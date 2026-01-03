@@ -9,97 +9,103 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
-    import { getAuth, RecaptchaVerifier, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+  // Core Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
-      authDomain: "skyl-d9729.firebaseapp.com",
-      projectId: "skyl-d9729",
-      storageBucket: "skyl-d9729.firebasestorage.app",
-      messagingSenderId: "1009884656935",
-      appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
-      measurementId: "G-HP6Q01XZEB"
-    };
+  // Firebase Authentication
+  import { getAuth, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth();
-    auth.languageCode = 'it';
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {});
+  // Firestore
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    const db = getFirestore(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
+    authDomain: "skyl-d9729.firebaseapp.com",
+    projectId: "skyl-d9729",
+    storageBucket: "skyl-d9729.firebasestorage.app",
+    messagingSenderId: "1009884656935",
+    appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
+    measurementId: "G-HP6Q01XZEB"
+  };
 
-    // Google Sign-In
-    window.googleSignIn = async () => {
-      try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        alert("Signed in successfully!");
-      } catch (err) {
-        alert("Error signing in: " + err.message);
-      }
-    };
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 
-    // Placeholder phone login functions
-    window.sendPhoneCode = () => alert("Phone verification code sent.");
-    window.verifyPhoneCode = () => alert("Phone code verified.");
-    window.showGames = () => alert("Redirect to games section.");
+  // Auth
+  const auth = getAuth(app);
+  auth.languageCode = 'it';
+  window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {});
 
-    // Dashboard stats
-    const dashboardStats = document.getElementById('dashboard-stats');
-    const statsQuery = query(collection(db, "gameStats"));
-    onSnapshot(statsQuery, (snapshot) => {
-      dashboardStats.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        dashboardStats.innerHTML += `
-          <div class="stat-card">
-            <h3>${data.title || 'Stats'}</h3>
-            <p>${data.value || 0}</p>
-          </div>
-        `;
-      });
+  // Firestore
+  const db = getFirestore(app);
+
+  // Google login
+  window.googleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      alert("Signed in successfully!");
+    } catch (err) {
+      alert("Error signing in: " + err.message);
+    }
+  };
+
+  // Phone login placeholders
+  window.sendPhoneCode = () => alert("Phone verification code sent.");
+  window.verifyPhoneCode = () => alert("Phone code verified.");
+  window.showGames = () => alert("Redirect to games section.");
+
+  // Dashboard stats
+  const dashboardStats = document.getElementById('dashboard-stats');
+  const statsQuery = query(collection(db, "gameStats"));
+  onSnapshot(statsQuery, (snapshot) => {
+    dashboardStats.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      dashboardStats.innerHTML += `
+        <div class="stat-card">
+          <h3>${data.title || 'Stats'}</h3>
+          <p>${data.value || 0}</p>
+        </div>
+      `;
+    });
+  });
+
+  // Community chat
+  const communityChat = document.getElementById('community-chat');
+  const messagesInput = document.querySelector('#community input[type="text"]');
+  const sendBtn = document.querySelector('#community button');
+
+  const messagesQuery = query(collection(db, "communityMessages"), orderBy("timestamp"));
+  onSnapshot(messagesQuery, (snapshot) => {
+    communityChat.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      communityChat.innerHTML += `<p><strong>${data.username}:</strong> ${data.message}</p>`;
+      communityChat.scrollTop = communityChat.scrollHeight;
+    });
+  });
+
+  sendBtn.addEventListener('click', async () => {
+    const message = messagesInput.value.trim();
+    if (!message) return;
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Sign in first to chat!");
+      return;
+    }
+
+    await addDoc(collection(db, "communityMessages"), {
+      username: user.displayName || user.phoneNumber || "Anonymous",
+      message: message,
+      timestamp: new Date()
     });
 
-    // Community chat
-    const communityChat = document.getElementById('community-chat');
-    const messagesInput = document.querySelector('#community input[type="text"]');
-    const sendBtn = document.querySelector('#community button');
-
-    const messagesQuery = query(collection(db, "communityMessages"), orderBy("timestamp"));
-    onSnapshot(messagesQuery, (snapshot) => {
-      communityChat.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        communityChat.innerHTML += `<p><strong>${data.username}:</strong> ${data.message}</p>`;
-        communityChat.scrollTop = communityChat.scrollHeight;
-      });
-    });
-
-    sendBtn.addEventListener('click', async () => {
-      const message = messagesInput.value.trim();
-      if (!message) return;
-      const user = auth.currentUser;
-      if (!user) {
-        alert("Sign in first to chat!");
-        return;
-      }
-
-      await addDoc(collection(db, "communityMessages"), {
-        username: user.displayName || user.phoneNumber || "Anonymous",
-        message: message,
-        timestamp: new Date()
-      });
-
-      messagesInput.value = "";
-    });
-  </script>
+    messagesInput.value = "";
+  });
+</script>
 
   <style>
     body { background-color: #f5f5f5; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; color: #333; text-align: center; }

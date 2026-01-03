@@ -46,7 +46,9 @@
   );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
-  if(!Parse.User.current()){
+  const currentUser = Parse.User.current();
+  if(!currentUser){
+    alert("Please login to access games!");
     location.href="index.html";
   }
 
@@ -55,13 +57,13 @@
     location.href="index.html";
   }
 
-  // Automatic tracking function
+  // Track game play automatically
   async function trackGame(gameTitle, statElementId){
     try {
       const GamePlay = Parse.Object.extend("GamePlay");
       const play = new GamePlay();
       play.set("gameTitle", gameTitle);
-      play.set("user", Parse.User.current().get("username"));
+      play.set("user", currentUser.get("username"));
       play.set("playedAt", new Date());
       await play.save();
       document.getElementById(statElementId).innerText =
@@ -71,21 +73,19 @@
     }
   }
 
-  // Track when user focuses or clicks on iframe
-  document.getElementById("game1").addEventListener("load", ()=>{
-    const iframe1 = document.getElementById("game1").contentWindow;
-    iframe1.addEventListener("click", ()=> trackGame("Game 1","stat-game1"));
-  });
-
-  document.getElementById("game2").addEventListener("load", ()=>{
-    const iframe2 = document.getElementById("game2").contentWindow;
-    iframe2.addEventListener("click", ()=> trackGame("Game 2","stat-game2"));
-  });
-
-  // Alternative: Track on mouseenter if iframe click inside doesn't work
+  // Use mouseenter to track iframe interaction reliably
   document.getElementById("game1").addEventListener("mouseenter", ()=> trackGame("Game 1","stat-game1"));
   document.getElementById("game2").addEventListener("mouseenter", ()=> trackGame("Game 2","stat-game2"));
 </script>
+
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="support.html">Support</a>
+  </p>
+  <p>© 2026 SkylPWorld</p>
+</footer>
 
 </body>
 </html>

@@ -11,7 +11,7 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getAuth, GithubAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     // Firebase config
@@ -31,18 +31,25 @@
     const db = getFirestore(app);
 
     // Elements
-    const loginBtn = document.getElementById("google-login");
+    const loginBtn = document.getElementById("github-login");
     const dashboardStats = document.getElementById("dashboard-stats");
 
-    // Google Sign-In
+    // GitHub Sign-In
     loginBtn.addEventListener("click", async () => {
-      const provider = new GoogleAuthProvider();
+      const provider = new GithubAuthProvider();
+      provider.addScope('repo'); // Optional: access to repos
       try {
         const result = await signInWithPopup(auth, provider);
-        alert("Welcome " + result.user.displayName);
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        alert("Welcome " + (user.displayName || user.email));
         loginBtn.style.display = "none"; // Hide button after login
+        console.log("GitHub token:", token);
+        // Redirect to dashboard automatically
+        window.location.href = "dashboard.html";
       } catch(e) {
-        console.error(e);
+        console.error("GitHub login error:", e);
         alert("Sign in failed: " + e.message);
       }
     });
@@ -52,7 +59,7 @@
       if (user) loginBtn.style.display = "none";
     });
 
-    // Firestore live dashboard
+    // Firestore live dashboard (optional preview on home page)
     const statsQuery = query(collection(db, "gameStats"));
     onSnapshot(statsQuery, (snapshot) => {
       dashboardStats.innerHTML = "";
@@ -87,6 +94,8 @@
     .stat-card h3 { margin:0 0 10px; color:#4b00ff; }
     .stat-card p { font-size:1.2rem; margin:0; font-weight:600; }
     footer { margin-top:60px; text-align:center; padding:20px; background:#222; color:#fff; }
+    footer a:hover { color:#ffcc00; }
+    footer div { margin-bottom:5px; }
   </style>
 </head>
 
@@ -100,17 +109,22 @@
   <header>
     <h1>Your Home of Games</h1>
     <p>Play, compete, and track your progress in one place.</p>
-    <button id="google-login">Sign in with Google</button>
+    <button id="github-login">Sign in with GitHub</button>
   </header>
 
   <main>
-    <h2>Dashboard</h2>
+    <h2>Dashboard Preview</h2>
     <div id="dashboard-stats">
       <p>Loading statistics...</p>
     </div>
   </main>
 
   <footer>
+    <div>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="support.html">Support</a>
+    </div>
+    <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
     <p>© 2026 Your Home of Games</p>
   </footer>
 </body>

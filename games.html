@@ -10,8 +10,11 @@
 Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C","4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
 Parse.serverURL = "https://parseapi.back4app.com/";
 
-async function enforceLogin(){ if(!Parse.User.current()) window.location.href="index.html"; else applyUserPreferences(Parse.User.current()); }
-async function applyUserPreferences(user){
+// Enforce login
+  if(!Parse.User.current()){
+    alert("You must log in first!");
+    window.location.href="index.html";
+  async function applyUserPreferences(user){
   document.body.style.background=(user.get("theme")==="dark")?"#111":"#f5f5f5";
   document.body.style.color=(user.get("theme")==="dark")?"#eee":"#333";
   document.getElementById("nav-username").textContent=user.get("username")||"";

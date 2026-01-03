@@ -1,236 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support - Your Home of Games</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #4b00ff, #ffcc00);
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+<meta charset="UTF-8">
+<title>Support - Your Home of Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    header {
-      background-color: #1f1f2e;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      padding: 0;
-      margin: 0;
-    }
+<script src="https://unpkg.com/parse/dist/parse.min.js"></script>
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.3s;
-    }
+<script type="module">
+  // Initialize Parse
+  Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQxSHC7KUQImgxCUB4C", "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
+  Parse.serverURL = 'https://parseapi.back4app.com';
 
-    nav a:hover {
-      color: #ffcc00;
-    }
+  window.onload = () => {
+    const form = document.getElementById("support-form");
+    const responseDiv = document.getElementById("response-msg");
 
-    main {
-      flex: 1;
-      max-width: 800px;
-      margin: 20px auto;
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      text-align: center;
-    }
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const userName = document.getElementById("user-name").value.trim();
+      const userEmail = document.getElementById("user-email").value.trim();
+      const issueText = document.getElementById("issue-text").value.trim();
 
-    h1 {
-      margin-bottom: 20px;
-      color: #4b00ff;
-    }
-
-    #chat-box {
-      width: 100%;
-      max-width: 700px;
-      margin: 0 auto;
-      background-color: #f5f5f5;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    #messages {
-      height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 10px;
-      text-align: left;
-      background-color: #fff;
-    }
-
-    #messages p {
-      margin: 5px 0;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background-color: #e0e0ff;
-    }
-
-    #user-input {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    #user-input input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-
-    #user-input button {
-      padding: 12px 25px;
-      border-radius: 10px;
-      border: none;
-      background-color: #4b00ff;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    #user-input button:hover {
-      background-color: #ffcc00;
-      color: #000;
-      transform: scale(1.05);
-    }
-
-    footer {
-      background-color: #1f1f2e;
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-    }
-
-  </style>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
-      authDomain: "skyl-d9729.firebaseapp.com",
-      projectId: "skyl-d9729",
-      storageBucket: "skyl-d9729.firebasestorage.app",
-      messagingSenderId: "1009884656935",
-      appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
-      measurementId: "G-HP6Q01XZEB"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.sendSupportMessage = async (userMessage) => {
-      try {
-        await addDoc(collection(db, "supportMessages"), {
-          message: userMessage,
-          timestamp: serverTimestamp()
-        });
-      } catch (err) {
-        console.error("Error sending support message:", err);
+      if(!userName || !userEmail || !issueText) {
+        responseDiv.innerText = "Please fill in all fields!";
+        responseDiv.style.color = "red";
+        return;
       }
-    };
-  </script>
+
+      try {
+        const SupportMessage = Parse.Object.extend("SupportMessage");
+        const message = new SupportMessage();
+        message.set("name", userName);
+        message.set("email", userEmail);
+        message.set("issue", issueText);
+        message.set("status", "new"); // optional, can track resolved messages
+        await message.save();
+
+        // Show automatic response
+        responseDiv.innerText = "Thank you! We'll get back to you soon.";
+        responseDiv.style.color = "#4b00ff";
+
+        // Clear form
+        form.reset();
+
+      } catch (error) {
+        responseDiv.innerText = "Error sending message: " + error.message;
+        responseDiv.style.color = "red";
+      }
+    });
+  };
+</script>
+
+<style>
+body { font-family: 'Poppins', sans-serif; margin:0; background:#f5f5f5; color:#333; }
+nav { background:#1f1f2e; text-align:center; padding:12px; }
+nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+nav a:hover { color:#ffcc00; }
+header { padding:60px 20px; text-align:center; background:linear-gradient(135deg, #4b00ff, #7b2cff); color:#fff; }
+header h1 { font-size:2.5rem; margin-bottom:10px; }
+header p { font-size:1.1rem; max-width:600px; margin:auto; }
+main { max-width:600px; margin:40px auto; padding:30px; background:#fff; border-radius:16px; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+input, textarea { width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ccc; font-size:1rem; }
+textarea { resize: none; height:150px; }
+button { padding:14px 28px; border:none; border-radius:12px; background:linear-gradient(135deg,#4b00ff,#7b2cff); color:#fff; cursor:pointer; font-weight:600; font-size:1.1rem; transition: all 0.3s ease; }
+button:hover { background:linear-gradient(135deg,#ffcc00,#f5a623); color:#000; transform: scale(1.05); }
+#response-msg { margin-top:15px; font-weight:600; font-size:1rem; text-align:center; }
+footer { margin-top:60px; text-align:center; padding:20px; background:#222; color:#fff; }
+footer a:hover { color:#ffcc00; }
+footer div { margin-bottom:5px; }
+</style>
 </head>
+
 <body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="games.html">Games</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="support.html" class="active">Support</a>
+</nav>
 
 <header>
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="games.html">Games</a></li>
-      <li><a href="community.html">Community</a></li>
-      <li><a href="settings.html">Settings</a></li>
-      <li><a href="privacy.html">Privacy Policy</a></li>
-    </ul>
-  </nav>
+  <h1>Support</h1>
+  <p>Have an issue or question? Send us a message and we'll get back to you.</p>
 </header>
 
 <main>
-  <h1>Support</h1>
-  <p>Have an issue? Type your message below and we'll get back to you!</p>
-
-  <div id="chat-box">
-    <div id="messages">
-      <p><em>Start typing your issue...</em></p>
-    </div>
-    <div id="user-input">
-      <input type="text" id="support-message" placeholder="Type your message here">
-      <button id="send-btn">Send</button>
-    </div>
-  </div>
+  <form id="support-form">
+    <input type="text" id="user-name" placeholder="Your Name" required>
+    <input type="email" id="user-email" placeholder="Your Email" required>
+    <textarea id="issue-text" placeholder="Describe your issue..." required></textarea>
+    <button type="submit">Send</button>
+  </form>
+  <div id="response-msg"></div>
 </main>
 
 <footer>
-  <p>Mail: chykedegreat@gmail.com | Contact: +2347061740924</p>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria | Postal Code: 900109</p>
+  <div>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="support.html">Support</a>
+  </div>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>© Skyl P World</p>
 </footer>
-
-<script type="module">
-  const sendBtn = document.getElementById('send-btn');
-  const messages = document.getElementById('messages');
-  const input = document.getElementById('support-message');
-
-  sendBtn.addEventListener('click', async () => {
-    const userMessage = input.value.trim();
-    if (!userMessage) return;
-
-    // Display user message
-    const pUser = document.createElement('p');
-    pUser.innerHTML = `<strong>You:</strong> ${userMessage}`;
-    messages.appendChild(pUser);
-
-    // Save to Firebase
-    await sendSupportMessage(userMessage);
-
-    // Automatic response
-    const pResponse = document.createElement('p');
-    pResponse.innerHTML = `<strong>Support:</strong> We will get back to you shortly.`;
-    messages.appendChild(pResponse);
-
-    // Scroll to bottom
-    messages.scrollTop = messages.scrollHeight;
-
-    // Clear input
-    input.value = '';
-  });
-
-  // Enter key to send
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendBtn.click();
-  });
-</script>
-
 </body>
 </html>

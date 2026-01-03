@@ -65,27 +65,51 @@
   <button id="logoutBtn" class="logout">Logout</button>
 </div>
 
-<footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
-  </p>
-  <p>© 2026 SkylPWorld</p>
-</footer>
+<!-- Load Facebook SDK -->
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '10069345703165605', // Your Facebook App ID
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v16.0'
+    });
+
+    Parse.FacebookUtils.init({
+      appId      : '10069345703165605',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v16.0'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
 
 <script>
+  // Initialize Parse
   Parse.initialize(
     "jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C",
     "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh"
   );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
+  const authBox = document.getElementById("authBox");
+  const logoutBox = document.getElementById("logoutBox");
+
   if(Parse.User.current()){
     authBox.style.display="none";
     logoutBox.style.display="block";
   }
 
+  // Signup
   signupBtn.onclick = async ()=>{
     const user = new Parse.User();
     user.set("username", username.value);
@@ -97,6 +121,7 @@
     }catch(e){ alert(e.message); }
   };
 
+  // Login
   loginBtn.onclick = async ()=>{
     try{
       await Parse.User.logIn(username.value,password.value);
@@ -104,18 +129,36 @@
     }catch(e){ alert(e.message); }
   };
 
-  fbLogin.onclick = async ()=>{
-    try{
-      await Parse.FacebookUtils.logIn();
+  // Facebook Login
+  fbLogin.onclick = async () => {
+    try {
+      const user = await Parse.FacebookUtils.logIn(null, {scope: 'email'});
+      if (!user.existed()) {
+        alert('User signed up and logged in through Facebook!');
+      } else {
+        alert('User logged in through Facebook!');
+      }
       location.href="dashboard.html";
-    }catch(e){ alert(e.message); }
+    } catch (error) {
+      alert('Facebook login failed: ' + error.message);
+    }
   };
 
+  // Logout
   logoutBtn.onclick = async ()=>{
     await Parse.User.logOut();
     location.reload();
   };
 </script>
+
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="support.html">Support</a>
+  </p>
+  <p>© 2026 SkylPWorld</p>
+</footer>
 
 </body>
 </html>

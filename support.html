@@ -10,8 +10,10 @@
 Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C","4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
 Parse.serverURL = "https://parseapi.back4app.com/";
 
-async function enforceLogin(){ if(!Parse.User.current()) window.location.href="index.html"; }
-
+// Enforce login
+  if(!Parse.User.current()){
+    alert("You must log in first!");
+    window.location.href="index.html";
 async function sendSupport(){
   const message = document.getElementById("support-message").value.trim();
   if(!message) return alert("Type your issue first.");

@@ -2,107 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Home of Games</title>
+  <title>SkylPWorld – Home</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
 
   <style>
-    body { font-family:'Poppins',sans-serif; margin:0; padding:20px; background:#f5f5f5; }
-    h1,h2 { color:#4b00ff; }
-    input { padding:10px; width:250px; margin-bottom:10px; border-radius:6px; border:1px solid #ccc; }
-    button { padding:10px 20px; border:none; border-radius:6px; background:#4b00ff; color:#fff; cursor:pointer; font-weight:600; }
-    button:hover { background:#ffcc00; color:#000; }
-    hr { margin:30px 0; border:0; border-top:1px solid #ccc; }
-    #logoutBtn { margin-top:20px; }
-    footer { margin-top:50px; padding:20px; background:#222; color:#fff; text-align:center; font-size:0.9rem; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; }
+    nav { background:#1f1f2e; text-align:center; padding:12px; }
+    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+    nav a:hover { color:#ffcc00; }
+    .container { max-width:400px; margin:40px auto; background:#fff; padding:30px; border-radius:12px; text-align:center; }
+    input, button { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
+    button { border:none; font-weight:bold; cursor:pointer; }
+    .fb { background:#1877f2; color:#fff; }
+    .logout { background:#ff3b3b; color:#fff; }
+    footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
     footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
-    footer a:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
 
-<h1>Welcome to Your Home of Games</h1>
+<nav>
+  <a href="index.html" class="active">Home</a>
+  <a href="games.html">Games</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="support.html">Support</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="settings.html">Settings</a>
+</nav>
 
-<div id="user-section">
-  <h2>Login</h2>
-  <input id="login-username" type="text" placeholder="Username" /><br>
-  <input id="login-password" type="password" placeholder="Password" /><br>
-  <button id="loginBtn">Login</button>
+<div class="container" id="authBox">
+  <h2>Welcome to SkylPWorld</h2>
+
+  <input id="mail" placeholder="Mail (Gmail / Yahoo)">
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+
+  <button id="signupBtn">Sign Up</button>
+  <button id="loginBtn">Log In</button>
+  <button id="fbLogin" class="fb">Continue with Facebook</button>
 </div>
 
-<hr>
-
-<div id="signup-section">
-  <h2>Signup</h2>
-  <input id="username" type="text" placeholder="Username" /><br>
-  <input id="mail" type="text" placeholder="Mail" /><br>
-  <input id="password" type="password" placeholder="Password" /><br>
-  <button id="createButton">Create Account</button>
+<div class="container" id="logoutBox" style="display:none;">
+  <h3>You are logged in</h3>
+  <button id="logoutBtn" class="logout">Logout</button>
 </div>
 
-<br>
-<button id="logoutBtn" style="display:none;">Logout</button>
-
-<!-- Footer -->
 <footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>
-    <a href="privacy.html">Privacy Policy</a> | 
+    <a href="privacy.html">Privacy Policy</a> |
     <a href="support.html">Support</a>
   </p>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>© 2026 Your Home of Games</p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
 
 <script>
-  // ---- Initialize Parse ----
-  Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C","4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
+  Parse.initialize(
+    "jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C",
+    "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh"
+  );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
-  // ---- Show logout if already logged in ----
   if(Parse.User.current()){
-    document.getElementById("user-section").style.display="none";
-    document.getElementById("signup-section").style.display="none";
-    document.getElementById("logoutBtn").style.display="block";
-    const usernameSpan = document.createElement("span");
-    usernameSpan.textContent = `Logged in as: ${Parse.User.current().get("username")}`;
-    document.body.insertBefore(usernameSpan, document.getElementById("logoutBtn"));
+    authBox.style.display="none";
+    logoutBox.style.display="block";
   }
 
-  // ---- Login ----
-  document.getElementById("loginBtn").addEventListener("click", async () => {
-    const username = document.getElementById("login-username").value.trim();
-    const password = document.getElementById("login-password").value.trim();
-    if(!username || !password){ alert("Enter both username and password"); return; }
-
+  signupBtn.onclick = async ()=>{
+    const user = new Parse.User();
+    user.set("username", username.value);
+    user.set("password", password.value);
+    user.set("email", mail.value);
     try{
-      await Parse.User.logIn(username,password);
-      alert("Login successful!");
-      window.location.href="dashboard.html"; // redirect to main features
-    }catch(e){
-      alert("Login failed: "+e.message);
-    }
-  });
-
-  // ---- Signup (existing code unchanged) ----
-  document.getElementById("createButton").addEventListener("click", async function () {
-    let user = new Parse.User();
-    user.set("username", document.getElementById("username").value.trim());
-    user.set("mail", document.getElementById("mail").value.trim());
-    user.set("password", document.getElementById("password").value.trim());
-    try {
       await user.signUp();
-      alert(`Welcome ${user.get("username")}! Account created.`);
-      window.location.href="dashboard.html";
-    } catch(error) { alert(`Signup failed: ${error.message}`); }
-  });
+      location.href="dashboard.html";
+    }catch(e){ alert(e.message); }
+  };
 
-  // ---- Logout ----
-  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  loginBtn.onclick = async ()=>{
+    try{
+      await Parse.User.logIn(username.value,password.value);
+      location.href="dashboard.html";
+    }catch(e){ alert(e.message); }
+  };
+
+  fbLogin.onclick = async ()=>{
+    try{
+      await Parse.FacebookUtils.logIn();
+      location.href="dashboard.html";
+    }catch(e){ alert(e.message); }
+  };
+
+  logoutBtn.onclick = async ()=>{
     await Parse.User.logOut();
-    alert("Logged out!");
-    window.location.reload();
-  });
+    location.reload();
+  };
 </script>
 
 </body>

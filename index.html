@@ -37,7 +37,6 @@
     // GitHub Sign-In
     loginBtn.addEventListener("click", async () => {
       const provider = new GithubAuthProvider();
-      provider.addScope('repo'); // Optional: access to repos
       try {
         const result = await signInWithPopup(auth, provider);
         const credential = GithubAuthProvider.credentialFromResult(result);

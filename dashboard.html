@@ -11,9 +11,10 @@
 Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C","4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
 Parse.serverURL = "https://parseapi.back4app.com/";
 
-async function enforceLogin(){
-  const user = Parse.User.current();
-  if(!user) window.location.href="index.html";
+// Enforce login
+  if(!Parse.User.current()){
+    alert("You must log in first!");
+    window.location.href="index.html";
   else applyUserPreferences(user);
 }
 

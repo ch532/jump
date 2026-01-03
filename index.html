@@ -4,22 +4,6 @@
   <meta charset="UTF-8">
   <title>SkylPWorld – Home</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Your Home of Games – Play, compete, and track your progress. Access real-time dashboards and enjoy a seamless gaming experience.">
-<!-- Open Graph / Facebook -->
-<meta property="og:title" content="Your Home of Games">
-<meta property="og:description" content="Play, compete, and track your progress with real-time dashboards.">
-<meta property="og:image" content="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-<meta property="og:url" content="https://yourwebsite.com">
-<meta property="og:type" content="website">
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Your Home of Games">
-<meta name="twitter:description" content="Play, compete, and track your progress with real-time dashboards.">
-<meta name="twitter:image" content="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-
-  <!-- Favicon for browsers -->
-<link rel="icon" href="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-
 
   <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
 
@@ -45,7 +29,6 @@
   <a href="dashboard.html">Dashboard</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
-  <a href="settings.html">Settings</a>
 </nav>
 
 <!-- AUTH CONTAINER -->
@@ -58,7 +41,17 @@
 
   <button id="signupBtn">Sign Up</button>
   <button id="loginBtn">Log In</button>
+
   <button id="fbLogin" class="fb">Continue with Facebook</button>
+
+  <!-- FB Login Button Alternative (optional) -->
+  <!--
+  <fb:login-button 
+    config_id="2316598995528367" 
+    scope="email" 
+    onlogin="checkLoginState();">
+  </fb:login-button>
+  -->
 </div>
 
 <!-- LOGOUT CONTAINER -->
@@ -97,7 +90,7 @@
 <script>
   window.fbAsyncInit = function() {
     FB.init({
-      appId      : '10069345703165605', // Your Facebook App ID
+      appId      : '10069345703165605',
       cookie     : true,
       xfbml      : true,
       version    : 'v16.0'
@@ -184,14 +177,21 @@
     }catch(e){ alert("Login failed: "+e.message); }
   };
 
-  // Facebook Login
-  fbLogin.onclick = async () => {
-    try {
-      const user = await Parse.FacebookUtils.logIn(null, {scope: 'email'});
-      location.href="dashboard.html";
-    } catch (error) {
-      alert('Facebook login failed: ' + error.message);
-    }
+  // Facebook Login using Config ID
+  fbLogin.onclick = function() {
+    FB.login(function(response) {
+      console.log(response);
+      if (response.authResponse) {
+        Parse.FacebookUtils.logIn(null, {scope: 'email'}).then((user) => {
+          alert("Logged in with Facebook: " + user.get("username"));
+          location.href="dashboard.html";
+        }).catch((err) => {
+          alert("Facebook login failed: " + err.message);
+        });
+      } else {
+        alert("Facebook login cancelled or failed.");
+      }
+    }, {config_id: '2316598995528367'});
   };
 
   // Logout
@@ -238,8 +238,8 @@
     <a href="privacy.html">Privacy Policy</a> |
     <a href="support.html">Support</a>
   </p>
-  <p>© 2026 Skyl P World</p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
 
 </body>
-</html>
+</html> 

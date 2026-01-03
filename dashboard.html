@@ -1,117 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard - Your Home of Games</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/parse/dist/parse.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script>
-Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C","4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
-Parse.serverURL = "https://parseapi.back4app.com/";
-
-// Enforce login
-  if(!Parse.User.current()){
-    alert("You must log in first!");
-    window.location.href="index.html";
-  else applyUserPreferences(user);
-}
-
-async function applyUserPreferences(user){
-  document.body.style.background = (user.get("theme")==="dark")?"#111":"#f5f5f5";
-  document.body.style.color = (user.get("theme")==="dark")?"#eee":"#333";
-  document.getElementById("nav-username").textContent=user.get("username")||"";
-  const profileFile=user.get("profilePic");
-  if(profileFile) document.getElementById("nav-profile-pic").src=profileFile.url();
-}
-
-async function loadStats(){
-  const query = new Parse.Query("gameStats");
-  try{
-    const results = await query.find();
-    const container = document.getElementById("dashboard-stats");
-    container.innerHTML="";
-    results.forEach(stat=>{
-      container.innerHTML+=`
-        <div class="stat-card">
-          <h3>${stat.get("title")||"Stats"}</h3>
-          <p>${stat.get("value")||0}</p>
-        </div>
-      `;
-    });
-  }catch(e){
-    console.error(e);
-    document.getElementById("dashboard-stats").innerHTML="<p>Error loading stats</p>";
-  }
-}
-
-window.onload=()=>{
-  enforceLogin();
-  loadStats();
-}
-</script>
-
-<style>
-body{font-family:'Poppins',sans-serif;margin:0;padding:0;}
-nav{background:#1f1f2e;text-align:center;padding:12px;}
-nav a{color:#fff;text-decoration:none;margin:0 15px;font-weight:600;cursor:pointer;}
-nav a:hover{color:#ffcc00;}
-#dashboard-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:20px;}
-.stat-card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,0.1);}
-.stat-card h3{margin:0 0 10px;color:#4b00ff;}
-.stat-card p{font-size:1.2rem;margin:0;font-weight:600;}
-</style>
+  <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f5f5f5; }
+    nav { background:#1f1f2e; text-align:center; padding:12px; }
+    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+    nav a:hover { color:#ffcc00; }
+    .stat-card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1); margin:20px 0; }
+    footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
+    footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
+  </style>
 </head>
-
 <body>
+
 <nav>
-  <a href="index.html">Home</a>
-  <a class="active" href="dashboard.html">Dashboard</a>
+  <a href="dashboard.html" class="active">Dashboard</a>
   <a href="games.html">Games</a>
   <a href="support.html">Support</a>
-  <a onclick="openSettingsModal()">Settings</a>
-  <span id="nav-username" style="margin-left:15px;font-weight:bold;"></span>
-  <img id="nav-profile-pic" src="" alt="Profile" style="width:30px;height:30px;border-radius:50%;margin-left:10px;">
+  <a href="settings.html">Settings</a>
+  <a href="index.html" onclick="logout()">Logout</a>
 </nav>
 
-<header>
 <h1>Dashboard</h1>
-<p>Live stats of your games and activities.</p>
-</header>
-
-<main>
-<div id="dashboard-stats"><p>Loading statistics...</p></div>
-</main>
+<div id="dashboardStats">
+  <p>Loading statistics...</p>
+</div>
 
 <footer>
-<div>
-<a href="privacy.html">Privacy Policy</a>
-<a href="support.html">Support</a>
-</div>
-<p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-<p>© 2026 Your Home of Games</p>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="support.html">Support</a>
+  </p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
 
-<!-- Settings Modal copied from index.html -->
-<div id="settings-modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
-    <h2>Settings</h2>
-    <label>Profile Picture</label>
-    <input type="file" id="settings-profile-pic" accept="image/*" />
-    <img id="profile-preview" src="" alt="Preview" style="width:80px;height:80px;border-radius:50%;display:block;margin:10px 0;" />
-    <input type="text" id="settings-username" placeholder="Change Username" />
-    <input type="email" id="settings-mail" placeholder="Change Mail" />
-    <input type="password" id="settings-password" placeholder="New Password" />
-    <label><input type="checkbox" id="settings-notifications" /> Email Notifications</label>
-    <label>Theme:</label>
-    <select id="settings-theme">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-    <button onclick="saveSettings()">Save Settings</button>
-  </div>
-</div>
+<script>
+  Parse.initialize(
+    "jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C",
+    "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh"
+  );
+  Parse.serverURL = "https://parseapi.back4app.com/";
+
+  if(!Parse.User.current()){
+    location.href="index.html";
+  }
+
+  async function logout(){
+    await Parse.User.logOut();
+    location.href="index.html";
+  }
+
+  // Example: Fetch stats (games played etc.) from Back4App
+  const Stats = Parse.Object.extend("GameStats");
+  const query = new Parse.Query(Stats);
+  query.find().then(results=>{
+    const container = document.getElementById("dashboardStats");
+    container.innerHTML="";
+    results.forEach(obj=>{
+      const div = document.createElement("div");
+      div.className="stat-card";
+      div.innerHTML=`<h3>${obj.get("title")}</h3><p>${obj.get("value")}</p>`;
+      container.appendChild(div);
+    });
+  }).catch(err=>console.error(err));
+</script>
+
 </body>
 </html>

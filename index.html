@@ -1,130 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Your Home of Games</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Your Home of Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAuth, GithubAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+<script src="https://unpkg.com/parse/dist/parse.min.js"></script>
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
-      authDomain: "skyl-d9729.firebaseapp.com",
-      projectId: "skyl-d9729",
-      storageBucket: "skyl-d9729.firebasestorage.app",
-      messagingSenderId: "1009884656935",
-      appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
-      measurementId: "G-HP6Q01XZEB"
-    };
+<script type="module">
+  // Initialize Parse
+  Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQxSHC7KUQImgxCUB4C", "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
+  Parse.serverURL = 'https://parseapi.back4app.com';
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  // Auto-redirect if already logged in
+  window.onload = () => {
+    if (Parse.User.current()) window.location.href = "dashboard.html";
+  };
 
-    // Elements
-    const loginBtn = document.getElementById("github-login");
-    const dashboardStats = document.getElementById("dashboard-stats");
+  const loginForm = document.getElementById("login-form");
+  loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if (!username || !password) return alert("Enter username and password");
 
-    // GitHub Sign-In
-    loginBtn.addEventListener("click", async () => {
-      const provider = new GithubAuthProvider();
+    try {
+      // Try login first
+      const user = await Parse.User.logIn(username, password);
+      alert("Welcome " + user.get("username"));
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      // If login fails, create new account
       try {
-        const result = await signInWithPopup(auth, provider);
-        const credential = GithubAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        const user = result.user;
-        alert("Welcome " + (user.displayName || user.email));
-        loginBtn.style.display = "none"; // Hide button after login
-        console.log("GitHub token:", token);
-        // Redirect to dashboard automatically
+        const newUser = new Parse.User();
+        newUser.set("username", username);
+        newUser.set("password", password);
+        await newUser.signUp();
+        alert("Account created! Welcome " + username);
         window.location.href = "dashboard.html";
-      } catch(e) {
-        console.error("GitHub login error:", e);
-        alert("Sign in failed: " + e.message);
+      } catch (signupError) {
+        alert("Error creating account: " + signupError.message);
       }
-    });
+    }
+  });
+</script>
 
-    // Check auth state on page load
-    onAuthStateChanged(auth, (user) => {
-      if (user) loginBtn.style.display = "none";
-    });
-
-    // Firestore live dashboard (optional preview on home page)
-    const statsQuery = query(collection(db, "gameStats"));
-    onSnapshot(statsQuery, (snapshot) => {
-      dashboardStats.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        dashboardStats.innerHTML += `
-          <div class="stat-card">
-            <h3>${data.title || 'Stats'}</h3>
-            <p>${data.value || 0}</p>
-          </div>
-        `;
-      });
-    }, (error) => {
-      console.error("Error fetching stats:", error);
-      dashboardStats.innerHTML = "<p>Error loading stats. Check permissions.</p>";
-    });
-  </script>
-
-  <style>
-    body { font-family: 'Poppins', sans-serif; margin:0; background:#f5f5f5; color:#333; }
-    nav { background:#1f1f2e; text-align:center; padding:12px; }
-    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-    nav a:hover { color:#ffcc00; }
-    header { padding:60px 20px; text-align:center; background:linear-gradient(135deg, #4b00ff, #7b2cff); color:#fff; }
-    header h1 { font-size:2.5rem; margin-bottom:10px; }
-    header p { font-size:1.1rem; max-width:600px; margin:auto; }
-    main { max-width:1000px; margin:40px auto; padding:20px; text-align:center; }
-    button { padding:12px 22px; border:none; border-radius:10px; background:#4b00ff; color:#fff; cursor:pointer; font-weight:600; margin-top:15px; }
-    button:hover { background:#ffcc00; color:#000; }
-    #dashboard-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-top:20px; }
-    .stat-card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
-    .stat-card h3 { margin:0 0 10px; color:#4b00ff; }
-    .stat-card p { font-size:1.2rem; margin:0; font-weight:600; }
-    footer { margin-top:60px; text-align:center; padding:20px; background:#222; color:#fff; }
-    footer a:hover { color:#ffcc00; }
-    footer div { margin-bottom:5px; }
-  </style>
+<style>
+body { font-family: 'Poppins', sans-serif; margin:0; background:#f5f5f5; color:#333; }
+nav { background:#1f1f2e; text-align:center; padding:12px; }
+nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+nav a:hover { color:#ffcc00; }
+header { padding:60px 20px; text-align:center; background:linear-gradient(135deg, #4b00ff, #7b2cff); color:#fff; }
+header h1 { font-size:2.5rem; margin-bottom:10px; }
+header p { font-size:1.1rem; max-width:600px; margin:auto; }
+main { max-width:400px; margin:40px auto; padding:20px; text-align:center; background:#fff; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
+input { padding:10px; margin:10px 0; width:90%; border-radius:8px; border:1px solid #ccc; }
+button { padding:12px 22px; border:none; border-radius:10px; background:#4b00ff; color:#fff; cursor:pointer; font-weight:600; margin-top:15px; width:95%; }
+button:hover { background:#ffcc00; color:#000; }
+footer { margin-top:60px; text-align:center; padding:20px; background:#222; color:#fff; }
+footer a:hover { color:#ffcc00; }
+footer div { margin-bottom:5px; }
+</style>
 </head>
 
 <body>
-  <nav>
-    <a href="index.html" class="active">Home</a>
-    <a href="games.html">Games</a>
-    <a href="dashboard.html">Dashboard</a>
-  </nav>
+<nav>
+  <a href="index.html" class="active">Home</a>
+  <a href="games.html">Games</a>
+  <a href="dashboard.html">Dashboard</a>
+</nav>
 
-  <header>
-    <h1>Your Home of Games</h1>
-    <p>Play, compete, and track your progress in one place.</p>
-    <button id="github-login">Sign in with GitHub</button>
-  </header>
+<header>
+  <h1>Your Home of Games</h1>
+  <p>Play, compete, and track your progress in one place.</p>
+</header>
 
-  <main>
-    <h2>Dashboard Preview</h2>
-    <div id="dashboard-stats">
-      <p>Loading statistics...</p>
-    </div>
-  </main>
+<main>
+  <form id="login-form">
+    <h3>Login or Sign Up</h3>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login / Sign Up</button>
+  </form>
+</main>
 
-  <footer>
-    <div>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="support.html">Support</a>
-    </div>
-    <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-    <p>© 2026 Your Home of Games</p>
-  </footer>
+<footer>
+  <div>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="support.html">Support</a>
+  </div>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>© 2026 Your Home of Games</p>
+</footer>
 </body>
 </html>

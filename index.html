@@ -4,125 +4,174 @@
 <meta charset="UTF-8">
 <title>Your Home of Games</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Your Home of Games – Play, compete, and track your progress. Access real-time dashboards and enjoy a seamless gaming experience.">
-<!-- Open Graph / Facebook -->
-<meta property="og:title" content="Your Home of Games">
-<meta property="og:description" content="Play, compete, and track your progress with real-time dashboards.">
-<meta property="og:image" content="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-<meta property="og:url" content="https://yourwebsite.com">
-<meta property="og:type" content="website">
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Your Home of Games">
-<meta name="twitter:description" content="Play, compete, and track your progress with real-time dashboards.">
-<meta name="twitter:image" content="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-
-  <!-- Favicon for browsers -->
-<link rel="icon" href="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
 
 <script>
-  // Initialize Back4App
-  Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQxSHC7KUQImgxCUB4C", "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
+  Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C", "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
   Parse.serverURL = "https://parseapi.back4app.com/";
 
-  // SIGN UP
-  async function createParseUser() {
-    const username = document.getElementById("signup-username").value.trim();
-    const email = document.getElementById("signup-email").value.trim();
-    const password = document.getElementById("signup-password").value;
+  async function applyUserPreferences(user) {
+    const theme = user.get("theme") || "light";
+    document.body.style.background = theme==="dark" ? "#111" : "#f5f5f5";
+    document.body.style.color = theme==="dark" ? "#eee" : "#333";
+    document.getElementById("nav-username").textContent = user.get("username") || "";
+    const profileFile = user.get("profilePic");
+    if(profileFile) document.getElementById("nav-profile-pic").src = profileFile.url();
+  }
 
-    if(!username || !email || !password){ alert("Fill all fields!"); return; }
+  async function checkLoginRedirect() {
+    const user = Parse.User.current();
+    if(user){
+      applyUserPreferences(user);
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("logout-btn").style.display = "inline-block";
+      setTimeout(()=> window.location.href="dashboard.html", 1000);
+    }
+  }
+
+  async function signupUser() {
+    const username = document.getElementById("signup-username").value.trim();
+    const mail = document.getElementById("signup-mail").value.trim();
+    const password = document.getElementById("signup-password").value.trim();
+    if(!username || !mail || !password) return alert("All fields required");
 
     const user = new Parse.User();
     user.set("username", username);
-    user.set("email", email);
+    user.set("mail", mail);
     user.set("password", password);
 
-    try {
-      const result = await user.signUp();
-      alert(`User created! Welcome ${result.get("username")}`);
-      document.getElementById("signupForm").reset();
-    } catch (e) {
-      alert(`Error: ${e.message}`);
+    try{
+      await user.signUp();
+      alert("Signup successful! Redirecting...");
+      applyUserPreferences(user);
+      window.location.href="dashboard.html";
+    }catch(e){
+      alert("Error: "+e.message);
     }
   }
 
-  // LOGIN
-  async function loginParseUser() {
-    const username = document.getElementById("login-username").value.trim();
-    const password = document.getElementById("login-password").value;
+  async function loginUser() {
+    const mail = document.getElementById("login-mail").value.trim();
+    const password = document.getElementById("login-password").value.trim();
+    if(!mail || !password) return alert("All fields required");
 
-    if(!username || !password){ alert("Enter username and password!"); return; }
+    try{
+      const query = new Parse.Query(Parse.User);
+      query.equalTo("mail", mail);
+      const user = await query.first({useMasterKey:false});
+      if(!user) return alert("User not found");
 
-    try {
-      const user = await Parse.User.logIn(username, password);
-      alert(`Welcome ${user.get("username")}! Redirecting to dashboard...`);
-      window.location.href = "dashboard.html";
-    } catch(e) {
-      alert(`Login failed: ${e.message}`);
+      const loggedInUser = await Parse.User.logIn(user.get("username"), password);
+      alert("Login successful! Redirecting...");
+      applyUserPreferences(loggedInUser);
+      window.location.href="dashboard.html";
+    }catch(e){
+      alert("Error: "+e.message);
     }
   }
 
-  // LOGOUT
-  async function logoutParseUser() {
-    await Parse.User.logOut();
-    alert("Logged out successfully!");
-    window.location.href = "index.html";
+  function logoutUser() {
+    Parse.User.logOut();
+    alert("Logged out!");
+    window.location.reload();
+  }
+
+  window.onload = () => {
+    checkLoginRedirect();
+  }
+
+  // Settings modal
+  function openSettingsModal(){ loadSettings(); document.getElementById("settings-modal").style.display="block"; }
+  function closeSettingsModal(){ document.getElementById("settings-modal").style.display="none"; }
+  async function loadSettings(){
+    const user = Parse.User.current();
+    if(!user) return;
+    document.getElementById("settings-username").value=user.get("username")||"";
+    document.getElementById("settings-mail").value=user.get("mail")||"";
+    document.getElementById("settings-notifications").checked=user.get("notifications")||false;
+    document.getElementById("settings-theme").value=user.get("theme")||"light";
+    const profileFile = user.get("profilePic");
+    if(profileFile) document.getElementById("profile-preview").src=profileFile.url();
+  }
+  async function saveSettings(){
+    const user = Parse.User.current();
+    if(!user) return;
+    const newUsername = document.getElementById("settings-username").value.trim();
+    const newMail = document.getElementById("settings-mail").value.trim();
+    const newPassword = document.getElementById("settings-password").value.trim();
+    const notifications = document.getElementById("settings-notifications").checked;
+    const theme = document.getElementById("settings-theme").value;
+    if(newUsername) user.set("username", newUsername);
+    if(newMail) user.set("mail", newMail);
+    if(newPassword) user.set("password", newPassword);
+    user.set("notifications", notifications);
+    user.set("theme", theme);
+    const fileInput = document.getElementById("settings-profile-pic");
+    if(fileInput.files.length>0){
+      const file = fileInput.files[0];
+      const parseFile = new Parse.File(file.name,file);
+      await parseFile.save();
+      user.set("profilePic",parseFile);
+    }
+    try{
+      await user.save();
+      alert("Settings saved!");
+      document.getElementById("settings-password").value="";
+      closeSettingsModal();
+      applyUserPreferences(user);
+    }catch(e){
+      alert("Error: "+e.message);
+    }
   }
 </script>
 
 <style>
-body { font-family: 'Poppins', sans-serif; margin:0; background:#f5f5f5; color:#333; }
-nav { background:#1f1f2e; text-align:center; padding:12px; }
-nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-nav a:hover { color:#ffcc00; }
-header { padding:40px 20px; text-align:center; background:linear-gradient(135deg,#4b00ff,#7b2cff); color:#fff; }
-header h1 { font-size:2.5rem; margin-bottom:10px; }
-header p { font-size:1.1rem; max-width:600px; margin:auto; }
-.container { max-width:400px; margin:30px auto; background:#fff; padding:25px; border-radius:16px; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
-input { width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px solid #ccc; font-size:1rem; }
-button { width:100%; padding:14px; margin-top:10px; border:none; border-radius:12px; background:linear-gradient(135deg,#4b00ff,#7b2cff); color:#fff; cursor:pointer; font-weight:600; font-size:1.1rem; transition:0.3s; }
-button:hover { background:linear-gradient(135deg,#ffcc00,#f5a623); color:#000; transform: scale(1.05); }
-button.logout { background:#ff4444; }
-footer { margin-top:60px; text-align:center; padding:20px; background:#222; color:#fff; }
-footer a:hover { color:#ffcc00; }
-footer div { margin-bottom:5px; }
+body{font-family:'Poppins',sans-serif;margin:0;padding:0;background:#f5f5f5;color:#333;}
+nav{background:#1f1f2e;text-align:center;padding:12px;}
+nav a{color:#fff;text-decoration:none;margin:0 15px;font-weight:600;cursor:pointer;}
+nav a:hover{color:#ffcc00;}
+main{max-width:500px;margin:40px auto;padding:20px;text-align:center;}
+input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ccc;}
+button{padding:10px 20px;margin:10px 0;border:none;border-radius:10px;background:#4b00ff;color:#fff;cursor:pointer;}
+button:hover{background:#ffcc00;color:#000;}
+#logout-btn{display:none;}
+#settings-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.5);}
+.modal-content{background:#fff;margin:10% auto;padding:20px;border-radius:16px;width:90%;max-width:400px;position:relative;}
+.close-btn{position:absolute;right:20px;top:20px;font-size:1.5rem;cursor:pointer;color:#4b00ff;}
+.close-btn:hover{color:#ffcc00;}
 </style>
 </head>
-
 <body>
+
 <nav>
   <a href="index.html" class="active">Home</a>
-  <a href="games.html">Games</a>
   <a href="dashboard.html">Dashboard</a>
+  <a href="games.html">Games</a>
   <a href="support.html">Support</a>
+  <a onclick="openSettingsModal()">Settings</a>
+  <span id="nav-username" style="margin-left:15px;font-weight:bold;"></span>
+  <img id="nav-profile-pic" src="" alt="Profile" style="width:30px;height:30px;border-radius:50%;margin-left:10px;">
+  <button id="logout-btn" onclick="logoutUser()">Logout</button>
 </nav>
 
 <header>
-  <h1>Your Home of Games</h1>
-  <p>Play, compete, track your progress, and contact support directly.</p>
+<h1>Welcome to Your Home of Games</h1>
+<p>Sign up or login to access all features.</p>
 </header>
 
-<div class="container">
-  <h1>Sign Up</h1>
-  <form id="signupForm" onsubmit="event.preventDefault(); createParseUser();">
-    <input type="text" id="signup-username" placeholder="Username" required />
-    <input type="email" id="signup-email" placeholder="Email" required />
-    <input type="password" id="signup-password" placeholder="Password" required />
-    <button type="submit">Create User</button>
-  </form>
-</div>
+<main id="login-section">
+<h2>Signup</h2>
+<input type="text" id="signup-username" placeholder="Username" />
+<input type="text" id="signup-mail" placeholder="Mail" />
+<input type="password" id="signup-password" placeholder="Password" />
+<button onclick="signupUser()">Sign Up</button>
 
-<div class="container">
-  <h1>Login</h1>
-  <input type="text" id="login-username" placeholder="Username" />
-  <input type="password" id="login-password" placeholder="Password" />
-  <button onclick="loginParseUser()">Login</button>
-  <button class="logout" onclick="logoutParseUser()">Logout</button>
-</div>
+<h2>Login</h2>
+<input type="text" id="login-mail" placeholder="Mail" />
+<input type="password" id="login-password" placeholder="Password" />
+<button onclick="loginUser()">Login</button>
+</main>
 
 <footer>
   <div>
@@ -132,5 +181,27 @@ footer div { margin-bottom:5px; }
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 Your Home of Games</p>
 </footer>
+
+<!-- Settings Modal -->
+<div id="settings-modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
+    <h2>Settings</h2>
+    <label>Profile Picture</label>
+    <input type="file" id="settings-profile-pic" accept="image/*" />
+    <img id="profile-preview" src="" alt="Preview" style="width:80px;height:80px;border-radius:50%;display:block;margin:10px 0;" />
+    <input type="text" id="settings-username" placeholder="Change Username" />
+    <input type="email" id="settings-mail" placeholder="Change Mail" />
+    <input type="password" id="settings-password" placeholder="New Password" />
+    <label><input type="checkbox" id="settings-notifications" /> Email Notifications</label>
+    <label>Theme:</label>
+    <select id="settings-theme">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+    <button onclick="saveSettings()">Save Settings</button>
+  </div>
+</div>
+
 </body>
 </html>

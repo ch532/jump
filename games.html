@@ -12,7 +12,7 @@
     nav a:hover { color:#ffcc00; }
     .game-container { margin:20px 0; text-align:center; }
     iframe { width:100%; height:500px; border:2px solid #ccc; border-radius:12px; }
-    .stat { margin-top:10px; font-weight:bold; }
+    .stat { margin-top:10px; font-weight:bold; color:green; }
   </style>
 </head>
 <body>
@@ -25,20 +25,17 @@
 </nav>
 
 <h1>Games</h1>
-
-<p>Play games below. Your plays are tracked for stats.</p>
+<p>Play games below. Plays are tracked automatically.</p>
 
 <div class="game-container">
   <h3>Game 1</h3>
   <iframe id="game1" src="https://example.com/game1" allowfullscreen></iframe>
-  <button onclick="trackGame('Game 1')">I Played This Game</button>
   <div class="stat" id="stat-game1"></div>
 </div>
 
 <div class="game-container">
   <h3>Game 2</h3>
   <iframe id="game2" src="https://example.com/game2" allowfullscreen></iframe>
-  <button onclick="trackGame('Game 2')">I Played This Game</button>
   <div class="stat" id="stat-game2"></div>
 </div>
 
@@ -58,8 +55,8 @@
     location.href="index.html";
   }
 
-  // Track game play
-  async function trackGame(gameTitle){
+  // Automatic tracking function
+  async function trackGame(gameTitle, statElementId){
     try {
       const GamePlay = Parse.Object.extend("GamePlay");
       const play = new GamePlay();
@@ -67,12 +64,27 @@
       play.set("user", Parse.User.current().get("username"));
       play.set("playedAt", new Date());
       await play.save();
-      document.getElementById("stat-" + gameTitle.toLowerCase().replace(/\s+/g,'')).innerText = 
+      document.getElementById(statElementId).innerText =
         "Play recorded at " + new Date().toLocaleTimeString();
     } catch(e) {
       console.error("Error tracking game:", e.message);
     }
   }
+
+  // Track when user focuses or clicks on iframe
+  document.getElementById("game1").addEventListener("load", ()=>{
+    const iframe1 = document.getElementById("game1").contentWindow;
+    iframe1.addEventListener("click", ()=> trackGame("Game 1","stat-game1"));
+  });
+
+  document.getElementById("game2").addEventListener("load", ()=>{
+    const iframe2 = document.getElementById("game2").contentWindow;
+    iframe2.addEventListener("click", ()=> trackGame("Game 2","stat-game2"));
+  });
+
+  // Alternative: Track on mouseenter if iframe click inside doesn't work
+  document.getElementById("game1").addEventListener("mouseenter", ()=> trackGame("Game 1","stat-game1"));
+  document.getElementById("game2").addEventListener("mouseenter", ()=> trackGame("Game 2","stat-game2"));
 </script>
 
 </body>

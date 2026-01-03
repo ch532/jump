@@ -129,6 +129,38 @@
     }
 
   </style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
+      authDomain: "skyl-d9729.firebaseapp.com",
+      projectId: "skyl-d9729",
+      storageBucket: "skyl-d9729.firebasestorage.app",
+      messagingSenderId: "1009884656935",
+      appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
+      measurementId: "G-HP6Q01XZEB"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.sendSupportMessage = async (userMessage) => {
+      try {
+        await addDoc(collection(db, "supportMessages"), {
+          message: userMessage,
+          timestamp: serverTimestamp()
+        });
+      } catch (err) {
+        console.error("Error sending support message:", err);
+      }
+    };
+  </script>
 </head>
 <body>
 
@@ -165,19 +197,22 @@
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria | Postal Code: 900109</p>
 </footer>
 
-<script>
+<script type="module">
   const sendBtn = document.getElementById('send-btn');
   const messages = document.getElementById('messages');
   const input = document.getElementById('support-message');
 
-  sendBtn.addEventListener('click', () => {
+  sendBtn.addEventListener('click', async () => {
     const userMessage = input.value.trim();
     if (!userMessage) return;
 
-    // Add user message
+    // Display user message
     const pUser = document.createElement('p');
     pUser.innerHTML = `<strong>You:</strong> ${userMessage}`;
     messages.appendChild(pUser);
+
+    // Save to Firebase
+    await sendSupportMessage(userMessage);
 
     // Automatic response
     const pResponse = document.createElement('p');
@@ -191,11 +226,9 @@
     input.value = '';
   });
 
-  // Optional: press Enter to send
+  // Enter key to send
   input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      sendBtn.click();
-    }
+    if (e.key === 'Enter') sendBtn.click();
   });
 </script>
 

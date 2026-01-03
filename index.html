@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Home of Games</title>
+  <meta name="description" content="Your Home of Games is the ultimate destination for everything gaming: play games, track achievements, join communities, and discover the latest in the gaming world.">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+    import { getAuth, RecaptchaVerifier, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
+      authDomain: "skyl-d9729.firebaseapp.com",
+      projectId: "skyl-d9729",
+      storageBucket: "skyl-d9729.firebasestorage.app",
+      messagingSenderId: "1009884656935",
+      appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
+      measurementId: "G-HP6Q01XZEB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth();
+    auth.languageCode = 'it';
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {});
+
+    const db = getFirestore(app);
+
+    // Google Sign-In
+    window.googleSignIn = async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        alert("Signed in successfully!");
+      } catch (err) {
+        alert("Error signing in: " + err.message);
+      }
+    };
+
+    // Placeholder phone login functions
+    window.sendPhoneCode = () => alert("Phone verification code sent.");
+    window.verifyPhoneCode = () => alert("Phone code verified.");
+    window.showGames = () => alert("Redirect to games section.");
+
+    // Dashboard stats
+    const dashboardStats = document.getElementById('dashboard-stats');
+    const statsQuery = query(collection(db, "gameStats"));
+    onSnapshot(statsQuery, (snapshot) => {
+      dashboardStats.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        dashboardStats.innerHTML += `
+          <div class="stat-card">
+            <h3>${data.title || 'Stats'}</h3>
+            <p>${data.value || 0}</p>
+          </div>
+        `;
+      });
+    });
+
+    // Community chat
+    const communityChat = document.getElementById('community-chat');
+    const messagesInput = document.querySelector('#community input[type="text"]');
+    const sendBtn = document.querySelector('#community button');
+
+    const messagesQuery = query(collection(db, "communityMessages"), orderBy("timestamp"));
+    onSnapshot(messagesQuery, (snapshot) => {
+      communityChat.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        communityChat.innerHTML += `<p><strong>${data.username}:</strong> ${data.message}</p>`;
+        communityChat.scrollTop = communityChat.scrollHeight;
+      });
+    });
+
+    sendBtn.addEventListener('click', async () => {
+      const message = messagesInput.value.trim();
+      if (!message) return;
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Sign in first to chat!");
+        return;
+      }
+
+      await addDoc(collection(db, "communityMessages"), {
+        username: user.displayName || user.phoneNumber || "Anonymous",
+        message: message,
+        timestamp: new Date()
+      });
+
+      messagesInput.value = "";
+    });
+  </script>
+
+  <style>
+    body { background-color: #f5f5f5; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; color: #333; text-align: center; }
+    .main-nav { position: sticky; top: 0; z-index: 100; }
+    .main-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; justify-content: center; background-color: #1f1f2e; }
+    .main-nav li { margin: 0; }
+    .main-nav a { display: block; padding: 14px 20px; color: #fff; text-decoration: none; font-weight: 600; transition: 0.3s; }
+    .main-nav a:hover, .main-nav a.active { background-color: #4b00ff; color: #fff; }
+
+    main { max-width: 1000px; margin: 20px auto; padding: 20px; }
+
+    button { padding: 10px 20px; border-radius: 8px; border: none; background-color: #4b00ff; color: #fff; cursor: pointer; font-weight: 600; margin: 5px; transition: background 0.3s, transform 0.2s; }
+    button:hover { background-color: #ffcc00; transform: scale(1.05); color: #000; }
+
+    #dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+    .stat-card { background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); text-align: center; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-card h3 { margin: 0 0 10px; color: #4b00ff; }
+    .stat-card p { font-size: 1.2rem; margin: 0; font-weight: 600; }
+
+    #community-chat { background-color: #fff; padding: 15px; border-radius: 12px; max-height: 300px; overflow-y: auto; box-shadow: 0 3px 8px rgba(0,0,0,0.1); text-align: left; margin: 20px auto; }
+    #community-chat p { margin: 5px 0; padding: 8px 12px; background-color: #e0e0ff; border-radius: 8px; display: inline-block; }
+    #community input[type="text"] { padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin: 5px; width: 70%; }
+    
+    footer { background-color: #222; color: #fff; padding: 20px 10px; margin-top: 40px; }
+    .footer-content { max-width: 800px; margin: 0 auto; }
+    .footer-content ul { list-style:none; display:flex; justify-content:center; flex-wrap:wrap; padding:0; margin:10px 0; }
+    .footer-content li { margin:0 10px; }
+    .footer-content a { color:#fff; text-decoration:none; transition:0.3s; }
+    .footer-content a:hover { color:#ffcc00; }
+    label { font-weight: 600; margin-right: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Navigation -->
+  <header>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="games.html">Games</a></li>
+        <li><a href="community.html">Community</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li><a href="about.html">About Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Welcome to Your Home of Games</h1>
+    <p>Your portal to play, track, and connect with other gamers!</p>
+
+    <!-- Call-to-action Buttons -->
+    <div>
+      <button onclick="googleSignIn()">Sign in with Google</button>
+      <button onclick="showGames()">Explore Games</button>
+    </div>
+
+    <!-- Phone Login -->
+    <div id="phone-login" style="margin:20px;">
+      <div id="recaptcha-container"></div>
+      <input type="text" id="phone-number" placeholder="Enter phone number">
+      <button onclick="sendPhoneCode()">Send Code</button>
+      <input type="text" id="phone-code" placeholder="Enter code">
+      <button onclick="verifyPhoneCode()">Verify Code</button>
+    </div>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard">
+      <h2>Dashboard</h2>
+      <p>View your game activity and community participation here.</p>
+      <label for="stats-filter">Filter Statistics:</label>
+      <select id="stats-filter">
+        <option value="all">All</option>
+        <option value="games">Games Only</option>
+        <option value="community">Community Only</option>
+      </select>
+
+      <div id="dashboard-stats">
+        <p>Loading statistics...</p>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community">
+      <h2>Community</h2>
+      <p>Interact with other users in the chat and community sections.</p>
+      <div id="community-chat">
+        <p>Loading messages...</p>
+      </div>
+      <div>
+        <input type="text" placeholder="Type a message">
+        <button>Send</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Your Home of Games</p>
+    <div class="footer-content">
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="support.html">Support</a></li>
+      </ul>
+      <p>
+        Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria <br>
+        Postal Code: 900109
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Community | Your Home of Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAnU7LUUHv7eK8k_2EtidP943sLHoBVb1g",
+      authDomain: "skyl-d9729.firebaseapp.com",
+      projectId: "skyl-d9729",
+      storageBucket: "skyl-d9729.firebasestorage.app",
+      messagingSenderId: "1009884656935",
+      appId: "1:1009884656935:web:ceb97ed5d9046a361da502",
+      measurementId: "G-HP6Q01XZEB"
+    };
+
+    // Init
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Google sign-in
+    window.googleSignIn = async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        alert("Signed in as " + result.user.displayName);
+      } catch (e) {
+        alert(e.message);
+      }
+    };
+
+    // Chat logic
+    const chatBox = document.getElementById("chat-box");
+    const messageInput = document.getElementById("message");
+    const sendBtn = document.getElementById("send");
+
+    const messagesQuery = query(
+      collection(db, "communityMessages"),
+      orderBy("timestamp")
+    );
+
+    onSnapshot(messagesQuery, (snapshot) => {
+      chatBox.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        chatBox.innerHTML += `
+          <p><strong>${data.username}:</strong> ${data.message}</p>
+        `;
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    sendBtn.addEventListener("click", async () => {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Please sign in to chat");
+        return;
+      }
+
+      await addDoc(collection(db, "communityMessages"), {
+        username: user.displayName || "Anonymous",
+        message: text,
+        timestamp: new Date()
+      });
+
+      messageInput.value = "";
+    });
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    nav {
+      background: #1f1f2e;
+      padding: 12px;
+      text-align: center;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #ffcc00;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #chat-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      height: 350px;
+      overflow-y: auto;
+      text-align: left;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 70%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+
+    button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      background: #4b00ff;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 5px;
+    }
+
+    button:hover {
+      background: #ffcc00;
+      color: #000;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 20px;
+      background: #222;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="games.html">Games</a>
+    <a href="community.html">Community</a>
+  </nav>
+
+  <main>
+    <h1>Community Chat</h1>
+    <p>Connect with other gamers</p>
+
+    <button onclick="googleSignIn()">Sign in with Google</button>
+
+    <div id="chat-box"></div>
+
+    <input id="message" type="text" placeholder="Type your message…">
+    <button id="send">Send</button>
+  </main>
+
+  <footer>
+    <p>© 2026 Your Home of Games</p>
+  </footer>
+
+</body>
+</html>

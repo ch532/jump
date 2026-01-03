@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Games - Your Home of Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/parse/dist/parse.min.js"></script>
+<script>
+Parse.initialize("jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C","4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh");
+Parse.serverURL = "https://parseapi.back4app.com/";
+
+async function enforceLogin(){ if(!Parse.User.current()) window.location.href="index.html"; else applyUserPreferences(Parse.User.current()); }
+async function applyUserPreferences(user){
+  document.body.style.background=(user.get("theme")==="dark")?"#111":"#f5f5f5";
+  document.body.style.color=(user.get("theme")==="dark")?"#eee":"#333";
+  document.getElementById("nav-username").textContent=user.get("username")||"";
+  const profileFile=user.get("profilePic"); if(profileFile) document.getElementById("nav-profile-pic").src=profileFile.url();
+}
+
+async function loadGames(){
+  const query = new Parse.Query("Games");
+  try{
+    const results = await query.find();
+    const container = document.getElementById("games-list");
+    container.innerHTML="";
+    results.forEach(game=>{
+      container.innerHTML+=`<div class="game-card"><h3>${game.get("title")}</h3><p>${game.get("description")}</p></div>`;
+    });
+  }catch(e){console.error(e); document.getElementById("games-list").innerHTML="<p>Error loading games</p>";}
+}
+
+window.onload=()=>{enforceLogin(); loadGames();}
+</script>
+<style>
+body{font-family:'Poppins',sans-serif;margin:0;padding:0;}
+nav{background:#1f1f2e;text-align:center;padding:12px;}
+nav a{color:#fff;text-decoration:none;margin:0 15px;font-weight:600;cursor:pointer;}
+nav a:hover{color:#ffcc00;}
+.game-card{background:#fff;margin:15px;padding:15px;border-radius:12px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a class="active" href="games.html">Games</a>
+  <a href="support.html">Support</a>
+  <a onclick="openSettingsModal()">Settings</a>
+  <span id="nav-username" style="margin-left:15px;font-weight:bold;"></span>
+  <img id="nav-profile-pic" src="" alt="Profile" style="width:30px;height:30px;border-radius:50%;margin-left:10px;">
+</nav>
+
+<header><h1>Games</h1><p>Explore all available games.</p></header>
+<main id="games-list"><p>Loading games...</p></main>
+
+<footer>
+<div><a href="privacy.html">Privacy Policy</a><a href="support.html">Support</a></div>
+<p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+<p>© 2026 Your Home of Games</p>
+</footer>
+</body>
+</html>

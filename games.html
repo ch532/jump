@@ -6,11 +6,8 @@
 
   <meta name="description" content="Play free online games instantly on SkylPWorld. Enjoy action, puzzle and casual games with no download required.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google Discover requirement -->
   <meta name="googlebot" content="max-image-preview:large">
 
-  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -20,39 +17,16 @@
   </script>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #000;
-    }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f5f5; color: #000; }
+    nav { background: #1f1f2e; padding: 12px; text-align: center; }
+    nav a { color: #fff; text-decoration: none; margin: 0 12px; font-weight: 600; }
+    nav a:hover { color: #ffcc00; }
+    main { max-width: 1200px; margin: auto; padding: 20px; }
+    h1, h2 { text-align: center; }
 
-    nav {
-      background: #1f1f2e;
-      padding: 12px;
-      text-align: center;
-    }
-
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 12px;
-      font-weight: 600;
-    }
-
-    nav a:hover {
-      color: #ffcc00;
-    }
-
-    main {
-      max-width: 1200px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    h1, h2 {
-      text-align: center;
-    }
+    /* Search Bar */
+    .search-container { margin: 20px auto; max-width: 600px; text-align: center; }
+    #gameSearch { width: 90%; padding: 12px; border-radius: 25px; border: 2px solid #1f1f2e; outline: none; font-size: 16px; }
 
     .games-grid {
       display: grid;
@@ -61,27 +35,19 @@
       margin-top: 30px;
     }
 
-    iframe {
-      width: 100%;
-      height: 320px;
-      border-radius: 12px;
-      border: none;
-      background: #000;
-    }
+    .game-card { background: #fff; border-radius: 12px; padding: 10px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    iframe { width: 100%; height: 320px; border-radius: 8px; border: none; background: #000; }
+    
+    .game-footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 5px; }
+    .game-title { font-weight: bold; font-size: 14px; margin: 0; }
 
-    footer {
-      background: #222;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-      margin-top: 40px;
-    }
+    /* Heart Button */
+    .heart-btn { font-size: 24px; cursor: pointer; color: #ccc; transition: color 0.3s; }
+    .heart-btn.active { color: #ff3b3b; }
 
-    footer a {
-      color: #ffcc00;
-      text-decoration: none;
-      margin: 0 10px;
-    }
+    #game-content { display: none; }
+    footer { background: #222; color: #fff; text-align: center; padding: 20px; margin-top: 40px; }
+    button.logout { background: #ff3b3b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 20px; }
   </style>
 </head>
 
@@ -89,25 +55,124 @@
 
 <nav>
   <a href="index.html">Home</a>
-  <a href="games.html">Games</a>
+  <a href="games.html" style="color:#ffcc00;">Games</a>
+  <a href="dashboard.html">Dashboard</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
 </nav>
 
 <main>
+  <div id="auth-placeholder"></div>
 
-<div id="auth-placeholder"></div>
+  <div id="game-content">
+    <img src="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png" alt="SkylPWorld" width="600" height="325" style="width:100%;height:auto;border-radius:16px;">
+
+    <h1>Play Free Online Games Instantly</h1>
+    
+    <div class="search-container">
+      <input type="text" id="gameSearch" onkeyup="searchGames()" placeholder="Search your games list...">
+    </div>
+
+    <div class="games-grid">
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/prism-match-3d/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Prism Match 3D</p>
+          <span class="heart-btn" id="heart-prism" onclick="toggleFavorite('prism', 'Prism Match 3D')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/three-cups-game/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Three Cups Game</p>
+          <span class="heart-btn" id="heart-threecups" onclick="toggleFavorite('threecups', 'Three Cups Game')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/body-drop-3d/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Body Drop 3D</p>
+          <span class="heart-btn" id="heart-bodydrop" onclick="toggleFavorite('bodydrop', 'Body Drop 3D')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/parmesan-partisan/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Parmesan Partisan</p>
+          <span class="heart-btn" id="heart-parmesan" onclick="toggleFavorite('parmesan', 'Parmesan Partisan')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/hoops-and-fruits/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Hoops and Fruits</p>
+          <span class="heart-btn" id="heart-hoops" onclick="toggleFavorite('hoops', 'Hoops and Fruits')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/merge-royal/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Merge Royal</p>
+          <span class="heart-btn" id="heart-merge" onclick="toggleFavorite('merge', 'Merge Royal')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/bus-driver-simulator-3d/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Bus Driver Simulator 3D</p>
+          <span class="heart-btn" id="heart-bus" onclick="toggleFavorite('bus', 'Bus Driver Simulator 3D')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/turbo-dismounting/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Turbo Dismounting</p>
+          <span class="heart-btn" id="heart-turbo" onclick="toggleFavorite('turbo', 'Turbo Dismounting')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/cerkio/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Cerkio</p>
+          <span class="heart-btn" id="heart-cerkio" onclick="toggleFavorite('cerkio', 'Cerkio')">❤</span>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <iframe src="https://play.gamepix.com/gelatino/embed?sid=56PD3" loading="lazy"></iframe>
+        <div class="game-footer">
+          <p class="game-title">Gelatino</p>
+          <span class="heart-btn" id="heart-gelatino" onclick="toggleFavorite('gelatino', 'Gelatino')">❤</span>
+        </div>
+      </div>
+    </div>
+    
+    <center><button class="logout" onclick="logout()">Logout</button></center>
+  </div>
+</main>
+
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>© 2026 Skyl P World</p>
+</footer>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-    // 1. The function that hides the button and wall
+    const AUTO_LOGOUT_TIME = 30 * 60 * 1000; 
+
     function handleCredentialResponse(response) {
-        console.log("Logged in successfully");
-        localStorage.setItem("isLoggedIn", "true"); // Save state
-        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
+        localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+        location.reload();
     }
 
-    // 2. The function that sets up the Google Button
     function initGoogleLogin() {
         google.accounts.id.initialize({
             client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
@@ -119,113 +184,56 @@
         );
     }
 
-    // 3. Logic to decide if we show the wall or not
-    window.onload = function () {
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            // Already logged in? Do nothing (content stays visible)
-            console.log("Access granted via session");
+    function checkAuth() {
+        const session = JSON.parse(localStorage.getItem("userSession"));
+        if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+            document.getElementById("game-content").style.display = "block";
+            loadFavorites();
         } else {
-            // Not logged in? Fetch the wall file
-            fetch('login-wall.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById("auth-placeholder").innerHTML = data;
-                    initGoogleLogin(); // Turn on the Google button inside the wall
-                });
+            fetch('login-wall.html').then(res => res.text()).then(data => {
+                document.getElementById("auth-placeholder").innerHTML = data;
+                initGoogleLogin();
+            });
         }
-    };
-</script>
-
-    
-  <!-- Discover large image -->
-  <img
-    src="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png"
-    alt="SkylPWorld Free Online Games"
-    width="600"
-    height="325"
-    style="width:100%;height:auto;border-radius:16px;"
-  >
-
-  <section>
-    <h1>Play Free Online Games Instantly</h1>
-    <p style="text-align:center;">
-      Enjoy free online games on SkylPWorld. No downloads, no installs — just play directly on mobile or desktop.
-    </p>
-    <p style="text-align:center;"><strong>Updated:</strong> New games added regularly.</p>
-  </section>
-
-  <h2>Featured Games</h2>
-
-  <div class="games-grid">
-
-    <iframe src="https://play.gamepix.com/prism-match-3d/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Prism Match 3D')"></iframe>
-
-    <iframe src="https://play.gamepix.com/three-cups-game/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Three Cups Game')"></iframe>
-
-    <iframe src="https://play.gamepix.com/body-drop-3d/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Body Drop 3D')"></iframe>
-
-    <iframe src="https://play.gamepix.com/parmesan-partisan/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Parmesan Partisan')"></iframe>
-
-    <iframe src="https://play.gamepix.com/hoops-and-fruits/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Hoops and Fruits')"></iframe>
-
-    <iframe src="https://play.gamepix.com/merge-royal/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Merge Royal')"></iframe>
-
-    <iframe src="https://play.gamepix.com/bus-driver-simulator-3d/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Bus Driver Simulator 3D')"></iframe>
-
-    <iframe src="https://play.gamepix.com/turbo-dismounting/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Turbo Dismounting')"></iframe>
-
-    <iframe src="https://play.gamepix.com/cerkio/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Cerkio')"></iframe>
-
-    <iframe src="https://play.gamepix.com/gelatino/embed?sid=56PD3" loading="lazy"
-      onclick="trackGame('Gelatino')"></iframe>
-
-  </div>
-
-</main>
-
-<footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>© 2026 Skyl P World</p>
-</footer>
-
-
-<!-- Analytics Event -->
-<script>
-  function trackGame(name) {
-    gtag('event', 'play_game', {
-      'event_category': 'Games',
-      'event_label': name
-    });
-  }
-</script>
-
-<!-- Structured data for Google Discover -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "Free Online Games – SkylPWorld",
-  "description": "Play free online games instantly on SkylPWorld.",
-  "url": "https://bright.skyl.name.ng/games.html",
-  "publisher": {
-    "@type": "Organization",
-    "name": "SkylPWorld",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png"
     }
-  }
-}
-</script>
 
+    function logout() {
+        localStorage.removeItem("userSession");
+        location.reload();
+    }
+
+    function searchGames() {
+        let input = document.getElementById('gameSearch').value.toLowerCase();
+        let cards = document.getElementsByClassName('game-card');
+        for (let i = 0; i < cards.length; i++) {
+            let title = cards[i].querySelector('.game-title').innerText.toLowerCase();
+            cards[i].style.display = title.includes(input) ? "" : "none";
+        }
+    }
+
+    function toggleFavorite(id, name) {
+        const heart = document.getElementById('heart-' + id);
+        let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
+        if (heart.classList.contains('active')) {
+            heart.classList.remove('active');
+            favorites = favorites.filter(game => game.id !== id);
+        } else {
+            heart.classList.add('active');
+            favorites.push({ id: id, name: name });
+        }
+        localStorage.setItem('myFavorites', JSON.stringify(favorites));
+    }
+
+    function loadFavorites() {
+        let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
+        favorites.forEach(game => {
+            const heart = document.getElementById('heart-' + game.id);
+            if (heart) heart.classList.add('active');
+        });
+    }
+
+    window.onload = checkAuth;
+</script>
 </body>
 </html>
+

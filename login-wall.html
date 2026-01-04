@@ -1,0 +1,9 @@
+<script>
+function handleCredentialResponse(response) {
+    // 1. Hide the guard div
+    document.getElementById("login-wall").style.display = "none";
+    
+    // 2. (Optional) Save the session so it stays unlocked
+    localStorage.setItem("isLoggedIn", "true");
+}
+</script>

@@ -75,34 +75,47 @@
   <a href="settings.html">sSettings</a>
 </nav>
 
-<div class="container">
+<div id="auth-placeholder"></div>
 
-  <h2>Welcome to SkylPWorld</h2>
-  <p>Login to access all features</p>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    // 1. The function that hides the button and wall
+    function handleCredentialResponse(response) {
+        console.log("Logged in successfully");
+        localStorage.setItem("isLoggedIn", "true"); // Save state
+        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
+    }
 
-  <!-- Google Login Button -->
-  <div id="google-btn-container">
-    <div id="g_id_onload"
-      data-client_id="1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com"
-      data-callback="handleCredentialResponse"
-      data-auto_prompt="false">
-    </div>
+    // 2. The function that sets up the Google Button
+    function initGoogleLogin() {
+        google.accounts.id.initialize({
+            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("googleButtonDiv"),
+            { theme: "outline", size: "large" }
+        );
+    }
 
-    <div class="g_id_signin" data-type="standard"></div>
-  </div>
+    // 3. Logic to decide if we show the wall or not
+    window.onload = function () {
+        if (localStorage.getItem("isLoggedIn") === "true") {
+            // Already logged in? Do nothing (content stays visible)
+            console.log("Access granted via session");
+        } else {
+            // Not logged in? Fetch the wall file
+            fetch('login-wall.html')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("auth-placeholder").innerHTML = data;
+                    initGoogleLogin(); // Turn on the Google button inside the wall
+                });
+        }
+    };
+</script>
 
-  <!-- Login success message -->
-  <p id="loginMessage" style="display:none;color:green;font-weight:bold;">
-    Login Successful!
-  </p>
-
-  <!-- Logout -->
-  <div id="logoutBox">
-    <button onclick="logout()">Logout</button>
-  </div>
-
-</div>
-
+  
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>
@@ -122,40 +135,6 @@ function handleCredentialResponse(response) {
     
     console.log("Access Granted");
 }
-</script>
-
-  
-<!-- LOGIN LOGIC -->
-<script>
-  function handleCredentialResponse(response) {
-    console.log("Login successful");
-
-    // Save login state
-    localStorage.setItem("skylp_logged_in", "true");
-
-    // Hide login button
-    document.getElementById("google-btn-container").style.display = "none";
-
-    // Show success message + logout/settings
-    document.getElementById("loginMessage").style.display = "block";
-    document.getElementById("logoutBox").style.display = "block";
-    document.getElementById("settingsBox").style.display = "block";
-  }
-
-  function logout() {
-    localStorage.removeItem("skylp_logged_in");
-    location.reload();
-  }
-
-  // Restore state after refresh
-  window.onload = function () {
-    if (localStorage.getItem("skylp_logged_in")) {
-      document.getElementById("google-btn-container").style.display = "none";
-      document.getElementById("loginMessage").style.display = "block";
-      document.getElementById("logoutBox").style.display = "block";
-      document.getElementById("settingsBox").style.display = "block";
-    }
-  };
 </script>
 
 </body>

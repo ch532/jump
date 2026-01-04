@@ -29,24 +29,6 @@
     footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
     footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
     button.logout { background:#ff3b3b; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-left:10px; }
-    /* Apply a blur to the content when not logged in */
-  .logged-out-blur {
-    filter: blur(8px);
-    pointer-events: none; /* Prevents clicking on anything */
-    user-select: none;    /* Prevents highlighting text */
-  }
-
-  /* The Login Wall sits on top */
-  #login-wall {
-    position: fixed;
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.7); /* See-through white */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-  }
   </style>
 </head>
 <body>
@@ -60,8 +42,46 @@
   <button onclick="logout()" class="logout">Logout</button>
 </nav>
 
-  <div id="login-wall">
-<div id="main-content" class="logged-out-blur">.
+<div id="auth-placeholder"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    // 1. The function that hides the button and wall
+    function handleCredentialResponse(response) {
+        console.log("Logged in successfully");
+        localStorage.setItem("isLoggedIn", "true"); // Save state
+        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
+    }
+
+    // 2. The function that sets up the Google Button
+    function initGoogleLogin() {
+        google.accounts.id.initialize({
+            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("googleButtonDiv"),
+            { theme: "outline", size: "large" }
+        );
+    }
+
+    // 3. Logic to decide if we show the wall or not
+    window.onload = function () {
+        if (localStorage.getItem("isLoggedIn") === "true") {
+            // Already logged in? Do nothing (content stays visible)
+            console.log("Access granted via session");
+        } else {
+            // Not logged in? Fetch the wall file
+            fetch('login-wall.html')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("auth-placeholder").innerHTML = data;
+                    initGoogleLogin(); // Turn on the Google button inside the wall
+                });
+        }
+    };
+</script>
+
   
 <div class="container">
   <h1>Dashboard – Information</h1>

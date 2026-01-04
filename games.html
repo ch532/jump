@@ -3,157 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Game Portal</title>
+    <title>Game Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
-        
-        /* The Grid Layout */
+        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 10px; }
+        h1 { text-align: center; color: #ffcc00; }
         #game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns for mobile phones */
+            gap: 10px;
+            padding: 10px;
         }
-
-        /* Individual Game Card */
         .game-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 10px;
             text-align: center;
+            border: 1px solid #444;
         }
-        .game-card:hover { transform: scale(1.05); }
-        .game-card img { width: 100%; height: auto; display: block; }
-        .game-card h3 { font-size: 14px; margin: 10px; color: #333; height: 35px; overflow: hidden; }
+        .game-card img { width: 100%; border-radius: 5px; height: auto; }
+        .game-card h3 { font-size: 14px; margin: 8px 0; height: 35px; overflow: hidden; }
         .play-btn {
-            display: inline-block;
-            margin-bottom: 15px;
-            padding: 8px 16px;
-            background: #28a745;
-            color: white;
+            display: block;
+            background: #ffcc00;
+            color: black;
             text-decoration: none;
+            padding: 8px;
             border-radius: 5px;
             font-weight: bold;
+            font-size: 13px;
         }
-
-        /* Pagination Buttons */
-        .controls { text-align: center; margin-top: 30px; }
-        .controls button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            margin: 0 10px;
-        }
-        .controls button:disabled { background: #ccc; cursor: not-allowed; }
+        .controls { text-align: center; margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        button { padding: 10px 15px; background: #444; color: white; border: none; border-radius: 5px; }
+        button:disabled { opacity: 0.3; }
     </style>
 </head>
 <body>
 
-<div id="auth-placeholder"></div>
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-    // 1. The function that hides the button and wall
-    function handleCredentialResponse(response) {
-        console.log("Logged in successfully");
-        localStorage.setItem("isLoggedIn", "true"); // Save state
-        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
-    }
-
-    // 2. The function that sets up the Google Button
-    function initGoogleLogin() {
-        google.accounts.id.initialize({
-            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("googleButtonDiv"),
-            { theme: "outline", size: "large" }
-        );
-    }
-
-    // 3. Logic to decide if we show the wall or not
-    window.onload = function () {
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            // Already logged in? Do nothing (content stays visible)
-            console.log("Access granted via session");
-        } else {
-            // Not logged in? Fetch the wall file
-            fetch('login-wall.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById("auth-placeholder").innerHTML = data;
-                    initGoogleLogin(); // Turn on the Google button inside the wall
-                });
-        }
-    };
-</script>
-
-  
-    <h1 style="text-align:center;">Top Games</h1>
-
-    <div id="game-grid">Loading games...</div>
+    <h1>Top Games</h1>
+    <div id="game-grid">Loading Games...</div>
 
     <div class="controls">
-        <button id="prevBtn" onclick="changePage(-1)">Previous</button>
+        <button id="prevBtn" onclick="changePage(-1)">Prev</button>
         <span id="pageDisplay">Page 1</span>
         <button id="nextBtn" onclick="changePage(1)">Next</button>
     </div>
 
     <script>
+        // 1. SECURITY CHECK
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "index.html";
+        }
+
         let currentPage = 1;
-        const maxPages = 4; // Your limit
+        const maxPages = 4;
         const sid = "2R229";
 
-        // This function fetches data from GamePix
         async function fetchGames(page) {
             const grid = document.getElementById('game-grid');
             grid.innerHTML = "<h3>Loading...</h3>";
             
-            const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&pagination=24&page=${page}`;
+            // Use a proxy-style URL or cache-buster to help mobile browsers load the feed
+            const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&pagination=24&page=${page}&t=${Date.now()}`;
             
             try {
                 const response = await fetch(url);
                 const result = await response.json();
                 
-                // GamePix feed stores games in result.data
-                const games = result.data;
-                displayGames(games);
-                updateUI();
+                if (result && result.data) {
+                    displayGames(result.data);
+                    updateUI();
+                } else {
+                    grid.innerHTML = "<h3>No games found.</h3>";
+                }
             } catch (error) {
-                grid.innerHTML = "<h3>Error loading games. Please try again.</h3>";
+                grid.innerHTML = "<h3>Error loading games. Try disabling Ad-Block.</h3>";
                 console.error(error);
             }
         }
 
-        // This function builds the HTML for each game card
         function displayGames(games) {
             const grid = document.getElementById('game-grid');
-            grid.innerHTML = ""; // Clear loader
+            grid.innerHTML = ""; 
 
             games.forEach(game => {
-                const card = document.createElement('div');
-                card.className = 'game-card';
-                card.innerHTML = `
-                    <img src="${game.thumbnailUrl}" alt="${game.title}">
+                // Force HTTPS for mobile security
+                const thumb = game.thumbnailUrl.replace("http://", "https://");
+                const gameUrl = game.url.replace("http://", "https://");
+
+                const div = document.createElement('div');
+                div.className = 'game-card';
+                div.innerHTML = `
+                    <img src="${thumb}" alt="${game.title}">
                     <h3>${game.title}</h3>
-                    <a href="${game.url}" target="_blank" class="play-btn">Play Now</a>
+                    <a href="${gameUrl}" target="_blank" class="play-btn">PLAY</a>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(div);
             });
         }
 
         function changePage(step) {
             currentPage += step;
             fetchGames(currentPage);
-            window.scrollTo(0, 0); // Scroll to top when page changes
+            window.scrollTo(0, 0);
         }
 
         function updateUI() {
@@ -162,19 +113,8 @@
             document.getElementById('nextBtn').disabled = (currentPage === maxPages);
         }
 
-        // Start page 1 automatically
         window.onload = () => fetchGames(1);
     </script>
-
-<footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
-  </p>
-  <p>© 2026 SkylPWorld</p>
-</footer>
-  
 </body>
 </html>
 

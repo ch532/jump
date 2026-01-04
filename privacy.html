@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy</title>
+  <title>Privacy Policy - Skyl P World</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Google Analytics -->
+  
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -16,36 +16,75 @@
   
   <style>
     body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background-color:#f5f5f5; color:#333; text-align:center; }
-    header, footer { background-color:#1f1f2e; color:#fff; padding:15px; }
-    nav ul { list-style:none; display:flex; justify-content:center; gap:10px; padding:0; margin:0; }
+    nav { background:#1f1f2e; text-align:center; padding:15px; }
+    nav ul { list-style:none; display:flex; justify-content:center; gap:20px; padding:0; margin:0; }
     nav a { color:#fff; text-decoration:none; font-weight:600; }
-    main { max-width:900px; margin:20px auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
+    nav a:hover { color:#ffcc00; }
+    
+    main { max-width:800px; margin:40px auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align: left; line-height: 1.6; }
+    h1 { text-align: center; color: #1f1f2e; }
+    h2 { color: #4b00ff; font-size: 18px; margin-top: 25px; }
+    
+    footer { background-color:#1f1f2e; color:#fff; padding:20px; margin-top:60px; }
+    footer a { color:#ffcc00; text-decoration:none; margin: 0 10px; }
+    
+    #privacy-content { display: none; }
   </style>
 </head>
 <body>
 
-<header>
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
-      <li><a href="games.html">Games</a></li>
-    </ul>
-  </nav>
-</header>
+<nav>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="support.html">Support</a></li>
+  </ul>
+</nav>
 
 <div id="auth-placeholder"></div>
 
+<main id="privacy-content">
+  <h1>Privacy Policy</h1>
+  <p style="text-align:center; font-style: italic;">Last Updated: January 2026</p>
+  
+  <p>Welcome to <strong>Skyl P World</strong>. We respect your privacy and are committed to protecting your personal data.</p>
+
+  <h2>1. Data We Collect</h2>
+  <p>When you log in using Google, we access basic profile information (like your name and email) to create your account. We also use <strong>LocalStorage</strong> to save your game favorites and session status locally on your device.</p>
+
+  <h2>2. How We Use Your Data</h2>
+  <p>Your information is used to enhance your experience, track your "hearted" games, and provide support. We use Firebase and Google Analytics to monitor site performance and security.</p>
+
+  <h2>3. Third-Party Services</h2>
+  <p>We use GamePix to provide game content and EmailJS to handle support requests. These services have their own privacy policies. We do not sell your personal data to third parties for advertising.</p>
+
+  <h2>4. Security</h2>
+  <p>Your session is protected by a 30-minute auto-logout feature to ensure your account remains secure even on shared devices.</p>
+
+  <center>
+    <button onclick="window.history.back()" style="margin-top:20px; padding:10px 20px; background:#4b00ff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Go Back</button>
+  </center>
+</main>
+
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="support.html">Support</a>
+  </p>
+  <p>© 2026 Skyl P World</p>
+</footer>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-    // 1. The function that hides the button and wall
+    const AUTO_LOGOUT_TIME = 30 * 60 * 1000;
+
     function handleCredentialResponse(response) {
-        console.log("Logged in successfully");
-        localStorage.setItem("isLoggedIn", "true"); // Save state
-        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
+        localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+        location.reload();
     }
 
-    // 2. The function that sets up the Google Button
     function initGoogleLogin() {
         google.accounts.id.initialize({
             client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
@@ -57,39 +96,21 @@
         );
     }
 
-    // 3. Logic to decide if we show the wall or not
-    window.onload = function () {
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            // Already logged in? Do nothing (content stays visible)
-            console.log("Access granted via session");
+    function checkAuth() {
+        const session = JSON.parse(localStorage.getItem("userSession"));
+        if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+            document.getElementById("privacy-content").style.display = "block";
         } else {
-            // Not logged in? Fetch the wall file
-            fetch('login-wall.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById("auth-placeholder").innerHTML = data;
-                    initGoogleLogin(); // Turn on the Google button inside the wall
-                });
+            fetch('login-wall.html').then(res => res.text()).then(data => {
+                document.getElementById("auth-placeholder").innerHTML = data;
+                initGoogleLogin();
+            });
         }
-    };
+    }
+
+    window.onload = checkAuth;
 </script>
-
-  
-<main>
-  <h1>Privacy Policy</h1>
-  <p>We respect your privacy. Any information you provide (like authentication info, game stats, and community messages) is stored securely in Firebase and only used to enhance your gaming experience. Your data will not be shared with third parties for advertising purposes.</p>
-</main>
-
-
-<footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
-  </p>
-  <p>© 2026 Skyl P World</p>
-</footer>
-
 
 </body>
 </html>
+

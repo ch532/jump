@@ -46,20 +46,47 @@
 <div class="container" id="loginBox">
   <h2>Welcome to Skyl P World</h2>
   <p>Login to access all features</p>
-   <div id="g_id_onload"
-     data-client_id="1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com"
-     data-auto_prompt="false">
+   <div id="loginBox">
+  <div id="g_id_onload"
+       data-client_id="1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
+  <div class="g_id_signin" data-type="standard"></div>
+
+  <!-- Message after login -->
+  <p id="loginMessage" style="color:green; font-weight:bold; display:none;">Login Successful!</p>
 </div>
-<div class="g_id_signin" data-type="standard"></div>
+
+<div id="logoutBox" style="display:none;">
+  <button id="logoutBtn">Logout</button>
+</div>
+<div id="settingsBox" style="display:none;">
+  <!-- Settings content -->
+</div>
 
 <script>
-  function handleCredentialResponse(response){
-    if(response.credential){
-      localStorage.setItem("googleToken", response.credential);
-      window.location.href = "dashboard.html"; // redirect after login
-    }
+  function handleCredentialResponse(response) {
+    console.log("JWT token:", response.credential);
+
+    // Show "Login Successful"
+    const msg = document.getElementById("loginMessage");
+    msg.style.display = "block";
+
+    // Hide login after 1.5 seconds and show logout/settings
+    setTimeout(() => {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("logoutBox").style.display = "block";
+      document.getElementById("settingsBox").style.display = "block";
+    }, 1500);
   }
 
+  // Logout button
+  document.getElementById("logoutBtn").onclick = function(){
+    location.reload(); // session ends, login box shows again
+  };
+</script>
+  
   <script>
   // Wait until Google Sign-In API loads
   window.onload = function() {
@@ -86,27 +113,7 @@
     // Store token locally so you know the user is logged in
     localStorage.setItem("googleToken", response.credential);
 
-    // Hide login box, show logout and settings
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("logoutBox").style.display = "block";
-    document.getElementById("settingsBox").style.display = "block";
-
-    // Optionally apply saved theme/settings
-  }
-
-  // Logout
-  document.getElementById("logoutBtn").onclick = function() {
-    localStorage.removeItem("googleToken"); // remove token
-    location.reload(); // show login again
-  };
-
-  // On page load, check if token exists
-  if(localStorage.getItem("googleToken")) {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("logoutBox").style.display = "block";
-    document.getElementById("settingsBox").style.display = "block";
-  }
-</script>
+    
 
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>

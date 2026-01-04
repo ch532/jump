@@ -2,82 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Support</title>
+  <title>SkylPWorld – Support</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
-<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b4cc32b2-5597-464c-b2ed-8fda5989fb00" type="text/javascript" async></script>
-  
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3XR1R2P73Y');
+  </script>
+
   <style>
-    body { font-family: Arial,sans-serif; padding:20px; }
-    textarea { width:100%; height:100px; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
-    button { padding:12px 20px; border:none; background:#4b00ff; color:#fff; border-radius:8px; cursor:pointer; font-weight:bold; }
-    #msg { margin-top:10px; font-weight:bold; color:green; }
-    body { display: none; } /* hide content until login check */
-  </style> 
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; transition: background 0.3s, color 0.3s; display:none; }
+    nav { background:#1f1f2e; text-align:center; padding:12px; }
+    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+    nav a:hover { color:#ffcc00; }
+    .container { max-width:600px; margin:40px auto; background:#fff; padding:30px; border-radius:12px; text-align:center; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
+    textarea, input, button { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; font-size:1rem; }
+    button { border:none; font-weight:bold; cursor:pointer; background:#4b00ff; color:#fff; transition:0.3s; }
+    button:hover { background:#ffcc00; color:#000; }
+    .success { color: green; font-weight:600; margin-top:10px; }
+    footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
+    footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
+  </style>
 </head>
 <body>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-3XR1R2P73Y');
-</script>
-  
-  <nav>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="games.html">Games</a>
   <a href="dashboard.html">Dashboard</a>
-  <a href="games.html" class="active">Games</a>
-  <a href="support.html">Support</a>
-  <a href="index.html" onclick="logout()">Logout</a>
+  <a href="support.html" class="active">Support</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="index.html#logout">Logout</a>
 </nav>
 
-<h1>Support</h1>
+<div class="container">
+  <h2>Contact Support</h2>
+  <p>Type your issue below and click Send. We'll get back to you as soon as possible.</p>
 
-<textarea id="issue" placeholder="Describe your issue..."></textarea>
-<button id="send">Send</button>
-<p id="msg"></p>
+  <input type="text" id="userName" placeholder="Your Name" readonly>
+  <input type="email" id="userMail" placeholder="Your Email" readonly>
+  <textarea id="userMessage" placeholder="Describe your issue..." rows="6"></textarea>
+  <button id="sendBtn">Send</button>
+  <p id="responseMsg" class="success" style="display:none;">Thank you! We will get back to you.</p>
+</div>
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("E4mFx5002KMFrf75t"); // Public key
+  })();
+</script>
 
 <script>
-  Parse.initialize(
-    "jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C",
-    "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh"
-  );
-  Parse.serverURL = "https://parseapi.back4app.com/";
+  // Show content only if logged in
+  const token = localStorage.getItem('googleUser');
+  if(!token){
+    window.location.href = "index.html";
+  } else {
+    document.body.style.display = "block";
+    const profile = JSON.parse(token);
+    document.getElementById("userName").value = profile.name || "";
+    document.getElementById("userMail").value = profile.email || "";
+  }
 
-  // Check if user is logged in
-    Parse.User.currentAsync().then((user) => {
-      if(user){
-        // User is logged in → show page
-        document.body.style.display = "block";
-      } else {
-        // User not logged in → redirect smoothly
-        alert("You must log in first!");
-        location.replace("index.html");
-      }
-    });
+  const sendBtn = document.getElementById("sendBtn");
+  const responseMsg = document.getElementById("responseMsg");
 
-  send.onclick = async ()=>{
-    const Support = Parse.Object.extend("Support");
-    const s = new Support();
-    s.set("message", issue.value);
-    s.set("user", Parse.User.current().get("username"));
-    await s.save();
-    msg.innerText="We will get back to you (notification sent to chykedegreat@gmail.com)";
-    issue.value="";
+  sendBtn.onclick = async () => {
+    const name = document.getElementById("userName").value;
+    const mail = document.getElementById("userMail").value;
+    const message = document.getElementById("userMessage").value.trim();
+
+    if(!message){
+      alert("Please type your issue before sending.");
+      return;
+    }
+
+    const templateParams = {
+      from_name: name,
+      from_email: mail,
+      to_email: "chykedegreat@gmail.com",
+      message: message
+    };
+
+    try{
+      await emailjs.send('service_o7p7qam', 'template_j2bk8co', templateParams);
+      responseMsg.style.display = "block";
+      document.getElementById("userMessage").value = "";
+    }catch(e){
+      alert("Failed to send message: " + e.text || e.message);
+    }
   };
 </script>
 
-  <footer>
+<footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
+    <a href="privacy.html">Privacy Policy</a>
   </p>
-  <p>© 2026 Skyl P World</p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
-
 
 </body>
 </html>

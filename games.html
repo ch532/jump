@@ -48,10 +48,11 @@
   );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
+  // Check if user is logged in
   const currentUser = Parse.User.current();
-  if(!currentUser){
-    alert("Please login to access games!");
-    location.href="index.html";
+  if (!currentUser) {
+    // Not logged in → redirect to homepage
+    window.location.href = "index.html";
   }
 
   async function logout(){

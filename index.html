@@ -61,25 +61,6 @@
       display: none;
       margin-top: 15px;
     }
-    /* Apply a blur to the content when not logged in */
-  .logged-out-blur {
-    filter: blur(8px);
-    pointer-events: none; /* Prevents clicking on anything */
-    user-select: none;    /* Prevents highlighting text */
-  }
-
-  /* The Login Wall sits on top */
-  #login-wall {
-    position: fixed;
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.7); /* See-through white */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-  }
-  </style>
 </head>
 
 <body>
@@ -93,9 +74,6 @@
   <a href="settings.html">sSettings</a>
 </nav>
 
-  <div id="login-wall">
-<div id="main-content" class="logged-out-blur">
-  
 <div class="container">
 
   <h2>Welcome to SkylPWorld</h2>

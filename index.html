@@ -2,157 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Skyl P World</title>
+  <title>Games - Skyl P World</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google Sign-In -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-3XR1R2P73Y');
-  </script>
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin:0;
-      background:#f5f5f5;
-      color:#000;
-      text-align:center;
-      padding:50px;
-    }
-    nav {
-      background:#1f1f2e;
-      text-align:center;
-      padding:12px;
-    }
-    nav a {
-      color:#fff;
-      text-decoration:none;
-      margin:0 15px;
-      font-weight:600;
-    }
-    nav a:hover {
-      color:#ffcc00;
-    }
-    .container {
-      max-width:400px;
-      margin:60px auto;
-      background:#fff;
-      padding:30px;
-      border-radius:12px;
-      box-shadow:0 3px 10px rgba(0,0,0,0.1);
-    }
-    .g_id_signin {
-      margin-top:20px;
-      width:100%;
-    }
-    button {
-      padding:12px 20px;
-      margin-top:15px;
-      border:none;
-      border-radius:10px;
-      background:#4b00ff;
-      color:#fff;
-      font-weight:600;
-      cursor:pointer;
-    }
-    button.logout {
-      background:#ff3b3b;
-    }
-    footer {
-      text-align:center;
-      background:#222;
-      color:#fff;
-      padding:20px;
-      margin-top:40px;
-    }
-    footer a {
-      color:#ffcc00;
-      text-decoration:none;
-      margin:0 10px;
-    }
-    #logoutBtn, #loginSuccess {
-      display: none;
-    }
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
+    nav { background:#1f1f2e; text-align:center; padding:12px; }
+    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+    nav a:hover { color:#ffcc00; }
+    .container { max-width:400px; margin:20px auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
+    #game-display-section { display: none; padding: 20px; }
+    
+    /* Search Bar Styling */
+    .search-container { margin: 10px auto 25px auto; max-width: 600px; padding: 0 10px; }
+    #gameSearch { width: 100%; padding: 14px; border-radius: 30px; border: 2px solid #4b00ff; outline: none; font-size: 16px; box-sizing: border-box; }
+
+    /* Game Grid Styling */
+    #game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 1000px; margin: 0 auto; }
+    .game-card { background:#fff; border-radius:10px; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); border:1px solid #ddd; }
+    .game-card img { width:100%; border-radius:8px; aspect-ratio: 1/1; object-fit: cover; }
+    .game-card h3 { font-size:14px; margin:10px 0; height:36px; overflow:hidden; }
+    .play-btn { display:block; background:#4b00ff; color:#fff; text-decoration:none; padding:8px; border-radius:8px; font-weight:bold; font-size:12px; }
+    
+    .pagination { margin: 30px 0; display: flex; justify-content: center; align-items: center; gap: 15px; }
+    button { padding:10px 20px; border:none; border-radius:8px; background:#4b00ff; color:#fff; font-weight:600; cursor:pointer; }
+    button:disabled { background:#ccc; }
+    button.logout { background:#ff3b3b; margin-top:20px; }
+    footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
   </style>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="active">Home</a>
-  <a href="games.html">Games</a>
+  <a href="index.html">Home</a>
+  <a href="games.html" style="color:#ffcc00;">Games</a>
   <a href="dashboard.html">Dashboard</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
-  <a href="#settingsBox">Settings</a>
 </nav>
 
-<!-- Login Wall -->
-<div class="container" id="auth-placeholder">
+<div class="container" id="login-wall">
+  <h3>Members Access</h3>
   <div id="googleButtonDiv"></div>
-  <p>Please log in to access all features and other sections.</p>
-  <p id="loginSuccess" style="color:green; font-weight:bold;">Login Successful!</p>
-  <button id="logoutBtn" class="logout">Logout</button>
+  <p>Please log in to play games.</p>
 </div>
 
-<!-- Settings Section -->
-<div class="container" id="settingsBox">
-  <h3>Settings</h3>
-  <label>
-    <input type="checkbox" id="notifPref"> Enable Email Notifications
-  </label>
-  <label>
-    Theme:
-    <select id="themeSelect">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-  </label>
-  <button id="updateBtn">Update Settings</button>
+<div id="game-display-section">
+  <h2>Action Games</h2>
+
+  <div class="search-container">
+    <input type="text" id="gameSearch" onkeyup="searchGames()" placeholder="Search action games...">
+  </div>
+
+  <div id="game-grid">Loading Games...</div>
+
+  <div class="pagination">
+    <button id="prevBtn" onclick="changePage(-1)">Previous</button>
+    <span id="pageNumber">Page 1</span>
+    <button id="nextBtn" onclick="changePage(1)">Next</button>
+  </div>
+
+  <button class="logout" onclick="logout()">Logout</button>
 </div>
+
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>© 2026 Skyl P World</p>
+</footer>
 
 <script>
-  const authPlaceholder = document.getElementById("auth-placeholder");
-  const googleBtnDiv = document.getElementById("googleButtonDiv");
-  const loginSuccess = document.getElementById("loginSuccess");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const settingsBox = document.getElementById("settingsBox");
-  const themeSelect = document.getElementById("themeSelect");
-  const notifPref = document.getElementById("notifPref");
-
-  function applyTheme(theme){
-    if(theme === "dark"){
-      document.body.style.background = "#222";
-      document.body.style.color = "#fff";
-    } else {
-      document.body.style.background = "#f5f5f5";
-      document.body.style.color = "#000";
-    }
-  }
+  const sid = "56PD3";
+  let currentPage = 1;
+  const maxPages = 40;
 
   function handleCredentialResponse(response) {
-    console.log("JWT token:", response.credential);
-
-    // Save login state
     localStorage.setItem("isLoggedIn", "true");
+    checkAuth();
+  }
 
-    // Hide Google button
-    googleBtnDiv.style.display = "none";
-
-    // Show login success message
-    loginSuccess.style.display = "block";
-
-    // Show logout button & settings
-    logoutBtn.style.display = "inline-block";
-    settingsBox.style.display = "block";
-
-    applyTheme(themeSelect.value);
+  function checkAuth() {
+    if (localStorage.getItem("isLoggedIn") === "true") {
+      document.getElementById("login-wall").style.display = "none";
+      document.getElementById("game-display-section").style.display = "block";
+      fetchGames(currentPage);
+    } else {
+      initGoogleLogin();
+    }
   }
 
   function initGoogleLogin() {
@@ -160,102 +95,75 @@
       client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
       callback: handleCredentialResponse
     });
-    google.accounts.id.renderButton(
-      googleBtnDiv,
-      { theme: "outline", size: "large" }
-    );
-  }
-
-  logoutBtn.onclick = function() {
-    localStorage.removeItem("isLoggedIn");
-    location.reload();
-  };
-
-  document.getElementById("updateBtn").onclick = function(){
-    alert("Settings updated!\nTheme: "+themeSelect.value+"\nEmail notifications: "+notifPref.checked);
-    applyTheme(themeSelect.value);
-  };
-
-  window.onload = function() {
-    if(localStorage.getItem("isLoggedIn") === "true"){
-      console.log("Access granted via session");
-      googleBtnDiv.style.display = "none";
-      loginSuccess.style.display = "block";
-      logoutBtn.style.display = "inline-block";
-      settingsBox.style.display = "block";
-    } else {
-      initGoogleLogin();
-    }
-  };
-</script>
-
-  <script>
-  const LOGIN_DURATION_MS = 30 * 60 * 1000; // 30 minutes
-
-  function handleCredentialResponse(response) {
-    console.log("JWT token:", response.credential);
-
-    // Save login state with timestamp
-    const loginData = {
-      token: response.credential,
-      timestamp: Date.now()
-    };
-    localStorage.setItem("googleLogin", JSON.stringify(loginData));
-
-    // Hide login button, show welcome message
-    document.getElementById("google-btn-container").style.display = "none";
-    document.getElementById("welcome-message").style.display = "block";
-    alert("Login Successful!");
-  }
-
-  function checkLoginStatus() {
-    const data = JSON.parse(localStorage.getItem("googleLogin"));
-    if (data) {
-      const elapsed = Date.now() - data.timestamp;
-      if (elapsed < LOGIN_DURATION_MS) {
-        // User is still logged in
-        document.getElementById("google-btn-container").style.display = "none";
-        document.getElementById("welcome-message").style.display = "block";
-        return true;
-      } else {
-        // Expired → remove login
-        localStorage.removeItem("googleLogin");
-      }
-    }
-    return false;
+    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
   }
 
   function logout() {
-    localStorage.removeItem("googleLogin");
-    document.getElementById("google-btn-container").style.display = "block";
-    document.getElementById("welcome-message").style.display = "none";
-    google.accounts.id.disableAutoSelect(); // prevents auto-login
+    localStorage.removeItem("isLoggedIn");
+    location.reload();
   }
 
-  window.onload = function() {
-    google.accounts.id.initialize({
-      client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
-      callback: handleCredentialResponse
-    });
-
-    if (!checkLoginStatus()) {
-      google.accounts.id.renderButton(
-        document.getElementById("google-btn-container"),
-        { theme: "outline", size: "large" }
-      );
-      google.accounts.id.prompt(); // optional One Tap
+  async function fetchGames(page) {
+    const grid = document.getElementById('game-grid');
+    grid.innerHTML = "<p>Loading Games...</p>";
+    const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&category=action&pagination=24&page=${page}&t=${Date.now()}`;
+    
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+      const games = result.data || result;
+      if (Array.isArray(games) && games.length > 0) {
+        renderGames(games);
+        updatePaginationUI();
+      } else {
+        grid.innerHTML = "<p>No games found.</p>";
+      }
+    } catch (err) {
+      grid.innerHTML = "<p>Connection Error.</p>";
     }
-  };
-</script>
+  }
 
-<footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
-  </p>
-  <p>© 2026 Skyl P World</p>
-</footer>
+  function renderGames(games) {
+    const grid = document.getElementById('game-grid');
+    grid.innerHTML = "";
+    games.forEach(game => {
+      const thumb = game.thumbnailUrl.replace("http://", "https://");
+      const gUrl = game.url.replace("http://", "https://");
+      grid.innerHTML += `
+        <div class="game-card">
+          <img src="${thumb}" alt="${game.title}">
+          <h3>${game.title}</h3>
+          <a href="${gUrl}" target="_blank" class="play-btn">PLAY NOW</a>
+        </div>
+      `;
+    });
+  }
+
+  function searchGames() {
+    let input = document.getElementById('gameSearch').value.toLowerCase();
+    let cards = document.getElementsByClassName('game-card');
+    for (let i = 0; i < cards.length; i++) {
+      let title = cards[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
+      cards[i].style.display = title.includes(input) ? "" : "none";
+    }
+  }
+
+  function changePage(step) {
+    document.getElementById('gameSearch').value = ""; 
+    currentPage += step;
+    document.getElementById("pageNumber").innerText = "Page " + currentPage;
+    fetchGames(currentPage);
+    window.scrollTo(0,0);
+  }
+
+  function updatePaginationUI() {
+    document.getElementById("prevBtn").disabled = (currentPage === 1);
+    document.getElementById("nextBtn").disabled = (currentPage === maxPages);
+  }
+
+  window.onload = checkAuth;
+</script>
 
 </body>
 </html>
+

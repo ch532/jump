@@ -18,7 +18,7 @@
   </script>
 
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding:50px;}
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding:50px; display:none; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
@@ -27,6 +27,7 @@
     .logout { background:#ff3b3b; }
     footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
     footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
+    input, select, label { width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
   </style>
 </head>
 <body>
@@ -37,7 +38,7 @@
   <a href="dashboard.html">Dashboard</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
-  <a href="index.html#settingsBox">Settings</a>
+  <a href="#settingsBox">Settings</a>
 </nav>
 
 <!-- LOGIN CONTAINER -->
@@ -76,9 +77,14 @@
 </div>
 
 <script>
-  // Hide everything until login check
-  document.body.style.display = 'none';
+  const loginBox = document.getElementById("loginBox");
+  const logoutBox = document.getElementById("logoutBox");
+  const settingsBox = document.getElementById("settingsBox");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const themeSelect = document.getElementById("themeSelect");
+  const notifPref = document.getElementById("notifPref");
 
+  // Apply theme
   function applyTheme(theme){
     if(theme === "dark"){
       document.body.style.background = "#222";
@@ -89,35 +95,45 @@
     }
   }
 
-  // Check login state using Google Identity Services
-  function handleCredentialResponse(response) {
-    // This is where you would send token to your server if needed
-    console.log("Encoded JWT ID token: " + response.credential);
-    
-    // Show logout and settings
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("logoutBox").style.display="block";
-    document.getElementById("settingsBox").style.display="block";
+  // Handle Google login
+  function handleCredentialResponse(response){
+    console.log("JWT ID token:", response.credential);
+    localStorage.setItem("googleUserToken", response.credential);
 
-    // Reveal body
-    document.body.style.display = 'block';
+    loginBox.style.display = "none";
+    logoutBox.style.display = "block";
+    settingsBox.style.display = "block";
+
+    document.body.style.display = "block";
   }
+  window.handleCredentialResponse = handleCredentialResponse;
 
+  // Persist login across reloads
   window.onload = function(){
-    // Wait for Google login to handle login
-    document.body.style.display = 'block';
+    const token = localStorage.getItem("googleUserToken");
+    if(token){
+      loginBox.style.display = "none";
+      logoutBox.style.display = "block";
+      settingsBox.style.display = "block";
+      document.body.style.display = "block";
+    } else {
+      document.body.style.display = "block"; // still reveal login box
+    }
   }
 
   // Logout
-  document.getElementById("logoutBtn").onclick = function(){
-    location.reload(); // simple logout for client side
+  logoutBtn.onclick = function(){
+    localStorage.removeItem("googleUserToken");
+    location.reload();
   };
 
-  // Settings
-  const themeSelect = document.getElementById("themeSelect");
-  const notifPref = document.getElementById("notifPref");
+  // Settings update
   document.getElementById("updateBtn").onclick = function(){
-    alert("Settings updated!\nTheme: "+themeSelect.value+"\nEmail notifications: "+notifPref.checked);
+    alert(
+      "Settings updated!\n" +
+      "Theme: " + themeSelect.value + "\n" +
+      "Email notifications: " + notifPref.checked
+    );
     applyTheme(themeSelect.value);
   };
 </script>

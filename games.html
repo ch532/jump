@@ -1,31 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Skyl P World – Games</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
-  nav { background:#1f1f2e; text-align:center; padding:12px; }
-  nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-  nav a:hover { color:#ffcc00; }
-  .games-container { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; padding:20px; }
-  .game-card { width:150px; background:#fff; border-radius:10px; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
-  .game-card img { width:100%; height:100px; object-fit:cover; border-radius:8px; }
-  .game-name { margin-top:5px; font-size:14px; font-weight:bold; }
-  footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
-  footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Game Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        
+        /* The Grid Layout */
+        #game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Individual Game Card */
+        .game-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            text-align: center;
+        }
+        .game-card:hover { transform: scale(1.05); }
+        .game-card img { width: 100%; height: auto; display: block; }
+        .game-card h3 { font-size: 14px; margin: 10px; color: #333; height: 35px; overflow: hidden; }
+        .play-btn {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Pagination Buttons */
+        .controls { text-align: center; margin-top: 30px; }
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .controls button:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
 </head>
 <body>
-
-<nav>
-  <a href="index.html">Home</a>
-  <a href="games.html" class="active">Games</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="support.html">Support</a>
-  <a href="privacy.html">Privacy Policy</a>
-</nav>
 
 <div id="auth-placeholder"></div>
 
@@ -68,56 +97,74 @@
 </script>
 
   
-<h2>SkylPWorld Games</h2>
-<div class="games-container" id="gamesContainer">Loading games...</div>
+    <h1 style="text-align:center;">Top Games</h1>
 
-<script>
-const gamesContainer = document.getElementById("gamesContainer");
-const totalPages = 40; // Total pages from GamePix
-const baseURL = "https://feeds.gamepix.com/v2/json?sid=2R229&pagination=24&page=";
+    <div id="game-grid">Loading games...</div>
 
-let currentPage = 1;
-let loading = false;
+    <div class="controls">
+        <button id="prevBtn" onclick="changePage(-1)">Previous</button>
+        <span id="pageDisplay">Page 1</span>
+        <button id="nextBtn" onclick="changePage(1)">Next</button>
+    </div>
 
-// Function to load a single page of games
-async function loadGames(page) {
-  loading = true;
-  try {
-    const res = await fetch(baseURL + page);
-    const data = await res.json();
-    const games = data.items || [];
-    if(games.length === 0 && page === 1){
-      gamesContainer.innerHTML = "No games found.";
-      return;
-    }
-    games.forEach(game => {
-      const icon = (game.assets && game.assets.icon) ? game.assets.icon : "https://via.placeholder.com/150?text=No+Image";
-      const name = game.name || "";
-      const card = document.createElement("div");
-      card.className = "game-card";
-      card.innerHTML = `
-        <img src="${icon}" alt="${name}">
-        <div class="game-name">${name}</div>
-      `;
-      gamesContainer.appendChild(card);
-    });
-  } catch(err) {
-    console.error("Failed to load page " + page, err);
-  }
-  loading = false;
-}
+    <script>
+        let currentPage = 1;
+        const maxPages = 4; // Your limit
+        const sid = "2R229";
 
-// Function to check if user scrolled near bottom
-function checkScroll() {
-  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !loading && currentPage <= totalPages){
-    loadGames(currentPage++);
-  }
-}
+        // This function fetches data from GamePix
+        async function fetchGames(page) {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = "<h3>Loading...</h3>";
+            
+            const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&pagination=24&page=${page}`;
+            
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                // GamePix feed stores games in result.data
+                const games = result.data;
+                displayGames(games);
+                updateUI();
+            } catch (error) {
+                grid.innerHTML = "<h3>Error loading games. Please try again.</h3>";
+                console.error(error);
+            }
+        }
 
-// Initial load
-loadGames(currentPage++);
-window.addEventListener("scroll", checkScroll);
-</script>
+        // This function builds the HTML for each game card
+        function displayGames(games) {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = ""; // Clear loader
+
+            games.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <img src="${game.thumbnailUrl}" alt="${game.title}">
+                    <h3>${game.title}</h3>
+                    <a href="${game.url}" target="_blank" class="play-btn">Play Now</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function changePage(step) {
+            currentPage += step;
+            fetchGames(currentPage);
+            window.scrollTo(0, 0); // Scroll to top when page changes
+        }
+
+        function updateUI() {
+            document.getElementById('pageDisplay').innerText = `Page ${currentPage} of ${maxPages}`;
+            document.getElementById('prevBtn').disabled = (currentPage === 1);
+            document.getElementById('nextBtn').disabled = (currentPage === maxPages);
+        }
+
+        // Start page 1 automatically
+        window.onload = () => fetchGames(1);
+    </script>
 
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
@@ -125,8 +172,9 @@ window.addEventListener("scroll", checkScroll);
     <a href="privacy.html">Privacy Policy</a> |
     <a href="support.html">Support</a>
   </p>
-  <p>© 2026 Skyl P World</p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
-
+  
 </body>
 </html>
+

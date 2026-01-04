@@ -1,43 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SkylPWorld – Games</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-3XR1R2P73Y');
-</script>
-
-<style>
-body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center;}
-nav { background:#1f1f2e; padding:12px; }
-nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-nav a:hover { color:#ffcc00; }
-#gameGrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; padding:20px; }
-.game-card { background:#fff; padding:15px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
-.game-card img { width:100%; border-radius:8px; }
-.game-card h3 { margin:10px 0; font-size:1rem; }
-.game-card a { text-decoration:none; color:#4b00ff; font-weight:bold; }
-.pagination { text-align:center; margin:20px; }
-.pagination button { padding:10px 15px; margin:0 5px; border:none; border-radius:8px; background:#4b00ff; color:#fff; font-weight:bold; cursor:pointer; }
-</style>
+  <meta charset="UTF-8">
+  <title>SkylPWorld – Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f5f5f5; }
+    h1 { text-align:center; margin-bottom:30px; }
+    #gamesContainer { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
+    .game-card { background:#fff; padding:15px; border-radius:12px; width:200px; text-align:center; box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+    .game-card button { margin-top:10px; padding:8px 12px; border:none; border-radius:8px; background:#4b00ff; color:#fff; cursor:pointer; font-weight:600;}
+    .game-card button:hover { background:#2f00b3; }
+  </style>
 </head>
 <body>
-
-<nav>
-  <a href="index.html">Home</a>
-  <a href="games.html" class="active">Games</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="support.html">Support</a>
-  <a href="privacy.html">Privacy Policy</a>
-</nav>
 
 <div id="auth-placeholder"></div>
 
@@ -80,64 +56,44 @@ nav a:hover { color:#ffcc00; }
 </script>
 
   
-<h2>Skyl P World </h2>
-<div id="gameGrid"></div>
+  <h1>SkylPWorld Games</h1>
+  <div id="gamesContainer">Loading games...</div>
 
-<div class="pagination">
-  <button id="prevPage">Previous</button>
-  <span id="pageNum">1</span>
-  <button id="nextPage">Next</button>
-</div>
+  <script>
+    const gamesContainer = document.getElementById("gamesContainer");
+    gamesContainer.innerHTML = "Loading games...";
 
-<script>
-const totalPages = 10;
-const pagination = 24;
-let currentPage = 1;
+    async function fetchGames() {
+      gamesContainer.innerHTML = "";
+      try {
+        for(let page=1; page<=10; page++){
+          const res = await fetch(`https://feeds.gamepix.com/v2/json?sid=2R229&pagination=24&page=${page}`);
+          const data = await res.json();
+          
+          const games = data.items || data.games || [];
+          games.forEach(game => {
+            const card = document.createElement("div");
+            card.className = "game-card";
 
-function loadGames(page){
-  fetch(`https://feeds.gamepix.com/v2/json?sid=2R229&pagination=${pagination}&page=${page}`)
-    .then(res => res.json())
-    .then(data => {
-      const grid = document.getElementById("gameGrid");
-      grid.innerHTML = "";
-      data.games.forEach(game => {
-        const card = document.createElement("div");
-        card.className = "game-card";
-        card.innerHTML = `
-          <img src="${game.thumbnailUrl}" alt="${game.title}">
-          <h3>${game.title}</h3>
-          <a href="${game.url}" target="_blank">Play Now</a>
-        `;
-        card.querySelector("a").addEventListener("click", () => {
-          gtag('event', 'game_click', {
-            'game_title': game.title,
-            'game_id': game.id
+            const title = document.createElement("h3");
+            title.innerText = game.title || "Untitled Game";
+            card.appendChild(title);
+
+            const btn = document.createElement("button");
+            btn.innerText = "Play";
+            btn.onclick = () => window.open(game.url, "_blank");
+            card.appendChild(btn);
+
+            gamesContainer.appendChild(card);
           });
-        });
-        grid.appendChild(card);
-      });
-      document.getElementById("pageNum").innerText = page;
-    })
-    .catch(err => console.error("Error loading games:", err));
-}
+        }
+      } catch(err){
+        console.error("Error fetching games:", err);
+        gamesContainer.innerHTML = "Failed to load games. Try again later.";
+      }
+    }
 
-document.getElementById("nextPage").onclick = () => {
-  if(currentPage < totalPages){
-    currentPage++;
-    loadGames(currentPage);
-  }
-};
-
-document.getElementById("prevPage").onclick = () => {
-  if(currentPage > 1){
-    currentPage--;
-    loadGames(currentPage);
-  }
-};
-
-// Initial load
-loadGames(currentPage);
-</script>
-
+    fetchGames();
+  </script>
 </body>
 </html>

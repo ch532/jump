@@ -18,7 +18,7 @@
   </script>
 
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding:50px; display:none; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding:50px; transition: background 0.3s, color 0.3s; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
@@ -27,7 +27,7 @@
     .logout { background:#ff3b3b; }
     footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
     footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
-    input, select, label { width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+    #loginBox, #logoutBox, #settingsBox { transition: all 0.3s ease; }
   </style>
 </head>
 <body>
@@ -48,8 +48,8 @@
        data-client_id="1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com"
        data-context="signin"
        data-ux_mode="popup"
-       data-login_uri="index.html"
-       data-auto_prompt="false">
+       data-auto_prompt="false"
+       data-callback="handleCredentialResponse">
   </div>
   <div class="g_id_signin" data-type="standard"></div>
 </div>
@@ -80,11 +80,50 @@
   const loginBox = document.getElementById("loginBox");
   const logoutBox = document.getElementById("logoutBox");
   const settingsBox = document.getElementById("settingsBox");
-  const logoutBtn = document.getElementById("logoutBtn");
+
   const themeSelect = document.getElementById("themeSelect");
   const notifPref = document.getElementById("notifPref");
 
-  // Apply theme
+  // Hide content until login check
+  document.body.style.display = 'none';
+
+  // Check if user token exists in localStorage
+  const storedToken = localStorage.getItem("googleUserToken");
+  if(storedToken){
+    loginBox.style.display="none";
+    logoutBox.style.display="block";
+    settingsBox.style.display="block";
+    document.body.style.display = 'block';
+  } else {
+    loginBox.style.display="block";
+    logoutBox.style.display="none";
+    settingsBox.style.display="none";
+    document.body.style.display = 'block';
+  }
+
+  // Google login callback
+  function handleCredentialResponse(response){
+    console.log("JWT token:", response.credential);
+    localStorage.setItem("googleUserToken", response.credential);
+
+    loginBox.style.display="none";
+    logoutBox.style.display="block";
+    settingsBox.style.display="block";
+  }
+  window.handleCredentialResponse = handleCredentialResponse;
+
+  // Logout
+  document.getElementById("logoutBtn").onclick = function(){
+    localStorage.removeItem("googleUserToken");
+    location.reload();
+  };
+
+  // Settings
+  document.getElementById("updateBtn").onclick = function(){
+    alert("Settings updated!\nTheme: "+themeSelect.value+"\nEmail notifications: "+notifPref.checked);
+    applyTheme(themeSelect.value);
+  };
+
   function applyTheme(theme){
     if(theme === "dark"){
       document.body.style.background = "#222";
@@ -95,47 +134,9 @@
     }
   }
 
-  // Handle Google login
-  function handleCredentialResponse(response){
-    console.log("JWT ID token:", response.credential);
-    localStorage.setItem("googleUserToken", response.credential);
-
-    loginBox.style.display = "none";
-    logoutBox.style.display = "block";
-    settingsBox.style.display = "block";
-
-    document.body.style.display = "block";
-  }
-  window.handleCredentialResponse = handleCredentialResponse;
-
-  // Persist login across reloads
-  window.onload = function(){
-    const token = localStorage.getItem("googleUserToken");
-    if(token){
-      loginBox.style.display = "none";
-      logoutBox.style.display = "block";
-      settingsBox.style.display = "block";
-      document.body.style.display = "block";
-    } else {
-      document.body.style.display = "block"; // still reveal login box
-    }
-  }
-
-  // Logout
-  logoutBtn.onclick = function(){
-    localStorage.removeItem("googleUserToken");
-    location.reload();
-  };
-
-  // Settings update
-  document.getElementById("updateBtn").onclick = function(){
-    alert(
-      "Settings updated!\n" +
-      "Theme: " + themeSelect.value + "\n" +
-      "Email notifications: " + notifPref.checked
-    );
+  themeSelect.addEventListener("change", ()=>{
     applyTheme(themeSelect.value);
-  };
+  });
 </script>
 
 <footer>

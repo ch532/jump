@@ -75,46 +75,50 @@
   <a href="settings.html">sSettings</a>
 </nav>
 
-<div id="auth-placeholder"></div>
+<!-- Google Login Button -->
+<div id="google-login-container">
+  <div id="g_id_onload"
+       data-client_id="1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
+  <div class="g_id_signin" data-type="standard"></div>
+</div>
+
+<!-- Message after login -->
+<p id="loginMessage" style="color:green; font-weight:bold; display:none;">Login Successful!</p>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-    // 1. The function that hides the button and wall
-    function handleCredentialResponse(response) {
-        console.log("Logged in successfully");
-        localStorage.setItem("isLoggedIn", "true"); // Save state
-        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
-    }
+  // Elements
+  const googleLoginContainer = document.getElementById("google-login-container");
+  const loginMessage = document.getElementById("loginMessage");
 
-    // 2. The function that sets up the Google Button
-    function initGoogleLogin() {
-        google.accounts.id.initialize({
-            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("googleButtonDiv"),
-            { theme: "outline", size: "large" }
-        );
-    }
+  // Callback after successful login
+  function handleCredentialResponse(response) {
+    console.log("JWT token:", response.credential);
 
-    // 3. Logic to decide if we show the wall or not
-    window.onload = function () {
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            // Already logged in? Do nothing (content stays visible)
-            console.log("Access granted via session");
-        } else {
-            // Not logged in? Fetch the wall file
-            fetch('login-wall.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById("auth-placeholder").innerHTML = data;
-                    initGoogleLogin(); // Turn on the Google button inside the wall
-                });
-        }
-    };
+    // Store token in localStorage so user stays logged in across pages
+    localStorage.setItem("googleToken", response.credential);
+
+    // Hide Google button
+    googleLoginContainer.style.display = "none";
+
+    // Show success message
+    loginMessage.style.display = "block";
+
+    // Optionally, redirect to dashboard or reveal protected content
+    // window.location.href = "dashboard.html"; 
+  }
+
+  // Logout function
+  function logout() {
+    localStorage.removeItem("googleToken"); // remove token
+    googleLoginContainer.style.display = "block"; // show login again
+    loginMessage.style.display = "none"; // hide success
+    google.accounts.id.disableAutoSelect(); // sign out
+  }
 </script>
-
   
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>

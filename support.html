@@ -45,12 +45,17 @@
   );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
-  // Check if user is logged in
-  const currentUser = Parse.User.current();
-  if (!currentUser) {
-    // Not logged in → redirect to homepage
+  // Async check for current user
+  Parse.User.currentAsync().then((currentUser) => {
+    if (!currentUser) {
+      // User is not logged in → redirect
+      window.location.href = "index.html";
+    }
+    // If currentUser exists, do nothing → page loads normally
+  }).catch((err) => {
+    console.error("Error checking user session:", err);
     window.location.href = "index.html";
-  }
+  });
 
   send.onclick = async ()=>{
     const Support = Parse.Object.extend("Support");

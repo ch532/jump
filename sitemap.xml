@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://bright.skyl.name.ng/index.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://bright.skyl.name.ng/games.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://bright.skyl.name.ng/dashboard.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://bright.skyl.name.ng/support.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://bright.skyl.name.ng/privacy.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://bright.skyl.name.ng/settings.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <priority>0.4</priority>
+  </url>
+
+</urlset>

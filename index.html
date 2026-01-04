@@ -41,7 +41,7 @@
 </nav>
 
 <div class="container" id="loginBox">
-  <h2>Welcome to SkylPWorld</h2>
+  <h2>Welcome to Skyl P World</h2>
   <p>Login to access all features</p>
   <div id="g_id_onload"
        data-client_id="1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com"
@@ -59,16 +59,52 @@
     }
   }
 
-  window.onload = function(){
+  <script>
+  // Wait until Google Sign-In API loads
+  window.onload = function() {
+
+    // Initialize the Google One Tap / Sign-In button
     google.accounts.id.initialize({
       client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
-      callback: handleCredentialResponse
+      callback: handleCredentialResponse,
     });
+
+    // Render the Google Sign-In button
     google.accounts.id.renderButton(
-      document.querySelector(".g_id_signin"),
-      { theme: "outline", size: "large", width: "100%" }
+      document.getElementById("loginBox"),
+      { theme: "outline", size: "large" }  // customization
     );
+
+    // Optionally, auto prompt
+    google.accounts.id.prompt(); 
   };
+
+  function handleCredentialResponse(response) {
+    console.log("JWT token:", response.credential);
+
+    // Store token locally so you know the user is logged in
+    localStorage.setItem("googleToken", response.credential);
+
+    // Hide login box, show logout and settings
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("logoutBox").style.display = "block";
+    document.getElementById("settingsBox").style.display = "block";
+
+    // Optionally apply saved theme/settings
+  }
+
+  // Logout
+  document.getElementById("logoutBtn").onclick = function() {
+    localStorage.removeItem("googleToken"); // remove token
+    location.reload(); // show login again
+  };
+
+  // On page load, check if token exists
+  if(localStorage.getItem("googleToken")) {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("logoutBox").style.display = "block";
+    document.getElementById("settingsBox").style.display = "block";
+  }
 </script>
 
 <footer>

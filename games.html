@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SkylPWorld – Games</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; }
-    nav { background:#1f1f2e; text-align:center; padding:12px; }
-    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-    nav a:hover, nav a.active { color:#ffcc00; }
-    #gamesContainer { display:flex; flex-wrap:wrap; justify-content:center; margin:20px; gap:15px; }
-    .game-card { width:180px; cursor:pointer; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-    .game-card img { width:100%; display:block; }
-    #paginationControls { text-align:center; margin:20px; }
-    #paginationControls button, #paginationControls select { padding:8px 12px; margin:0 5px; border-radius:6px; border:none; cursor:pointer; }
-    footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
-    footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
-  </style>
+<meta charset="UTF-8">
+<title>SkylPWorld – Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
+  nav { background:#1f1f2e; padding:12px; }
+  nav a { color:#fff; margin:0 15px; text-decoration:none; font-weight:600; }
+  nav a:hover { color:#ffcc00; }
+  #gamesContainer { display:flex; flex-wrap:wrap; justify-content:center; margin:20px; gap:15px; }
+  .gameCard { width:120px; height:120px; border:1px solid #ccc; border-radius:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#fff; cursor:pointer; }
+  .gameCard img { max-width:100%; max-height:100%; display:block; }
+  .gameCard img:hover { transform: scale(1.05); transition: transform 0.2s; }
+  button { padding:10px 20px; margin:20px 10px; border:none; border-radius:8px; background:#4b00ff; color:#fff; font-weight:600; cursor:pointer; }
+  footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
+  footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
+</style>
 </head>
 <body>
 
@@ -70,15 +69,70 @@
 </script>
 
   
-<div id="gamesContainer">
-  Loading games...
-</div>
+<h2>SkylPWorld Games</h2>
 
-<div id="paginationControls">
+<div id="gamesContainer">Loading games...</div>
+
+<div>
   <button id="prevBtn">Previous</button>
-  <select id="jumpPageSelect"></select>
   <button id="nextBtn">Next</button>
 </div>
+
+<script>
+const gamesContainer = document.getElementById('gamesContainer');
+let currentPage = 1;
+const totalPages = 40; // Optional: allow navigation up to page 40
+
+async function loadGames(page) {
+  gamesContainer.innerHTML = 'Loading games...';
+  try {
+    const response = await fetch(`https://feeds.gamepix.com/v2/json?sid=2R229&pagination=24&page=${page}`);
+    const data = await response.json();
+    const games = data.games || [];
+    
+    if (games.length === 0) {
+      gamesContainer.innerHTML = 'No games found';
+      return;
+    }
+
+    // Display only game icons with optional tooltip
+    gamesContainer.innerHTML = '';
+    games.forEach(game => {
+      const card = document.createElement('div');
+      card.className = 'gameCard';
+      const img = document.createElement('img');
+      img.src = game.icon || '';
+      img.alt = game.name || 'Game';
+      if (game.name) img.title = game.name; // tooltip
+      card.appendChild(img);
+      card.onclick = () => {
+        if (game.url) window.open(game.url, '_blank');
+      };
+      gamesContainer.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    gamesContainer.innerHTML = 'Failed to load games';
+  }
+}
+
+// Navigation
+document.getElementById('prevBtn').onclick = () => {
+  if (currentPage > 1) {
+    currentPage--;
+    loadGames(currentPage);
+  }
+};
+document.getElementById('nextBtn').onclick = () => {
+  if (currentPage < totalPages) {
+    currentPage++;
+    loadGames(currentPage);
+  }
+};
+
+// Initial load
+loadGames(currentPage);
+</script>
 
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
@@ -88,97 +142,6 @@
   </p>
   <p>© 2026 SkylPWorld</p>
 </footer>
-
-<script>
-  const SID = "2R229"; 
-  const PER_PAGE = 24;
-  let currentPage = 1;
-  const totalPages = 40;
-  const container = document.getElementById("gamesContainer");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const jumpSelect = document.getElementById("jumpPageSelect");
-
-  // Populate jump-to-page dropdown
-  for(let i=1; i<=totalPages; i++){
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.text = "Page " + i;
-    jumpSelect.appendChild(opt);
-  }
-
-  async function fetchGames(page){
-    container.innerHTML = "Loading games...";
-    try{
-      const res = await fetch(`https://feeds.gamepix.com/v2/json?sid=${SID}&pagination=${PER_PAGE}&page=${page}`);
-      const data = await res.json();
-      displayGames(data.games);
-    }catch(err){
-      container.innerHTML = "Failed to load games.";
-      console.error(err);
-    }
-  }
-
-  function displayGames(games){
-    container.innerHTML = "";
-    if(!games || games.length === 0){
-      container.innerHTML = "No games found.";
-      return;
-    }
-
-    games.forEach(item => {
-      let imgURL = "https://via.placeholder.com/180x120?text=No+Image";
-      let gameURL = "#";
-
-      if(item.assets && item.assets.length > 0){
-        const mainAsset = item.assets[0];
-        if(mainAsset.thumbnail) imgURL = mainAsset.thumbnail;
-        if(mainAsset.url) gameURL = mainAsset.url;
-      }
-
-      const card = document.createElement("div");
-      card.className = "game-card";
-
-      const img = document.createElement("img");
-      img.src = imgURL;
-      img.alt = "Game Icon";
-
-      card.appendChild(img);
-
-      if(gameURL !== "#"){
-        card.addEventListener("click", ()=>window.open(gameURL, "_blank"));
-      }
-
-      container.appendChild(card);
-    });
-
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
-    jumpSelect.value = currentPage;
-  }
-
-  prevBtn.onclick = ()=>{
-    if(currentPage > 1){
-      currentPage--;
-      fetchGames(currentPage);
-    }
-  }
-
-  nextBtn.onclick = ()=>{
-    if(currentPage < totalPages){
-      currentPage++;
-      fetchGames(currentPage);
-    }
-  }
-
-  jumpSelect.onchange = function(){
-    currentPage = parseInt(this.value);
-    fetchGames(currentPage);
-  }
-
-  // Initial load
-  fetchGames(currentPage);
-</script>
 
 </body>
 </html>

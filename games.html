@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Station</title>
+    <title>My Game Collection</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; margin: 0; padding: 10px; }
-        h1 { text-align: center; color: #00d4ff; margin-top: 20px; }
+        body { font-family: sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 10px; }
+        h1 { text-align: center; color: #38bdf8; font-size: 24px; margin: 20px 0; }
         
-        /* Mobile-first grid: 2 columns */
         #game-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, 1fr); /* Mobile friendly: 2 per row */
             gap: 12px;
-            padding: 10px;
+            padding: 5px;
         }
 
         .game-card {
-            background: #1e1e1e;
+            background: #1e293b;
             border-radius: 12px;
             padding: 8px;
             text-align: center;
-            border: 1px solid #333;
+            border: 1px solid #334155;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
 
         .game-card img {
@@ -32,40 +30,40 @@
             aspect-ratio: 1 / 1;
             object-fit: cover;
             border-radius: 8px;
+            background: #000;
         }
 
         .game-card h3 {
             font-size: 13px;
             margin: 8px 0;
-            height: 32px;
+            height: 34px;
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            color: #e2e8f0;
         }
 
         .play-btn {
-            background: #00d4ff;
-            color: #000;
+            background: #38bdf8;
+            color: #0f172a;
             text-decoration: none;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: bold;
             font-size: 12px;
             text-transform: uppercase;
+            margin-top: auto;
         }
 
         .controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             margin: 30px 0;
         }
 
         button {
-            padding: 10px 20px;
-            background: #333;
+            padding: 12px 20px;
+            background: #334155;
             color: white;
             border: none;
             border-radius: 8px;
@@ -73,15 +71,15 @@
         }
 
         button:disabled { opacity: 0.2; }
-        #pageDisplay { font-weight: bold; color: #00d4ff; }
+        #pageDisplay { font-weight: bold; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-    <h1>Top Games</h1>
+    <h1>Premium Games</h1>
     
     <div id="game-grid">
-        <p style="grid-column: 1/-1; text-align: center;">Connecting to GamePix...</p>
+        <p style="grid-column: 1/-1; text-align: center;">Loading your games...</p>
     </div>
 
     <div class="controls">
@@ -91,50 +89,37 @@
     </div>
 
     <script>
-        // 1. SECURITY REDIRECT
+        // Check if logged in
         if (localStorage.getItem("isLoggedIn") !== "true") {
             window.location.href = "index.html";
         }
 
         let currentPage = 1;
         const maxPages = 4;
-        const sid = "2R229";
+        const sid = "56PD3"; // YOUR NEW SID
 
         async function fetchGames(page) {
             const grid = document.getElementById('game-grid');
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Loading Games...</p>';
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Fetching data...</p>';
             
-            // Adding a timestamp (t=) prevents the phone from caching errors
             const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&pagination=24&page=${page}&t=${Date.now()}`;
             
             try {
                 const response = await fetch(url);
                 const result = await response.json();
                 
-                // Smart data detection: Check result.data or result itself
-                let gamesList = [];
-                if (result && result.data && Array.isArray(result.data)) {
-                    gamesList = result.data;
-                } else if (Array.isArray(result)) {
-                    gamesList = result;
-                }
+                // GamePix usually returns data inside a 'data' property
+                let gamesList = result.data || result;
 
-                // If no games found, try a simple fallback URL without page parameters
-                if (gamesList.length === 0 && page === 1) {
-                    const fallbackUrl = `https://feeds.gamepix.com/v2/json?sid=${sid}`;
-                    const fbResponse = await fetch(fallbackUrl);
-                    const fbResult = await fbResponse.json();
-                    gamesList = fbResult.data || fbResult;
-                }
-
-                if (gamesList && gamesList.length > 0) {
+                if (Array.isArray(gamesList) && gamesList.length > 0) {
                     displayGames(gamesList);
                     updateUI();
                 } else {
-                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No games available for this SID right now.</p>';
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No games found in this collection. Check your GamePix Dashboard filters.</p>';
                 }
             } catch (error) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Error loading feed. Try disabling Ad-Blockers.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Error: Ad-blocker or connection issue.</p>';
+                console.error(error);
             }
         }
 
@@ -143,14 +128,14 @@
             grid.innerHTML = ""; 
 
             games.forEach(game => {
-                // Secure links for mobile
+                // Ensure images load over HTTPS
                 const thumb = game.thumbnailUrl.replace("http://", "https://");
                 const gameUrl = game.url.replace("http://", "https://");
 
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `
-                    <img src="${thumb}" alt="${game.title}">
+                    <img src="${thumb}" alt="${game.title}" loading="lazy">
                     <h3>${game.title}</h3>
                     <a href="${gameUrl}" target="_blank" class="play-btn">Play Now</a>
                 `;
@@ -170,19 +155,8 @@
             document.getElementById('nextBtn').disabled = (currentPage === maxPages);
         }
 
-        // Run on load
         window.onload = () => fetchGames(1);
     </script>
-
-<footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
-  </p>
-  <p>© 2026 SkylPWorld</p>
-</footer>
-    
 </body>
 </html>
 

@@ -17,6 +17,7 @@
     .stat-card h3 { margin:0 0 10px; color:#4b00ff; }
     .stat-card p { font-size:1.2rem; margin:0; font-weight:600; }
     footer { margin-top:60px; text-align:center; padding:20px; background:#222; color:#fff; }
+    body { display: none; } /* hide content until login check */
   </style>
 </head>
 <body>
@@ -49,17 +50,17 @@
   );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
-// Async check for current user
-  Parse.User.currentAsync().then((currentUser) => {
-    if (!currentUser) {
-      // User is not logged in → redirect
-      window.location.href = "index.html";
-    }
-    // If currentUser exists, do nothing → page loads normally
-  }).catch((err) => {
-    console.error("Error checking user session:", err);
-    window.location.href = "index.html";
-  });
+// Check if user is logged in
+    Parse.User.currentAsync().then((user) => {
+      if(user){
+        // User is logged in → show page
+        document.body.style.display = "block";
+      } else {
+        // User not logged in → redirect smoothly
+        alert("You must log in first!");
+        location.replace("index.html");
+      }
+    });
 
   async function loadStats(){
     const dashboardStats = document.getElementById("dashboard-stats");

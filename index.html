@@ -189,6 +189,65 @@
   };
 </script>
 
+  <script>
+  const LOGIN_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
+  function handleCredentialResponse(response) {
+    console.log("JWT token:", response.credential);
+
+    // Save login state with timestamp
+    const loginData = {
+      token: response.credential,
+      timestamp: Date.now()
+    };
+    localStorage.setItem("googleLogin", JSON.stringify(loginData));
+
+    // Hide login button, show welcome message
+    document.getElementById("google-btn-container").style.display = "none";
+    document.getElementById("welcome-message").style.display = "block";
+    alert("Login Successful!");
+  }
+
+  function checkLoginStatus() {
+    const data = JSON.parse(localStorage.getItem("googleLogin"));
+    if (data) {
+      const elapsed = Date.now() - data.timestamp;
+      if (elapsed < LOGIN_DURATION_MS) {
+        // User is still logged in
+        document.getElementById("google-btn-container").style.display = "none";
+        document.getElementById("welcome-message").style.display = "block";
+        return true;
+      } else {
+        // Expired → remove login
+        localStorage.removeItem("googleLogin");
+      }
+    }
+    return false;
+  }
+
+  function logout() {
+    localStorage.removeItem("googleLogin");
+    document.getElementById("google-btn-container").style.display = "block";
+    document.getElementById("welcome-message").style.display = "none";
+    google.accounts.id.disableAutoSelect(); // prevents auto-login
+  }
+
+  window.onload = function() {
+    google.accounts.id.initialize({
+      client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
+      callback: handleCredentialResponse
+    });
+
+    if (!checkLoginStatus()) {
+      google.accounts.id.renderButton(
+        document.getElementById("google-btn-container"),
+        { theme: "outline", size: "large" }
+      );
+      google.accounts.id.prompt(); // optional One Tap
+    }
+  };
+</script>
+
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>

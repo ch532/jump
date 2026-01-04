@@ -2,31 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Games - Skyl P World</title>
+  <title>SkylPWorld – Online Games Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-<meta name="description" content="SkylPWorld is your ultimate online gaming hub! Play exciting free games directly in your browser, track your progress, and enjoy a fun, interactive experience. Start playing now!">
-
-  <!-- Open Graph / Social Meta -->
-<meta property="og:title" content="SkylPWorld – Online Games Hub">
-<meta property="og:description" content="Play exciting free games directly in your browser at SkylPWorld. Fun, interactive, and ready to play!">
-<meta property="og:image" content="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-<meta property="og:url" content="https://bright.skyl.name.ng/">
-<meta property="og:type" content="website">
   
-<!-- Favicon / Website Icon -->
-<link rel="icon" type="image/png" sizes="512x512" href="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-<link rel="shortcut icon" href="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
-<link rel="apple-touch-icon" sizes="512x512" href="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
+  <meta name="description" content="SkylPWorld is your ultimate online gaming hub! Play exciting free games directly in your browser, track your progress, and enjoy a fun, interactive experience. Start playing now!">
 
-<!-- Website Logo inside homepage -->
-<div style="text-align:center; margin: 20px 0;">
-  <img src="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png" alt="SkylPWorld Logo" style="width:80px; height:80px; border-radius:12px;">
-</div>
+  <meta property="og:title" content="SkylPWorld – Online Games Hub">
+  <meta property="og:description" content="Play exciting free games directly in your browser at SkylPWorld. Fun, interactive, and ready to play!">
+  <meta property="og:image" content="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
+  <meta property="og:url" content="https://bright.skyl.name.ng/">
+  <meta property="og:type" content="website">
+  
+  <link rel="icon" type="image/png" sizes="512x512" href="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png">
 
-  <script data-cookieconsent="ignore">    window.dataLayer = window.dataLayer || [];    function gtag() {        dataLayer.push(arguments);    }    gtag("consent", "default", {        ad_personalization: "denied",        ad_storage: "denied",        ad_user_data: "denied",        analytics_storage: "denied",        functionality_storage: "denied",        personalization_storage: "denied",        security_storage: "granted",        wait_for_update: 500,    });    gtag("set", "ads_data_redaction", true);    gtag("set", "url_passthrough", false);</script>
-
-<!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -40,79 +29,87 @@
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
-    .container { max-width:400px; margin:20px auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
-    #game-display-section { display: none; padding: 20px; }
     
-    /* Search Bar Styling */
-    .search-container { margin: 10px auto 25px auto; max-width: 600px; padding: 0 10px; }
-    #gameSearch { width: 100%; padding: 14px; border-radius: 30px; border: 2px solid #4b00ff; outline: none; font-size: 16px; box-sizing: border-box; }
+    .main-container { max-width:800px; margin:20px auto; padding:20px; }
+    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    
+    #user-content { display: none; }
+    
+    .featured-card { 
+      background: #fff; border-radius: 15px; padding: 15px; margin-bottom: 25px; 
+      border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; 
+    }
+    
+    .iframe-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
+    .iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-    /* Game Grid Styling */
-    #game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 1000px; margin: 0 auto; }
-    .game-card { background:#fff; border-radius:10px; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); border:1px solid #ddd; }
-    .game-card img { width:100%; border-radius:8px; aspect-ratio: 1/1; object-fit: cover; }
-    .game-card h3 { font-size:14px; margin:10px 0; height:36px; overflow:hidden; }
-    .play-btn { display:block; background:#4b00ff; color:#fff; text-decoration:none; padding:8px; border-radius:8px; font-weight:bold; font-size:12px; }
+    .heart-btn { float: right; font-size: 26px; cursor: pointer; color: #ccc; transition: 0.3s; }
+    .heart-btn.active { color: #ff3b3b; }
     
-    .pagination { margin: 30px 0; display: flex; justify-content: center; align-items: center; gap: 15px; }
-    button { padding:10px 20px; border:none; border-radius:8px; background:#4b00ff; color:#fff; font-weight:600; cursor:pointer; }
-    button:disabled { background:#ccc; }
-    button.logout { background:#ff3b3b; margin-top:20px; }
+    .play-btn { display:block; background:#4b00ff; color:#fff; text-decoration:none; padding:12px; border-radius:8px; font-weight:bold; text-align:center; margin-top:10px; }
+    
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
+    .logout-link { color: #ff3b3b; cursor: pointer; text-decoration: underline; font-size: 14px; }
   </style>
 </head>
 <body>
 
-
 <nav>
-  <a href="index.html">Home</a>
-  <a href="games.html" style="color:#ffcc00;">Games</a>
+  <a href="index.html" style="color:#ffcc00;">Home</a>
+  <a href="games.html">Games</a>
   <a href="dashboard.html">Dashboard</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
-  <a href="settings.html">Settings</a>
 </nav>
 
+<div class="main-container">
+  <img src="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png" alt="Logo" style="width:80px; border-radius:12px;">
+  <h5>Your home of games</h5>
 
-<h5>Your home of games</h5>
-  
-<div class="container" id="login-wall">
-  <h3>Members Access</h3>
-  <div id="googleButtonDiv"></div>
-  <p>Please log in to play games.</p>
-</div>
-
-<div id="game-display-section">
-
+  <div id="auth-placeholder" class="auth-card">
+      <h3>Members Access</h3>
+      <p>Please log in to play and save favorites.</p>
+      <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
   </div>
-  <button class="logout" onclick="logout()">Logout</button>
+
+  <div id="user-content">
+    <h2>🔥 Featured for You</h2>
+    
+    <div class="featured-card">
+      <span class="heart-btn" id="heart-hoops" onclick="toggleFavorite('hoops', 'Hoops and Fruits')">❤</span>
+      <h4>Hoops and Fruits</h4>
+      <div class="iframe-wrapper">
+        <iframe src="https://play.gamepix.com/hoops-and-fruits/embed?sid=56PD3" loading="lazy"></iframe>
+      </div>
+      <a href="games.html" class="play-btn">GO TO GAMES GALLERY</a>
+    </div>
+
+    <div class="featured-card">
+      <span class="heart-btn" id="heart-merge" onclick="toggleFavorite('merge', 'Merge Royal')">❤</span>
+      <h4>Merge Royal</h4>
+      <div class="iframe-wrapper">
+        <iframe src="https://play.gamepix.com/merge-royal/embed?sid=56PD3" loading="lazy"></iframe>
+      </div>
+      <a href="games.html" class="play-btn">GO TO GAMES GALLERY</a>
+    </div>
+
+    <p><span class="logout-link" onclick="logout()">Logout from Skyl P World</span></p>
+  </div>
 </div>
 
 <script id="CookieDeclaration" src="https://consent.cookiebot.com/b4cc32b2-5597-464c-b2ed-8fda5989fb00/cd.js" type="text/javascript" async></script>
-  
+
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 Skyl P World</p>
 </footer>
 
 <script>
-  const sid = "56PD3";
-  let currentPage = 1;
-  const maxPages = 40;
+  const AUTO_LOGOUT_TIME = 30 * 60 * 1000;
 
   function handleCredentialResponse(response) {
-    localStorage.setItem("isLoggedIn", "true");
-    checkAuth();
-  }
-
-  function checkAuth() {
-    if (localStorage.getItem("isLoggedIn") === "true") {
-      document.getElementById("login-wall").style.display = "none";
-      document.getElementById("game-display-section").style.display = "block";
-      fetchGames(currentPage);
-    } else {
-      initGoogleLogin();
-    }
+    localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+    location.reload();
   }
 
   function initGoogleLogin() {
@@ -123,72 +120,45 @@
     google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
   }
 
+  function checkAuth() {
+    const session = JSON.parse(localStorage.getItem("userSession"));
+    if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+      document.getElementById("auth-placeholder").style.display = "none";
+      document.getElementById("user-content").style.display = "block";
+      loadFavorites();
+    } else {
+      initGoogleLogin();
+    }
+  }
+
   function logout() {
-    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userSession");
     location.reload();
   }
 
-  async function fetchGames(page) {
-    const grid = document.getElementById('game-grid');
-    grid.innerHTML = "<p>Loading Games...</p>";
-    const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&category=action&pagination=24&page=${page}&t=${Date.now()}`;
-    
-    try {
-      const response = await fetch(url);
-      const result = await response.json();
-      const games = result.data || result;
-      if (Array.isArray(games) && games.length > 0) {
-        renderGames(games);
-        updatePaginationUI();
-      } else {
-        grid.innerHTML = "<p>No games found.</p>";
-      }
-    } catch (err) {
-      grid.innerHTML = "<p>Connection Error.</p>";
+  function toggleFavorite(id, name) {
+    const heart = document.getElementById('heart-' + id);
+    let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
+    if (heart.classList.contains('active')) {
+        heart.classList.remove('active');
+        favorites = favorites.filter(game => game.id !== id);
+    } else {
+        heart.classList.add('active');
+        favorites.push({ id: id, name: name });
+        gtag('event', 'favorite_game', { 'game_title': name });
     }
+    localStorage.setItem('myFavorites', JSON.stringify(favorites));
   }
 
-  function renderGames(games) {
-    const grid = document.getElementById('game-grid');
-    grid.innerHTML = "";
-    games.forEach(game => {
-      const thumb = game.thumbnailUrl.replace("http://", "https://");
-      const gUrl = game.url.replace("http://", "https://");
-      grid.innerHTML += `
-        <div class="game-card">
-          <img src="${thumb}" alt="${game.title}">
-          <h3>${game.title}</h3>
-          <a href="${gUrl}" target="_blank" class="play-btn">PLAY NOW</a>
-        </div>
-      `;
+  function loadFavorites() {
+    let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
+    favorites.forEach(game => {
+        const heart = document.getElementById('heart-' + game.id);
+        if (heart) heart.classList.add('active');
     });
-  }
-
-  function searchGames() {
-    let input = document.getElementById('gameSearch').value.toLowerCase();
-    let cards = document.getElementsByClassName('game-card');
-    for (let i = 0; i < cards.length; i++) {
-      let title = cards[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
-      cards[i].style.display = title.includes(input) ? "" : "none";
-    }
-  }
-
-  function changePage(step) {
-    document.getElementById('gameSearch').value = ""; 
-    currentPage += step;
-    document.getElementById("pageNumber").innerText = "Page " + currentPage;
-    fetchGames(currentPage);
-    window.scrollTo(0,0);
-  }
-
-  function updatePaginationUI() {
-    document.getElementById("prevBtn").disabled = (currentPage === 1);
-    document.getElementById("nextBtn").disabled = (currentPage === maxPages);
   }
 
   window.onload = checkAuth;
 </script>
-
 </body>
 </html>
-

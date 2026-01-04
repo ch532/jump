@@ -3,53 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Portal</title>
+    <title>Game Station</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 10px; }
-        h1 { text-align: center; color: #ffcc00; }
+        body { font-family: sans-serif; background: #121212; color: white; margin: 0; padding: 10px; }
+        h1 { text-align: center; color: #00d4ff; margin-top: 20px; }
+        
+        /* Mobile-first grid: 2 columns */
         #game-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns for mobile phones */
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             padding: 10px;
         }
+
         .game-card {
-            background: #2a2a2a;
-            border-radius: 8px;
-            padding: 10px;
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 8px;
             text-align: center;
-            border: 1px solid #444;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .game-card img { width: 100%; border-radius: 5px; height: auto; }
-        .game-card h3 { font-size: 14px; margin: 8px 0; height: 35px; overflow: hidden; }
+
+        .game-card img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .game-card h3 {
+            font-size: 13px;
+            margin: 8px 0;
+            height: 32px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
         .play-btn {
-            display: block;
-            background: #ffcc00;
-            color: black;
+            background: #00d4ff;
+            color: #000;
             text-decoration: none;
             padding: 8px;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
+            text-transform: uppercase;
         }
-        .controls { text-align: center; margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 15px; }
-        button { padding: 10px 15px; background: #444; color: white; border: none; border-radius: 5px; }
-        button:disabled { opacity: 0.3; }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        button:disabled { opacity: 0.2; }
+        #pageDisplay { font-weight: bold; color: #00d4ff; }
     </style>
 </head>
 <body>
 
     <h1>Top Games</h1>
-    <div id="game-grid">Loading Games...</div>
+    
+    <div id="game-grid">
+        <p style="grid-column: 1/-1; text-align: center;">Connecting to GamePix...</p>
+    </div>
 
     <div class="controls">
-        <button id="prevBtn" onclick="changePage(-1)">Prev</button>
+        <button id="prevBtn" onclick="changePage(-1)">PREV</button>
         <span id="pageDisplay">Page 1</span>
-        <button id="nextBtn" onclick="changePage(1)">Next</button>
+        <button id="nextBtn" onclick="changePage(1)">NEXT</button>
     </div>
 
     <script>
-        // 1. SECURITY CHECK
+        // 1. SECURITY REDIRECT
         if (localStorage.getItem("isLoggedIn") !== "true") {
             window.location.href = "index.html";
         }
@@ -60,24 +102,39 @@
 
         async function fetchGames(page) {
             const grid = document.getElementById('game-grid');
-            grid.innerHTML = "<h3>Loading...</h3>";
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Loading Games...</p>';
             
-            // Use a proxy-style URL or cache-buster to help mobile browsers load the feed
+            // Adding a timestamp (t=) prevents the phone from caching errors
             const url = `https://feeds.gamepix.com/v2/json?sid=${sid}&pagination=24&page=${page}&t=${Date.now()}`;
             
             try {
                 const response = await fetch(url);
                 const result = await response.json();
                 
-                if (result && result.data) {
-                    displayGames(result.data);
+                // Smart data detection: Check result.data or result itself
+                let gamesList = [];
+                if (result && result.data && Array.isArray(result.data)) {
+                    gamesList = result.data;
+                } else if (Array.isArray(result)) {
+                    gamesList = result;
+                }
+
+                // If no games found, try a simple fallback URL without page parameters
+                if (gamesList.length === 0 && page === 1) {
+                    const fallbackUrl = `https://feeds.gamepix.com/v2/json?sid=${sid}`;
+                    const fbResponse = await fetch(fallbackUrl);
+                    const fbResult = await fbResponse.json();
+                    gamesList = fbResult.data || fbResult;
+                }
+
+                if (gamesList && gamesList.length > 0) {
+                    displayGames(gamesList);
                     updateUI();
                 } else {
-                    grid.innerHTML = "<h3>No games found.</h3>";
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No games available for this SID right now.</p>';
                 }
             } catch (error) {
-                grid.innerHTML = "<h3>Error loading games. Try disabling Ad-Block.</h3>";
-                console.error(error);
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Error loading feed. Try disabling Ad-Blockers.</p>';
             }
         }
 
@@ -86,25 +143,25 @@
             grid.innerHTML = ""; 
 
             games.forEach(game => {
-                // Force HTTPS for mobile security
+                // Secure links for mobile
                 const thumb = game.thumbnailUrl.replace("http://", "https://");
                 const gameUrl = game.url.replace("http://", "https://");
 
-                const div = document.createElement('div');
-                div.className = 'game-card';
-                div.innerHTML = `
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
                     <img src="${thumb}" alt="${game.title}">
                     <h3>${game.title}</h3>
-                    <a href="${gameUrl}" target="_blank" class="play-btn">PLAY</a>
+                    <a href="${gameUrl}" target="_blank" class="play-btn">Play Now</a>
                 `;
-                grid.appendChild(div);
+                grid.appendChild(card);
             });
         }
 
         function changePage(step) {
             currentPage += step;
             fetchGames(currentPage);
-            window.scrollTo(0, 0);
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         function updateUI() {
@@ -113,8 +170,19 @@
             document.getElementById('nextBtn').disabled = (currentPage === maxPages);
         }
 
+        // Run on load
         window.onload = () => fetchGames(1);
     </script>
+
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="support.html">Support</a>
+  </p>
+  <p>© 2026 SkylPWorld</p>
+</footer>
+    
 </body>
 </html>
 

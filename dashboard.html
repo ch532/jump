@@ -14,23 +14,21 @@
     gtag('config', 'G-3XR1R2P73Y');
   </script>
 
-  <!-- Google Sign-In -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Enforce Login -->
+  <script src="login-check.js"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; transition: background 0.3s, color 0.3s; display:none; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; transition: background 0.3s, color 0.3s; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
-    main { max-width:1000px; margin:40px auto; padding:20px; text-align:center; }
-    .dashboard-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
-    .card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
-    .card h3 { margin:0 0 10px; color:#4b00ff; }
-    .card p { font-size:1rem; margin:0 0 10px; }
-    .card button { padding:10px 20px; margin:5px 0; border:none; border-radius:8px; background:#4b00ff; color:#fff; font-weight:600; cursor:pointer; }
-    .card button:hover { background:#ffcc00; color:#000; }
+    .container { max-width:1000px; margin:40px auto; padding:20px; }
+    h1 { text-align:center; margin-bottom:30px; }
+    .info-list { list-style:none; padding:0; }
+    .info-list li { background:#fff; margin:10px 0; padding:15px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); font-size:1.1rem; }
     footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
     footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
+    button.logout { background:#ff3b3b; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-left:10px; }
   </style>
 </head>
 <body>
@@ -41,64 +39,18 @@
   <a href="dashboard.html" class="active">Dashboard</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
-  <a href="index.html#logout">Logout</a>
+  <a href="index.html#settingsBox">Settings</a>
+  <button onclick="logout()" class="logout">Logout</button>
 </nav>
 
-<main>
-  <h1>Dashboard</h1>
-  <div id="dashboard-content" class="dashboard-cards">
-    <!-- Welcome card -->
-    <div class="card">
-      <h3>Welcome, <span id="userName"></span>!</h3>
-      <p>Glad to see you! Explore the games and enjoy your time.</p>
-    </div>
-
-    <!-- Quick links card -->
-    <div class="card">
-      <h3>Quick Links</h3>
-      <button onclick="window.location.href='games.html'">Play a Game</button>
-      <button onclick="window.location.href='support.html'">Contact Support</button>
-      <button onclick="window.location.href='index.html#settings'">Settings</button>
-    </div>
-
-    <!-- Dynamic Information card -->
-    <div class="card">
-      <h3>Information</h3>
-      <p id="infoMessage">Loading information...</p>
-    </div>
-  </div>
-</main>
-
-<script>
-  // Google login check
-  window.onload = function() {
-    const token = localStorage.getItem('googleUser');
-    if(!token){
-      // Not logged in → redirect to homepage
-      window.location.href = "index.html";
-    } else {
-      // Show content
-      document.body.style.display = "block";
-
-      // Display user name if stored
-      const userNameSpan = document.getElementById("userName");
-      const profile = JSON.parse(token);
-      userNameSpan.textContent = profile.name || "Player";
-    }
-
-    // Fetch dynamic information
-    fetch('info.json')
-      .then(response => response.json())
-      .then(data => {
-        const infoMsg = document.getElementById('infoMessage');
-        infoMsg.textContent = data.message || "No information available at the moment.";
-      })
-      .catch(err => {
-        console.error("Failed to load information:", err);
-        document.getElementById('infoMessage').textContent = "Failed to load information.";
-      });
-  }
-</script>
+<div class="container">
+  <h1>Dashboard – Information</h1>
+  <ul class="info-list" id="infoList">
+    <li>Welcome to your dashboard! Updates and information will appear here.</li>
+    <li>Latest news about games and features will be displayed here.</li>
+    <li>Any announcements or important messages for you will show here.</li>
+  </ul>
+</div>
 
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
@@ -108,6 +60,26 @@
   </p>
   <p>© 2026 SkylPWorld</p>
 </footer>
+
+<script>
+  // Apply theme if previously set
+  const theme = localStorage.getItem('theme') || 'light';
+  if(theme === 'dark'){
+    document.body.style.background = "#222";
+    document.body.style.color = "#fff";
+  }
+
+  // Logout function
+  function logout(){
+    localStorage.removeItem("googleToken");
+    alert("You have been logged out!");
+    window.location.href = "index.html";
+  }
+
+  // Example: dynamically update information list in future
+  // const infoList = document.getElementById("infoList");
+  // infoList.innerHTML += "<li>New information item added dynamically!</li>";
+</script>
 
 </body>
 </html>

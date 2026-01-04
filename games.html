@@ -2,89 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Games</title>
+  <title>SkylPWorld – Games</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
-<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b4cc32b2-5597-464c-b2ed-8fda5989fb00" type="text/javascript" async></script>
-  
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3XR1R2P73Y');
+  </script>
+
   <style>
-    body { font-family: Arial, sans-serif; padding:20px; background:#f5f5f5; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding:50px;}
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
-    .game-container { margin:20px 0; text-align:center; }
-    iframe { width:100%; height:500px; border:2px solid #ccc; border-radius:12px; }
-    .stat { margin-top:10px; font-weight:bold; color:green; }
-    body { display: none; } /* hide content until login check */
+    .container { max-width:1000px; margin:40px auto; padding:30px; background:#fff; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+    iframe { width:100%; height:500px; border:none; border-radius:12px; margin-top:20px;}
   </style>
 </head>
 <body>
 
 <nav>
-  <a href="dashboard.html">Dashboard</a>
+  <a href="index.html">Home</a>
   <a href="games.html" class="active">Games</a>
+  <a href="dashboard.html">Dashboard</a>
   <a href="support.html">Support</a>
-  <a href="index.html" onclick="logout()">Logout</a>
+  <a href="privacy.html">Privacy Policy</a>
 </nav>
 
-<h1>Games</h1>
-<p>Play games below. Plays are tracked automatically.</p>
+<div class="container">
+  <h2>Games</h2>
+  <p>Play games here:</p>
 
-<div class="game-container">
-  <h3>Game 1</h3>
-  <iframe id="game1" src="https://example.com/game1" allowfullscreen></iframe>
-  <div class="stat" id="stat-game1"></div>
-</div>
-
-<div class="game-container">
-  <h3>Game 2</h3>
-  <iframe id="game2" src="https://example.com/game2" allowfullscreen></iframe>
-  <div class="stat" id="stat-game2"></div>
+  <!-- Example embedded game -->
+  <iframe src="https://example.com/your-game" title="Embedded Game"></iframe>
 </div>
 
 <script>
-  Parse.initialize(
-    "jI6Yyy4fA4EwHgkaLn50oUQImgxCUB4C",
-    "4clh951SJa1TWPve5zlPwoUQ82Go0BPbMaMxBvwh"
-  );
-  Parse.serverURL = "https://parseapi.back4app.com/";
-
-// Check if user is logged in
-    Parse.User.currentAsync().then((user) => {
-      if(user){
-        // User is logged in → show page
-        document.body.style.display = "block";
-      } else {
-        // User not logged in → redirect smoothly
-        alert("You must log in first!");
-        location.replace("index.html");
-      }
-    });
-
-  async function logout(){
-    await Parse.User.logOut();
-    location.href="index.html";
+  // Enforce login
+  if(!sessionStorage.getItem('loggedIn')){
+    alert("Please login first!");
+    window.location.href = "index.html";
   }
 
-  // Track game play automatically
-  async function trackGame(gameTitle, statElementId){
-    try {
-      const GamePlay = Parse.Object.extend("GamePlay");
-      const play = new GamePlay();
-      play.set("gameTitle", gameTitle);
-      play.set("user", currentUser.get("username"));
-      play.set("playedAt", new Date());
-      await play.save();
-      document.getElementById(statElementId).innerText =
-        "Play recorded at " + new Date().toLocaleTimeString();
-    } catch(e) {
-      console.error("Error tracking game:", e.message);
-    }
-  }
-
-  // Use mouseenter to track iframe interaction reliably
-  document.getElementById("game1").addEventListener("mouseenter", ()=> trackGame("Game 1","stat-game1"));
-  document.getElementById("game2").addEventListener("mouseenter", ()=> trackGame("Game 2","stat-game2"));
+  // Example GA event tracking for iframe click
+  const iframe = document.querySelector('iframe');
+  iframe.addEventListener('load', ()=>{
+    gtag('event', 'game_loaded', { 'event_category': 'Games', 'event_label': iframe.src });
+  });
 </script>
 
 <footer>
@@ -93,8 +61,7 @@
     <a href="privacy.html">Privacy Policy</a> |
     <a href="support.html">Support</a>
   </p>
-  <p>© 2026 Skyl P World</p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
-
 </body>
 </html>

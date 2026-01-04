@@ -15,6 +15,7 @@
     .game-container { margin:20px 0; text-align:center; }
     iframe { width:100%; height:500px; border:2px solid #ccc; border-radius:12px; }
     .stat { margin-top:10px; font-weight:bold; color:green; }
+    body { display: none; } /* hide content until login check */
   </style>
 </head>
 <body>
@@ -48,17 +49,17 @@
   );
   Parse.serverURL = "https://parseapi.back4app.com/";
 
-// Async check for current user
-  Parse.User.currentAsync().then((currentUser) => {
-    if (!currentUser) {
-      // User is not logged in → redirect
-      window.location.href = "index.html";
-    }
-    // If currentUser exists, do nothing → page loads normally
-  }).catch((err) => {
-    console.error("Error checking user session:", err);
-    window.location.href = "index.html";
-  });
+// Check if user is logged in
+    Parse.User.currentAsync().then((user) => {
+      if(user){
+        // User is logged in → show page
+        document.body.style.display = "block";
+      } else {
+        // User not logged in → redirect smoothly
+        alert("You must log in first!");
+        location.replace("index.html");
+      }
+    });
 
   async function logout(){
     await Parse.User.logOut();

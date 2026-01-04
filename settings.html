@@ -118,6 +118,47 @@
   <a href="settings.html" class="active">Settings</a>
 </nav>
 
+<div id="auth-placeholder"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    // 1. The function that hides the button and wall
+    function handleCredentialResponse(response) {
+        console.log("Logged in successfully");
+        localStorage.setItem("isLoggedIn", "true"); // Save state
+        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
+    }
+
+    // 2. The function that sets up the Google Button
+    function initGoogleLogin() {
+        google.accounts.id.initialize({
+            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("googleButtonDiv"),
+            { theme: "outline", size: "large" }
+        );
+    }
+
+    // 3. Logic to decide if we show the wall or not
+    window.onload = function () {
+        if (localStorage.getItem("isLoggedIn") === "true") {
+            // Already logged in? Do nothing (content stays visible)
+            console.log("Access granted via session");
+        } else {
+            // Not logged in? Fetch the wall file
+            fetch('login-wall.html')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById("auth-placeholder").innerHTML = data;
+                    initGoogleLogin(); // Turn on the Google button inside the wall
+                });
+        }
+    };
+</script>
+
+  
 <div class="container">
   <h2>Account Settings</h2>
 

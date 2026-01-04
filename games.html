@@ -110,15 +110,15 @@
     const data = await res.json();
     gamesContainer.innerHTML = '';
     data.items.forEach(game => {
-      const div = document.createElement('div');
-      div.className = 'game-card';
-      div.innerHTML = `
-        <img src="${game.image || ''}" alt="${game.name}">
-        <h4>${game.name}</h4>
-        <a href="${game.url}" target="_blank">Play</a>
-      `;
-      gamesContainer.appendChild(div);
-    });
+  const div = document.createElement('div');
+  div.className = 'game-card';
+  div.innerHTML = `
+    <img src="${game.thumbnail || ''}" alt="${game.title}">
+    <h4>${game.title}</h4>
+    <a href="https://gamepix.com/games/${game.slug}" target="_blank">Play</a>
+  `;
+  gamesContainer.appendChild(div);
+});
   }
 
   document.getElementById("prevPage").onclick = () => {

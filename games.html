@@ -7,93 +7,98 @@
   <style>
     body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f5f5f5; }
     h1 { text-align:center; margin-bottom:30px; }
-    #gamesContainer { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
-    .game-card { background:#fff; padding:15px; border-radius:12px; width:200px; text-align:center; box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+    #gamesContainer { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; min-height:300px; }
+    .game-card { background:#fff; padding:15px; border-radius:12px; width:180px; text-align:center; box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+    .game-card img { width:100%; height:120px; object-fit:cover; border-radius:8px; }
     .game-card button { margin-top:10px; padding:8px 12px; border:none; border-radius:8px; background:#4b00ff; color:#fff; cursor:pointer; font-weight:600;}
     .game-card button:hover { background:#2f00b3; }
+    .pagination { text-align:center; margin-top:20px; }
+    .pagination button { padding:8px 15px; margin:0 5px; border:none; border-radius:8px; background:#4b00ff; color:#fff; cursor:pointer; font-weight:600; }
+    .pagination button:hover { background:#2f00b3; }
+    .pagination button:disabled { background:#999; cursor:not-allowed; }
   </style>
 </head>
 <body>
-
-<div id="auth-placeholder"></div>
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-    // 1. The function that hides the button and wall
-    function handleCredentialResponse(response) {
-        console.log("Logged in successfully");
-        localStorage.setItem("isLoggedIn", "true"); // Save state
-        document.getElementById("auth-placeholder").innerHTML = ""; // Remove the wall
-    }
-
-    // 2. The function that sets up the Google Button
-    function initGoogleLogin() {
-        google.accounts.id.initialize({
-            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("googleButtonDiv"),
-            { theme: "outline", size: "large" }
-        );
-    }
-
-    // 3. Logic to decide if we show the wall or not
-    window.onload = function () {
-        if (localStorage.getItem("isLoggedIn") === "true") {
-            // Already logged in? Do nothing (content stays visible)
-            console.log("Access granted via session");
-        } else {
-            // Not logged in? Fetch the wall file
-            fetch('login-wall.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById("auth-placeholder").innerHTML = data;
-                    initGoogleLogin(); // Turn on the Google button inside the wall
-                });
-        }
-    };
-</script>
-
-  
   <h1>SkylPWorld Games</h1>
   <div id="gamesContainer">Loading games...</div>
 
+  <div class="pagination">
+    <button id="prevBtn" disabled>Previous</button>
+    <span id="pageNum">Page 1</span>
+    <button id="nextBtn">Next</button>
+  </div>
+
   <script>
     const gamesContainer = document.getElementById("gamesContainer");
-    gamesContainer.innerHTML = "Loading games...";
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const pageNum = document.getElementById("pageNum");
 
-    async function fetchGames() {
-      gamesContainer.innerHTML = "";
+    let currentPage = 1;
+    const totalPages = 10; // change if you want more
+
+    async function loadGames(page) {
+      gamesContainer.innerHTML = "Loading games...";
       try {
-        for(let page=1; page<=10; page++){
-          const res = await fetch(`https://feeds.gamepix.com/v2/json?sid=2R229&pagination=24&page=${page}`);
-          const data = await res.json();
-          
-          const games = data.items || data.games || [];
-          games.forEach(game => {
-            const card = document.createElement("div");
-            card.className = "game-card";
-
-            const title = document.createElement("h3");
-            title.innerText = game.title || "Untitled Game";
-            card.appendChild(title);
-
-            const btn = document.createElement("button");
-            btn.innerText = "Play";
-            btn.onclick = () => window.open(game.url, "_blank");
-            card.appendChild(btn);
-
-            gamesContainer.appendChild(card);
-          });
+        const res = await fetch(`https://feeds.gamepix.com/v2/json?sid=2R229&pagination=24&page=${page}`);
+        const data = await res.json();
+        const games = data.items || data.games || [];
+        
+        if(games.length === 0){
+          gamesContainer.innerHTML = "No games available.";
+          return;
         }
+
+        gamesContainer.innerHTML = ""; // clear previous games
+
+        games.forEach(game => {
+          const card = document.createElement("div");
+          card.className = "game-card";
+
+          const img = document.createElement("img");
+          img.src = game.image || game.thumbnail || ""; // show icon/logo
+          img.alt = game.title || "Game";
+          card.appendChild(img);
+
+          const title = document.createElement("h3");
+          title.innerText = game.title || "Untitled Game";
+          card.appendChild(title);
+
+          const btn = document.createElement("button");
+          btn.innerText = "Play";
+          btn.onclick = () => window.open(game.url, "_blank");
+          card.appendChild(btn);
+
+          gamesContainer.appendChild(card);
+        });
+
+        // update pagination buttons
+        pageNum.innerText = `Page ${currentPage}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+
       } catch(err){
         console.error("Error fetching games:", err);
         gamesContainer.innerHTML = "Failed to load games. Try again later.";
       }
     }
 
-    fetchGames();
+    // Pagination buttons
+    prevBtn.onclick = () => {
+      if(currentPage > 1){
+        currentPage--;
+        loadGames(currentPage);
+      }
+    };
+    nextBtn.onclick = () => {
+      if(currentPage < totalPages){
+        currentPage++;
+        loadGames(currentPage);
+      }
+    };
+
+    // Initial load
+    loadGames(currentPage);
   </script>
 </body>
 </html>

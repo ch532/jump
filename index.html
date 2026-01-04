@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
-
   <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b4cc32b2-5597-464c-b2ed-8fda5989fb00" type="text/javascript" async></script>
 
   <style>
@@ -15,8 +14,7 @@
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
     .container { max-width:400px; margin:40px auto; background:#fff; padding:30px; border-radius:12px; text-align:center; }
-    input, button, select, label { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
-    button { border:none; font-weight:bold; cursor:pointer; }
+    button { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:none; font-weight:bold; cursor:pointer; }
     .fb { background:#1877f2; color:#fff; }
     .logout { background:#ff3b3b; color:#fff; }
     footer { text-align:center; background:#222; color:#fff; padding:20px; margin-top:40px; }
@@ -31,7 +29,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-3XR1R2P73Y');
 </script>
   
@@ -43,36 +40,19 @@
   <a href="privacy.html">Privacy Policy</a>
 </nav>
 
-<!-- AUTH CONTAINER -->
+<!-- FACEBOOK LOGIN -->
 <div class="container" id="authBox">
   <h2>Welcome to SkylPWorld</h2>
-
-  <input id="mail" placeholder="Mail (Gmail / Yahoo)">
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
-
-  <button id="signupBtn">Sign Up</button>
-  <button id="loginBtn">Log In</button>
-
   <button id="fbLogin" class="fb">Continue with Facebook</button>
-
-  <!-- FB Login Button Alternative (optional) -->
-  <!--
-  <fb:login-button 
-    config_id="2316598995528367" 
-    scope="email" 
-    onlogin="checkLoginState();">
-  </fb:login-button>
-  -->
 </div>
 
-<!-- LOGOUT CONTAINER -->
+<!-- LOGOUT -->
 <div class="container" id="logoutBox" style="display:none;">
   <h3>You are logged in</h3>
   <button id="logoutBtn" class="logout">Logout</button>
 </div>
 
-<!-- SETTINGS SECTION -->
+<!-- SETTINGS -->
 <div class="container" id="settingsBox" style="display:none;">
   <h3>Settings</h3>
   <p>Update your account info:</p>
@@ -137,12 +117,6 @@
   const logoutBox = document.getElementById("logoutBox");
   const settingsBox = document.getElementById("settingsBox");
 
-  const mail = document.getElementById("mail");
-  const username = document.getElementById("username");
-  const password = document.getElementById("password");
-
-  const signupBtn = document.getElementById("signupBtn");
-  const loginBtn = document.getElementById("loginBtn");
   const fbLogin = document.getElementById("fbLogin");
   const logoutBtn = document.getElementById("logoutBtn");
 
@@ -166,36 +140,15 @@
     themeSelect.value = currentUser.get("theme") || "light";
     applyTheme(themeSelect.value);
 
-    loginType.innerText = "Login Type: " + (currentUser.get("authData") && currentUser.get("authData").facebook ? "Facebook" : "Email");
+    loginType.innerText = "Login Type: Facebook";
   }
 
-  // Signup
-  signupBtn.onclick = async ()=>{
-    const user = new Parse.User();
-    user.set("username", username.value);
-    user.set("password", password.value);
-    user.set("email", mail.value);
-    try{
-      await user.signUp();
-      location.href="dashboard.html";
-    }catch(e){ alert("Signup failed: "+e.message); }
-  };
-
-  // Login
-  loginBtn.onclick = async ()=>{
-    try{
-      await Parse.User.logIn(username.value,password.value);
-      location.href="dashboard.html";
-    }catch(e){ alert("Login failed: "+e.message); }
-  };
-
-  // Facebook Login using Config ID
+  // Facebook Login
   fbLogin.onclick = function() {
     FB.login(function(response) {
-      console.log(response);
       if (response.authResponse) {
         Parse.FacebookUtils.logIn(null, {scope: 'email'}).then((user) => {
-          alert("Logged in with Facebook: " + user.get("username"));
+          alert("Logged in with Facebook: " + (user.get("username") || "Unknown"));
           location.href="dashboard.html";
         }).catch((err) => {
           alert("Facebook login failed: " + err.message);
@@ -250,8 +203,8 @@
     <a href="privacy.html">Privacy Policy</a> |
     <a href="support.html">Support</a>
   </p>
-  <p>© 2026 SkylPWorld</p>
+  <p>© 2026 Skyl P World</p>
 </footer>
 
 </body>
-</html> 
+</html>

@@ -5,6 +5,15 @@
   <title>SkylPWorld – Online Games Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0",
+    });
+  });
+</script>
   
   <meta name="description" content="SkylPWorld is your ultimate online gaming hub! Play exciting free games directly in your browser, track your progress, and enjoy a fun, interactive experience. Start playing now!">
 

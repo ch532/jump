@@ -1,3 +1,9 @@
+google.com, pub-4829415926881290, DIRECT, f08c47fec0942fa0
+rubiconproject.com, 17960, DIRECT, 0bfd66d529a55807
+pubmatic.com, 156439, DIRECT, 5d62403b186f2ace
+openx.com, 540224251, DIRECT, 6a698e2ec38604c6
+appnexus.com, 9382, DIRECT, f5ab79cb980f11d1
+
 #gpx-property-56PD3
 #gpx-last-updated-2024-11-21
 #gpx-reviq

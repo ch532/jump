@@ -142,6 +142,48 @@
 
 <script id="CookieDeclaration" src="https://consent.cookiebot.com/b4cc32b2-5597-464c-b2ed-8fda5989fb00/cd.js" type="text/javascript" async></script>
 
+<!-- Cookie Consent Banner -->
+<div id="cookie-consent" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right:0;
+    background: #222;
+    color: #fff;
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 14px;
+    z-index: 9999;
+    display: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+">
+    This website uses cookies to ensure you get the best experience. 
+    <button id="accept-cookies" style="
+        margin-left: 15px;
+        padding: 6px 12px;
+        background: #4b00ff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    ">Accept</button>
+</div>
+
+<script>
+  // Check if user has already accepted cookies
+  if (!localStorage.getItem("cookiesAccepted")) {
+    document.getElementById("cookie-consent").style.display = "block";
+  }
+
+  // Accept button
+  document.getElementById("accept-cookies").onclick = function() {
+    localStorage.setItem("cookiesAccepted", "true");
+    document.getElementById("cookie-consent").style.display = "none";
+  }
+</script>
+  
 <!-- Footer -->
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>

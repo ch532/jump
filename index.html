@@ -2,29 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SkylPWorld – Online Games Hub</title>
+  <title>SkylPWorld – Knowledge Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0",
-    });
-  });
-</script>
   
-  <meta name="description" content="SkylPWorld is your ultimate online gaming hub! Play exciting free games directly in your browser, track your progress, and enjoy a fun, interactive experience. Start playing now!">
-
-  <meta property="og:title" content="SkylPWorld – Online Games Hub">
-  <meta property="og:description" content="Play exciting free games directly in your browser at SkylPWorld. Fun, interactive, and ready to play!">
+  <!-- Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <!-- OneSignal Push Notifications -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0",
+      });
+    });
+  </script>
+  
+  <!-- SEO / Social -->
+  <meta name="description" content="SkylPWorld is your online knowledge hub! Explore world news, articles, dictionaries, encyclopaedia entries, and more. Learn and grow your knowledge daily.">
+  <meta property="og:title" content="SkylPWorld – Knowledge Hub">
+  <meta property="og:description" content="Explore news, articles, dictionaries, and encyclopaedia content at SkylPWorld. Stay informed and expand your knowledge.">
   <meta property="og:image" content="Picture/skylpworld256x256.png">
   <meta property="og:url" content="https://skyl.name.ng/">
   <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
   
-<link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
-  
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -32,91 +38,122 @@
     gtag('js', new Date());
     gtag('config', 'G-3XR1R2P73Y');
   </script>
+
+  <!-- Yandex Maps -->
+  <script src="https://api-maps.yandex.com/2.1/?lang=en_US&apikey=128d9a3e-ecd0-4651-8008-069f089206f4" type="text/javascript"></script>
   
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
-    
-    .main-container { max-width:800px; margin:20px auto; padding:20px; }
-    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    
-    #user-content { display: none; }
-    
-    .featured-card { 
-      background: #fff; border-radius: 15px; padding: 15px; margin-bottom: 25px; 
-      border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; 
-    }
-    
-    .iframe-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; background: #000; }
-    .iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-    .heart-btn { float: right; font-size: 26px; cursor: pointer; color: #ccc; transition: 0.3s; }
-    .heart-btn.active { color: #ff3b3b; }
-    
-    .play-btn { display:block; background:#4b00ff; color:#fff; text-decoration:none; padding:12px; border-radius:8px; font-weight:bold; text-align:center; margin-top:10px; }
-    
+    .main-container { max-width:900px; margin:20px auto; padding:20px; }
+    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+
+    #user-content { display: none; }
+
+    .content-card { 
+      background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 25px; 
+      border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; 
+      max-width: 800px; margin-left:auto; margin-right:auto;
+    }
+
+    .content-card h4 { margin-top:0; color:#333; }
+    .content-card p { line-height:1.6; color:#555; }
+    .content-card a { text-decoration:none; color:#4b00ff; }
+
+    input[type=text] { padding:10px; width:60%; font-size:16px; }
+    button { padding:10px 15px; font-size:16px; margin-left:5px; cursor:pointer; }
+
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
     .logout-link { color: #ff3b3b; cursor: pointer; text-decoration: underline; font-size: 14px; }
+
+    /* Google Search Styling */
+    gcse\:search { max-width: 800px; margin: 20px auto; display: block; }
+
+    /* Yandex Map Styling */
+    #map { width: 100%; height: 500px; margin: 20px 0; }
   </style>
 </head>
 <body>
 
+<!-- Navigation -->
 <nav>
   <a href="index.html" style="color:#ffcc00;">Home</a>
-  <a href="games.html">Games</a>
-  <a href="dashboard.html">Dashboard</a>
+  <a href="page1.html">Page 1</a>
+  <a href="page2.html">Page 2</a>
+  <a href="page3.html">Page 3</a>
+  <a href="page4.html">Page 4</a>
+  <a href="page5.html">Page 5</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
+<a href="about.html" style="color:#ffcc00;">About</a>
 </nav>
 
+<!-- Google Translate -->
+<div id="google_translate_element" style="margin: 10px auto; text-align: center;"></div>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<!-- Main Logo & Header -->
 <div class="main-container">
   <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:80px; border-radius:12px;">
-  <h5>Your home of games</h5>
+  <h5>Your knowledge hub online</h5>
 </div>
 
-  <div id="auth-placeholder" class="auth-card">
-      <h3>Members Access</h3>
-      <p>Please log in to play and save favorites.</p>
-      <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
+<!-- Login Section -->
+<div id="auth-placeholder" class="auth-card">
+  <h3>Members Access</h3>
+  <p>Please log in to explore world news, articles, dictionaries, maps, and more.</p>
+  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
+</div>
+
+<!-- User Content Section -->
+<div id="user-content">
+
+  <!-- World News Section -->
+  <div id="news-section">
+    <h2>📰 Latest World News</h2>
+    <div id="news-list"></div>
   </div>
 
-  <div id="user-content">
-    <h2>🔥 Featured for You</h2>
-    
-    <div class="featured-card">
-      <span class="heart-btn" id="heart-hoops" onclick="toggleFavorite('hoops', 'Hoops and Fruits')">❤</span>
-      <h4>Hoops and Fruits</h4>
-      <div class="iframe-wrapper">
-        <iframe src="https://play.gamepix.com/hoops-and-fruits/embed?sid=56PD3" loading="lazy"></iframe>
-      </div>
-      <a href="games.html" class="play-btn">GO TO GAMES GALLERY</a>
-    </div>
-
-    <div class="featured-card">
-      <span class="heart-btn" id="heart-merge" onclick="toggleFavorite('merge', 'Merge Royal')">❤</span>
-      <h4>Merge Royal</h4>
-      <div class="iframe-wrapper">
-        <iframe src="https://play.gamepix.com/merge-royal/embed?sid=56PD3" loading="lazy"></iframe>
-      </div>
-      <a href="games.html" class="play-btn">GO TO GAMES GALLERY</a>
-    </div>
-
-    <p><span class="logout-link" onclick="logout()">Logout from Skyl P World</span></p>
+  <!-- Dictionary/Thesaurus Section -->
+  <div id="dictionary-section" style="margin-top:40px;">
+    <h2>📖 Dictionary / Thesaurus</h2>
+    <input type="text" id="wordInput" placeholder="Type a word">
+    <button onclick="lookupWord()">Search</button>
+    <div id="wordResult" style="margin-top:20px;"></div>
   </div>
+
+  <!-- Google Web Search Section -->
+  <div class="main-container" style="margin-top:40px;">
+    <h2>🔍 Search the Web</h2>
+    <div class="gcse-search"></div>
+  </div>
+  <script async src="https://cse.google.com/cse.js?cx=0367484b4c806434c"></script>
+
+  <!-- Yandex World Map Section -->
+  <div id="map"></div>
+
 </div>
 
 <script id="CookieDeclaration" src="https://consent.cookiebot.com/b4cc32b2-5597-464c-b2ed-8fda5989fb00/cd.js" type="text/javascript" async></script>
 
+<!-- Footer -->
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>© 2026 Skyl P World</p>
+  <p>© 2026 SkylPWorld</p>
 </footer>
 
 <script>
   const AUTO_LOGOUT_TIME = 30 * 60 * 1000;
 
+  // --- Google Login ---
   function handleCredentialResponse(response) {
     localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
     location.reload();
@@ -135,7 +172,8 @@
     if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
       document.getElementById("auth-placeholder").style.display = "none";
       document.getElementById("user-content").style.display = "block";
-      loadFavorites();
+      loadNews();
+      initMap();
     } else {
       initGoogleLogin();
     }
@@ -146,28 +184,114 @@
     location.reload();
   }
 
-  function toggleFavorite(id, name) {
-    const heart = document.getElementById('heart-' + id);
-    let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
-    if (heart.classList.contains('active')) {
-        heart.classList.remove('active');
-        favorites = favorites.filter(game => game.id !== id);
-    } else {
-        heart.classList.add('active');
-        favorites.push({ id: id, name: name });
-        gtag('event', 'favorite_game', { 'game_title': name });
+  // --- Load World News ---
+  const NEWS_API_KEY = "90ba2a81414d40b9aeb8854f544532cf";
+  async function loadNews() {
+    const NEWS_API_URL = `https://newsapi.org/v2/top-headlines?language=en&pageSize=5&apiKey=${NEWS_API_KEY}`;
+    const newsList = document.getElementById('news-list');
+    newsList.innerHTML = "Loading...";
+    try {
+      const res = await fetch(NEWS_API_URL);
+      const data = await res.json();
+      if (!data.articles || data.articles.length === 0) {
+        newsList.innerHTML = "<p>No news found.</p>";
+        return;
+      }
+      newsList.innerHTML = data.articles.map(a => `
+        <div class="content-card">
+          <h4>${a.title}</h4>
+          <p>${a.description || ''}</p>
+          <a href="${a.url}" target="_blank">Read full article</a>
+        </div>
+      `).join('');
+    } catch(e) {
+      console.error(e);
+      newsList.innerHTML = "<p>Failed to load news.</p>";
     }
-    localStorage.setItem('myFavorites', JSON.stringify(favorites));
   }
 
-  function loadFavorites() {
-    let favorites = JSON.parse(localStorage.getItem('myFavorites')) || [];
-    favorites.forEach(game => {
-        const heart = document.getElementById('heart-' + game.id);
-        if (heart) heart.classList.add('active');
+  // --- Dictionary/Thesaurus Lookup ---
+  const DICT_API_KEY = "b603a6c7-2d98-4162-befb-33458a20aff5";
+  async function lookupWord() {
+    const word = document.getElementById('wordInput').value.trim();
+    const resultDiv = document.getElementById('wordResult');
+    if (!word) { resultDiv.innerHTML = "<p>Please enter a word.</p>"; return; }
+    resultDiv.innerHTML = "Loading...";
+    try {
+      const res = await fetch(`https://www.dictionaryapi.com/api/v3/references/ithesaurus/json/${word}?key=${DICT_API_KEY}`);
+      const data = await res.json();
+      if (!data || data.length === 0) { resultDiv.innerHTML = "<p>No entries found.</p>"; return; }
+      if (typeof data[0] === 'string') { 
+        resultDiv.innerHTML = "<p>Word not found. Did you mean: " + data.slice(0,5).join(', ') + "?</p>"; 
+        return; 
+      }
+      const entry = data[0];
+      const definition = entry.shortdef ? entry.shortdef.join('; ') : "No definition found.";
+      const synonyms = entry.meta.syns ? entry.meta.syns.flat().join(', ') : "No synonyms found.";
+      resultDiv.innerHTML = `
+        <div class="content-card">
+          <h4>${entry.hwi.hw} (${entry.fl})</h4>
+          <p><strong>Definition:</strong> ${definition}</p>
+          <p><strong>Synonyms:</strong> ${synonyms}</p>
+        </div>
+      `;
+    } catch(err) {
+      console.error(err);
+      resultDiv.innerHTML = "<p>Error fetching data. Try again later.</p>";
+    }
+  }
+
+  // --- Yandex Map Initialization ---
+  function initMap() {
+    ymaps.ready(function() {
+      var myMap = new ymaps.Map("map", {
+          center: [0, 0],
+          zoom: 1,
+          controls: ['zoomControl', 'routeButtonControl']
+      });
+
+      // Business placemark
+      var myPlacemark = new ymaps.Placemark([9.0, 7.5], {
+          balloonContentHeader: 'Connectgold Enterprise',
+          balloonContentBody: `
+              Software development/web design<br>
+              Address: 2 Near Beulah International School, Kurudu, Abuja, FCT, Nigeria<br>
+              Phone: +2347061740924<br>
+              Website: <a href="https://connectgold.sbs" target="_blank">connectgold.sbs</a><br>
+              Mail: <a href="mailto:chykedegreat@gmail.com">chykedegreat@gmail.com</a>
+          `
+      }, { preset: 'islands#blueDotIcon' });
+
+      myMap.geoObjects.add(myPlacemark);
+      myPlacemark.events.add('click', function () { myPlacemark.balloon.open(); });
+
+      // Predefined example route
+      ymaps.route([
+          [9.0820, 8.6753],
+          [40.7128, -74.0060]
+      ], { mapStateAutoApply: true }).then(function(route) {
+          myMap.geoObjects.add(route);
+      });
+
+      // Interactive route by user clicks
+      var routePoints = [];
+      var userRoute;
+      myMap.events.add('click', function (e) {
+          var coords = e.get('coords');
+          routePoints.push(coords);
+          if (routePoints.length === 2) {
+              ymaps.route(routePoints, { mapStateAutoApply: true }).then(function(route) {
+                  if (userRoute) myMap.geoObjects.remove(userRoute);
+                  userRoute = route;
+                  myMap.geoObjects.add(userRoute);
+                  routePoints = [];
+              });
+          }
+      });
     });
   }
 
+  // --- Initialize ---
   window.onload = checkAuth;
 </script>
 </body>

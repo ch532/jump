@@ -65,37 +65,21 @@
 
 <!-- User Content -->
 <div id="user-content">
-<div class="main-container">
-  <h2>📝 Articles</h2>
+  <div class="main-container">
+    <h2>📝 Articles</h2>
 
-<div style="margin-bottom:20px; text-align:center;">
-  <button id="refresh-news-btn" style="padding:10px 20px; font-weight:bold; cursor:pointer; background:#4b00ff; color:#fff; border:none; border-radius:8px;">
-    🔄 Refresh News
-  </button>
-</div>
+    <h3 class="section-title">Sports (Wikipedia)</h3>
+    <div id="articles-sports" class="articles-container">Loading...</div>
 
-<script>
-document.getElementById("refresh-news-btn").onclick = () => {
-  loadNews();
-  console.log("News manually refreshed at", new Date().toLocaleTimeString());
-};
-</script>
-  
-  <!-- Wikipedia sections -->
-  <h3 class="section-title">Sports (Wikipedia)</h3>
-  <div id="articles-sports" class="articles-container">Loading...</div>
+    <h3 class="section-title">Health (Wikipedia)</h3>
+    <div id="articles-health" class="articles-container">Loading...</div>
 
-  <h3 class="section-title">Health (Wikipedia)</h3>
-  <div id="articles-health" class="articles-container">Loading...</div>
+    <h3 class="section-title">Business (Wikipedia)</h3>
+    <div id="articles-business" class="articles-container">Loading...</div>
 
-  <h3 class="section-title">Business (Wikipedia)</h3>
-  <div id="articles-business" class="articles-container">Loading...</div>
-
-  <!-- Merged Technology / Software Technology section -->
-  <h3 class="section-title">Technology & Software (Wikipedia + Dev.to)</h3>
-  <div id="articles-tech-software" class="articles-container">Loading...</div>
-
-</div>
+    <h3 class="section-title">Technology & Software (Wikipedia + Dev.to)</h3>
+    <div id="articles-tech-software" class="articles-container">Loading...</div>
+  </div>
 </div>
 
 <!-- Footer -->
@@ -104,41 +88,13 @@ document.getElementById("refresh-news-btn").onclick = () => {
   <p>© 2026 SkylPWorld</p>
 </footer>
 
-
-<script>
-  const userAgent = navigator.userAgent.toLowerCase();
-
-  // List of common crawlers and ad bots
-  const botPatterns = [
-    /googlebot/i,        // Google
-    /adsbot-google/i,    // AdSense
-    /bingbot/i,          // Bing
-    /yandexbot/i,        // Yandex
-    /baiduspider/i,      // Baidu
-    /facebookexternalhit/i, // Facebook
-    /twitterbot/i,       // Twitter
-    /linkedinbot/i       // LinkedIn
-  ];
-
-  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
-
-  if (isBot) {
-    // Show content to bots automatically
-    document.getElementById("auth-placeholder").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-
-    // Load dynamic content if needed
-    if (typeof loadArticles === "function") loadArticles();
-    if (typeof loadNews === "function") loadNews();
-  }
-</script>
-  
 <script>
   const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
+  const wikiCategories = ["sports","health","business"];
 
   // --- Google Login ---
   function handleCredentialResponse(response) {
-    localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+    localStorage.setItem("userSession", JSON.stringify({ loggedIn:true, loginTime:Date.now() }));
     location.reload();
   }
 
@@ -147,141 +103,85 @@ document.getElementById("refresh-news-btn").onclick = () => {
       client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
       callback: handleCredentialResponse
     });
-    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
+    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
   }
 
   function checkAuth() {
     const session = JSON.parse(localStorage.getItem("userSession"));
-    if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+    if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
       document.getElementById("auth-placeholder").style.display = "none";
       document.getElementById("user-content").style.display = "block";
-      loadArticles();
+      loadArticles(); // load immediately
     } else {
       initGoogleLogin();
     }
   }
 
-  // --- Wikipedia ---
-  const wikiCategories = ["sports","health","business"];
-  async function fetchWikiArticles(category, containerId) {
+  // --- Wikipedia fetch ---
+  async function fetchWikiArticles(category, containerId){
     const container = document.getElementById(containerId);
     container.innerHTML = "";
-    try {
-      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${category}&utf8=&format=json&origin=*&srlimit=10`;
-      const searchRes = await fetch(searchUrl);
-      const searchData = await searchRes.json();
-      const pages = searchData.query.search;
-
-      for (const page of pages) {
-        try {
-          const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`;
-          const res = await fetch(summaryUrl);
-          const data = await res.json();
-          const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}">` : '';
-          const cardHTML = `
-            <div class="article-card">
-              ${thumbnail}
-              <h4>${data.title}</h4>
-              <p>${data.extract}</p>
-              <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
-            </div>
-          `;
-          container.insertAdjacentHTML('beforeend', cardHTML);
-        } catch(err){ console.error("Wiki summary error:", err); }
-      }
-    } catch(err){ console.error("Wiki search error:", err); container.innerHTML="<p>Failed to load articles.</p>"; }
-  }
-
-  // --- Wikipedia + Dev.to for Technology & Software ---
-  async function fetchTechSoftware(containerId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-    try {
-      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=technology&utf8=&format=json&origin=*&srlimit=5`;
-      const searchRes = await fetch(searchUrl);
-      const searchData = await searchRes.json();
-      const pages = searchData.query.search;
-      for (const page of pages) {
-        try {
-          const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`;
-          const res = await fetch(summaryUrl);
-          const data = await res.json();
-          const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}">` : '';
-          const cardHTML = `
-            <div class="article-card">
-              ${thumbnail}
-              <h4>${data.title}</h4>
-              <p>${data.extract}</p>
-              <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
-            </div>
-          `;
-          container.insertAdjacentHTML('beforeend', cardHTML);
-        } catch(err){ console.error("Wiki tech summary error:", err); }
-      }
-    } catch(err){ console.error("Wiki tech search error:", err); }
-
-    // Dev.to Software
-    try {
-      const devUrl = `https://dev.to/api/articles?tag=software&per_page=5`;
-      const res = await fetch(devUrl);
-      const data = await res.json();
-      for(const article of data) {
-        const thumbnail = article.social_image ? `<img src="${article.social_image}" alt="${article.title}">` : '';
-        const cardHTML = `
-          <div class="article-card">
-            ${thumbnail}
-            <h4>${article.title}</h4>
-            <p>${article.description || article.title}</p>
-            <a href="${article.url}" target="_blank">Read more →</a>
-          </div>
-        `;
+    try{
+      const searchRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${category}&utf8=&format=json&origin=*&srlimit=10`);
+      const pages = (await searchRes.json()).query.search;
+      for(const page of pages){
+        const summaryRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`);
+        const data = await summaryRes.json();
+        const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}">` : '';
+        const cardHTML = `<div class="article-card">${thumbnail}<h4>${data.title}</h4><p>${data.extract}</p><a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a></div>`;
         container.insertAdjacentHTML('beforeend', cardHTML);
       }
-    } catch(err){ console.error("Dev.to fetch error:", err); }
+    }catch(e){ console.error(e); container.innerHTML="<p>Failed to load articles.</p>"; }
   }
 
-  // --- Dev.to Climate Change ---
-  async function fetchDevClimate(containerId) {
+  // --- Technology + Dev.to ---
+  async function fetchTechSoftware(containerId){
     const container = document.getElementById(containerId);
     container.innerHTML = "";
-    try {
-      const devUrl = `https://dev.to/api/articles?tag=climate-change&per_page=10`;
-      const res = await fetch(devUrl);
-      const data = await res.json();
-      for(const article of data) {
-        const thumbnail = article.social_image ? `<img src="${article.social_image}" alt="${article.title}">` : '';
-        const cardHTML = `
-          <div class="article-card">
-            ${thumbnail}
-            <h4>${article.title}</h4>
-            <p>${article.description || article.title}</p>
-            <a href="${article.url}" target="_blank">Read more →</a>
-          </div>
-        `;
+    try{
+      // Wikipedia
+      const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=technology&utf8=&format=json&origin=*&srlimit=5`);
+      const pages = (await wikiRes.json()).query.search;
+      for(const page of pages){
+        const summaryRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`);
+        const data = await summaryRes.json();
+        const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}">` : '';
+        const cardHTML = `<div class="article-card">${thumbnail}<h4>${data.title}</h4><p>${data.extract}</p><a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a></div>`;
         container.insertAdjacentHTML('beforeend', cardHTML);
       }
-    } catch(err){ console.error("Dev.to fetch error:", err); container.innerHTML="<p>Failed to load articles.</p>"; }
+
+      // Dev.to
+      const devRes = await fetch("https://dev.to/api/articles?tag=software&per_page=5");
+      const devArticles = await devRes.json();
+      for(const article of devArticles){
+        const thumbnail = article.social_image ? `<img src="${article.social_image}" alt="${article.title}">` : '';
+        const cardHTML = `<div class="article-card">${thumbnail}<h4>${article.title}</h4><p>${article.description || article.title}</p><a href="${article.url}" target="_blank">Read more →</a></div>`;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+      }
+    }catch(e){ console.error(e); container.innerHTML="<p>Failed to load tech articles.</p>"; }
   }
 
   // --- Load all articles ---
-  function loadArticles() {
+  function loadArticles(){
     wikiCategories.forEach(c => fetchWikiArticles(c, `articles-${c}`));
     fetchTechSoftware("articles-tech-software");
-    fetchDevClimate("articles-climate");
   }
 
-  // --- Auto-update articles every 5 minutes ---
-  setInterval(() => {
-    const userContentVisible = document.getElementById("user-content").style.display === "block";
-    if(userContentVisible) {
-      loadArticles();
-      console.log("Articles auto-updated at", new Date().toLocaleTimeString());
-    }
-  }, 5 * 60 * 1000); // 5 minutes
+  // --- Bot auto access ---
+  const userAgent = navigator.userAgent.toLowerCase();
+  const botPatterns = [
+    /googlebot/i, /adsbot-google/i, /bingbot/i, /yandexbot/i,
+    /baiduspider/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i
+  ];
+  if(botPatterns.some(p => p.test(userAgent))){
+    document.getElementById("auth-placeholder").style.display="none";
+    document.getElementById("user-content").style.display="block";
+    loadArticles();
+  }
 
   // --- Initialize ---
   window.onload = checkAuth;
 </script>
-  
+
 </body>
 </html>

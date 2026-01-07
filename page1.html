@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Articles – SkylPWorld</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3XR1R2P73Y');
+  </script>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
+    nav { background:#1f1f2e; text-align:center; padding:12px; }
+    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
+    nav a:hover { color:#ffcc00; }
+
+    .main-container { max-width:1000px; margin:20px auto; padding:20px; }
+    .section-title { text-align:left; margin-top:40px; color:#4b00ff; }
+    .articles-container { display:flex; flex-wrap:wrap; gap:15px; justify-content:flex-start; }
+
+    .article-card { 
+      display:flex; flex-direction:column; background: #fff; border-radius: 15px; padding: 10px; 
+      border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align:left; 
+      width: 300px; max-height: 350px; overflow-y:auto;
+    }
+    .article-card img { width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px; }
+    .article-card h4 { margin:0 0 10px 0; color:#333; font-size:18px; }
+    .article-card p { font-size:14px; color:#555; line-height:1.4; }
+    .article-card a { text-decoration:none; color:#4b00ff; font-weight:bold; margin-top:8px; display:inline-block; }
+
+    footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <a href="index.html">Home</a>
+  <a href="page1.html" style="color:#ffcc00;">Articles</a>
+  <a href="page2.html">Page 2</a>
+  <a href="page3.html">Page 3</a>
+  <a href="page4.html">Page 4</a>
+  <a href="page5.html">Page 5</a>
+  <a href="about.html">About</a>
+  <a href="support.html">Support</a>
+  <a href="privacy.html">Privacy Policy</a>
+</nav>
+
+<div class="main-container">
+  <h2>📝 Articles</h2>
+
+  <!-- Wikipedia sections -->
+  <h3 class="section-title">Sports (Wikipedia)</h3>
+  <div id="articles-sports" class="articles-container">Loading...</div>
+
+  <h3 class="section-title">Health (Wikipedia)</h3>
+  <div id="articles-health" class="articles-container">Loading...</div>
+
+  <h3 class="section-title">Business (Wikipedia)</h3>
+  <div id="articles-business" class="articles-container">Loading...</div>
+
+  <!-- Merged Technology / Software Technology section -->
+  <h3 class="section-title">Technology & Software (Wikipedia + Dev.to)</h3>
+  <div id="articles-tech-software" class="articles-container">Loading...</div>
+
+  <!-- Dev.to Climate Change -->
+  <h3 class="section-title">Climate Change (Dev.to)</h3>
+  <div id="articles-climate" class="articles-container">Loading...</div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+  <p>© 2026 SkylPWorld</p>
+</footer>
+
+<script>
+  // --- Wikipedia ---
+  const wikiCategories = ["sports","health","business"];
+  async function fetchWikiArticles(category, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    try {
+      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${category}&utf8=&format=json&origin=*&srlimit=10`;
+      const searchRes = await fetch(searchUrl);
+      const searchData = await searchRes.json();
+      const pages = searchData.query.search;
+
+      for (const page of pages) {
+        try {
+          const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`;
+          const res = await fetch(summaryUrl);
+          const data = await res.json();
+          const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}">` : '';
+          const cardHTML = `
+            <div class="article-card">
+              ${thumbnail}
+              <h4>${data.title}</h4>
+              <p>${data.extract}</p>
+              <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', cardHTML);
+        } catch(err){ console.error("Wiki summary error:", err); }
+      }
+    } catch(err){ console.error("Wiki search error:", err); container.innerHTML="<p>Failed to load articles.</p>"; }
+  }
+
+  // --- Wikipedia + Dev.to for Technology & Software ---
+  async function fetchTechSoftware(containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+
+    // 1. Wikipedia Technology
+    try {
+      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=technology&utf8=&format=json&origin=*&srlimit=5`;
+      const searchRes = await fetch(searchUrl);
+      const searchData = await searchRes.json();
+      const pages = searchData.query.search;
+      for (const page of pages) {
+        try {
+          const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.title)}`;
+          const res = await fetch(summaryUrl);
+          const data = await res.json();
+          const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}">` : '';
+          const cardHTML = `
+            <div class="article-card">
+              ${thumbnail}
+              <h4>${data.title}</h4>
+              <p>${data.extract}</p>
+              <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', cardHTML);
+        } catch(err){ console.error("Wiki tech summary error:", err); }
+      }
+    } catch(err){ console.error("Wiki tech search error:", err); }
+
+    // 2. Dev.to Software
+    try {
+      const devUrl = `https://dev.to/api/articles?tag=software&per_page=5`;
+      const res = await fetch(devUrl);
+      const data = await res.json();
+      for(const article of data) {
+        const thumbnail = article.social_image ? `<img src="${article.social_image}" alt="${article.title}">` : '';
+        const cardHTML = `
+          <div class="article-card">
+            ${thumbnail}
+            <h4>${article.title}</h4>
+            <p>${article.description || article.title}</p>
+            <a href="${article.url}" target="_blank">Read more →</a>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+      }
+    } catch(err){ console.error("Dev.to fetch error:", err); }
+  }
+
+  // --- Dev.to Climate Change ---
+  async function fetchDevClimate(containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    try {
+      const devUrl = `https://dev.to/api/articles?tag=climate-change&per_page=10`;
+      const res = await fetch(devUrl);
+      const data = await res.json();
+      for(const article of data) {
+        const thumbnail = article.social_image ? `<img src="${article.social_image}" alt="${article.title}">` : '';
+        const cardHTML = `
+          <div class="article-card">
+            ${thumbnail}
+            <h4>${article.title}</h4>
+            <p>${article.description || article.title}</p>
+            <a href="${article.url}" target="_blank">Read more →</a>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+      }
+    } catch(err){ console.error("Dev.to fetch error:", err); container.innerHTML="<p>Failed to load articles.</p>"; }
+  }
+
+  // --- Load everything ---
+  wikiCategories.forEach(c => fetchWikiArticles(c, `articles-${c}`));
+  fetchTechSoftware("articles-tech-software");
+  fetchDevClimate("articles-climate");
+</script>
+
+</body>
+</html>

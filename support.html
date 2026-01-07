@@ -32,6 +32,7 @@
     button:hover { background:#3700b3; }
     button:disabled { background: #ccc; cursor: not-allowed; }
 
+    #auth-placeholder { margin:40px auto; max-width:500px; }
     #support-content { display: none; }
     .response { margin-top:15px; font-weight:bold; color:green; }
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
@@ -47,12 +48,14 @@
   <a href="page2.html">Page 2</a>
   <a href="page3.html">Page 3</a>
   <a href="about.html">About</a>
-  <a href="support.html">Support</a>
-  <a href="privacy.html" style="color:#ffcc00;">Privacy Policy</a>
+  <a href="support.html" style="color:#ffcc00;">Support</a>
+  <a href="privacy.html">Privacy Policy</a>
 </nav>
 
+<!-- Login Wall -->
 <div id="auth-placeholder"></div>
 
+<!-- Support Content -->
 <div id="support-content" class="container">
   <img src="https://bright.skyl.name.ng/SkylPWorld_copy_512x512.png" alt="Logo" style="width:60px; border-radius:10px;">
   <h2>Contact Support</h2>
@@ -76,81 +79,93 @@
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-    const AUTO_LOGOUT_TIME = 30 * 60 * 1000;
+  const AUTO_LOGOUT_TIME = 30 * 60 * 1000; // 30 minutes
 
-    // --- SESSION & AUTH LOGIC ---
-    function handleCredentialResponse(response) {
-        localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
-        location.reload();
+  // --- Bot Detection ---
+  const userAgent = navigator.userAgent.toLowerCase();
+  const botPatterns = [
+    /googlebot/i, /adsbot-google/i, /bingbot/i, /yandexbot/i,
+    /baiduspider/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i
+  ];
+  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
+  if(isBot){
+    document.getElementById("auth-placeholder").style.display = "none";
+    document.getElementById("support-content").style.display = "block";
+  }
+
+  // --- Google Login ---
+  function handleCredentialResponse(response) {
+    localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+    location.reload();
+  }
+
+  function initGoogleLogin() {
+    google.accounts.id.initialize({
+      client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
+  }
+
+  function checkAuth() {
+    const session = JSON.parse(localStorage.getItem("userSession"));
+    if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)){
+      document.getElementById("support-content").style.display = "block";
+    } else if(!isBot){
+      document.getElementById("auth-placeholder").innerHTML = `
+        <div class="auth-card">
+          <h3>Members Access</h3>
+          <p>Please log in to access support.</p>
+          <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
+        </div>
+      `;
+      initGoogleLogin();
+    }
+  }
+
+  window.onload = checkAuth;
+
+  // --- EMAIL SENDING LOGIC ---
+  const sendBtn = document.getElementById("sendBtn");
+  const responseMsg = document.getElementById("responseMsg");
+
+  sendBtn.onclick = function(){
+    const name = document.getElementById("userName").value;
+    const mail = document.getElementById("userMail").value;
+    const message = document.getElementById("userMessage").value;
+
+    if(!name || !mail || !message){
+      alert("Please fill all fields.");
+      return;
     }
 
-    function initGoogleLogin() {
-        google.accounts.id.initialize({
-            client_id: "1009884656935-vmqn83rlp53nkahd67b6qtr6dru6e33j.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("googleButtonDiv"), 
-            { theme: "outline", size: "large" }
-        );
-    }
+    sendBtn.disabled = true;
+    sendBtn.innerText = "Sending...";
 
-    function checkAuth() {
-        const session = JSON.parse(localStorage.getItem("userSession"));
-        if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
-            document.getElementById("support-content").style.display = "block";
-        } else {
-            fetch('login-wall.html').then(res => res.text()).then(data => {
-                document.getElementById("auth-placeholder").innerHTML = data;
-                initGoogleLogin();
-            });
-        }
-    }
+    const templateParams = {
+      from_name: name,
+      from_email: mail,
+      message: message,
+      to_email: "chykedegreat@gmail.com"
+    };
 
-    // --- EMAIL SENDING LOGIC ---
-    const sendBtn = document.getElementById("sendBtn");
-    const responseMsg = document.getElementById("responseMsg");
-
-    sendBtn.onclick = function(){
-        const name = document.getElementById("userName").value;
-        const mail = document.getElementById("userMail").value;
-        const message = document.getElementById("userMessage").value;
-
-        if(!name || !mail || !message){
-            alert("Please fill all fields.");
-            return;
-        }
-
-        sendBtn.disabled = true;
-        sendBtn.innerText = "Sending...";
-
-        const templateParams = {
-            from_name: name,
-            from_email: mail,
-            message: message,
-            to_email: "chykedegreat@gmail.com"
-        };
-
-        emailjs.send("service_o7p7qam", "template_j2bk8co", templateParams)
-        .then(function(response){
-            responseMsg.style.color = "green";
-            responseMsg.innerText = "Thank you! We will get back to you soon.";
-            document.getElementById("userName").value = "";
-            document.getElementById("userMail").value = "";
-            document.getElementById("userMessage").value = "";
-            sendBtn.disabled = false;
-            sendBtn.innerText = "Send Message";
-        }, function(error){
-            responseMsg.style.color = "red";
-            responseMsg.innerText = "Oops! Something went wrong. Please try again.";
-            sendBtn.disabled = false;
-            sendBtn.innerText = "Send Message";
-        });
-    }
-
-    window.onload = checkAuth;
+    emailjs.send("service_o7p7qam", "template_j2bk8co", templateParams)
+      .then(function(response){
+        responseMsg.style.color = "green";
+        responseMsg.innerText = "Thank you! We will get back to you soon.";
+        document.getElementById("userName").value = "";
+        document.getElementById("userMail").value = "";
+        document.getElementById("userMessage").value = "";
+        sendBtn.disabled = false;
+        sendBtn.innerText = "Send Message";
+      }, function(error){
+        responseMsg.style.color = "red";
+        responseMsg.innerText = "Oops! Something went wrong. Please try again.";
+        sendBtn.disabled = false;
+        sendBtn.innerText = "Send Message";
+      });
+  }
 </script>
 
 </body>
 </html>
-

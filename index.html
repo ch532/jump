@@ -7,10 +7,9 @@
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
      crossorigin="anonymous"></script>
-  
+
   <!-- Default Consent Mode config -->
-<script>
-    //<![CDATA[
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('consent', 'default', {
@@ -23,43 +22,20 @@
         'ad_personalization': 'granted',
         'wait_for_update': 1500
     });
-    gtag('consent', 'default', {
-        'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'CH'],
-        'ad_storage': 'denied',
-        'analytics_storage': 'denied',
-        'functionality_storage': 'denied',
-        'personalization_storage': 'denied',
-        'security_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'wait_for_update': 1500
-    });
-    gtag('set', 'ads_data_redaction', true);
-    gtag('set', 'url_passthrough', false);
-    (function(){
-        const s={adStorage:{storageName:"ad_storage",serialNumber:0},analyticsStorage:{storageName:"analytics_storage",serialNumber:1},functionalityStorage:{storageName:"functionality_storage",serialNumber:2},personalizationStorage:{storageName:"personalization_storage",serialNumber:3},securityStorage:{storageName:"security_storage",serialNumber:4},adUserData:{storageName:"ad_user_data",serialNumber:5},adPersonalization:{storageName:"ad_personalization",serialNumber:6}};let c=localStorage.getItem("__lxG__consent__v2");if(c){c=JSON.parse(c);if(c&&c.cls_val)c=c.cls_val;if(c)c=c.split("|");if(c&&c.length&&typeof c[14]!==undefined){c=c[14].split("").map(e=>e-0);if(c.length){let t={};Object.values(s).sort((e,t)=>e.serialNumber-t.serialNumber).forEach(e=>{t[e.storageName]=c[e.serialNumber]?"granted":"denied"});gtag("consent","update",t)}}}
-        if(Math.random() < 0.05) {if (window.dataLayer && (window.dataLayer.some(e => e[0] === 'js' && e[1] instanceof Date) || window.dataLayer.some(e => e['event'] === 'gtm.js' && e['gtm.start'] == true ))) {document.head.appendChild(document.createElement('img')).src = "//clickiocdn.com/utr/gtag/?sid=246906";}}
-    })();
-    //]]>
-</script>
+  </script>
 
-<!-- Clickio Consent Main tag -->
-<script async type="text/javascript" src="//clickiocmp.com/t/consent_246906.js"></script>
-  
-  <!-- Google Sign-In -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
+  <!-- Clickio Consent Main tag -->
+  <script async type="text/javascript" src="//clickiocmp.com/t/consent_246906.js"></script>
+
   <!-- OneSignal Push Notifications -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0",
-      });
+      await OneSignal.init({ appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0" });
     });
   </script>
-  
+
   <!-- SEO / Social -->
   <meta name="description" content="SkylPWorld is your online knowledge hub! Explore world news, articles, dictionaries, encyclopaedia entries, and more. Learn and grow your knowledge daily.">
   <meta property="og:title" content="SkylPWorld – Knowledge Hub">
@@ -68,9 +44,8 @@
   <meta property="og:url" content="https://skyl.name.ng/">
   <meta property="og:type" content="website">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
-  
+
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
@@ -82,7 +57,7 @@
 
   <!-- Yandex Maps -->
   <script src="https://api-maps.yandex.com/2.1/?lang=en_US&apikey=128d9a3e-ecd0-4651-8008-069f089206f4" type="text/javascript"></script>
-  
+
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
@@ -90,16 +65,11 @@
     nav a:hover { color:#ffcc00; }
 
     .main-container { max-width:900px; margin:20px auto; padding:20px; }
-    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-
-    #user-content { display: none; }
-
     .content-card { 
       background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 25px; 
       border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; 
       max-width: 800px; margin-left:auto; margin-right:auto;
     }
-
     .content-card h4 { margin-top:0; color:#333; }
     .content-card p { line-height:1.6; color:#555; }
     .content-card a { text-decoration:none; color:#4b00ff; }
@@ -108,7 +78,6 @@
     button { padding:10px 15px; font-size:16px; margin-left:5px; cursor:pointer; }
 
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
-    .logout-link { color: #ff3b3b; cursor: pointer; text-decoration: underline; font-size: 14px; }
 
     /* Google Search Styling */
     gcse\:search { max-width: 800px; margin: 20px auto; display: block; }
@@ -131,7 +100,7 @@
 </nav>
 
 <script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
-  
+
 <!-- Google Translate -->
 <div id="google_translate_element" style="margin: 10px auto; text-align: center;"></div>
 <script type="text/javascript">
@@ -145,13 +114,6 @@
 <div class="main-container">
   <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:80px; border-radius:12px;">
   <h5>Your knowledge hub online</h5>
-</div>
-
-<!-- Login Section -->
-<div id="auth-placeholder" class="auth-card">
-  <h3>Members Access</h3>
-  <p>Please log in to explore world news, articles, dictionaries, maps, and more.</p>
-  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
 </div>
 
 <!-- User Content Section -->
@@ -176,7 +138,6 @@
   <div id="map"></div>
 
 </div>
-
 
 <!-- Cookie Consent Banner -->
 <div id="cookie-consent" style="
@@ -208,89 +169,23 @@
 </div>
 
 <script>
-  // Check if user has already accepted cookies
   if (!localStorage.getItem("cookiesAccepted")) {
     document.getElementById("cookie-consent").style.display = "block";
   }
-
-  // Accept button
   document.getElementById("accept-cookies").onclick = function() {
     localStorage.setItem("cookiesAccepted", "true");
     document.getElementById("cookie-consent").style.display = "none";
   }
 </script>
-  
+
 <!-- Footer -->
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 SkylPWorld</p>
 </footer>
 
-  
+<!-- Dictionary Lookup -->
 <script>
-  const userAgent = navigator.userAgent.toLowerCase();
-
-  // List of common crawlers and ad bots
-  const botPatterns = [
-    /googlebot/i,        // Google
-    /adsbot-google/i,    // AdSense
-    /bingbot/i,          // Bing
-    /yandexbot/i,        // Yandex
-    /baiduspider/i,      // Baidu
-    /facebookexternalhit/i, // Facebook
-    /twitterbot/i,       // Twitter
-    /linkedinbot/i       // LinkedIn
-  ];
-
-  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
-
-  if (isBot) {
-    // Show content to bots automatically
-    document.getElementById("auth-placeholder").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-
-    // Load dynamic content if needed
-    if (typeof loadArticles === "function") loadArticles();
-    if (typeof loadNews === "function") loadNews();
-  }
-</script>
-  
-<script>
-  const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
-
-  // --- Google Login ---
-  function handleCredentialResponse(response) {
-    localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
-    location.reload();
-  }
-
-  function initGoogleLogin() {
-    google.accounts.id.initialize({
-      client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
-      callback: handleCredentialResponse
-    });
-    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
-  }
-
-  function checkAuth() {
-    const session = JSON.parse(localStorage.getItem("userSession"));
-    if (session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
-      document.getElementById("auth-placeholder").style.display = "none";
-      document.getElementById("user-content").style.display = "block";
-      loadNews();
-      initMap();
-    } else {
-      initGoogleLogin();
-    }
-  }
-
-  function logout() {
-    localStorage.removeItem("userSession");
-    location.reload();
-  }
-
-
-  // --- Dictionary/Thesaurus Lookup ---
   const DICT_API_KEY = "b603a6c7-2d98-4162-befb-33458a20aff5";
   async function lookupWord() {
     const word = document.getElementById('wordInput').value.trim();
@@ -320,8 +215,10 @@
       resultDiv.innerHTML = "<p>Error fetching data. Try again later.</p>";
     }
   }
+</script>
 
-  // --- Yandex Map Initialization ---
+<!-- Yandex Map -->
+<script>
   function initMap() {
     ymaps.ready(function() {
       var myMap = new ymaps.Map("map", {
@@ -368,8 +265,7 @@
     });
   }
 
-  // --- Initialize ---
-  window.onload = checkAuth;
+  window.onload = initMap;
 </script>
 </body>
 </html>

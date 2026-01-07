@@ -151,7 +151,7 @@
 </footer>
 
 <script>
-  const AUTO_LOGOUT_TIME = 30 * 60 * 1000;
+  const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
 
   // --- Google Login ---
   function handleCredentialResponse(response) {
@@ -250,7 +250,6 @@
           controls: ['zoomControl', 'routeButtonControl']
       });
 
-      // Business placemark
       var myPlacemark = new ymaps.Placemark([9.0, 7.5], {
           balloonContentHeader: 'Connectgold Enterprise',
           balloonContentBody: `
@@ -265,7 +264,6 @@
       myMap.geoObjects.add(myPlacemark);
       myPlacemark.events.add('click', function () { myPlacemark.balloon.open(); });
 
-      // Predefined example route
       ymaps.route([
           [9.0820, 8.6753],
           [40.7128, -74.0060]
@@ -273,7 +271,6 @@
           myMap.geoObjects.add(route);
       });
 
-      // Interactive route by user clicks
       var routePoints = [];
       var userRoute;
       myMap.events.add('click', function (e) {

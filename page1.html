@@ -234,6 +234,15 @@
     fetchDevClimate("articles-climate");
   }
 
+  // --- Auto-update articles every 5 minutes ---
+  setInterval(() => {
+    const userContentVisible = document.getElementById("user-content").style.display === "block";
+    if(userContentVisible) {
+      loadArticles();
+      console.log("Articles auto-updated at", new Date().toLocaleTimeString());
+    }
+  }, 5 * 60 * 1000); // 5 minutes
+
   // --- Initialize ---
   window.onload = checkAuth;
 </script>

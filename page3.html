@@ -57,6 +57,20 @@
 
 <!-- User Content -->
 <div id="user-content" class="main-container" style="display:none;">
+ 
+  <div style="margin-bottom:20px; text-align:center;">
+  <button id="refresh-news-btn" style="padding:10px 20px; font-weight:bold; cursor:pointer; background:#4b00ff; color:#fff; border:none; border-radius:8px;">
+    🔄 Refresh News
+  </button>
+</div>
+
+<script>
+document.getElementById("refresh-news-btn").onclick = () => {
+  loadNews();
+  console.log("News manually refreshed at", new Date().toLocaleTimeString());
+};
+</script>
+  
   <h2>💡 Tips & How-To Guides</h2>
   <div id="tips-list" class="tips-container">Loading tips...</div>
 </div>

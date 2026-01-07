@@ -46,11 +46,9 @@
 <!-- Navigation -->
 <nav>
   <a href="index.html">Home</a>
-  <a href="page1.html">Articles</a>
-  <a href="page2.html" style="color:#ffcc00;">World News</a>
+  <a href="page1.html">Page 1</a>
+  <a href="page2.html" style="color:#ffcc00;">Page 2</a>
   <a href="page3.html">Page 3</a>
-  <a href="page4.html">Page 4</a>
-  <a href="page5.html">Page 5</a>
   <a href="about.html">About</a>
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
@@ -169,6 +167,15 @@ function loadNews() {
   ];
   sportsFeeds.forEach((url,i) => fetchRSS(url, "sports-news"));
 }
+
+// --- Auto-update news every 5 minutes ---
+setInterval(() => {
+  const userContentVisible = document.getElementById("user-content").style.display === "block";
+  if(userContentVisible) {
+    loadNews();
+    console.log("World news auto-updated at", new Date().toLocaleTimeString());
+  }
+}, 5 * 60 * 1000); // 5 minutes
 
 window.onload = checkAuth;
 </script>

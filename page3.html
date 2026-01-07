@@ -32,8 +32,6 @@
     .tip-card p { font-size:14px; color:#555; line-height:1.4; }
     .tip-card a { text-decoration:none; color:#4b00ff; font-weight:bold; margin-top:8px; display:inline-block; }
 
-    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin: 40px auto; max-width:500px; }
-
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
   </style>
 </head>
@@ -50,15 +48,8 @@
   <a href="privacy.html">Privacy Policy</a>
 </nav>
 
-<!-- Login Wall -->
-<div id="auth-placeholder" class="auth-card">
-  <h3>Members Access</h3>
-  <p>Please log in to view tips and tutorials.</p>
-  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
-</div>
-
-<!-- User Content -->
-<div id="user-content" class="main-container" style="display:none;">
+<!-- Main Content -->
+<div id="user-content" class="main-container">
   <h2>💡 Tips & How-To Guides</h2>
   <div id="tips-list" class="tips-container">Loading tips...</div>
 </div>
@@ -69,78 +60,46 @@
   <p>© 2026 SkylPWorld</p>
 </footer>
 
-<!-- Google Sign-In -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <script>
-const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
+  // --- Load Tips from Wikipedia ---
+  async function loadTips() {
+    const container = document.getElementById("tips-list");
+    container.innerHTML = "";
+    const topics = ["how to cook","how to write","how to start a business","time management","gardening tips","health tips","exercise tips","study tips","financial planning","DIY projects"];
 
-// --- Google Login ---
-function handleCredentialResponse(response) {
-  localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
-  location.reload();
-}
-
-function initGoogleLogin() {
-  google.accounts.id.initialize({
-    client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
-    callback: handleCredentialResponse
-  });
-  google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
-}
-
-// --- Auto-load content after login ---
-function checkAuth() {
-  const session = JSON.parse(localStorage.getItem("userSession"));
-  if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
-    document.getElementById("auth-placeholder").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-    loadTips(); // auto-load tips immediately
-  } else {
-    initGoogleLogin();
+    for(const topic of topics) {
+      try {
+        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(topic)}&utf8=&format=json&origin=*&srlimit=1`;
+        const searchRes = await fetch(searchUrl);
+        const searchData = await searchRes.json();
+        if(searchData.query.search.length === 0) continue;
+        const pageTitle = searchData.query.search[0].title;
+        const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`;
+        const res = await fetch(summaryUrl);
+        const data = await res.json();
+        const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:10px;">` : '';
+        const cardHTML = `
+          <div class="tip-card">
+            ${thumbnail}
+            <h4>${data.title}</h4>
+            <p>${data.extract}</p>
+            <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+      } catch(err){ console.error("Wiki tips error:", err); }
+    }
   }
-}
 
-// --- Bot access ---
-const userAgent = navigator.userAgent.toLowerCase();
-const botPatterns = [/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
-if(botPatterns.some(p => p.test(userAgent))){
-  document.getElementById("auth-placeholder").style.display = "none";
-  document.getElementById("user-content").style.display = "block";
-  loadTips(); // bots get content immediately
-}
-
-window.onload = checkAuth;
-
-// --- Load Tips from Wikipedia ---
-async function loadTips() {
-  const container = document.getElementById("tips-list");
-  container.innerHTML = "";
-  const topics = ["how to cook","how to write","how to start a business","time management","gardening tips","health tips","exercise tips","study tips","financial planning","DIY projects"];
-
-  for(const topic of topics) {
-    try {
-      const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(topic)}&utf8=&format=json&origin=*&srlimit=1`;
-      const searchRes = await fetch(searchUrl);
-      const searchData = await searchRes.json();
-      if(searchData.query.search.length === 0) continue;
-      const pageTitle = searchData.query.search[0].title;
-      const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`;
-      const res = await fetch(summaryUrl);
-      const data = await res.json();
-      const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:10px;">` : '';
-      const cardHTML = `
-        <div class="tip-card">
-          ${thumbnail}
-          <h4>${data.title}</h4>
-          <p>${data.extract}</p>
-          <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
-        </div>
-      `;
-      container.insertAdjacentHTML('beforeend', cardHTML);
-    } catch(err){ console.error("Wiki tips error:", err); }
+  // --- Bot auto access ---
+  const userAgent = navigator.userAgent.toLowerCase();
+  const botPatterns = [/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
+  if(botPatterns.some(p => p.test(userAgent))){
+    loadTips(); // bots get content immediately
   }
-}
+
+  // --- Initialize ---
+  window.onload = loadTips;
 </script>
 
 </body>

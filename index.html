@@ -7,10 +7,6 @@
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
      crossorigin="anonymous"></script>
-
-<script>
-  AdButlerHB.registerAuction('abhb_42980_1', [[320,480]], 1122604, 189406, "servedbyadbutler.com");
-</script>
   
   <!-- Default Consent Mode config -->
   <script>
@@ -138,122 +134,9 @@
   </div>
   <script async src="https://cse.google.com/cse.js?cx=0367484b4c806434c"></script>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Video Test – SkylPWorld</title>
-  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prebid@7.21.0/dist/prebid.min.js"></script>
-  <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
-  <style>
-    #video-container { width: 640px; margin: 20px auto; }
-    video { width: 100%; height: 360px; }
-    #ad-container { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-  </style>
-</head>
-<body>
 
-<div id="video-container">
-  <video id="content-video" controls>
-    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-  </video>
-  <div id="ad-container"></div>
-</div>
 
-<script>
-  // ----- GPT Slot -----
-  window.googletag = window.googletag || {cmd: []};
-  googletag.cmd.push(function() {
-    googletag.defineOutOfPageSlot('/23311640042/Brightad', 'div-gpt-ad-1767805478297-0')
-      .addService(googletag.pubads());
-    googletag.pubads().enableSingleRequest();
-    googletag.enableServices();
-  });
 
-  // ----- Prebid Video -----
-  var pbjs = pbjs || {};
-  pbjs.que = pbjs.que || [];
-
-  var videoAdUnit = {
-    code: 'div-gpt-ad-1767805478297-0',
-    mediaTypes: {
-      video: {
-        context: 'instream',
-        playerSize: [640, 480],
-        mimes: ['video/mp4'],
-        minduration: 4,
-        maxduration: 30
-      }
-    },
-    bids: [
-      {
-        bidder: 'sovrn',
-        params: {
-          tagid: '1302716'  // your Sovrn tag id
-        }
-      }
-    ]
-  };
-
-  pbjs.que.push(function() {
-    pbjs.addAdUnits(videoAdUnit);
-    pbjs.requestBids({
-      bidsBackHandler: initVideoAds
-    });
-  });
-
-  function initVideoAds(bidResponses) {
-    var contentVideo = document.getElementById('content-video');
-    var adContainer = document.getElementById('ad-container');
-
-    // Initialize IMA SDK
-    var adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, contentVideo);
-    adDisplayContainer.initialize();
-
-    var adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-
-    adsLoader.addEventListener(
-      google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-      function(e) {
-        var adsManager = e.getAdsManager(contentVideo);
-        adsManager.init(640, 360, google.ima.ViewMode.NORMAL);
-        adsManager.start();
-      },
-      false
-    );
-
-    var adsRequest = new google.ima.AdsRequest();
-
-    // Check if Prebid returned a bid
-    var sovrnBid = pbjs.getHighestCpmBids('div-gpt-ad-1767805478297-0')[0];
-    if(sovrnBid && sovrnBid.cpm > 0){
-      console.log("Serving Sovrn VAST via IMA:", sovrnBid.vastUrl);
-      adsRequest.adTagUrl = sovrnBid.vastUrl; // Prebid bid's VAST
-    } else {
-      // Fallback to GPT VAST
-      adsRequest.adTagUrl = '/23311640042/Brightad'; // your Ad Manager VAST tag
-    }
-
-    adsLoader.requestAds(adsRequest);
-  }
-</script>
-
-</body>
-</html>
-
-<!-- Away [async] -->
-<script type="text/javascript">if (!window.AdButler){(function(){var s = document.createElement("script"); s.async = true; s.type = "text/javascript"; s.src = 'https://servedbyadbutler.com/app.js'; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(s, n);}());}</script>
-<script type="text/javascript">
-var AdButler = AdButler || {};
-AdButler.ads = AdButler.ads || [];
-var abkw = window.abkw || '';
-var plc1122604 = window.plc1122604 || 0;
-document.write('<'+'div id="placement_1122604_'+plc1122604+'"></'+'div>');
-AdButler.ads.push({handler: function(opt){ AdButler.register(189406, 1122604, [320,480], 'placement_1122604_'+opt.place, opt); }, opt: { place: plc1122604++, keywords: abkw, domain: 'servedbyadbutler.com', click: 'CLICK_MACRO_PLACEHOLDER' }});
-</script>
-
-<div id="abhb_42980_1"></div>
   
   <!-- Yandex World Map Section -->
   <div id="map"></div>

@@ -187,16 +187,6 @@ function loadNews() {
   ];
   nigeriaFeeds.forEach((url,i) => fetchRSS(url, "nigeria-news"));
 
-  // 3. Sports News
-  const sportsFeeds = [
-    "https://www.espn.com/espn/rss/news",
-    "https://www.bbc.com/sport/rss.xml",
-    "https://www.goal.com/en-us/feeds/news",
-    "https://www.supersport.com/rss"
-  ];
-  sportsFeeds.forEach((url,i) => fetchRSS(url, "sports-news"));
-}
-
 // --- Auto-update news every 5 minutes ---
 setInterval(() => {
   const userContentVisible = document.getElementById("user-content").style.display === "block";

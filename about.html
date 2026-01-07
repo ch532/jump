@@ -5,6 +5,10 @@
   <title>About – SkylPWorld</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
+
+  <!-- Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
@@ -18,6 +22,10 @@
     }
     .content-card h2 { margin-top:0; color:#333; }
     .content-card p { line-height:1.6; color:#555; }
+
+    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin: 40px auto; max-width:500px; }
+
+    #user-content { display:none; }
 
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
   </style>
@@ -35,7 +43,15 @@
   <a href="privacy.html">Privacy Policy</a>
 </nav>
 
-<div class="main-container">
+<!-- Login Wall -->
+<div id="auth-placeholder" class="auth-card">
+  <h3>Members Access</h3>
+  <p>Please log in to view the About page.</p>
+  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
+</div>
+
+<!-- User Content -->
+<div id="user-content" class="main-container">
   <div class="content-card">
     <h2>About SkylPWorld</h2>
     <p>Welcome to <strong>SkylPWorld</strong>, your ultimate online knowledge hub. Our platform brings you the latest world news, educational articles, dictionaries, encyclopaedia entries, and interactive maps all in one place.</p>
@@ -48,6 +64,48 @@
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 SkylPWorld</p>
 </footer>
+
+<script>
+  const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
+
+  // --- Bot Detection ---
+  const userAgent = navigator.userAgent.toLowerCase();
+  const botPatterns = [
+    /googlebot/i, /adsbot-google/i, /bingbot/i, /yandexbot/i,
+    /baiduspider/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i
+  ];
+  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
+  if(isBot){
+    document.getElementById("auth-placeholder").style.display = "none";
+    document.getElementById("user-content").style.display = "block";
+  }
+
+  // --- Google Login ---
+  function handleCredentialResponse(response) {
+    localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+    location.reload();
+  }
+
+  function initGoogleLogin() {
+    google.accounts.id.initialize({
+      client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
+  }
+
+  function checkAuth() {
+    const session = JSON.parse(localStorage.getItem("userSession"));
+    if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+      document.getElementById("auth-placeholder").style.display = "none";
+      document.getElementById("user-content").style.display = "block";
+    } else if(!isBot){
+      initGoogleLogin();
+    }
+  }
+
+  window.onload = checkAuth;
+</script>
 
 </body>
 </html>

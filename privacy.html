@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
 
+  <!-- Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; line-height:1.6; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
@@ -16,6 +19,10 @@
     h1, h2, h3 { color:#4b00ff; }
     h1 { text-align:center; margin-bottom:20px; }
     p { margin-bottom:12px; }
+
+    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin: 40px auto; max-width:500px; }
+    #user-content { display:none; }
+
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
   </style>
 </head>
@@ -32,7 +39,15 @@
   <a href="privacy.html" style="color:#ffcc00;">Privacy Policy</a>
 </nav>
 
-<div class="main-container">
+<!-- Login Wall -->
+<div id="auth-placeholder" class="auth-card">
+  <h3>Members Access</h3>
+  <p>Please log in to view the Privacy Policy.</p>
+  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
+</div>
+
+<!-- User Content -->
+<div id="user-content" class="main-container">
   <h1>Privacy Policy – SkylPWorld</h1>
   <p><strong>Effective Date:</strong> January 7, 2026</p>
 
@@ -71,13 +86,55 @@
 
   <h2>Contact Us</h2>
   <p>For questions about this Privacy Policy, please contact:</p>
-  <p>Email: <a href="mailto:trustconnect713@gmail.com">your-email@example.com</a></p>
+  <p>Email: <a href="mailto:trustconnect713@gmail.com">trustconnect713@gmail.com</a></p>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
 </div>
 
 <footer>
   <p>© 2026 SkylPWorld</p>
 </footer>
+
+<script>
+  const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
+
+  // --- Bot Detection ---
+  const userAgent = navigator.userAgent.toLowerCase();
+  const botPatterns = [
+    /googlebot/i, /adsbot-google/i, /bingbot/i, /yandexbot/i,
+    /baiduspider/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i
+  ];
+  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
+  if(isBot){
+    document.getElementById("auth-placeholder").style.display = "none";
+    document.getElementById("user-content").style.display = "block";
+  }
+
+  // --- Google Login ---
+  function handleCredentialResponse(response) {
+    localStorage.setItem("userSession", JSON.stringify({ loggedIn: true, loginTime: Date.now() }));
+    location.reload();
+  }
+
+  function initGoogleLogin() {
+    google.accounts.id.initialize({
+      client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large" });
+  }
+
+  function checkAuth() {
+    const session = JSON.parse(localStorage.getItem("userSession"));
+    if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+      document.getElementById("auth-placeholder").style.display = "none";
+      document.getElementById("user-content").style.display = "block";
+    } else if(!isBot){
+      initGoogleLogin();
+    }
+  }
+
+  window.onload = checkAuth;
+</script>
 
 </body>
 </html>

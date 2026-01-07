@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
 
+  <!-- Google Sign-In -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
@@ -35,16 +38,13 @@
     .article-card p { font-size:14px; color:#555; line-height:1.4; }
     .article-card a { text-decoration:none; color:#4b00ff; font-weight:bold; margin-top:8px; display:inline-block; }
 
-    #auth-placeholder { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    #googleButtonDiv { display:flex; justify-content:center; margin-top:10px; }
-    #user-content { display:none; }
+    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin: 40px auto; max-width:500px; }
 
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
   </style>
 </head>
 <body>
 
-<!-- Navigation -->
 <nav>
   <a href="index.html">Home</a>
   <a href="page1.html">Page 1</a>
@@ -55,77 +55,79 @@
   <a href="privacy.html">Privacy Policy</a>
 </nav>
 
-<!-- Google Sign-In Placeholder -->
-<div id="auth-placeholder">
+<div id="auth-placeholder" class="auth-card">
   <h3>Members Access</h3>
   <p>Please log in to view world news.</p>
-  <div id="googleButtonDiv"></div>
+  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
 </div>
 
-<!-- User Content -->
-<div id="user-content" class="main-container">
-  <h2>🌍 World News Hub</h2>
+<div id="user-content">
+  <div class="main-container">
+    <h2>🌍 World News Hub</h2>
 
-<div style="margin-bottom:20px; text-align:center;">
-  <button id="refresh-news-btn" style="padding:10px 20px; font-weight:bold; cursor:pointer; background:#4b00ff; color:#fff; border:none; border-radius:8px;">
-    🔄 Refresh News
-  </button>
+    <h3 class="section-title">Google World News</h3>
+    <div id="google-news" class="articles-container">Loading...</div>
+
+    <h3 class="section-title">Top Nigerian Media</h3>
+    <div id="nigeria-news" class="articles-container">Loading...</div>
+  </div>
 </div>
 
-<script>
-document.getElementById("refresh-news-btn").onclick = () => {
-  loadNews();
-  console.log("News manually refreshed at", new Date().toLocaleTimeString());
-};
-</script>
-  
-  <h3 class="section-title">Google World News</h3>
-  <div id="google-news" class="articles-container">Loading...</div>
-
-  <h3 class="section-title">Top Nigerian Media</h3>
-  <div id="nigeria-news" class="articles-container">Loading...</div>
-</div>
-
-<!-- Footer -->
 <footer>
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 SkylPWorld</p>
 </footer>
 
-<!-- Google Sign-In -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <script>
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
 
-// --- Fetch RSS via rss2json ---
-async function fetchRSS(url, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "Loading...";
-  try {
-    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    if(!data.items || data.items.length===0) { container.innerHTML="<p>No news found.</p>"; return; }
-    container.innerHTML = "";
-    data.items.forEach(item => {
-      const cardHTML = `
-        <div class="article-card">
-          ${item.thumbnail ? `<img src="${item.thumbnail}" alt="${item.title}">` : ''}
-          <h4>${item.title}</h4>
-          <p>${item.description ? item.description.replace(/(<([^>]+)>)/gi,"") : ''}</p>
-          <a href="${item.link}" target="_blank">Read more →</a>
-        </div>
-      `;
-      container.insertAdjacentHTML('beforeend', cardHTML);
-    });
-  } catch(err) {
-    console.error(err);
-    container.innerHTML="<p>Failed to load news.</p>";
+function handleCredentialResponse(response){
+  localStorage.setItem("userSession", JSON.stringify({ loggedIn:true, loginTime:Date.now() }));
+  location.reload();
+}
+
+function initGoogleLogin(){
+  google.accounts.id.initialize({
+    client_id:"1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
+    callback:handleCredentialResponse
+  });
+  google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
+}
+
+function checkAuth(){
+  const session = JSON.parse(localStorage.getItem("userSession"));
+  if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)){
+    document.getElementById("auth-placeholder").style.display="none";
+    document.getElementById("user-content").style.display="block";
+    loadNews(); // load immediately
+  } else {
+    initGoogleLogin();
   }
 }
 
-// --- Load All News ---
-function loadNews() {
+// --- RSS fetch ---
+async function fetchRSS(url, containerId){
+  const container = document.getElementById(containerId);
+  container.innerHTML="Loading...";
+  try{
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+    const data = await res.json();
+    container.innerHTML="";
+    if(!data.items || data.items.length===0){ container.innerHTML="<p>No news found.</p>"; return; }
+    data.items.forEach(item=>{
+      const cardHTML = `<div class="article-card">
+        ${item.thumbnail?`<img src="${item.thumbnail}" alt="${item.title}">`:""}
+        <h4>${item.title}</h4>
+        <p>${item.description?item.description.replace(/(<([^>]+)>)/gi,""):""}</p>
+        <a href="${item.link}" target="_blank">Read more →</a>
+      </div>`;
+      container.insertAdjacentHTML('beforeend', cardHTML);
+    });
+  } catch(e){ console.error(e); container.innerHTML="<p>Failed to load news.</p>"; }
+}
+
+// --- Load world & Nigerian news ---
+function loadNews(){
   fetchRSS("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", "google-news");
 
   const nigeriaFeeds = [
@@ -134,60 +136,19 @@ function loadNews() {
     "https://guardian.ng/feed/",
     "https://www.thisdaylive.com/feed/"
   ];
-  nigeriaFeeds.forEach(url => fetchRSS(url, "nigeria-news"));
+  nigeriaFeeds.forEach(url=>fetchRSS(url,"nigeria-news"));
 }
 
-// --- Google Login ---
-function handleCredentialResponse(response) {
-  localStorage.setItem("userSession", JSON.stringify({ loggedIn:true, loginTime:Date.now() }));
-  location.reload();
-}
-
-function initGoogleLogin() {
-  google.accounts.id.initialize({
-    client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
-    callback: handleCredentialResponse
-  });
-  google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
-}
-
-function checkAuth() {
-  const session = JSON.parse(localStorage.getItem("userSession"));
-  if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
-    document.getElementById("auth-placeholder").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-    loadNews();
-  } else {
-    initGoogleLogin();
-  }
-}
-
-function logout() {
-  localStorage.removeItem("userSession");
-  location.reload();
-}
-
-// --- Bot detection (show content to crawlers) ---
+// --- Bot auto access ---
 const userAgent = navigator.userAgent.toLowerCase();
-const botPatterns = [
-  /googlebot/i, /adsbot-google/i, /bingbot/i, /yandexbot/i,
-  /baiduspider/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i
-];
-const isBot = botPatterns.some(pattern => pattern.test(userAgent));
-
-if(isBot){
-  document.getElementById("auth-placeholder").style.display = "none";
-  document.getElementById("user-content").style.display = "block";
-  try { loadNews(); } catch(e){ console.error(e); }
+const botPatterns=[/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
+if(botPatterns.some(p=>p.test(userAgent))){
+  document.getElementById("auth-placeholder").style.display="none";
+  document.getElementById("user-content").style.display="block";
+  loadNews();
 }
 
-// --- Auto-update news every 5 minutes ---
-setInterval(() => {
-  const userContentVisible = document.getElementById("user-content").style.display === "block";
-  if(userContentVisible) loadNews();
-}, 5 * 60 * 1000); // 5 minutes
-
-// --- On page load ---
+// --- Initialize ---
 window.onload = checkAuth;
 </script>
 

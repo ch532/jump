@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
 
-  <!-- Google Sign-In -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
@@ -38,8 +35,6 @@
     .article-card p { font-size:14px; color:#555; line-height:1.4; }
     .article-card a { text-decoration:none; color:#4b00ff; font-weight:bold; margin-top:8px; display:inline-block; }
 
-    .auth-card { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin: 40px auto; max-width:500px; }
-
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
   </style>
 </head>
@@ -54,12 +49,6 @@
   <a href="support.html">Support</a>
   <a href="privacy.html">Privacy Policy</a>
 </nav>
-
-<div id="auth-placeholder" class="auth-card">
-  <h3>Members Access</h3>
-  <p>Please log in to view world news.</p>
-  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
-</div>
 
 <div id="user-content">
   <div class="main-container">
@@ -79,77 +68,50 @@
 </footer>
 
 <script>
-const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
-
-function handleCredentialResponse(response){
-  localStorage.setItem("userSession", JSON.stringify({ loggedIn:true, loginTime:Date.now() }));
-  location.reload();
-}
-
-function initGoogleLogin(){
-  google.accounts.id.initialize({
-    client_id:"1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
-    callback:handleCredentialResponse
-  });
-  google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
-}
-
-function checkAuth(){
-  const session = JSON.parse(localStorage.getItem("userSession"));
-  if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)){
-    document.getElementById("auth-placeholder").style.display="none";
-    document.getElementById("user-content").style.display="block";
-    loadNews(); // load immediately
-  } else {
-    initGoogleLogin();
+  // --- RSS fetch ---
+  async function fetchRSS(url, containerId){
+    const container = document.getElementById(containerId);
+    container.innerHTML="Loading...";
+    try{
+      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      container.innerHTML="";
+      if(!data.items || data.items.length===0){ container.innerHTML="<p>No news found.</p>"; return; }
+      data.items.forEach(item=>{
+        const cardHTML = `<div class="article-card">
+          ${item.thumbnail?`<img src="${item.thumbnail}" alt="${item.title}">`:""}
+          <h4>${item.title}</h4>
+          <p>${item.description?item.description.replace(/(<([^>]+)>)/gi,""):""}</p>
+          <a href="${item.link}" target="_blank">Read more →</a>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+      });
+    } catch(e){ console.error(e); container.innerHTML="<p>Failed to load news.</p>"; }
   }
-}
 
-// --- RSS fetch ---
-async function fetchRSS(url, containerId){
-  const container = document.getElementById(containerId);
-  container.innerHTML="Loading...";
-  try{
-    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    container.innerHTML="";
-    if(!data.items || data.items.length===0){ container.innerHTML="<p>No news found.</p>"; return; }
-    data.items.forEach(item=>{
-      const cardHTML = `<div class="article-card">
-        ${item.thumbnail?`<img src="${item.thumbnail}" alt="${item.title}">`:""}
-        <h4>${item.title}</h4>
-        <p>${item.description?item.description.replace(/(<([^>]+)>)/gi,""):""}</p>
-        <a href="${item.link}" target="_blank">Read more →</a>
-      </div>`;
-      container.insertAdjacentHTML('beforeend', cardHTML);
-    });
-  } catch(e){ console.error(e); container.innerHTML="<p>Failed to load news.</p>"; }
-}
+  function loadNews(){
+    // Google News
+    fetchRSS("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", "google-news");
 
-// --- Load world & Nigerian news ---
-function loadNews(){
-  fetchRSS("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", "google-news");
+    // Nigerian news
+    const nigeriaFeeds = [
+      "https://www.vanguardngr.com/feed/",
+      "https://punchng.com/feed/",
+      "https://guardian.ng/feed/",
+      "https://www.thisdaylive.com/feed/"
+    ];
+    nigeriaFeeds.forEach(url=>fetchRSS(url,"nigeria-news"));
+  }
 
-  const nigeriaFeeds = [
-    "https://www.vanguardngr.com/feed/",
-    "https://punchng.com/feed/",
-    "https://guardian.ng/feed/",
-    "https://www.thisdaylive.com/feed/"
-  ];
-  nigeriaFeeds.forEach(url=>fetchRSS(url,"nigeria-news"));
-}
+  // --- Bot auto access ---
+  const userAgent = navigator.userAgent.toLowerCase();
+  const botPatterns=[/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
+  if(botPatterns.some(p=>p.test(userAgent))){
+    loadNews();
+  }
 
-// --- Bot auto access ---
-const userAgent = navigator.userAgent.toLowerCase();
-const botPatterns=[/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
-if(botPatterns.some(p=>p.test(userAgent))){
-  document.getElementById("auth-placeholder").style.display="none";
-  document.getElementById("user-content").style.display="block";
-  loadNews();
-}
-
-// --- Initialize ---
-window.onload = checkAuth;
+  // --- Initialize ---
+  window.onload = loadNews;
 </script>
 
 </body>

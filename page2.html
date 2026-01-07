@@ -66,6 +66,19 @@
 <div id="user-content" class="main-container">
   <h2>🌍 World News Hub</h2>
 
+<div style="margin-bottom:20px; text-align:center;">
+  <button id="refresh-news-btn" style="padding:10px 20px; font-weight:bold; cursor:pointer; background:#4b00ff; color:#fff; border:none; border-radius:8px;">
+    🔄 Refresh News
+  </button>
+</div>
+
+<script>
+document.getElementById("refresh-news-btn").onclick = () => {
+  loadNews();
+  console.log("News manually refreshed at", new Date().toLocaleTimeString());
+};
+</script>
+  
   <h3 class="section-title">Google World News</h3>
   <div id="google-news" class="articles-container">Loading...</div>
 

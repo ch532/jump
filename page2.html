@@ -36,6 +36,7 @@
     .article-card a { text-decoration:none; color:#4b00ff; font-weight:bold; margin-top:8px; display:inline-block; }
 
     #auth-placeholder { background:#fff; padding:30px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    #googleButtonDiv { display:flex; justify-content:center; margin-top:10px; }
     #user-content { display:none; }
 
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
@@ -58,12 +59,11 @@
 <div id="auth-placeholder">
   <h3>Members Access</h3>
   <p>Please log in to view world news.</p>
-  <div id="googleButtonDiv" style="display:flex; justify-content:center;"></div>
+  <div id="googleButtonDiv"></div>
 </div>
 
 <!-- User Content -->
 <div id="user-content" class="main-container">
-
   <h2>🌍 World News Hub</h2>
 
   <h3 class="section-title">Google World News</h3>
@@ -71,7 +71,6 @@
 
   <h3 class="section-title">Top Nigerian Media</h3>
   <div id="nigeria-news" class="articles-container">Loading...</div>
-
 </div>
 
 <!-- Footer -->
@@ -80,69 +79,11 @@
   <p>© 2026 SkylPWorld</p>
 </footer>
 
-
-<script>
-  const userAgent = navigator.userAgent.toLowerCase();
-
-  // List of common crawlers and ad bots
-  const botPatterns = [
-    /googlebot/i,        // Google
-    /adsbot-google/i,    // AdSense
-    /bingbot/i,          // Bing
-    /yandexbot/i,        // Yandex
-    /baiduspider/i,      // Baidu
-    /facebookexternalhit/i, // Facebook
-    /twitterbot/i,       // Twitter
-    /linkedinbot/i       // LinkedIn
-  ];
-
-  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
-
-  if (isBot) {
-    // Show content to bots automatically
-    document.getElementById("auth-placeholder").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-
-    // Load dynamic content if needed
-    if (typeof loadArticles === "function") loadArticles();
-    if (typeof loadNews === "function") loadNews();
-  }
-</script>
-  
 <!-- Google Sign-In -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
-
-function handleCredentialResponse(response) {
-  localStorage.setItem("userSession", JSON.stringify({ loggedIn:true, loginTime:Date.now() }));
-  location.reload();
-}
-
-function initGoogleLogin() {
-  google.accounts.id.initialize({
-    client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
-    callback: handleCredentialResponse
-  });
-  google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
-}
-
-function checkAuth() {
-  const session = JSON.parse(localStorage.getItem("userSession"));
-  if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
-    document.getElementById("auth-placeholder").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-    loadNews();
-  } else {
-    initGoogleLogin();
-  }
-}
-
-function logout() {
-  localStorage.removeItem("userSession");
-  location.reload();
-}
 
 // --- Fetch RSS via rss2json ---
 async function fetchRSS(url, containerId) {
@@ -172,27 +113,68 @@ async function fetchRSS(url, containerId) {
 
 // --- Load All News ---
 function loadNews() {
-  // 1. Google World News
   fetchRSS("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en", "google-news");
 
-  // 2. Top Nigerian Media
   const nigeriaFeeds = [
     "https://www.vanguardngr.com/feed/",
     "https://punchng.com/feed/",
     "https://guardian.ng/feed/",
     "https://www.thisdaylive.com/feed/"
   ];
-  nigeriaFeeds.forEach((url,i) => fetchRSS(url, "nigeria-news"));
+  nigeriaFeeds.forEach(url => fetchRSS(url, "nigeria-news"));
+}
+
+// --- Google Login ---
+function handleCredentialResponse(response) {
+  localStorage.setItem("userSession", JSON.stringify({ loggedIn:true, loginTime:Date.now() }));
+  location.reload();
+}
+
+function initGoogleLogin() {
+  google.accounts.id.initialize({
+    client_id: "1009884656935-9ie9actl74rm94s9jp3o63ci10uoaj7j.apps.googleusercontent.com",
+    callback: handleCredentialResponse
+  });
+  google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme:"outline", size:"large" });
+}
+
+function checkAuth() {
+  const session = JSON.parse(localStorage.getItem("userSession"));
+  if(session && session.loggedIn && (Date.now() - session.loginTime < AUTO_LOGOUT_TIME)) {
+    document.getElementById("auth-placeholder").style.display = "none";
+    document.getElementById("user-content").style.display = "block";
+    loadNews();
+  } else {
+    initGoogleLogin();
+  }
+}
+
+function logout() {
+  localStorage.removeItem("userSession");
+  location.reload();
+}
+
+// --- Bot detection (show content to crawlers) ---
+const userAgent = navigator.userAgent.toLowerCase();
+const botPatterns = [
+  /googlebot/i, /adsbot-google/i, /bingbot/i, /yandexbot/i,
+  /baiduspider/i, /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i
+];
+const isBot = botPatterns.some(pattern => pattern.test(userAgent));
+
+if(isBot){
+  document.getElementById("auth-placeholder").style.display = "none";
+  document.getElementById("user-content").style.display = "block";
+  try { loadNews(); } catch(e){ console.error(e); }
+}
 
 // --- Auto-update news every 5 minutes ---
 setInterval(() => {
   const userContentVisible = document.getElementById("user-content").style.display === "block";
-  if(userContentVisible) {
-    loadNews();
-    console.log("World news auto-updated at", new Date().toLocaleTimeString());
-  }
+  if(userContentVisible) loadNews();
 }, 5 * 60 * 1000); // 5 minutes
 
+// --- On page load ---
 window.onload = checkAuth;
 </script>
 

@@ -67,6 +67,35 @@
   <p>© 2026 SkylPWorld</p>
 </footer>
 
+// Bot detection runs before user login
+<script>
+  const userAgent = navigator.userAgent.toLowerCase();
+
+  // List of common crawlers and ad bots
+  const botPatterns = [
+    /googlebot/i,        // Google
+    /adsbot-google/i,    // AdSense
+    /bingbot/i,          // Bing
+    /yandexbot/i,        // Yandex
+    /baiduspider/i,      // Baidu
+    /facebookexternalhit/i, // Facebook
+    /twitterbot/i,       // Twitter
+    /linkedinbot/i       // LinkedIn
+  ];
+
+  const isBot = botPatterns.some(pattern => pattern.test(userAgent));
+
+  if (isBot) {
+    // Show content to bots automatically
+    document.getElementById("auth-placeholder").style.display = "none";
+    document.getElementById("user-content").style.display = "block";
+
+    // Load dynamic content if needed
+    if (typeof loadArticles === "function") loadArticles();
+    if (typeof loadNews === "function") loadNews();
+  }
+</script>
+  
 <!-- Google Sign-In -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>

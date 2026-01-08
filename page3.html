@@ -9,8 +9,6 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
      crossorigin="anonymous"></script>
 
-  
-
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
   <script>
@@ -58,16 +56,13 @@
   <h2>💡 Tips & How-To Guides</h2>
 
   <div id="7SAD15695F5BC71AC27" data-7pub="7SAD15695F5BC71AC27"></div>
-                    <script src="https://code.adclickppc.com/7s-native-ad.js"></script>
-                    <script>
-                    (function() {
-                      initNativeAd(['7SAD15695F5BC71AC27', 'native',  2])
-                      }())
-                    </script>
+  <script src="https://code.adclickppc.com/7s-native-ad.js"></script>
+  <script>
+    (function() { initNativeAd(['7SAD15695F5BC71AC27', 'native',  2]) }())
+  </script>
   
   <div id="tips-list" class="tips-container">Loading tips...</div>
 </div>
-
 
 <!-- Footer -->
 <footer>
@@ -76,33 +71,45 @@
 </footer>
 
 <script>
-  // --- Load Tips from Wikipedia ---
   async function loadTips() {
     const container = document.getElementById("tips-list");
     container.innerHTML = "";
-    const topics = ["how to cook","how to write","how to start a business","time management","gardening tips","health tips","exercise tips","study tips","financial planning","DIY projects"];
 
-    for(const topic of topics) {
+    const rssFeeds = [
+      "https://lifehacker.com/rss",
+      "https://www.wikihow.com/feed/rss",
+      "https://www.makeuseof.com/feed/",
+      "https://www.digitaltrends.com/feed/",
+      "https://www.instructables.com/feed/rss.xml"
+    ];
+
+    for(const feedUrl of rssFeeds){
       try {
-        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(topic)}&utf8=&format=json&origin=*&srlimit=1`;
-        const searchRes = await fetch(searchUrl);
-        const searchData = await searchRes.json();
-        if(searchData.query.search.length === 0) continue;
-        const pageTitle = searchData.query.search[0].title;
-        const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`;
-        const res = await fetch(summaryUrl);
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+        const res = await fetch(apiUrl);
         const data = await res.json();
-        const thumbnail = data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:10px;">` : '';
-        const cardHTML = `
-          <div class="tip-card">
-            ${thumbnail}
-            <h4>${data.title}</h4>
-            <p>${data.extract}</p>
-            <a href="${data.content_urls.desktop.page}" target="_blank">Read more →</a>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', cardHTML);
-      } catch(err){ console.error("Wiki tips error:", err); }
+        if(!data.items) continue;
+
+        data.items.slice(0,5).forEach(item => {
+          const thumbnail = item.thumbnail ? `<img src="${item.thumbnail}" alt="${item.title}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:10px;">` : '';
+          const cardHTML = `
+            <div class="tip-card">
+              ${thumbnail}
+              <h4>${item.title}</h4>
+              <p>${item.description || item.contentSnippet || item.title}</p>
+              <a href="${item.link}" target="_blank">Read more →</a>
+            </div>
+
+            <!-- AdClickPPC Text Ad -->
+            <div id="7SAD15695F58DA25692" data-7pub="7SAD15695F58DA25692"></div>
+            <script src="https://code.adclickppc.com/7s-text-ad.js"></script>
+            <script>
+              (function() { initTextAd(['7SAD15695F58DA25692', 'text']) }())
+            </script>
+          `;
+          container.insertAdjacentHTML('beforeend', cardHTML);
+        });
+      } catch(err){ console.error("RSS tips error:", err); }
     }
   }
 

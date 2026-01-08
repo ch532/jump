@@ -56,12 +56,13 @@
 <div id="user-content" class="main-container">
   <h2>💡 Tips & How-To Guides</h2>
 
+  <!-- Native Ad Placeholder -->
   <div id="7SAD15695F5BC71AC27" data-7pub="7SAD15695F5BC71AC27"></div>
   <script src="https://code.adclickppc.com/7s-native-ad.js"></script>
   <script>
     (function() { initNativeAd(['7SAD15695F5BC71AC27', 'native',  2]) }())
   </script>
-  
+
   <div id="tips-list" class="tips-container">Loading tips...</div>
 </div>
 
@@ -71,58 +72,64 @@
   <p>© 2026 SkylPWorld</p>
 </footer>
 
+<!-- AdClickPPC script once -->
+<script src="https://code.adclickppc.com/7s-text-ad.js"></script>
+
 <script>
-  async function loadTips() {
-    const container = document.getElementById("tips-list");
-    container.innerHTML = "";
+async function loadTips() {
+  const container = document.getElementById("tips-list");
+  container.innerHTML = "";
 
-    const rssFeeds = [
-      "https://lifehacker.com/rss",
-      "https://www.wikihow.com/feed/rss",
-      "https://www.makeuseof.com/feed/",
-      "https://www.digitaltrends.com/feed/",
-      "https://www.instructables.com/feed/rss.xml"
-    ];
+  const rssFeeds = [
+    "https://lifehacker.com/rss",
+    "https://www.wikihow.com/feed/rss",
+    "https://www.makeuseof.com/feed/",
+    "https://www.digitaltrends.com/feed/",
+    "https://www.instructables.com/feed/rss.xml"
+  ];
 
-    for(const feedUrl of rssFeeds){
-      try {
-        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        if(!data.items) continue;
+  for(const feedUrl of rssFeeds){
+    try {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+      if(!data.items) continue;
 
-        data.items.slice(0,5).forEach(item => {
-          const thumbnail = item.thumbnail ? `<img src="${item.thumbnail}" alt="${item.title}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:10px;">` : '';
-          const cardHTML = `
-            <div class="tip-card">
-              ${thumbnail}
-              <h4>${item.title}</h4>
-              <p>${item.description || item.contentSnippet || item.title}</p>
-              <a href="${item.link}" target="_blank">Read more →</a>
-            </div>
+      data.items.slice(0,5).forEach((item, index) => {
+        // Fallback thumbnail
+        let thumb = item.thumbnail || (item.enclosure && item.enclosure.link) || '';
+        const thumbnail = thumb ? `<img src="${thumb}" alt="${item.title}" style="width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:10px;">` : '';
 
-            <!-- AdClickPPC Text Ad -->
-            <div id="7SAD15695F58DA25692" data-7pub="7SAD15695F58DA25692"></div>
-            <script src="https://code.adclickppc.com/7s-text-ad.js"></script>
-            <script>
-              (function() { initTextAd(['7SAD15695F58DA25692', 'text']) }())
-            </script>
-          `;
-          container.insertAdjacentHTML('beforeend', cardHTML);
-        });
-      } catch(err){ console.error("RSS tips error:", err); }
-    }
+        const cardHTML = `
+          <div class="tip-card">
+            ${thumbnail}
+            <h4>${item.title}</h4>
+            <p>${item.description || item.contentSnippet || item.title}</p>
+            <a href="${item.link}" target="_blank">Read more →</a>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+
+        // Insert AdClickPPC after each post
+        const adDiv = document.createElement('div');
+        adDiv.id = `7SAD15695F58DA25692_${feedUrl.split('/')[2]}_${index}`;
+        adDiv.setAttribute('data-7pub','7SAD15695F58DA25692');
+        container.appendChild(adDiv);
+        initTextAd([adDiv.id, 'text']);
+      });
+    } catch(err){ console.error("RSS tips error:", err); }
   }
+}
 
-  // --- Bot auto access ---
-  const userAgent = navigator.userAgent.toLowerCase();
-  const botPatterns = [/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
-  if(botPatterns.some(p => p.test(userAgent))){
-    loadTips(); // bots get content immediately
-  }
+// --- Bot auto access ---
+const userAgent = navigator.userAgent.toLowerCase();
+const botPatterns = [/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
+if(botPatterns.some(p => p.test(userAgent))){
+  loadTips(); // bots get content immediately
+}
 
-  // --- Initialize ---
-  window.onload = loadTips;
+// --- Initialize ---
+window.onload = loadTips;
 </script>
 
 </body>

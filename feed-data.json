@@ -1,0 +1,15 @@
+{
+  "site": {
+    "title": "Skyl P World – News & Updates",
+    "description": "Updates, articles and content from Jump project",
+    "url": "https://ch532.github.io/jump"
+  },
+  "items": [
+    {
+      "title": "Skyl P World Project Launched",
+      "description": "The Skyl P World project is now live with curated content and updates.",
+      "link": "https://ch532.github.io/jump/",
+      "pubDate": "2026-01-10"
+    }
+  ]
+}

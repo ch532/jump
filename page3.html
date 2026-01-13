@@ -145,60 +145,38 @@
 <script src="https://code.adclickppc.com/7s-text-ad.js"></script>
 
 <script>
-async function loadTips() {
-  const container = document.getElementById("tips-list");
-  container.innerHTML = "";
+  // --- RSS fetch ---
+  async function fetchRSS(url, containerId){
+    const container = document.getElementById(containerId);
+    container.innerHTML="Loading...";
+    try{
+      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      container.innerHTML="";
+      if(!data.items || data.items.length===0){ container.innerHTML="<p>No news found.</p>"; return; }
+      data.items.forEach(item=>{
+        const cardHTML = `<div class="article-card">
+          ${item.thumbnail?`<img src="${item.thumbnail}" alt="${item.title}">`:""}
+          <h4>${item.title}</h4>
+          <p>${item.description?item.description.replace(/(<([^>]+)>)/gi,""):""}</p>
+          <a href="${item.link}" target="_blank">Read more →</a>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+      });
+    } catch(e){ console.error(e); container.innerHTML="<p>Failed to load articles.</p>"; }
+  }
 
-  const rssFeeds = [
-    "https://lifehacker.com/rss",
+    // Articles 
+    (function(){
+  const feeds = [
+   "https://lifehacker.com/rss",
     "https://www.wikihow.com/feed/rss",
     "https://www.makeuseof.com/feed/",
     "https://www.digitaltrends.com/feed/",
     "https://www.instructables.com/feed/rss.xml"
   ];
-
-  for (const feedUrl of rssFeeds) {
-    try {
-      const apiUrl = `https://r.jina.ai/http://${feedUrl.replace(/^https?:\/\//, '')}`;
-      const res = await fetch(apiUrl);
-      const text = await res.text();
-
-      // Extract article-like lines
-      const lines = text
-  .split('\n')
-  .map(l => l.trim())
-  .filter(l => l.length > 80 && !l.startsWith('#'))
-  .slice(0, 5);
-
-      lines.forEach((line, index) => {
-        const clean = line.replace('- **', '');
-        const parts = clean.split('**: ');
-        const title = line.slice(0, 60) + '…';
-        const description = line;
-        
-        const cardHTML = `
-          <div class="tip-card">
-            <h4>${title}</h4>
-            <p>${description}</p>
-            <a href="${feedUrl}" target="_blank">Read more →</a>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', cardHTML);
-
-        // AdClickPPC after each article
-        const adDiv = document.createElement('div');
-        adDiv.id = `7SAD15695F58DA25692_${Math.random().toString(36).substring(7)}`;
-        adDiv.setAttribute('data-7pub', '7SAD15695F58DA25692');
-        container.appendChild(adDiv);
-        initTextAd([adDiv.id, 'text']);
-      });
-
-    } catch (err) {
-      console.error("RSS error:", err);
-    }
+    nigeriaFeeds.forEach(url => fetchRSS(url, "tips-list"));
   }
-}
-</script>
 
 </body>
 </html>

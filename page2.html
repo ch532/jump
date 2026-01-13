@@ -7,6 +7,9 @@
   <meta name="description" content="SkylPWorld News: Get the latest updates and breaking news from around the world. Stay informed on sports, health, business, technology, and global events.">
   <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
 
+  <script async src="https://cdn.jsdelivr.net/npm/prebid.js@latest/dist/prebid.js"></script>
+
+
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
      crossorigin="anonymous"></script>
 
@@ -81,6 +84,43 @@
   <a href="privacy.html">Privacy Policy</a>
 </nav>
 
+<p>First paragraph of article...</p>
+
+<!-- Native Ad Placement -->
+<div id="native-ad"></div>
+
+<script>
+pbjs = pbjs || {};
+pbjs.que = pbjs.que || [];
+
+pbjs.que.push(function () {
+  pbjs.addAdUnits([{
+    code: 'native-ad',
+    mediaTypes: {
+      native: {
+        title: { required: true },
+        image: { required: true },
+        sponsoredBy: { required: true },
+        clickUrl: { required: true }
+      }
+    },
+    bids: [{
+      bidder: 'smartyads',
+      params: {
+        host: 'prebid',
+        sourceId: '9628',
+        accountId: '20457'
+      }
+    }]
+  }]);
+
+  pbjs.requestBids({
+    bidsBackHandler: renderNative
+  });
+});
+</script>
+
+<p>Second paragraph continues...</p>
 	
 <div id="7SAD15695F5BEF95D6A" data-7pub="7SAD15695F5BEF95D6A"></div>
                       <script src="https://code.adclickppc.com/7s-banner-ad.js"></script>
@@ -127,6 +167,26 @@
   <p>© 2026 SkylPWorld</p>
 </footer>
 
+<script>
+function renderNative() {
+  const bid = pbjs.getHighestCpmBids('native-ad')[0];
+  if (!bid || !bid.native) return;
+
+  const ad = bid.native;
+
+  document.getElementById('native-ad').innerHTML = `
+    <a href="${ad.clickUrl}" target="_blank" style="text-decoration:none;color:inherit">
+      <div style="border:1px solid #ddd;padding:10px;max-width:300px">
+        <img src="${ad.image.url}" style="width:100%;height:auto">
+        <h3>${ad.title}</h3>
+        <small>Sponsored by ${ad.sponsoredBy}</small>
+      </div>
+    </a>
+  `;
+}
+</script>
+</body>
+	
 <script type="text/javascript" src="https://s.skimresources.com/js/297254X1784727.skimlinks.js"></script>
 	
 <script>

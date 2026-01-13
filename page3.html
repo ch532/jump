@@ -198,26 +198,6 @@ async function loadTips() {
   }
 }
 
-// Bots load immediately
-const userAgent = navigator.userAgent.toLowerCase();
-const botPatterns = [/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i];
-if (botPatterns.some(p => p.test(userAgent))) {
-  loadTips();
-}
-
-window.onload = loadTips;
-</script>
-
-// --- Bot auto access ---
-const userAgent = navigator.userAgent.toLowerCase();
-const botPatterns = [/googlebot/i,/adsbot-google/i,/bingbot/i,/yandexbot/i,/baiduspider/i,/facebookexternalhit/i,/twitterbot/i,/linkedinbot/i];
-if(botPatterns.some(p => p.test(userAgent))){
-  loadTips(); // bots get content immediately
-}
-
-// --- Initialize ---
-window.onload = loadTips;
-</script>
 
 </body>
 </html>

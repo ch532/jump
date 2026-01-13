@@ -1,3 +1,5 @@
+smartyads.com, 20457, DIRECT,  fd2bde0ff2e62c5d
+
 pubmatic.com, 161970, RESELLER, 5d62403b186f2ace
 improvedigital.com, 2345, DIRECT
 adyoulike.com, 2a3352a12f5fdb64b653c9ade1e3b0fe, RESELLER

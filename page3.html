@@ -165,16 +165,17 @@ async function loadTips() {
 
       // Extract article-like lines
       const lines = text
-        .split('\n')
-        .filter(l => l.startsWith('- **'))
-        .slice(0, 5);
+  .split('\n')
+  .map(l => l.trim())
+  .filter(l => l.length > 80 && !l.startsWith('#'))
+  .slice(0, 5);
 
       lines.forEach((line, index) => {
         const clean = line.replace('- **', '');
         const parts = clean.split('**: ');
-        const title = parts[0];
-        const description = parts[1] || title;
-
+        const title = line.slice(0, 60) + '…';
+        const description = line;
+        
         const cardHTML = `
           <div class="tip-card">
             <h4>${title}</h4>

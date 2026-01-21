@@ -58,6 +58,25 @@
     .response { margin-top:15px; font-weight:bold; }
     footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
     footer a { color:#ffcc00; text-decoration:none; margin:0 10px; }
+
+    .main-nav {
+  display: flex;
+  flex-wrap: wrap;        /* 🔥 THIS is the key */
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background: #1c1c2b;
+}
+
+.main-nav a {
+  display: inline-block; /* ensures visibility */
+  padding: 8px 14px;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  white-space: nowrap;   /* prevents text breaking */
+}
   </style>
 </head>
 <body>

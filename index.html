@@ -143,6 +143,35 @@
 <li><a href="support.html">Support</a></li>            
 </nav>
 
+<script>
+document.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", function (e) {
+        const url = this.href;
+        const adType = this.dataset.ad;
+
+        if (window.WebAppBridge) {
+            e.preventDefault();
+
+            if (adType === "interstitial") {
+                WebAppBridge.showInterstitial();
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 800);
+            }
+
+            if (adType === "rewarded") {
+                WebAppBridge.showRewarded(url);
+            }
+        }
+    });
+});
+
+// Called by Android AFTER rewarded ad finishes
+window.onRewardGranted = function (url) {
+    window.location.href = url;
+};
+</script>
+	
 <a href="https://www.boomplay.com/share/playlist/30019697" data-ad="rewarded">
     🎵 Music
 </a>

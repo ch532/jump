@@ -34,6 +34,31 @@
   const analytics = getAnalytics(app);
 </script>
 
+<script>	
+	import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-messaging.js";
+
+const messaging = getMessaging(app);
+
+// Request permission and get token
+getToken(messaging, { vapidKey: 'BGh1YWLQLPEpfT5bQA0IS3F3MWMOAGEfQAARjboIi4LErPOrzsUzAnquxYwVMIFuNvcqZr3VfJ-kDMmlXU78DVY' })
+  .then((currentToken) => {
+    if (currentToken) {
+      console.log('FCM Token:', currentToken);
+      // Send this token to your server or store it to send notifications
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+    }
+  })
+  .catch((err) => {
+    console.log('An error occurred while retrieving token. ', err);
+  });
+
+// Optional: Handle messages when site is in the foreground
+onMessage(messaging, (payload) => {
+  console.log('Message received. ', payload);
+  alert(`New notification: ${payload.notification.title}`);
+});
+</script>
 	
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
      crossorigin="anonymous"></script>

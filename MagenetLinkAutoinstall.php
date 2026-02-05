@@ -570,3 +570,10 @@ if (!class_exists('MagenetLinkAutoinstall')) {
         }
     }
 }
+
+<?php
+define('_MN_USER', 'dd8385b65602c5d56db27c038e600a4ca7b77927');
+require_once($_SERVER['DOCUMENT_ROOT'].'/'._MN_USER.'/magenet.php');
+$magenet = new Magenet();
+echo $magenet->getLinks();
+?>

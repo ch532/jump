@@ -201,7 +201,70 @@ onMessage(messaging, (payload) => {
 <li><a href="support.html">Support</a></li>            
 </nav>
 
-dd8385b65602c5d56db27c038e600a4ca7b77927
+<h2>Huawei Cloud Storage Upload Test</h2>
+
+<input type="file" id="fileInput" />
+<button onclick="uploadFile()">Upload File</button>
+
+<!-- AGConnect SDKs -->
+<script src="https://static.hms-db.com/agconnect-core.js"></script>
+<script src="https://static.hms-db.com/agconnect-auth.js"></script>
+<script src="https://static.hms-db.com/agconnect-storage.js"></script>
+
+<script>
+let agConnectConfig = {
+    client: {
+        project_id: "101653523863556637",
+        app_id: "116859259",
+        client_id: "1881352522669552960",
+        client_secret: "36A23B36B68A3B2C96321F7DE4927667E2C7247719756D4F8C2A6FD48B56CB1D",
+        api_key: "DgEDAGeAuxU1FkS1BMpDKnyyo5AxGGuvOAzzKbAVnzU8+nhQdTZiGv1ofzB0QPbHQpVYcSyneLK4XHcUQ+AsIH3zF7NAt428case3w=="
+    },
+    service: {
+        cloudstorage: {
+            default_storage: "prince-buh07",
+            storage_url: "https://agc-storage-drcn.platform.dbankcloud.cn"
+        }
+    }
+};
+
+let tagCN = 'cn';
+let insCN = agconnect.instance(tagCN);
+
+// Initialize AGC instance
+insCN.configInstance(agConnectConfig);
+
+// Set China route
+insCN.setOption({ routePolicy: 1 });
+
+// Anonymous sign-in
+agconnect.auth(tagCN).signInAnonymously().then(() => {
+    console.log("Anonymous login successful");
+}).catch(err => {
+    console.error("Auth failed:", err);
+});
+
+// Initialize Cloud Storage
+const storageManagement = agconnect.cloudStorage(insCN, 'prince-buh07');
+
+// Upload function
+function uploadFile() {
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) { alert("Please select a file first."); return; }
+
+    const reference = storageManagement.ref("uploads/" + file.name);
+
+    reference.put(file)
+    .then(() => reference.getDownloadURL())
+    .then(url => {
+        console.log("File URL:", url);
+        alert("Upload successful!\nFile URL: " + url);
+    })
+    .catch(err => {
+        console.error("Upload failed:", err);
+    });
+}
+</script>
 	
 <script>
 document.querySelectorAll("a").forEach(link => {

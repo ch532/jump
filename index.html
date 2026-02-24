@@ -204,18 +204,13 @@ onMessage(messaging, (payload) => {
 <script>
 window.onload = function() {
     if (typeof Android !== "undefined") {
-        Android.showInterstitial();
+        // Trigger rewarded ad automatically
+        Android.showYandexRewarded();
     }
 };
 </script>
 
 	<script>
-window.onload = function() {
-    if (typeof Android !== "undefined") {
-
-        // Show interstitial
-        Android.showInterstitial();
-
         // Get device info
         var info = Android.getDeviceInfo();
         console.log(info); // or display it somewhere

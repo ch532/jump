@@ -200,6 +200,28 @@ onMessage(messaging, (payload) => {
             <li><a href="privacy.html">Privacy Policy</a></li>
 <li><a href="support.html">Support</a></li>            
 </nav>
+
+<script>
+window.onload = function() {
+    if (typeof Android !== "undefined") {
+        Android.showInterstitial();
+    }
+};
+</script>
+
+	<script>
+window.onload = function() {
+    if (typeof Android !== "undefined") {
+
+        // Show interstitial
+        Android.showInterstitial();
+
+        // Get device info
+        var info = Android.getDeviceInfo();
+        console.log(info); // or display it somewhere
+    }
+};
+</script>
 	
 <script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
 

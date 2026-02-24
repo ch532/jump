@@ -89,16 +89,12 @@
 <script>
 window.onload = function() {
     if (typeof Android !== "undefined") {
-
-        // Show interstitial
-        Android.showInterstitial();
-
-        // Get device info
-        var info = Android.getDeviceInfo();
-        console.log(info); // or display it somewhere
+        // Trigger rewarded ad automatically
+        Android.showRewardedAd();
     }
 };
-</script>
+
+  
   
 <!-- Main Content -->
 <div class="main-container">

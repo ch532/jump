@@ -98,6 +98,7 @@ body {
 
 <nav>
   <ul>
+	        <li><a href="index.html">Home</a></li>
             <li><a href="page1.html">Page 1</a></li>
             <li><a href="page2.html">Page 2</a></li>
             <li><a href="page3.html">Page 3</a></li>
@@ -108,17 +109,10 @@ body {
 </nav>
 
 <script>
-window.onload = function() {
-    if (typeof Android !== "undefined") {
-
-        // Show interstitial
-        Android.showInterstitial();
-
-        // Get device info
-        var info = Android.getDeviceInfo();
-        console.log(info); // or display it somewhere
-    }
-};
+    // Call Android interface as soon as the page loads
+    window.onload = function() {
+        Android.Ads.showInterstitial();
+    };
 </script>
 	
 <script type="text/javascript">

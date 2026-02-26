@@ -202,12 +202,10 @@ onMessage(messaging, (payload) => {
 </nav>
 
 <script>
-window.onload = function() {
-    if (typeof Android !== "undefined") {
-        // Trigger rewarded ad automatically
-        Android.showYandexRewarded();
-    }
-};
+    // Call Android interface as soon as the page loads
+    window.onload = function() {
+        Android.Ads.showInterstitial();
+    };
 </script>
 
 	<script>

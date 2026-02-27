@@ -108,17 +108,14 @@ body {
 <li><a href="support.html">Support</a></li>           
 </nav>
 
-<script>
-    // Call Android interface as soon as the page loads
-    window.onload = function() {
-        AndroidAds.showInterstitial();
-    };
-</script>
-	
 <script type="text/javascript">
-    aclib.runInterstitial({
-        zoneId: '10811742',
-    });
+    // Automatically show rewarded ad on page load
+    AndroidAds.showRewardedAd();
+
+    // Or trigger manually after some event
+    function triggerAd() {
+        AndroidAds.showRewardedAd();
+    }
 </script>
 
 <script type="text/javascript">

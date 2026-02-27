@@ -108,14 +108,17 @@ body {
 <li><a href="support.html">Support</a></li>           
 </nav>
 
-<script type="text/javascript">
-    // Automatically show rewarded ad on page load
-    AndroidAds.showRewardedAd();
-
-    // Or trigger manually after some event
-    function triggerAd() {
+<script>
+function showRewardedAdAutomatically() {
+    if(window.AndroidAds){
         AndroidAds.showRewardedAd();
     }
+}
+
+// Example: call ad on page load
+window.onload = function() {
+    showRewardedAdAutomatically();
+}
 </script>
 
 <script type="text/javascript">

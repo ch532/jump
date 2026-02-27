@@ -119,18 +119,15 @@ body {
 <li><a href="support.html">Support</a></li>            
 </nav>
 
-<script>
-    // Call Android interface as soon as the page loads
-    window.onload = function() {
-        AndroidAds.showInterstitial();
-    };
-</script>
+<script type="text/javascript">
+    // Automatically show rewarded ad on page load
+    AndroidAds.showRewardedAd();
 
-<div data-type="_mgwidget" data-widget-id="1933146"> 
- </div> 
- <script>(function(w,q){w[q]=w[q]||[];w[q].push(["_mgc.load"])})(window,"_mgq"); 
- </script> 
- 
+    // Or trigger manually after some event
+    function triggerAd() {
+        AndroidAds.showRewardedAd();
+    }
+</script>
 	
 <!--dictionary lookup box by TheFreeDictionary.com-->
 <style>#dictionarybox TD, INPUT, SELECT {font-size:10pt;}</style>

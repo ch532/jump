@@ -103,18 +103,17 @@ body {
 </nav>
 
 <script>
-    // This function calls the JSBridge directly
-    function triggerRewardedAd() {
-        Android.showRewardedAd();
+    // Function to be called from the JavaScript button
+    function requestAd() {
+        if (window.Android) {
+            // Call the Java method 'showRewardedAd'
+            window.Android.showRewardedAd();
+        } else {
+            alert("Android interface not found.");
+        }
     }
 </script>
 	
-<script type="text/javascript">
-    aclib.runInterstitial({
-        zoneId: '10811742',
-    });
-</script>
-
 <div>
     <script type="text/javascript">
         aclib.runBanner({

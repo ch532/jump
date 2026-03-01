@@ -202,18 +202,12 @@ onMessage(messaging, (payload) => {
 </nav>
 
 <script>
-function showRewardedAdAutomatically() {
-    if(window.AndroidAds){
-        AndroidAds.showRewardedAd();
+    // This function calls the JSBridge directly
+    function triggerRewardedAd() {
+        Android.showRewardedAd();
     }
-}
-
-// Example: call ad on page load
-window.onload = function() {
-    showRewardedAdAutomatically();
-}
 </script>
-
+	
 	<script>
         // Get device info
         var info = Android.getDeviceInfo();

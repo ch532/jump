@@ -120,15 +120,11 @@ body {
 </nav>
 
 <script>
-    // Function to be called from the JavaScript button
-    function requestAd() {
-        if (window.Android) {
-            // Call the Java method 'showRewardedAd'
-            window.Android.showRewardedAd();
-        } else {
-            alert("Android interface not found.");
-        }
+window.onload = function() {
+    if (window.Android && Android.showRewardAd) {
+        Android.showRewardAd();  // triggers the ad automatically
     }
+};
 </script>
 	
 <!--dictionary lookup box by TheFreeDictionary.com-->

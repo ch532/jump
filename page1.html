@@ -102,12 +102,20 @@ body {
 <li><a href="support.html">Support</a></li>           
 </nav>
 
+<div id="adOverlay">
+    <button onclick="watchAd()">Continue</button>
+</div>
+
 <script>
-window.onload = function() {
-    if (window.Android && typeof Android.showRewardedAd === 'function') {
-        Android.showRewardedAd();  // triggers the ad automatically
+function watchAd() {
+    if (window.Android && Android.watchAndContinue) {
+        Android.watchAndContinue();
     }
-};
+}
+
+function continueAfterAd() {
+    document.getElementById("adOverlay").style.display = "none";
+}
 </script>
 	
 <div>

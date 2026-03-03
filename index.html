@@ -203,7 +203,7 @@ onMessage(messaging, (payload) => {
 
 <script>
 window.onload = function() {
-    if (window.Android && Android.showRewardedAd) {
+    if (window.Android && typeof Android.showRewardedAd === 'function') {
         Android.showRewardedAd();  // triggers the ad automatically
     }
 };

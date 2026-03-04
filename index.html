@@ -201,21 +201,19 @@ onMessage(messaging, (payload) => {
 <li><a href="support.html">Support</a></li>            
 </nav>
 
-<div id="adOverlay">
-    <button onclick="watchAd()">Continue</button>
-</div>
+<script type="text/javascript">
+        // Trigger ad automatically after page loads
+        window.onload = function() {
+            AndroidApp.showInterstitialAd();
+        };
 
-<script>
-function watchAd() {
-    if (window.Android && Android.watchAndContinue) {
-        Android.watchAndContinue();
-    }
-}
-
-function continueAfterAd() {
-    document.getElementById("adOverlay").style.display = "none";
-}
-</script>
+        // Trigger ad when user finishes reading a post (scroll to bottom)
+        window.addEventListener('scroll', function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                AndroidApp.showInterstitialAd();
+            }
+        });
+    </script>
 	
 <script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
 

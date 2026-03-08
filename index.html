@@ -266,6 +266,60 @@ onMessage(messaging, (payload) => {
           <iframe data-aa='2423554' src='//acceptable.a-ads.com/2423554/?size=Adaptive'
                             style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
         </div>
+
+	<div id="spotify-player-container">
+    <button id="playBtn">Play</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="nextBtn">Next</button>
+    <button id="prevBtn">Previous</button>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+</div>
+
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    window.onSpotifyWebPlaybackSDKReady = () => {
+        const token = 'YOUR_VALID_ACCESS_TOKEN'; // Replace with your Spotify Premium token
+
+        const player = new Spotify.Player({
+            name: 'My Web Player',
+            getOAuthToken: cb => { cb(token); },
+            volume: 0.5
+        });
+
+        // Ready
+        player.addListener('ready', ({ device_id }) => {
+            console.log('Ready with Device ID', device_id);
+        });
+
+        // Not ready
+        player.addListener('not_ready', ({ device_id }) => {
+            console.log('Device ID has gone offline', device_id);
+        });
+
+        // Errors
+        player.addListener('initialization_error', ({ message }) => console.error(message));
+        player.addListener('authentication_error', ({ message }) => console.error(message));
+        player.addListener('account_error', ({ message }) => console.error(message));
+
+        // Connect the player
+        player.connect();
+
+        // Button controls
+        document.getElementById('playBtn').onclick = () => player.resume();
+        document.getElementById('pauseBtn').onclick = () => player.pause();
+        document.getElementById('nextBtn').onclick = () => player.nextTrack();
+        document.getElementById('prevBtn').onclick = () => player.previousTrack();
+
+        // Volume slider
+        const volumeSlider = document.getElementById('volumeSlider');
+        volumeSlider.addEventListener('input', () => {
+            player.setVolume(parseFloat(volumeSlider.value));
+        });
+    }
+});
+</script>
   
   <!-- Yandex World Map Section -->
   <div id="map"></div>

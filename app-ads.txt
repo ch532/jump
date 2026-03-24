@@ -5,6 +5,7 @@ vungle.com, 691fd103d0cc86866112eb24, RESELLER
 vungle.com, 69a94478090600979197f985, RESELLER
 pangle.com, 8792914, RESELLER
 pangle.com, 8720535, RESELLER
+ironsrc.com, 256d5e765, RESELLER
 
 adagio.io, 1522, RESELLER
 

@@ -1,6 +1,11 @@
 # app-ads.txt for your app
 google.com, pub-7728035806961877, DIRECT, f08c47fec0942fa0
 
+vungle.com, 691fd103d0cc86866112eb24, RESELLER
+vungle.com, 69a94478090600979197f985, RESELLER
+pangle.com, 8792914, RESELLER
+pangle.com, 8720535, RESELLER
+
 adagio.io, 1522, RESELLER
 
 adagio.io, 1575, RESELLER

@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QR Scanner</title>
+  <title>QR Scanner & Generator</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 
 <body>
+
   <h2>QR Scanner</h2>
   <div id="reader" style="width:300px;"></div>
   <p id="result"></p>
 
-  <script>
-    function onScanSuccess(decodedText) {
-      document.getElementById("result").innerText = decodedText;
+  <hr>
 
-      // stop scanning after success
+  <h2>Generate QR</h2>
+  <input type="text" id="text" placeholder="Enter text or ID">
+  <button onclick="generateQR()">Generate</button>
+  <br><br>
+  <canvas id="qrCanvas"></canvas>
+
+  <script>
+    // QR Scanner
+    function onScanSuccess(decodedText) {
+      document.getElementById("result").innerText = "Scanned: " + decodedText;
       html5QrcodeScanner.clear();
     }
 
@@ -24,6 +33,22 @@
     );
 
     html5QrcodeScanner.render(onScanSuccess);
+
+    // QR Generator
+    function generateQR() {
+      let text = document.getElementById("text").value;
+
+      if (!text) {
+        alert("Enter something first");
+        return;
+      }
+
+      QRCode.toCanvas(document.getElementById("qrCanvas"), text, function (error) {
+        if (error) console.error(error);
+        console.log("QR generated!");
+      });
+    }
   </script>
+
 </body>
 </html>

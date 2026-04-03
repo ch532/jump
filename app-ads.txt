@@ -1,6 +1,8 @@
 # app-ads.txt for your app
 google.com, pub-7728035806961877, DIRECT, f08c47fec0942fa0
 
+6887905d0bfb8000118996d6, DIRECT, c107d686becd2d77
+
 #Appodeal
 
 appodeal.com, 252110, DIRECT

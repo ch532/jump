@@ -150,9 +150,6 @@ onMessage(messaging, (payload) => {
     gtag('config', 'G-3XR1R2P73Y');
   </script>
 
-  <!-- Yandex Maps -->
-  <script src="https://api-maps.yandex.com/2.1/?lang=en_US&apikey=128d9a3e-ecd0-4651-8008-069f089206f4" type="text/javascript"></script>
-
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
     nav { background:#1f1f2e; text-align:center; padding:12px; }
@@ -179,12 +176,6 @@ onMessage(messaging, (payload) => {
 
     /* Google Search Styling */
     gcse\:search { max-width: 800px; margin: 20px auto; display: block; }
-
-    /* Yandex Map Styling */
-    #map { width: 100%; height: 500px; margin: 20px 0; }
-	  body {
-    padding-bottom: 60px;
-}
   </style>
 </head>
 <body>
@@ -267,64 +258,87 @@ onMessage(messaging, (payload) => {
                             style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
         </div>
 
-	<div id="spotify-player-container">
-    <button id="playBtn">Play</button>
-    <button id="pauseBtn">Pause</button>
-    <button id="nextBtn">Next</button>
-    <button id="prevBtn">Previous</button>
-    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+  
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Page with Map</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+    }
+
+    #map {
+      height: 400px; /* not full screen inside a page */
+      width: 100%;
+    }
+
+    #info {
+      padding: 10px;
+      background: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+
+<div id="info">
+  <h3>Location Info</h3>
+  <div id="details">Click the button to get your location</div>
+  <button id="btn">Show My Location</button>
 </div>
 
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
+<div id="map"></div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    window.onSpotifyWebPlaybackSDKReady = () => {
-        const token = 'f8e6ab2cdb65428b99c7a75010d4b690'; // Replace with your Spotify Premium token
+  let map, marker, geocoder;
 
-        const player = new Spotify.Player({
-            name: 'My Web Player',
-            getOAuthToken: cb => { cb(token); },
-            volume: 0.5
-        });
+  function initMap() {
+    const defaultLocation = { lat: 20, lng: 0 };
 
-        // Ready
-        player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
-        });
+    map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 2,
+      center: defaultLocation,
+    });
 
-        // Not ready
-        player.addListener('not_ready', ({ device_id }) => {
-            console.log('Device ID has gone offline', device_id);
-        });
+    marker = new google.maps.Marker({
+      map: map,
+    });
 
-        // Errors
-        player.addListener('initialization_error', ({ message }) => console.error(message));
-        player.addListener('authentication_error', ({ message }) => console.error(message));
-        player.addListener('account_error', ({ message }) => console.error(message));
+    geocoder = new google.maps.Geocoder();
+  }
 
-        // Connect the player
-        player.connect();
+  document.getElementById("btn").addEventListener("click", () => {
+    navigator.geolocation.getCurrentPosition((position) => {
 
-        // Button controls
-        document.getElementById('playBtn').onclick = () => player.resume();
-        document.getElementById('pauseBtn').onclick = () => player.pause();
-        document.getElementById('nextBtn').onclick = () => player.nextTrack();
-        document.getElementById('prevBtn').onclick = () => player.previousTrack();
+      const userLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
 
-        // Volume slider
-        const volumeSlider = document.getElementById('volumeSlider');
-        volumeSlider.addEventListener('input', () => {
-            player.setVolume(parseFloat(volumeSlider.value));
-        });
-    }
-});
+      map.setCenter(userLocation);
+      map.setZoom(15);
+      marker.setPosition(userLocation);
+
+      geocoder.geocode({ location: userLocation }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          document.getElementById("details").innerHTML =
+            results[0].formatted_address;
+        }
+      });
+
+    });
+  });
 </script>
-  
-  <!-- Yandex World Map Section -->
-  <div id="map"></div>
 
-</div>
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZX6QbpJtYOuRKapcBHcW965yBklOMuCM&libraries=places&callback=initMap">
+</script>
+
+</body>
+</html>
+
 
 <!-- Cookie Consent Banner -->
 <div id="cookie-consent" style="
@@ -404,69 +418,6 @@ document.addEventListener("DOMContentLoaded", function() {
       resultDiv.innerHTML = "<p>Error fetching data. Try again later.</p>";
     }
   }
-</script>
-
-<!-- Yandex Map -->
-<script>
-  function initMap() {
-    ymaps.ready(function() {
-      var myMap = new ymaps.Map("map", {
-          center: [0, 0],
-          zoom: 1,
-          controls: ['zoomControl', 'routeButtonControl']
-      });
-
-      var myPlacemark = new ymaps.Placemark([9.0, 7.5], {
-          balloonContentHeader: 'Connectgold Enterprise',
-          balloonContentBody: `
-              Software development/web design<br>
-              Address: 2 Near Beulah International School, Kurudu, Abuja, FCT, Nigeria<br>
-              Phone: +2347061740924<br>
-              Website: <a href="https://connectgold.sbs" target="_blank">connectgold.sbs</a><br>
-              Mail: <a href="mailto:chykedegreat@gmail.com">chykedegreat@gmail.com</a>
-          `
-      }, { preset: 'islands#blueDotIcon' });
-
-      myMap.geoObjects.add(myPlacemark);
-      myPlacemark.events.add('click', function () { myPlacemark.balloon.open(); });
-
-      ymaps.route([
-          [9.0820, 8.6753],
-          [40.7128, -74.0060]
-      ], { mapStateAutoApply: true }).then(function(route) {
-          myMap.geoObjects.add(route);
-      });
-
-      var routePoints = [];
-      var userRoute;
-      myMap.events.add('click', function (e) {
-          var coords = e.get('coords');
-          routePoints.push(coords);
-          if (routePoints.length === 2) {
-              ymaps.route(routePoints, { mapStateAutoApply: true }).then(function(route) {
-                  if (userRoute) myMap.geoObjects.remove(userRoute);
-                  userRoute = route;
-                  myMap.geoObjects.add(userRoute);
-                  routePoints = [];
-              });
-          }
-      });
-    });
-  }
-
-  window.onload = initMap;
-</script>
-
-<script>
-    window.onNativeLocation = function(lat, lon) {
-        console.log("Latitude:", lat);
-        console.log("Longitude:", lon);
-
-        // use it anywhere
-        // send to server
-        // show on map
-        // store in JS variable
-    };
 </script>
 
 	<!-- Google Tag Manager (noscript) -->

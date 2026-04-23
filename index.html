@@ -17,24 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NPPVKR3V');</script>
 <!-- End Google Tag Manager -->
 
-	<script type="module" src="https://js.arcgis.com/5.0/"></script>
-
-	<script>
-	import "@arcgis/ai-components/components/arcgis-assistant";
-		import "@arcgis/ai-components/components/arcgis-assistant-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-chat";
-		import "@arcgis/ai-components/components/arcgis-assistant-chat-card";
-		import "@arcgis/ai-components/components/arcgis-assistant-chat-card-content";
-		import "@arcgis/ai-components/components/arcgis-assistant-chat-entry";
-		import "@arcgis/ai-components/components/arcgis-assistant-data-exploration-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-help-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-interrupt";
-		import "@arcgis/ai-components/components/arcgis-assistant-layer-filter-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-layer-query-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-layer-styling-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-navigation-agent";
-		import "@arcgis/ai-components/components/arcgis-assistant-shell";
-	</script>
+	
 
 	<script type="module">
   // Import the functions you need from the SDKs you need
@@ -284,17 +267,72 @@ onMessage(messaging, (payload) => {
 	})();
 </script>
 
-<arcgis-map id="main-map" item-id="49ecd45c57e246c2afa63ca254c5b6c4"></arcgis-map>
-<arcgis-assistant
-  reference-element="#main-map"
-  heading="Chyke Agent"
-  description="Give details about location in map">
-  <arcgis-assistant-navigation-agent></arcgis-assistant-navigation-agent>
-  <arcgis-assistant-data-exploration-agent></arcgis-assistant-data-exploration-agent>
-</arcgis-assistant>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Chyke Agent | Global Location Assistant</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css" />
+  
+  <style>
+    html, body, #main-map { padding: 0; margin: 0; height: 100%; width: 100%; overflow: hidden; }
     
+    /* Layout for the Assistant */
+    arcgis-assistant {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 380px;
+      max-height: 90vh;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <arcgis-map id="main-map" item-id="49ecd45c57e246c2afa63ca254c5b6c4">
+    <arcgis-zoom slot="top-left"></arcgis-zoom>
+  </arcgis-map>
+
+  <arcgis-assistant
+    id="chyke-agent"
+    heading="Chyke Agent"
+    description="Ask me about locations on this map"
+    reference-element="main-map">
     
-	
+    <arcgis-assistant-navigation-agent></arcgis-assistant-navigation-agent>
+    <arcgis-assistant-data-exploration-agent></arcgis-assistant-data-exploration-agent>
+    <arcgis-assistant-help-agent></arcgis-assistant-help-agent>
+  </arcgis-assistant>
+
+  <script type="module">
+    // IMPORTANT: Fix the ReferenceError seen in your console
+    window.AndroidApp = window.AndroidApp || {};
+
+    // Use the 5.0 ESM loader to bring in the AI components
+    import { defineCustomElements } from "https://js.arcgis.com/5.0/@arcgis/map-components/dist/loader/index.js";
+    import { defineCustomElements as defineAI } from "https://js.arcgis.com/5.0/@arcgis/ai-components/dist/loader/index.js";
+    
+    // Initialize the components
+    defineCustomElements();
+    defineAI();
+
+    const mapElement = document.querySelector("#main-map");
+    const assistant = document.querySelector("#chyke-agent");
+
+    // Sync the assistant with the map once it's loaded
+    mapElement.addEventListener("arcgisViewReadyChange", () => {
+      console.log("Map successfully loaded. Chyke Agent is active.");
+      assistant.referenceElement = mapElement;
+    });
+  </script>
+</body>
+</html>
+
+    
   
 <!-- Cookie Consent Banner -->
 <div id="cookie-consent" style="

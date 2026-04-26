@@ -17,6 +17,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NPPVKR3V');</script>
 <!-- End Google Tag Manager -->
 
+	<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+
+<script src="blockchain.js"></script>
 	
 
 	<script type="module">
@@ -210,8 +213,13 @@ onMessage(messaging, (payload) => {
 	
 <script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
 
-	<iframe width="384px" height="319px" src="https://plugins.jetbrains.com/embeddable/card/31464"></iframe>
-
+	<div class="node-dashboard" style="font-family: monospace; border: 1px solid #333; padding: 15px; background: #000; color: #00ff00;">
+    <h4 style="margin-top: 0;">🛰️ Goldtech Node Infrastructure</h4>
+    <p>Status: <span id="node-status">Initiating...</span></p>
+    <p>Current Block: <span id="block-height">Fetching...</span></p>
+	</div>
+	
+	
 <!-- Google Translate -->
 <div id="google_translate_element" style="margin: 10px auto; text-align: center;"></div>
 <script type="text/javascript">

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Agent Deployment</title>
+    
+    <!-- Dialogflow Messenger Scripts and Styles -->
+    <script defer src="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/chat-messenger.js"></script>
+    <link rel="stylesheet" href="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/themes/chat-messenger-light.css">
+</head>
+<body>
+
+    <h1>Welcome to Chyke Agent</h1>
+    <p>The chat agent is located at the bottom right of the page.</p>
+
+    <!-- Chat Messenger Component -->
+    <chat-messenger
+        url-allowlist="*"
+    >
+        <chat-messenger-container
+            chat-title="Cyke"
+            chat-title-icon="https://www.gstatic.com/dialogflow-console/common/assets/ccai-favicons/conversational_agents.png"
+            enable-file-upload
+            enable-audio-input
+        >
+            <chat-reset-session-button
+                slot="titlebar-actions"
+                title-text="Start new chat"
+            ></chat-reset-session-button>
+            
+            <chat-toggle-dialog-button
+                slot="titlebar-actions"
+                title-text-expanded="Collapse"
+                title-text-collapsed="Expand"
+            ></chat-toggle-dialog-button>
+            
+            <chat-messenger-close-button
+                slot="titlebar-actions"
+                title-text="Close"
+            ></chat-messenger-close-button>
+        </chat-messenger-container>
+    </chat-messenger>
+
+    <!-- Initialization Script -->
+    <script>
+        window.addEventListener("chat-messenger-loaded", () => {
+            chatSdk.registerContext(
+                chatSdk.prebuilts.ces.createContext({
+                    deploymentName: "projects/46181700573/locations/us/apps/bebc4aae-8edf-48cc-8969-50f4e088efd0/deployments/6e8dab7b-2848-49ea-a19f-3c0283be2475",
+                    tokenBroker: {
+                        enableTokenBroker: true,
+                        enableRecaptcha: true
+                    }
+                }),
+            );
+        });
+    </script>
+
+</body>
+</html>

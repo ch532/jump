@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protech</title>
+    
+    <script defer src="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/chat-messenger.js"></script>
+    <link rel="stylesheet" href="https://www.gstatic.com/ces-console/fast/chat-messenger/prod/v1.15/themes/chat-messenger-light.css">
+</head>
+<body>
+
+    <chat-messenger url-allowlist="*">
+        <chat-messenger-container
+            chat-title="Protech"
+            chat-title-icon="gold-2.png"
+            enable-file-upload
+            enable-audio-input
+        >
+            <chat-reset-session-button slot="titlebar-actions" title-text="Start new chat"></chat-reset-session-button>
+            <chat-toggle-dialog-button slot="titlebar-actions" title-text-expanded="Collapse" title-text-collapsed="Expand"></chat-toggle-dialog-button>
+            <chat-messenger-close-button slot="titlebar-actions" title-text="Close"></chat-messenger-close-button>
+        </chat-messenger-container>
+    </chat-messenger>
+
+    <script>
+        window.addEventListener("chat-messenger-loaded", () => {
+            chatSdk.registerContext(
+                chatSdk.prebuilts.ces.createContext({
+                    deploymentName: "projects/46181700573/locations/us/apps/72147fa5-c4f0-459b-91fd-461c06409311/deployments/deployment-version-29/04/2026, 01:52:58 AM",
+                    tokenBroker: {
+                        enableTokenBroker: true,
+                        enableRecaptcha: true
+                    }
+                }),
+            );
+        });
+    </script>
+
+</body>
+</html>

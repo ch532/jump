@@ -143,8 +143,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <li><a href="support.html">Support</a></li>            
 </nav>
 
-	<script type="module">
-  // All imports fixed to use the 12.12.1 web URLs (Standard for 2026)
+<script type="module">
+  // We must use full URLs for the browser to understand the imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
   import { getPerformance } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-performance.js";
@@ -161,27 +161,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     measurementId: "G-XTJ5Z0JR0K"
   };
 
-  // Initialize Firebase
+  // Initialize Firebase (Only call this ONCE to avoid "SDK already initialized" error)
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const perf = getPerformance(app);
 
-  // Initialize Gemini AI (Using 'app' variable defined above)
+  // Initialize Gemini AI
   const ai = getAI(app, { backend: new GoogleAIBackend() });
   const model = getGenerativeModel(ai, { model: "gemini-3-flash-preview" });
 
   async function run() {
-    const prompt = "Send me message or ask me.";
-    const result = await model.generateContent(prompt);
-    console.log("AI Story Output:", result.response.text());
+    try {
+      const prompt = "Write a story about a magic backpack.";
+      const result = await model.generateContent(prompt);
+      console.log(result.response.text());
+    } catch (error) {
+      console.error("AI Error:", error.message);
+      console.log("Note: If you get a 401 error, you MUST disable 'Enforce App Check' in the Firebase Console for Vertex AI.");
+    }
   }
 
-  // Exposed functions for your Submit button
-  window.signUpUser = (email, password) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((user) => console.log("Success:", user))
-      .catch((err) => console.error("Error:", err.message));
+  // Auth functions (making them global so your buttons can see them)
+  window.loginUser = (email, password) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((user) => console.log("Logged in:", user))
+      .catch((err) => console.error(err.message));
   };
 
   run();
@@ -191,7 +196,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <div class="g-recaptcha" data-sitekey="6LdbkNYsAAAAAD5n2Rastbc29juALJ3Azqw1ydhO" data-action="LOGIN"></div>
   <br/>
   <input type="submit" value="Submit">
-</form>
+</form>	
+
 	
 <script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
 	

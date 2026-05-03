@@ -165,6 +165,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+const auth = getAuth(app)
+	const perf = getPerformance(app);
 </script>
 
 	<script>
@@ -177,15 +179,7 @@ const firebaseConfig = {
   // ...
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-
-// Initialize Performance Monitoring and get a reference to the service
-const perf = getPerformance(app);
-	</script>
-
-	<script>		
+	<script>		is
 import { initializeApp } from "firebase/app";
 import { getAI, getGenerativeModel, GoogleAIBackend } from "firebase/ai";
 
@@ -193,10 +187,7 @@ import { getAI, getGenerativeModel, GoogleAIBackend } from "firebase/ai";
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 const firebaseConfig = {
   // ...
-};
-
-// Initialize FirebaseApp
-const firebaseApp = initializeApp(firebaseConfig);
+}
 
 // Initialize the Gemini Developer API backend service
 const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });

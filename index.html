@@ -144,14 +144,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </nav>
 
 	<script type="module">
-  // Import the functions you need from the SDKs you need
+  // All imports fixed to use the 12.12.1 web URLs (Standard for 2026)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getPerformance } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-performance.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+  import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-ai.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
     authDomain: "air-skye.firebaseapp.com",
@@ -165,57 +164,34 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-const auth = getAuth(app)
-	const perf = getPerformance(app);
+  const auth = getAuth(app);
+  const perf = getPerformance(app);
+
+  // Initialize Gemini AI (Using 'app' variable defined above)
+  const ai = getAI(app, { backend: new GoogleAIBackend() });
+  const model = getGenerativeModel(ai, { model: "gemini-3-flash-preview" });
+
+  async function run() {
+    const prompt = "Send me message or ask me.";
+    const result = await model.generateContent(prompt);
+    console.log("AI Story Output:", result.response.text());
+  }
+
+  // Exposed functions for your Submit button
+  window.signUpUser = (email, password) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((user) => console.log("Success:", user))
+      .catch((err) => console.error("Error:", err.message));
+  };
+
+  run();
 </script>
 
-	<script>
-	import { initializeApp } from "firebase/app";
-import { getPerformance } from "firebase/performance";
-
-// TODO: Replace the following with your app's Firebase project configuration
-// See: https://firebase.google.com/docs/web/learn-more#config-object
-const firebaseConfig = {
-  // ...
-};
-
-	<script>		is
-import { initializeApp } from "firebase/app";
-import { getAI, getGenerativeModel, GoogleAIBackend } from "firebase/ai";
-
-// TODO(developer) Replace the following with your app's Firebase configuration
-// See: https://firebase.google.com/docs/web/learn-more#config-object
-const firebaseConfig = {
-  // ...
-}
-
-// Initialize the Gemini Developer API backend service
-const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
-
-// Create a `GenerativeModel` instance with a model that supports your use case
-const model = getGenerativeModel(ai, { model: "gemini-3-flash-preview" });
-
-// Wrap in an async function so you can use await
-async function run() {
-  // Provide a prompt that contains text
-  const prompt = "Write a story about a magic backpack."
-
-  // To generate text output, call generateContent with the text input
-  const result = await model.generateContent(prompt);
-
-  const response = result.response;
-  const text = response.text();
-  console.log(text);
-}
-
-run();
-	</script>
-
- <form action="" method="POST">
-      <div class="g-recaptcha" data-sitekey="6LdbkNYsAAAAAD5n2Rastbc29juALJ3Azqw1ydhO" data-action="LOGIN"></div>
-      <br/>
-      <input type="submit" value="Submit">
-    </form>
+<form action="" method="POST">
+  <div class="g-recaptcha" data-sitekey="6LdbkNYsAAAAAD5n2Rastbc29juALJ3Azqw1ydhO" data-action="LOGIN"></div>
+  <br/>
+  <input type="submit" value="Submit">
+</form>
 	
 <script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
 	

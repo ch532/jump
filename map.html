@@ -33,8 +33,7 @@
     <div style="background: #fff; padding: 15px 40px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000;">
       <img src="https://connectgold.sbs/gold-2.png" alt="Connect Gold Logo" style="height: 50px; width: auto; margin-right: 20px;">
       <h1 style="font-size: 22px; margin: 0; color: #333; font-weight: 500;">Okoye Chibuike maptech</h1>
-</div>
-
+    </div>
 
     <div class="feature-section">
         <h2>1. Earthquake Data Layer</h2>
@@ -112,18 +111,17 @@
 
     <script>
         (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-            key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw", // <--- REPLACE THIS
+            key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw", 
             v: "beta"
         });
     </script>
 
     <script>
         async function initAll() {
-            const { Map, InfoWindow, KmlLayer, StreetViewPanorama } = await google.maps.importLibrary("maps");
+            const { Map, KmlLayer } = await google.maps.importLibrary("maps");
             const { Autocomplete, PlacesService } = await google.maps.importLibrary("places");
             const { DirectionsService, DirectionsRenderer, DistanceMatrixService } = await google.maps.importLibrary("routes");
             const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-            const geocoder = new google.maps.Geocoder();
 
             // 1. Quakes
             const qMap = new Map(document.getElementById("quake-map"), { center: {lat: 20, lng: -160}, zoom: 2 });
@@ -171,17 +169,27 @@
             const ac = new Autocomplete(document.getElementById("ship-addr"), { types: ["address"] });
             ac.addListener("place_changed", () => {
                 const p = ac.getPlace();
-                p.address_components.forEach(c => {
-                    if(c.types.includes("locality")) document.getElementById("city-f").value = c.long_name;
-                    if(c.types.includes("postal_code")) document.getElementById("zip-f").value = c.long_name;
-                });
+                if (p.address_components) {
+                    p.address_components.forEach(c => {
+                        if(c.types.includes("locality")) document.getElementById("city-f").value = c.long_name;
+                        if(c.types.includes("postal_code")) document.getElementById("zip-f").value = c.long_name;
+                    });
+                }
             });
 
-            // 11. Custom Controls
-            const kMap = new Map(document.getElementById("kml-map"), { center: {lat: 41, lng: -87}, zoom: 4 });
-            new KmlLayer({ url: "http://api.flickr.com/services/feeds/geo/?g=322338@N20&lang=en-us&format=feed-georss", map: kMap });
-            const btn = document.createElement("button"); btn.className = "custom-btn"; btn.innerText = "Center Chicago";
-            btn.onclick = () => kMap.setCenter({lat: 41.87, lng: -87.62});
+            // 11. Custom Controls & KML Layer (YOUR CUSTOM KML)
+            const kMap = new Map(document.getElementById("kml-map"), { center: {lat: 9.001, lng: 7.585}, zoom: 12 });
+            
+            // Adding your KML file
+            new KmlLayer({ 
+                url: "https://skyl.name.ng/Okoye-Chibuike.kml", 
+                map: kMap 
+            });
+
+            const btn = document.createElement("button"); 
+            btn.className = "custom-btn"; 
+            btn.innerText = "Center Abuja";
+            btn.onclick = () => kMap.setCenter({lat: 9.001, lng: 7.585});
             kMap.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
         }
         window.onload = initAll;

@@ -1,197 +1,236 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Geo-Intelligence Master Library</title>
+<head>
+    <title>Okoye Chibuike Maptech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
-      body {
-        font-family: 'Roboto', sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f0f2f5;
-      }
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 20px; background-color: #f0f2f5; }
+        .feature-section { background: #fff; margin-bottom: 40px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h2 { color: #1a73e8; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; font-size: 24px; }
+        .map-frame { height: 450px; width: 100%; border: 1px solid #ddd; border-radius: 8px; position: relative; overflow: hidden; }
+        
+        /* Specialized Layouts */
+        .split-flex { display: flex; height: 450px; }
+        .sidebar-panel { flex: 0 0 300px; padding: 10px; overflow-y: auto; background: #fafafa; border-left: 1px solid #ddd; font-size: 12px; }
+        .main-panel { flex-grow: 1; position: relative; }
+        
+        /* Section 7 & 11 Controls */
+        #floating-panel { position: absolute; top: 10px; left: 10px; z-index: 5; background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .custom-btn { background: #fff; border: 1px solid #ccc; padding: 8px; margin: 5px; cursor: pointer; border-radius: 2px; }
 
-      .feature-section {
-        background: #fff;
-        margin-bottom: 30px;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      }
-
-      h2 { color: #1a73e8; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; }
-
-      .map-frame {
-        height: 550px; /* Slightly taller for the split checkout UI */
-        width: 100%;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-
-      /* Checkout Split Layout */
-      .checkout-container { display: flex; height: 100%; }
-      .checkout-form-panel {
-        flex: 0 0 350px;
-        padding: 15px;
-        overflow-y: auto;
-        background: #fff;
-        border-right: 1px solid #ddd;
-      }
-      .checkout-map-panel { flex-grow: 1; position: relative; }
-
-      /* Landmark Marker Styling */
-      .descriptor-marker {
-        background-color: #4285F4;
-        border-radius: 50%;
-        color: #FFFFFF;
-        font-size: 11px;
-        padding: 4px 7px;
-        border: 2px solid white;
-      }
-      .descriptor-marker.highlighted { background-color: #ea4335 !important; }
-
-      #combined-address {
-        border: none;
-        background: #f9f9f9;
-        padding: 10px;
-        margin-top: 10px;
-        font-size: 13px;
-        color: #555;
-        width: 100%;
-        height: 80px;
-      }
+        /* Section 10 & 13 Forms */
+        .auto-form { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .full-width { grid-column: span 2; }
+        .descriptor-marker { background-color: #4285F4; border-radius: 50%; color: #fff; padding: 4px 8px; font-size: 11px; border: 2px solid #fff; }
+        .highlighted { background-color: #ea4335 !important; }
+        
+        /* Street View Split */
+        #street-map, #pano { height: 100%; width: 50%; float: left; }
     </style>
-  </head>
-  <body>
+</head>
+<body>
 
     <div class="feature-section">
-      <h2>13. Checkout: Address Descriptors & Landmarks</h2>
-      <div class="map-frame">
-        <div class="checkout-container">
-          <div class="checkout-form-panel">
-            <h6>Delivery Details</h6>
-            <div class="input-field">
-              <input type="text" id="desc-autocomplete" placeholder="Search Address">
-            </div>
-            <div class="input-field">
-              <select id="landmarks-select">
-                <option value="" disabled selected>Nearby Landmarks</option>
-              </select>
-            </div>
-            <div class="row">
-              <div class="input-field col s6"><input type="text" id="desc-city" placeholder="City"></div>
-              <div class="input-field col s6"><input type="text" id="desc-zip" placeholder="Zip"></div>
-            </div>
-            <textarea id="combined-address" readonly placeholder="Final formatted address will appear here..."></textarea>
-            <button class="btn blue waves-effect waves-light" style="width:100%; margin-top:10px;">Confirm Address</button>
-          </div>
-          <div id="checkout-map" class="checkout-map-panel"></div>
-        </div>
-      </div>
+        <h2>1. Earthquake Data Layer</h2>
+        <div id="quake-map" class="map-frame"></div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <div class="feature-section">
+        <h2>2. Distance Matrix Service</h2>
+        <div class="split-flex">
+            <div id="dist-map" class="main-panel"></div>
+            <div class="sidebar-panel"><pre id="dm-res">Results will appear here...</pre></div>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>3. Commute Solution (Iframe)</h2>
+        <div class="map-frame">
+            <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/commutes/lcjm/commutes.html" width="100%" height="100%" style="border:0;"></iframe>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>4. Geolocation (Browser GPS)</h2>
+        <div id="geo-map" class="map-frame"></div>
+    </div>
+
+    <div class="feature-section">
+        <h2>5. Advanced Markers: Uluru</h2>
+        <div id="uluru-map" class="map-frame"></div>
+    </div>
+
+    <div class="feature-section">
+        <h2>6. Place Details Service</h2>
+        <div id="place-map" class="map-frame"></div>
+    </div>
+
+    <div class="feature-section">
+        <h2>7. Directions Service with Text Panel</h2>
+        <div class="split-flex">
+            <div class="main-panel">
+                <div id="floating-panel">
+                    <select id="start-dir"><option value="chicago, il">Chicago</option><option value="st louis, mo">St Louis</option></select>
+                    <select id="end-dir"><option value="los angeles, ca">Los Angeles</option><option value="joplin, mo">Joplin</option></select>
+                </div>
+                <div id="dir-map" style="height:100%"></div>
+            </div>
+            <div id="dir-panel" class="sidebar-panel"></div>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>8. Neighborhood Discovery (Iframe)</h2>
+        <div class="map-frame">
+            <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/neighborhood-discovery/pmrz/neighborhood-discovery.html" width="100%" height="100%" style="border:0;"></iframe>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>9. Aerial View (3D Rendering)</h2>
+        <div class="map-frame" style="background:#000;">
+            <video id="aerial-video" style="width:100%; height:100%;" muted autoplay loop></video>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>10. Place Autocomplete Address Form</h2>
+        <div class="map-frame">
+            <div class="auto-form">
+                <input id="ship-addr" class="full-width" placeholder="Enter address">
+                <input id="city-f" placeholder="City">
+                <input id="state-f" placeholder="State">
+                <input id="zip-f" placeholder="Zip">
+                <input id="country-f" placeholder="Country">
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>11. Custom Controls & KML Layer</h2>
+        <div id="kml-map" class="map-frame"></div>
+    </div>
+
+    <div class="feature-section">
+        <h2>12. Street View Split-Map Pane</h2>
+        <div class="map-frame">
+            <div id="street-map"></div>
+            <div id="pano"></div>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2>13. Checkout: Address Descriptors & Landmarks</h2>
+        <div class="map-frame">
+            <div class="checkout-container" style="display:flex; height:100%;">
+                <div style="flex:0 0 300px; padding:15px; border-right:1px solid #ddd;">
+                    <input type="text" id="chk-auto" placeholder="Search Address">
+                    <select id="chk-landmarks" class="browser-default" style="margin-top:10px;"></select>
+                    <textarea id="chk-final" style="height:100px; margin-top:10px;" readonly></textarea>
+                </div>
+                <div id="chk-map" style="flex-grow:1;"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-        key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw",
-        v: "beta",
-      });
+        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+            key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw", // <--- REPLACE THIS
+            v: "beta"
+        });
     </script>
 
     <script>
-      async function initApp() {
-        // Load required libraries
-        const { Map, InfoWindow } = await google.maps.importLibrary("maps");
-        const { Autocomplete } = await google.maps.importLibrary("places");
-        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-        const geocoder = new google.maps.Geocoder();
+        async function initAll() {
+            const { Map, InfoWindow, KmlLayer, StreetViewPanorama } = await google.maps.importLibrary("maps");
+            const { Autocomplete, PlacesService } = await google.maps.importLibrary("places");
+            const { DirectionsService, DirectionsRenderer, DistanceMatrixService } = await google.maps.importLibrary("routes");
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+            const geocoder = new google.maps.Geocoder();
 
-        // --- 13. Checkout Logic ---
-        const map = new Map(document.getElementById("checkout-map"), {
-          center: { lat: 28.432, lng: 77.045 },
-          zoom: 16,
-          mapId: "f8b9e6163e48e501"
-        });
+            // 1. Quakes
+            const qMap = new Map(document.getElementById("quake-map"), { center: {lat: 20, lng: -160}, zoom: 2 });
+            window.eqfeed_callback = (data) => qMap.data.addGeoJson(data);
+            const script = document.createElement("script");
+            script.src = "https://storage.googleapis.com/mapsdevsite/json/quakes.geo.json";
+            document.head.appendChild(script);
 
-        const mainMarker = new AdvancedMarkerElement({ map, gmpDraggable: true, position: { lat: 28.432, lng: 77.045 } });
-        const landmarksSelect = document.getElementById('landmarks-select');
-        const autocompleteInput = document.getElementById('desc-autocomplete');
-        const descriptorMarkers = [];
-        let currentFormattedAddr = "";
+            // 2. Distance Matrix
+            const dmMap = new Map(document.getElementById("dist-map"), { center: {lat: 55, lng: 10}, zoom: 4 });
+            const dmSvc = new DistanceMatrixService();
+            dmSvc.getDistanceMatrix({ origins: ['London'], destinations: ['Paris'], travelMode: 'DRIVING' })
+                 .then(res => document.getElementById("dm-res").innerText = JSON.stringify(res, null, 2));
 
-        // Init Materialize Select
-        M.FormSelect.init(landmarksSelect);
-
-        const autocomplete = new Autocomplete(autocompleteInput, {
-          fields: ['place_id', 'address_components', 'formatted_address', 'geometry']
-        });
-
-        autocomplete.addListener('place_changed', () => {
-          const place = autocomplete.getPlace();
-          if (!place.geometry) return;
-
-          mainMarker.position = place.geometry.location;
-          map.setCenter(place.geometry.location);
-          currentFormattedAddr = place.formatted_address;
-          
-          // Fill form
-          place.address_components.forEach(c => {
-            if(c.types.includes('locality')) document.getElementById('desc-city').value = c.long_name;
-            if(c.types.includes('postal_code')) document.getElementById('desc-zip').value = c.long_name;
-          });
-
-          lookupDescriptors(place.place_id);
-        });
-
-        async function lookupDescriptors(placeId) {
-          geocoder.geocode({
-            placeId: placeId,
-            extraComputations: ['ADDRESS_DESCRIPTORS']
-          }, (results, status) => {
-            if (status === 'OK' && results[0].address_descriptor) {
-              const landmarks = results[0].address_descriptor.landmarks;
-              landmarksSelect.innerHTML = '<option value="" disabled selected>Choose a Landmark</option>';
-              
-              descriptorMarkers.forEach(m => m.map = null);
-              descriptorMarkers.length = 0;
-
-              landmarks.forEach((ld, i) => {
-                const opt = document.createElement('option');
-                opt.value = ld.display_name;
-                opt.text = `${ld.spatial_relationship} ${ld.display_name}`;
-                landmarksSelect.appendChild(opt);
-
-                // Create Landmark Marker
-                const dot = document.createElement('div');
-                dot.className = 'descriptor-marker';
-                dot.textContent = i + 1;
-
-                geocoder.geocode({ placeId: ld.place_id }, (res) => {
-                  if (res && res[0]) {
-                    const lm = new AdvancedMarkerElement({
-                      map,
-                      position: res[0].geometry.location,
-                      content: dot
-                    });
-                    descriptorMarkers.push(lm);
-                  }
+            // 4. Geolocation
+            const geoMap = new Map(document.getElementById("geo-map"), { center: {lat: 0, lng: 0}, zoom: 2 });
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(p => {
+                    const pos = {lat: p.coords.latitude, lng: p.coords.longitude};
+                    geoMap.setCenter(pos); geoMap.setZoom(14);
+                    new google.maps.Marker({position: pos, map: geoMap, title: "You are here"});
                 });
-              });
-              M.FormSelect.init(landmarksSelect);
             }
-          });
+
+            // 5. Uluru
+            const uMap = new Map(document.getElementById("uluru-map"), { center: {lat: -25.344, lng: 131.031}, zoom: 4, mapId: "DEMO_MAP_ID" });
+            new AdvancedMarkerElement({ map: uMap, position: {lat: -25.344, lng: 131.031}, title: "Uluru" });
+
+            // 6. Place Details
+            const pMap = new Map(document.getElementById("place-map"), { center: {lat: -33.866, lng: 151.196}, zoom: 15 });
+            const pSvc = new PlacesService(pMap);
+            pSvc.getDetails({ placeId: 'ChIJN1t_tDeuEmsRUsoyG83frY4' }, (p) => {
+                if(p) new google.maps.Marker({map: pMap, position: p.geometry.location});
+            });
+
+            // 7. Directions
+            const drSvc = new DirectionsService();
+            const drRend = new DirectionsRenderer({ map: new Map(document.getElementById("dir-map"), {zoom: 4, center: {lat: 41, lng: -87}}), panel: document.getElementById("dir-panel") });
+            const route = () => drSvc.route({ origin: document.getElementById("start-dir").value, destination: document.getElementById("end-dir").value, travelMode: 'DRIVING' }).then(r => drRend.setDirections(r));
+            document.getElementById("start-dir").addEventListener("change", route);
+            document.getElementById("end-dir").addEventListener("change", route);
+            route();
+
+            // 9. Aerial View
+            fetch(`https://aerialview.googleapis.com/v1/videos:lookupVideo?address=1600%20Amphitheatre%20Parkway%20Mountain%20View%20CA&key=INSERT_YOUR_API_KEY`)
+                .then(r => r.json()).then(d => { if(d.uris) document.getElementById("aerial-video").src = d.uris.MP4_MEDIUM.landscapeUri; });
+
+            // 10. Address Form
+            const ac = new Autocomplete(document.getElementById("ship-addr"), { types: ["address"] });
+            ac.addListener("place_changed", () => {
+                const p = ac.getPlace();
+                p.address_components.forEach(c => {
+                    if(c.types.includes("locality")) document.getElementById("city-f").value = c.long_name;
+                    if(c.types.includes("postal_code")) document.getElementById("zip-f").value = c.long_name;
+                });
+            });
+
+            // 11. Custom Controls
+            const kMap = new Map(document.getElementById("kml-map"), { center: {lat: 41, lng: -87}, zoom: 4 });
+            new KmlLayer({ url: "http://api.flickr.com/services/feeds/geo/?g=322338@N20&lang=en-us&format=feed-georss", map: kMap });
+            const btn = document.createElement("button"); btn.className = "custom-btn"; btn.innerText = "Center Chicago";
+            btn.onclick = () => kMap.setCenter({lat: 41.87, lng: -87.62});
+            kMap.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
+
+            // 12. Street View Split
+            const sMap = new Map(document.getElementById("street-map"), { center: {lat: 42.345, lng: -71.098}, zoom: 14 });
+            const pano = new StreetViewPanorama(document.getElementById("pano"), { position: {lat: 42.345, lng: -71.098} });
+            sMap.setStreetView(pano);
+
+            // 13. Checkout Landmarks
+            const cMap = new Map(document.getElementById("chk-map"), { center: {lat: 28.43, lng: 77.04}, zoom: 16, mapId: "DEMO_MAP_ID" });
+            const cMark = new AdvancedMarkerElement({ map: cMap, position: {lat: 28.43, lng: 77.04}, gmpDraggable: true });
+            const cAuto = new Autocomplete(document.getElementById("chk-auto"));
+            cAuto.addListener("place_changed", () => {
+                const p = cAuto.getPlace();
+                cMap.setCenter(p.geometry.location); cMark.position = p.geometry.location;
+                geocoder.geocode({ placeId: p.place_id, extraComputations: ['ADDRESS_DESCRIPTORS'] }, (res) => {
+                    const lms = res[0].address_descriptor.landmarks;
+                    const sel = document.getElementById("chk-landmarks");
+                    sel.innerHTML = lms.map(l => `<option>${l.spatial_relationship} ${l.display_name}</option>`).join('');
+                });
+            });
         }
-
-        landmarksSelect.addEventListener('change', () => {
-          const landmarkStr = landmarksSelect.options[landmarksSelect.selectedIndex].text;
-          document.getElementById('combined-address').value = `${currentFormattedAddr}\nNote: ${landmarkStr}`;
-        });
-
-        // Initialize other 1-12 sections below...
-      }
-
-      window.onload = initApp;
+        window.onload = initAll;
     </script>
-  </body>
+</body>
 </html>

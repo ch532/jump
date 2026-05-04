@@ -1,85 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logic & Lens | Global Geo-Hub</title>
+<html>
+  <head>
+    <title>Geo-Intelligence Master Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
-        /* Map takes up 100% of the screen with no grey borders */
-        html, body, #map { height: 100%; margin: 0; padding: 0; background-color: #aad3df; }
-        
-        /* High-end Integrated Marker Styling */
-        .map-feature-card {
-            background: white; border-radius: 12px; padding: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-bottom: 4px solid #4285F4;
-            min-width: 180px; font-family: 'Roboto', sans-serif;
-        }
-        .feature-title { font-weight: bold; color: #1a73e8; font-size: 13px; margin-bottom: 8px; }
-        .feature-btn { 
-            background: #1a73e8; color: white; border: none; padding: 8px; 
-            width: 100%; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 500;
-        }
-        .feature-btn:hover { background: #1557b0; }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw&libraries=marker,places,routes,addressValidation&v=beta"></script>
-</head>
-<body>
+      body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f2f5;
+      }
 
-    <div id="map"></div>
+      .feature-section {
+        background: #fff;
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+
+      h2 { color: #1a73e8; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; }
+
+      .map-frame {
+        height: 550px; /* Slightly taller for the split checkout UI */
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      /* Checkout Split Layout */
+      .checkout-container { display: flex; height: 100%; }
+      .checkout-form-panel {
+        flex: 0 0 350px;
+        padding: 15px;
+        overflow-y: auto;
+        background: #fff;
+        border-right: 1px solid #ddd;
+      }
+      .checkout-map-panel { flex-grow: 1; position: relative; }
+
+      /* Landmark Marker Styling */
+      .descriptor-marker {
+        background-color: #4285F4;
+        border-radius: 50%;
+        color: #FFFFFF;
+        font-size: 11px;
+        padding: 4px 7px;
+        border: 2px solid white;
+      }
+      .descriptor-marker.highlighted { background-color: #ea4335 !important; }
+
+      #combined-address {
+        border: none;
+        background: #f9f9f9;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #555;
+        width: 100%;
+        height: 80px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="feature-section">
+      <h2>13. Checkout: Address Descriptors & Landmarks</h2>
+      <div class="map-frame">
+        <div class="checkout-container">
+          <div class="checkout-form-panel">
+            <h6>Delivery Details</h6>
+            <div class="input-field">
+              <input type="text" id="desc-autocomplete" placeholder="Search Address">
+            </div>
+            <div class="input-field">
+              <select id="landmarks-select">
+                <option value="" disabled selected>Nearby Landmarks</option>
+              </select>
+            </div>
+            <div class="row">
+              <div class="input-field col s6"><input type="text" id="desc-city" placeholder="City"></div>
+              <div class="input-field col s6"><input type="text" id="desc-zip" placeholder="Zip"></div>
+            </div>
+            <textarea id="combined-address" readonly placeholder="Final formatted address will appear here..."></textarea>
+            <button class="btn blue waves-effect waves-light" style="width:100%; margin-top:10px;">Confirm Address</button>
+          </div>
+          <div id="checkout-map" class="checkout-map-panel"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+        key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw",
+        v: "beta",
+      });
+    </script>
 
     <script>
-        async function initMap() {
-            const { Map } = await google.maps.importLibrary("maps");
-            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+      async function initApp() {
+        // Load required libraries
+        const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+        const { Autocomplete } = await google.maps.importLibrary("places");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+        const geocoder = new google.maps.Geocoder();
 
-            const map = new Map(document.getElementById("map"), {
-                center: { lat: 20, lng: 10 }, 
-                zoom: 3, // Starts at the "Wonderful" Global view
-                mapId: "dd61f599aec3185b58ca538d", // Your ID for clear Google styling
-                mapTypeControl: true,
-                streetViewControl: true,
-                fullscreenControl: true,
-                backgroundColor: '#aad3df',
-                isFractionalZoomEnabled: true
-            });
+        // --- 13. Checkout Logic ---
+        const map = new Map(document.getElementById("checkout-map"), {
+          center: { lat: 28.432, lng: 77.045 },
+          zoom: 16,
+          mapId: "f8b9e6163e48e501"
+        });
 
-            // Features are bound to the ground. User finds them when they zoom in.
-            const dataPoints = [
-                { 
-                    lat: 9.057, lng: 7.495, 
-                    title: "Environmental Intelligence", 
-                    content: '<gmp-air-quality-meter location="9.057,7.495"></gmp-air-quality-meter>' 
-                },
-                { 
-                    lat: 9.0765, lng: 7.3985, 
-                    title: "Solar Potential", 
-                    content: '<button class="feature-btn" onclick="alert(\'Analyzing Energy...\')">Get Solar Data</button>' 
-                },
-                { 
-                    lat: 9.0667, lng: 7.4833, 
-                    title: "Logistics Optimization", 
-                    content: '<button class="feature-btn" onclick="alert(\'Optimizing Routes...\')">Run Navigation</button>' 
-                }
-            ];
+        const mainMarker = new AdvancedMarkerElement({ map, gmpDraggable: true, position: { lat: 28.432, lng: 77.045 } });
+        const landmarksSelect = document.getElementById('landmarks-select');
+        const autocompleteInput = document.getElementById('desc-autocomplete');
+        const descriptorMarkers = [];
+        let currentFormattedAddr = "";
 
-            // Create markers that are part of the map itself
-            dataPoints.forEach(point => {
-                const markerDiv = document.createElement('div');
-                markerDiv.innerHTML = `
-                    <div class="map-feature-card">
-                        <div class="feature-title">${point.title}</div>
-                        ${point.content}
-                    </div>`;
-                
-                new AdvancedMarkerElement({
-                    map: map,
-                    position: { lat: point.lat, lng: point.lng },
-                    content: markerDiv,
+        // Init Materialize Select
+        M.FormSelect.init(landmarksSelect);
+
+        const autocomplete = new Autocomplete(autocompleteInput, {
+          fields: ['place_id', 'address_components', 'formatted_address', 'geometry']
+        });
+
+        autocomplete.addListener('place_changed', () => {
+          const place = autocomplete.getPlace();
+          if (!place.geometry) return;
+
+          mainMarker.position = place.geometry.location;
+          map.setCenter(place.geometry.location);
+          currentFormattedAddr = place.formatted_address;
+          
+          // Fill form
+          place.address_components.forEach(c => {
+            if(c.types.includes('locality')) document.getElementById('desc-city').value = c.long_name;
+            if(c.types.includes('postal_code')) document.getElementById('desc-zip').value = c.long_name;
+          });
+
+          lookupDescriptors(place.place_id);
+        });
+
+        async function lookupDescriptors(placeId) {
+          geocoder.geocode({
+            placeId: placeId,
+            extraComputations: ['ADDRESS_DESCRIPTORS']
+          }, (results, status) => {
+            if (status === 'OK' && results[0].address_descriptor) {
+              const landmarks = results[0].address_descriptor.landmarks;
+              landmarksSelect.innerHTML = '<option value="" disabled selected>Choose a Landmark</option>';
+              
+              descriptorMarkers.forEach(m => m.map = null);
+              descriptorMarkers.length = 0;
+
+              landmarks.forEach((ld, i) => {
+                const opt = document.createElement('option');
+                opt.value = ld.display_name;
+                opt.text = `${ld.spatial_relationship} ${ld.display_name}`;
+                landmarksSelect.appendChild(opt);
+
+                // Create Landmark Marker
+                const dot = document.createElement('div');
+                dot.className = 'descriptor-marker';
+                dot.textContent = i + 1;
+
+                geocoder.geocode({ placeId: ld.place_id }, (res) => {
+                  if (res && res[0]) {
+                    const lm = new AdvancedMarkerElement({
+                      map,
+                      position: res[0].geometry.location,
+                      content: dot
+                    });
+                    descriptorMarkers.push(lm);
+                  }
                 });
-            });
+              });
+              M.FormSelect.init(landmarksSelect);
+            }
+          });
         }
 
-        window.onload = initMap;
+        landmarksSelect.addEventListener('change', () => {
+          const landmarkStr = landmarksSelect.options[landmarksSelect.selectedIndex].text;
+          document.getElementById('combined-address').value = `${currentFormattedAddr}\nNote: ${landmarkStr}`;
+        });
+
+        // Initialize other 1-12 sections below...
+      }
+
+      window.onload = initApp;
     </script>
-</body>
+  </body>
 </html>

@@ -1,112 +1,148 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Okoye Chibuike Maptech</title>
+    <title>Okoye Chibuike Maptech - Secured</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
-        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 20px; background-color: #f0f2f5; }
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
+        
+        /* Lock Screen Styling */
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #1a73e8;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .lock-box {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        #pass-field {
+            padding: 12px;
+            border-radius: 4px;
+            border: none;
+            width: 250px;
+            margin-bottom: 20px;
+            color: #333;
+            background: white;
+        }
+
+        /* Main Content Styling */
+        #main-content-wrapper { display: none; padding: 20px; }
         .feature-section { background: #fff; margin-bottom: 40px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h2 { color: #1a73e8; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; font-size: 24px; }
         .map-frame { height: 450px; width: 100%; border: 1px solid #ddd; border-radius: 8px; position: relative; overflow: hidden; }
-        
-        /* Specialized Layouts */
         .split-flex { display: flex; height: 450px; }
         .sidebar-panel { flex: 0 0 300px; padding: 10px; overflow-y: auto; background: #fafafa; border-left: 1px solid #ddd; font-size: 12px; }
         .main-panel { flex-grow: 1; position: relative; }
-        
-        /* Section 7 & 11 Controls */
         #floating-panel { position: absolute; top: 10px; left: 10px; z-index: 5; background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
         .custom-btn { background: #fff; border: 1px solid #ccc; padding: 8px; margin: 5px; cursor: pointer; border-radius: 2px; }
-
-        /* Section 10 & 13 Forms */
         .auto-form { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full-width { grid-column: span 2; }
-        .descriptor-marker { background-color: #4285F4; border-radius: 50%; color: #fff; padding: 4px 8px; font-size: 11px; border: 2px solid #fff; }
-        .highlighted { background-color: #ea4335 !important; }
-        
-        /* Street View Split */
-        #street-map, #pano { height: 100%; width: 50%; float: left; }
     </style>
 </head>
 <body>
 
-    <div style="background: #fff; padding: 15px 40px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000;">
-      <img src="https://connectgold.sbs/gold-2.png" alt="Connect Gold Logo" style="height: 50px; width: auto; margin-right: 20px;">
-      <h1 style="font-size: 22px; margin: 0; color: #333; font-weight: 500;">Okoye Chibuike maptech</h1>
-    </div>
-
-    <div class="feature-section">
-        <h2>1. Earthquake Data Layer</h2>
-        <div id="quake-map" class="map-frame"></div>
-    </div>
-
-    <div class="feature-section">
-        <h2>2. Distance Matrix Service</h2>
-        <div class="split-flex">
-            <div id="dist-map" class="main-panel"></div>
-            <div class="sidebar-panel"><pre id="dm-res">Results will appear here...</pre></div>
+    <div id="lock-screen">
+        <div class="lock-box">
+            <img src="https://connectgold.sbs/gold-2.png" alt="Logo" style="height: 70px; margin-bottom: 20px;">
+            <h3>Knowledge Hub Restricted</h3>
+            <p>Please enter your Commercial Access Code</p>
+            <input type="password" id="pass-field" placeholder="Access Code">
+            <br>
+            <button class="btn black" onclick="checkAccess()">Unlock Maptech</button>
+            <p style="margin-top: 20px; font-size: 11px;">Contact Okoye Chibuike for Payment & Verification</p>
         </div>
     </div>
 
-    <div class="feature-section">
-        <h2>3. Commute Solution (Iframe)</h2>
-        <div class="map-frame">
-            <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/commutes/lcjm/commutes.html" width="100%" height="100%" style="border:0;"></iframe>
+    <div id="main-content-wrapper">
+        <div style="background: #fff; padding: 15px 40px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-radius: 12px;">
+          <img src="https://connectgold.sbs/gold-2.png" alt="Logo" style="height: 50px; width: auto; margin-right: 20px;">
+          <h1 style="font-size: 22px; margin: 0; color: #333; font-weight: 500;">Okoye Chibuike maptech</h1>
         </div>
-    </div>
 
-    <div class="feature-section">
-        <h2>4. Geolocation (Browser GPS)</h2>
-        <div id="geo-map" class="map-frame"></div>
-    </div>
+        <div class="feature-section">
+            <h2>1. Earthquake Data Layer</h2>
+            <div id="quake-map" class="map-frame"></div>
+        </div>
 
-    <div class="feature-section">
-        <h2>5. Advanced Markers: Uluru</h2>
-        <div id="uluru-map" class="map-frame"></div>
-    </div>
+        <div class="feature-section">
+            <h2>2. Distance Matrix Service</h2>
+            <div class="split-flex">
+                <div id="dist-map" class="main-panel"></div>
+                <div class="sidebar-panel"><pre id="dm-res">Results will appear here...</pre></div>
+            </div>
+        </div>
 
-    <div class="feature-section">
-        <h2>6. Place Details Service</h2>
-        <div id="place-map" class="map-frame"></div>
-    </div>
+        <div class="feature-section">
+            <h2>3. Commute Solution (Iframe)</h2>
+            <div class="map-frame">
+                <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/commutes/lcjm/commutes.html" width="100%" height="100%" style="border:0;"></iframe>
+            </div>
+        </div>
 
-    <div class="feature-section">
-        <h2>7. Directions Service with Text Panel</h2>
-        <div class="split-flex">
-            <div class="main-panel">
-                <div id="floating-panel">
-                    <select id="start-dir"><option value="chicago, il">Chicago</option><option value="st louis, mo">St Louis</option></select>
-                    <select id="end-dir"><option value="los angeles, ca">Los Angeles</option><option value="joplin, mo">Joplin</option></select>
+        <div class="feature-section">
+            <h2>4. Geolocation (Browser GPS)</h2>
+            <div id="geo-map" class="map-frame"></div>
+        </div>
+
+        <div class="feature-section">
+            <h2>5. Advanced Markers: Uluru</h2>
+            <div id="uluru-map" class="map-frame"></div>
+        </div>
+
+        <div class="feature-section">
+            <h2>6. Place Details Service</h2>
+            <div id="place-map" class="map-frame"></div>
+        </div>
+
+        <div class="feature-section">
+            <h2>7. Directions Service with Text Panel</h2>
+            <div class="split-flex">
+                <div class="main-panel">
+                    <div id="floating-panel">
+                        <select id="start-dir" style="display:block"><option value="chicago, il">Chicago</option><option value="st louis, mo">St Louis</option></select>
+                        <select id="end-dir" style="display:block"><option value="los angeles, ca">Los Angeles</option><option value="joplin, mo">Joplin</option></select>
+                    </div>
+                    <div id="dir-map" style="height:100%"></div>
                 </div>
-                <div id="dir-map" style="height:100%"></div>
-            </div>
-            <div id="dir-panel" class="sidebar-panel"></div>
-        </div>
-    </div>
-
-    <div class="feature-section">
-        <h2>8. Neighborhood Discovery (Iframe)</h2>
-        <div class="map-frame">
-            <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/neighborhood-discovery/pmrz/neighborhood-discovery.html" width="100%" height="100%" style="border:0;"></iframe>
-        </div>
-    </div>
-
-    <div class="feature-section">
-        <h2>10. Place Autocomplete Address Form</h2>
-        <div class="map-frame">
-            <div class="auto-form">
-                <input id="ship-addr" class="full-width" placeholder="Enter address">
-                <input id="city-f" placeholder="City">
-                <input id="state-f" placeholder="State">
-                <input id="zip-f" placeholder="Zip">
-                <input id="country-f" placeholder="Country">
+                <div id="dir-panel" class="sidebar-panel"></div>
             </div>
         </div>
-    </div>
 
-    <div class="feature-section">
-        <h2>11. Custom Controls & KML Layer</h2>
-        <div id="kml-map" class="map-frame"></div>
+        <div class="feature-section">
+            <h2>8. Neighborhood Discovery (Iframe)</h2>
+            <div class="map-frame">
+                <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/neighborhood-discovery/pmrz/neighborhood-discovery.html" width="100%" height="100%" style="border:0;"></iframe>
+            </div>
+        </div>
+
+        <div class="feature-section">
+            <h2>10. Place Autocomplete Address Form</h2>
+            <div class="map-frame">
+                <div class="auto-form">
+                    <input id="ship-addr" class="full-width" placeholder="Enter address">
+                    <input id="city-f" placeholder="City">
+                    <input id="state-f" placeholder="State">
+                    <input id="zip-f" placeholder="Zip">
+                    <input id="country-f" placeholder="Country">
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-section">
+            <h2>11. Custom Controls & KML Layer</h2>
+            <div id="kml-map" class="map-frame"></div>
+        </div>
     </div>
 
     <script>
@@ -117,6 +153,19 @@
     </script>
 
     <script>
+        // GATEKEEPER LOGIC
+        function checkAccess() {
+            const code = document.getElementById('pass-field').value;
+            if (code === 'Abuja2026') { 
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('main-content-wrapper').style.display = 'block';
+                initAll(); // Start the engine ONLY after payment code is correct
+            } else {
+                alert("Access Denied. Please complete payment to Okoye Chibuike.");
+            }
+        }
+
+        // MAP ENGINE
         async function initAll() {
             const { Map, KmlLayer } = await google.maps.importLibrary("maps");
             const { Autocomplete, PlacesService } = await google.maps.importLibrary("places");
@@ -159,8 +208,15 @@
 
             // 7. Directions
             const drSvc = new DirectionsService();
-            const drRend = new DirectionsRenderer({ map: new Map(document.getElementById("dir-map"), {zoom: 4, center: {lat: 41, lng: -87}}), panel: document.getElementById("dir-panel") });
-            const route = () => drSvc.route({ origin: document.getElementById("start-dir").value, destination: document.getElementById("end-dir").value, travelMode: 'DRIVING' }).then(r => drRend.setDirections(r));
+            const drRend = new DirectionsRenderer({ 
+                map: new Map(document.getElementById("dir-map"), {zoom: 4, center: {lat: 41, lng: -87}}), 
+                panel: document.getElementById("dir-panel") 
+            });
+            const route = () => drSvc.route({ 
+                origin: document.getElementById("start-dir").value, 
+                destination: document.getElementById("end-dir").value, 
+                travelMode: 'DRIVING' 
+            }).then(r => drRend.setDirections(r));
             document.getElementById("start-dir").addEventListener("change", route);
             document.getElementById("end-dir").addEventListener("change", route);
             route();
@@ -177,10 +233,8 @@
                 }
             });
 
-            // 11. Custom Controls & KML Layer (YOUR CUSTOM KML)
+            // 11. Custom Controls & KML Layer
             const kMap = new Map(document.getElementById("kml-map"), { center: {lat: 9.001, lng: 7.585}, zoom: 12 });
-            
-            // Adding your KML file
             new KmlLayer({ 
                 url: "https://skyl.name.ng/Okoye-Chibuike.kml", 
                 map: kMap 
@@ -192,7 +246,6 @@
             btn.onclick = () => kMap.setCenter({lat: 9.001, lng: 7.585});
             kMap.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
         }
-        window.onload = initAll;
     </script>
 </body>
 </html>

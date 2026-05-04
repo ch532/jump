@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Okoye Chibuike Maptech - Secured</title>
+    <title>Okoye Chibuike Maptech - Secured Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style>
         body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
@@ -20,20 +20,31 @@
             z-index: 10000;
         }
         .lock-box {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
             padding: 40px;
             border-radius: 15px;
             text-align: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 500px;
         }
         #pass-field {
             padding: 12px;
             border-radius: 4px;
             border: none;
-            width: 250px;
+            width: 280px;
             margin-bottom: 20px;
             color: #333;
             background: white;
+            font-size: 16px;
+            text-align: center;
+        }
+        .contact-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            font-size: 14px;
+            text-align: left;
         }
 
         /* Main Content Styling */
@@ -55,12 +66,19 @@
     <div id="lock-screen">
         <div class="lock-box">
             <img src="https://connectgold.sbs/gold-2.png" alt="Logo" style="height: 70px; margin-bottom: 20px;">
-            <h3>Knowledge Hub Restricted</h3>
-            <p>Please enter your Commercial Access Code</p>
-            <input type="password" id="pass-field" placeholder="Access Code">
+            <h4>Knowledge Hub Restricted</h4>
+            <p>Access to professional population data and technical infrastructure maps requires a commercial license code.</p>
+            
+            <input type="password" id="pass-field" placeholder="Enter Access Code">
             <br>
-            <button class="btn black" onclick="checkAccess()">Unlock Maptech</button>
-            <p style="margin-top: 20px; font-size: 11px;">Contact Okoye Chibuike for Payment & Verification</p>
+            <button class="btn black waves-effect waves-light" onclick="checkAccess()">Unlock Maptech Portal</button>
+            
+            <div class="contact-info">
+                <strong>For Payment & Verification, Contact:</strong><br>
+                <span>📧 Email: <b>chyke33@skyl.name.ng</b></span><br>
+                <span>📞 Phone: <b>+234 706 174 0924</b></span><br>
+                <p style="font-size: 11px; margin-top: 10px; font-style: italic;">Provide proof of payment to receive your instant access code.</p>
+            </div>
         </div>
     </div>
 
@@ -156,12 +174,13 @@
         // GATEKEEPER LOGIC
         function checkAccess() {
             const code = document.getElementById('pass-field').value;
+            // SECURE CODE: Abuja2026
             if (code === 'Abuja2026') { 
                 document.getElementById('lock-screen').style.display = 'none';
                 document.getElementById('main-content-wrapper').style.display = 'block';
-                initAll(); // Start the engine ONLY after payment code is correct
+                initAll(); 
             } else {
-                alert("Access Denied. Please complete payment to Okoye Chibuike.");
+                alert("Invalid Access Code.\n\nPlease contact Okoye Chibuike at +2347061740924 or chyke33@skyl.name.ng for verification.");
             }
         }
 

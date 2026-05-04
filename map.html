@@ -110,28 +110,6 @@
         <div id="kml-map" class="map-frame"></div>
     </div>
 
-    <div class="feature-section">
-        <h2>12. Street View Split-Map Pane</h2>
-        <div class="map-frame">
-            <div id="street-map"></div>
-            <div id="pano"></div>
-        </div>
-    </div>
-
-    <div class="feature-section">
-        <h2>13. Checkout: Address Descriptors & Landmarks</h2>
-        <div class="map-frame">
-            <div class="checkout-container" style="display:flex; height:100%;">
-                <div style="flex:0 0 300px; padding:15px; border-right:1px solid #ddd;">
-                    <input type="text" id="chk-auto" placeholder="Search Address">
-                    <select id="chk-landmarks" class="browser-default" style="margin-top:10px;"></select>
-                    <textarea id="chk-final" style="height:100px; margin-top:10px;" readonly></textarea>
-                </div>
-                <div id="chk-map" style="flex-grow:1;"></div>
-            </div>
-        </div>
-    </div>
-
     <script>
         (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
             key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw", // <--- REPLACE THIS
@@ -205,25 +183,6 @@
             const btn = document.createElement("button"); btn.className = "custom-btn"; btn.innerText = "Center Chicago";
             btn.onclick = () => kMap.setCenter({lat: 41.87, lng: -87.62});
             kMap.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
-
-            // 12. Street View Split
-            const sMap = new Map(document.getElementById("street-map"), { center: {lat: 42.345, lng: -71.098}, zoom: 14 });
-            const pano = new StreetViewPanorama(document.getElementById("pano"), { position: {lat: 42.345, lng: -71.098} });
-            sMap.setStreetView(pano);
-
-            // 13. Checkout Landmarks
-            const cMap = new Map(document.getElementById("chk-map"), { center: {lat: 28.43, lng: 77.04}, zoom: 16, mapId: "DEMO_MAP_ID" });
-            const cMark = new AdvancedMarkerElement({ map: cMap, position: {lat: 28.43, lng: 77.04}, gmpDraggable: true });
-            const cAuto = new Autocomplete(document.getElementById("chk-auto"));
-            cAuto.addListener("place_changed", () => {
-                const p = cAuto.getPlace();
-                cMap.setCenter(p.geometry.location); cMark.position = p.geometry.location;
-                geocoder.geocode({ placeId: p.place_id, extraComputations: ['ADDRESS_DESCRIPTORS'] }, (res) => {
-                    const lms = res[0].address_descriptor.landmarks;
-                    const sel = document.getElementById("chk-landmarks");
-                    sel.innerHTML = lms.map(l => `<option>${l.spatial_relationship} ${l.display_name}</option>`).join('');
-                });
-            });
         }
         window.onload = initAll;
     </script>

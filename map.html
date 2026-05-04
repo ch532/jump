@@ -1,142 +1,96 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Locator | Geo-Intelligence Hub</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geo-Intelligence Hub | Integrated View</title>
     <style>
-      html, body { height: 100%; margin: 0; font-family: "Roboto", sans-serif; }
-
-      /* Your original Locator styles */
-      gmpx-store-locator {
-        width: 100%; height: 100%;
-        --gmpx-color-surface: #fff;
-        --gmpx-color-on-surface: #212121;
-        --gmpx-color-primary: #1967d2;
-        --gmpx-font-family-base: "Roboto", sans-serif;
-      }
-
-      /* Floating Innovator Dashboard Overlay */
-      #innovator-panel {
-        position: absolute; top: 10px; right: 10px; width: 300px; z-index: 9999;
-        background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: 1px solid #1967d2;
-        max-height: 90vh; overflow-y: auto;
-      }
-
-      .hub-feature { background: #f1f3f4; border-radius: 8px; padding: 10px; margin-bottom: 8px; border-left: 4px solid #1967d2; }
-      h3 { margin: 0 0 10px 0; font-size: 1rem; color: #1967d2; }
-      button { 
-        width: 100%; padding: 8px; margin: 4px 0; border: none; border-radius: 4px;
-        background: #1967d2; color: white; cursor: pointer; font-weight: bold; font-size: 0.8rem;
-      }
-      button:hover { background: #1557b0; }
-      #weather-display { font-size: 0.85rem; font-weight: bold; color: #5f6368; }
-      
-      #aerial-vid-box { display: none; margin-top: 10px; background: #000; border-radius: 8px; overflow: hidden; }
+        html, body, #map { height: 100%; margin: 0; padding: 0; }
+        
+        /* Custom Marker Styling for Features */
+        .map-feature-card {
+            background: white; border-radius: 8px; padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); border-bottom: 3px solid #4285F4;
+            min-width: 150px; font-family: 'Roboto', sans-serif; cursor: pointer;
+        }
+        .feature-title { font-weight: bold; color: #4285F4; font-size: 12px; margin-bottom: 5px; }
+        .feature-btn { 
+            background: #4285F4; color: white; border: none; padding: 5px; 
+            width: 100%; border-radius: 4px; font-size: 10px; margin-top: 5px; 
+        }
     </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw&libraries=marker,places,routes,addressValidation&v=beta"></script>
+</head>
+<body>
+
+    <div id="map"></div>
 
     <script>
-      const CONFIGURATION = {
-        "locations": [
-          {"title":"Escondido Grill","address1":"601 Geary St","address2":"San Francisco, CA 94102, USA","coords":{"lat":37.7866,"lng":-122.4133},"placeId":"ChIJ5Sz52pGAhYAR1raOybzuDp8","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"747 3rd St","address2":"San Francisco, CA 94107, USA","coords":{"lat":37.7785,"lng":-122.392},"placeId":"ChIJeyVKpNd_j4ARLUED10OEr1s","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"1512 Stockton St","address2":"San Francisco, CA 94133, USA","coords":{"lat":37.7998,"lng":-122.4089},"placeId":"ChIJgYMdZvGAhYAR2ifWKOR5ek8","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"50 Clement St","address2":"San Francisco, CA 94118, USA","coords":{"lat":37.7833,"lng":-122.46},"placeId":"ChIJk_FWiDmHhYARgDVidBVO_RM","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"3755 Noriega St","address2":"San Francisco, CA 94122, USA","coords":{"lat":37.7529,"lng":-122.5042},"placeId":"ChIJ_2knd4-HhYARI5PPNZ7aasA","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"2619 Mission St","address2":"San Francisco, CA 94110, USA","coords":{"lat":37.7552,"lng":-122.4184},"placeId":"ChIJSwWfLT9-j4ARMGcgMs-tBRE","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"4935 Mission St","address2":"San Francisco, CA 94112, USA","coords":{"lat":37.7194,"lng":-122.4386},"placeId":"ChIJtYdd3IR-j4ARSybFjVnGTBw","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]},
-          {"title":"Escondido Grill","address1":"6202 3rd St","address2":"San Francisco, CA 94124, USA","coords":{"lat":37.7223,"lng":-122.396},"placeId":"ChIJ0VRZVB9_j4ARaB7r66H67eg","actions":[{"label":"Reserve a table","defaultUrl":"https://www.gstatic.com/pantheon/images/maps/reserve_with_google_preview_v1.png"}]}
-        ],
-        "mapOptions": {"center":{"lat":20.0,"lng":0.0},"fullscreenControl":true,"mapTypeControl":true,"streetViewControl":true,"zoom":3,"zoomControl":true,"maxZoom":17,"mapId":"dd61f599aec3185b58ca538d"},
-        "mapsApiKey": "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw",
-        "capabilities": {"input":true,"autocomplete":true,"directions":true,"distanceMatrix":true,"details":true,"actions":true}
-      };
+        async function initMap() {
+            const { Map } = await google.maps.importLibrary("maps");
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+            const map = new Map(document.getElementById("map"), {
+                center: { lat: 9.0765, lng: 7.3985 }, // Abuja
+                zoom: 13,
+                mapId: "dd61f599aec3185b58ca538d", // This ensures high clarity
+                mapTypeControl: true,
+                streetViewControl: true
+            });
+
+            // FEATURE 1: Air Quality Marker (Inside the Map at a specific spot)
+            const aqiContainer = document.createElement('div');
+            aqiContainer.innerHTML = `
+                <div class="map-feature-card">
+                    <div class="feature-title">AQI Intelligence</div>
+                    <gmp-air-quality-meter location="9.057,7.495" style="height:50px"></gmp-air-quality-meter>
+                </div>`;
+            
+            new AdvancedMarkerElement({
+                map,
+                position: { lat: 9.057, lng: 7.495 },
+                content: aqiContainer,
+                title: "Environmental Intel"
+            });
+
+            // FEATURE 2: Solar Marker (Inside the Map)
+            const solarContainer = document.createElement('div');
+            solarContainer.innerHTML = `
+                <div class="map-feature-card">
+                    <div class="feature-title">Solar Potential</div>
+                    <button class="feature-btn" onclick="alert('Analyzing building footprint...')">Get Solar Data</button>
+                </div>`;
+            
+            new AdvancedMarkerElement({
+                map,
+                position: { lat: 9.0765, lng: 7.3985 },
+                content: solarContainer,
+                title: "Energy Intel"
+            });
+
+            // FEATURE 3: Navigation/Optimization Trigger
+            const navContainer = document.createElement('div');
+            navContainer.innerHTML = `
+                <div class="map-feature-card">
+                    <div class="feature-title">Logistics Hub</div>
+                    <button class="feature-btn" onclick="alert('Optimizing routes for this sector...')">Run Optimization</button>
+                </div>`;
+            
+            new AdvancedMarkerElement({
+                map,
+                position: { lat: 9.0850, lng: 7.4100 },
+                content: navContainer,
+                title: "Logistics Intel"
+            });
+
+            // Handle World View properly - high detail on zoom
+            map.addListener('zoom_changed', () => {
+                const zoom = map.getZoom();
+                console.log("Current Zoom Level for Clarity: ", zoom);
+            });
+        }
+
+        window.onload = initMap;
     </script>
-
-    <script type="module">
-      document.addEventListener('DOMContentLoaded', async () => {
-        await customElements.whenDefined('gmpx-store-locator');
-        const locator = document.querySelector('gmpx-store-locator');
-        locator.configureFromQuickBuilder(CONFIGURATION);
-        
-        // Sync weather to center on load
-        updateWeather(20, 0);
-      });
-    </script>
-  </head>
-  <body>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/@googlemaps/extended-component-library/0.6.11/index.min.js"></script>
-
-    <gmpx-api-loader key="AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw" solution-channel="GMP_QB_locatorplus_v11_cABDF"></gmpx-api-loader>
-    
-    <gmpx-store-locator map-id="dd61f599aec3185b58ca538d"></gmpx-store-locator>
-
-    <div id="innovator-panel">
-        <h3>Geo-Intelligence Hub</h3>
-        
-        <div class="hub-feature">
-            <strong>Environmental Intelligence</strong>
-            <gmp-air-quality-meter location="9.057,7.495"></gmp-air-quality-meter>
-            <div id="weather-display">Syncing Weather...</div>
-        </div>
-
-        <div class="hub-feature">
-            <strong>Logistics & Optimization</strong>
-            <button onclick="runOptimizedRoute()">Run Optimized Route</button>
-        </div>
-
-        <div class="hub-feature">
-            <strong>Solar & 3D Aerial</strong>
-            <button onclick="getSolarData()">Get Solar Potential</button>
-            <button onclick="showAerialView()">Cinematic Aerial View</button>
-            <div id="aerial-vid-box">
-                <video id="aerial-v" width="100%" controls autoplay></video>
-                <button onclick="document.getElementById('aerial-vid-box').style.display='none'" style="background:red">Close</button>
-            </div>
-        </div>
-
-        <div class="hub-feature">
-            <strong>Advanced Metadata</strong>
-            <button onclick="alert('Analyzing Business Density...')">Place Density</button>
-            <button onclick="alert('Street View Publish Ready')">Street View Status</button>
-        </div>
-        <small style="color:gray">Map Innovator | skyl.name.ng</small>
-    </div>
-
-    <script>
-      // Feature: Optimization
-      async function runOptimizedRoute() {
-          alert("Optimizing logistics path between Escondido Grill locations...");
-          // Logic for waypoint optimization
-      }
-
-      // Feature: Solar
-      async function getSolarData() {
-          const key = CONFIGURATION.mapsApiKey;
-          const url = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=37.7866&location.longitude=-122.4133&key=${key}`;
-          const res = await fetch(url);
-          const data = await res.json();
-          alert(`Solar capacity: ${data.solarPotential.maxArrayPanels} panels possible here.`);
-      }
-
-      // Feature: Weather
-      async function updateWeather(lat, lng) {
-          const key = CONFIGURATION.mapsApiKey;
-          const res = await fetch(`https://weather.googleapis.com/v1/currentConditions:get?location=${lat},${lng}&key=${key}`);
-          const data = await res.json();
-          if(data.temperature) {
-              document.getElementById('weather-display').innerText = `Current: ${data.temperature}°C | ${data.condition}`;
-          }
-      }
-
-      // Feature: Aerial View
-      function showAerialView() {
-          const box = document.getElementById('aerial-vid-box');
-          const vid = document.getElementById('aerial-v');
-          vid.src = `https://aerialview.googleapis.com/v1/videos:renderVideo?address=601+Geary+St,San+Francisco&key=${CONFIGURATION.mapsApiKey}`;
-          box.style.display = 'block';
-      }
-    </script>
-  </body>
+</body>
 </html>

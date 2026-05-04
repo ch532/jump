@@ -93,13 +93,6 @@
     </div>
 
     <div class="feature-section">
-        <h2>9. Aerial View (3D Rendering)</h2>
-        <div class="map-frame" style="background:#000;">
-            <video id="aerial-video" style="width:100%; height:100%;" muted autoplay loop></video>
-        </div>
-    </div>
-
-    <div class="feature-section">
         <h2>10. Place Autocomplete Address Form</h2>
         <div class="map-frame">
             <div class="auto-form">
@@ -195,10 +188,6 @@
             document.getElementById("start-dir").addEventListener("change", route);
             document.getElementById("end-dir").addEventListener("change", route);
             route();
-
-            // 9. Aerial View
-            fetch(`https://aerialview.googleapis.com/v1/videos:lookupVideo?address=1600%20Amphitheatre%20Parkway%20Mountain%20View%20CA&key=INSERT_YOUR_API_KEY`)
-                .then(r => r.json()).then(d => { if(d.uris) document.getElementById("aerial-video").src = d.uris.MP4_MEDIUM.landscapeUri; });
 
             // 10. Address Form
             const ac = new Autocomplete(document.getElementById("ship-addr"), { types: ["address"] });

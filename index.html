@@ -94,6 +94,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   <style>
     body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
+    
+    /* New: Hide content until login */
+    #user-content, nav, footer, .whatsapp-float, .main-container:not(#login-container) { display: none; }
+    
+    #login-container { 
+        height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        background: #1f1f2e; 
+        color: white; 
+    }
+
     nav { background:#1f1f2e; text-align:center; padding:12px; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
@@ -122,7 +136,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </head>
 <body>
 
-<nav>
+<div id="login-container" class="main-container">
+  <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:100px; border-radius:15px; margin-bottom: 20px;">
+  <h1>SkylPWorld</h1>
+  <p>Your knowledge hub online. Please sign in to continue.</p>
+  
+  <div id="g_id_onload"
+       data-client_id="46181700573-l6vs77u2th2vta35j9ic1shoaln7c1ta.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
+  <div class="g_id_signin" data-type="standard"></div>
+</div>
+
+<nav id="site-nav">
   <ul>
             <li><a href="page1.html">Page 1</a></li>
             <li><a href="page2.html">Page 2</a></li>
@@ -150,16 +177,9 @@ window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb
 </script>
 <script defer src="https://storage.googleapis.com/agentx-cdn-01/agentx-chat.js"></script>
 
-<div class="main-container">
+<div class="main-container site-body">
   <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:80px; border-radius:12px;">
   <h5>Your knowledge hub online</h5>
-  
-  <div id="g_id_onload"
-       data-client_id="46181700573-l6vs77u2th2vta35j9ic1shoaln7c1ta.apps.googleusercontent.com"
-       data-callback="handleCredentialResponse"
-       data-auto_prompt="false">
-  </div>
-  <div class="g_id_signin" data-type="standard" style="margin: 10px auto; display: flex; justify-content: center;"></div>
 </div>
 
 <div id="user-content">
@@ -171,7 +191,7 @@ window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb
     <div id="wordResult" style="margin-top:20px;"></div>
   </div>
 
-  <div class="main-container" style="margin-top:40px;">
+  <div class="main-container site-body" style="margin-top:40px;">
     <h2>🔍 Search the Web</h2>
     <div class="gcse-search"></div>
   </div>
@@ -195,6 +215,7 @@ window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb
 
     <a href="https://wa.me/2347061740924" 
        target="_blank" 
+       class="whatsapp-float"
        style="position: fixed; bottom: 100px; right: 20px; background-color: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; box-shadow: 0px 4px 12px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center;">
        Chat on WhatsApp
     </a>
@@ -237,7 +258,7 @@ window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb
   }
 </script>
 
-<footer>
+<footer id="site-footer">
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 SkylPWorld</p>
 </footer>
@@ -259,7 +280,17 @@ window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb
   function handleCredentialResponse(response) {
     const responsePayload = decodeJWT(response.credential);
     console.log("Login Successful: " + responsePayload.name);
-    // You can redirect or show/hide content here
+    
+    // Unlock and show the website
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("user-content").style.display = "block";
+    document.getElementById("site-nav").style.display = "block";
+    document.getElementById("site-footer").style.display = "block";
+    
+    // Show hidden main containers and whatsapp
+    const siteBodies = document.querySelectorAll('.site-body');
+    siteBodies.forEach(el => el.style.display = 'block');
+    document.querySelector('.whatsapp-float').style.display = 'flex';
   }
 </script>
 	

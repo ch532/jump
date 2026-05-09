@@ -93,27 +93,24 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </script>
 
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; }
+    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding-top: 60px; }
     
-    /* New: Hide content until login */
-    #user-content, nav, footer, .whatsapp-float, .main-container:not(#login-container) { display: none; }
+    /* SEO INDEXABLE: Nav, Footer, and Header remain visible */
+    #user-content, #login-container { display: none; }
     
-    #login-container { 
-        height: 100vh; 
-        display: flex; 
-        flex-direction: column; 
-        justify-content: center; 
-        align-items: center; 
+    /* Show Login Box by default if not logged in */
+    #login-box { 
         background: #1f1f2e; 
         color: white; 
+        padding: 30px; 
+        margin: 20px auto; 
+        max-width: 400px; 
+        border-radius: 15px;
     }
 
-    nav { background:#1f1f2e; text-align:center; padding:12px; }
+    nav { background:#1f1f2e; text-align:center; padding:15px; position: fixed; top: 0; width: 100%; z-index: 1000; }
     nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
     nav a:hover { color:#ffcc00; }
-	  body {
-  padding-top: 30px; /* adjust to nav height */
-}
 
     .main-container { max-width:900px; margin:20px auto; padding:20px; }
     .content-card { 
@@ -121,9 +118,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; 
       max-width: 800px; margin-left:auto; margin-right:auto;
     }
-    .content-card h4 { margin-top:0; color:#333; }
-    .content-card p { line-height:1.6; color:#555; }
-    .content-card a { text-decoration:none; color:#4b00ff; }
 
     input[type=text] { padding:10px; width:60%; font-size:16px; }
     button { padding:10px 15px; font-size:16px; margin-left:5px; cursor:pointer; }
@@ -136,55 +130,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </head>
 <body>
 
-<div id="login-container" class="main-container">
-  <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:100px; border-radius:15px; margin-bottom: 20px;">
+<nav id="site-nav">
+  <a href="page1.html">Page 1</a>
+  <a href="page2.html">Page 2</a>
+  <a href="about.html">About Us</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="support.html">Support</a>            
+</nav>
+
+<div class="main-container site-body">
+  <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:80px; border-radius:12px;">
   <h1>SkylPWorld</h1>
-  <p>Your knowledge hub online. Please sign in to continue.</p>
-  
+  <h5>Your knowledge hub online</h5>
+</div>
+
+<div id="login-box">
+  <p>Sign in with Google to use the Dictionary and Search Tools</p>
   <div id="g_id_onload"
        data-client_id="46181700573-l6vs77u2th2vta35j9ic1shoaln7c1ta.apps.googleusercontent.com"
        data-callback="handleCredentialResponse"
        data-auto_prompt="false">
   </div>
-  <div class="g_id_signin" data-type="standard"></div>
-</div>
-
-<nav id="site-nav">
-  <ul>
-            <li><a href="page1.html">Page 1</a></li>
-            <li><a href="page2.html">Page 2</a></li>
-            <li><a href="page3.html">Page 3</a></li>
-            <li><a
-<li><a href="about.html">About Us</a></li>
-            <li><a href="privacy.html">Privacy Policy</a></li>
-<li><a href="support.html">Support</a></li>            
-</nav>
-	
-<script defer data-cfasync='false' src='https://s.clickiocdn.com/t/246906_wv.js'></script>
-	
-	
-<div id="google_translate_element" style="margin: 10px auto; text-align: center;"></div>
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
-  }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-	<script defer>
-document.body.appendChild(document.createElement('div')).setAttribute('id','chatBubbleRoot');
-window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb9JlzMPdkgMZnVixLyA9w18C9tI=';
-</script>
-<script defer src="https://storage.googleapis.com/agentx-cdn-01/agentx-chat.js"></script>
-
-<div class="main-container site-body">
-  <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:80px; border-radius:12px;">
-  <h5>Your knowledge hub online</h5>
+  <div class="g_id_signin" data-type="standard" style="display: flex; justify-content: center;"></div>
 </div>
 
 <div id="user-content">
-
-  <div id="dictionary-section" style="margin-top:40px;">
+  <div id="dictionary-section" style="margin-top:40px;" class="main-container">
     <h2>📖 Dictionary / Thesaurus</h2>
     <input type="text" id="wordInput" placeholder="Type a word">
     <button onclick="lookupWord()">Search</button>
@@ -196,165 +167,55 @@ window.agx = '69fe9f1e7d0b1b38f1d66efejDKpRGt7UXmGjidM9jl8bA==|7z0o8v+Ysg8XPKOjb
     <div class="gcse-search"></div>
   </div>
   <script async src="https://cse.google.com/cse.js?cx=0367484b4c806434c"></script>
-
-<input placeholder="Search here" id="searchWidgetTrigger" />
-
-<div id="zergnet-widget-93781"></div>
-
-<script language="javascript" type="text/javascript">
-	(function() {
-		var zergnet = document.createElement('script');
-		zergnet.type = 'text/javascript'; zergnet.async = true;
-		zergnet.src = (document.location.protocol == "https:" ? "https:" : "http:") + '//www.zergnet.com/zerg.js?id=93781';
-		var znscr = document.getElementsByTagName('script')[0];
-		znscr.parentNode.insertBefore(zergnet, znscr);
-	})();
-</script>
-
-	<iframe width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/31464"></iframe>
-
-    <a href="https://wa.me/2347061740924" 
-       target="_blank" 
-       class="whatsapp-float"
-       style="position: fixed; bottom: 100px; right: 20px; background-color: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; box-shadow: 0px 4px 12px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center;">
-       Chat on WhatsApp
-    </a>
-
-<div id="cookie-consent" style="
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right:0;
-    background: #222;
-    color: #fff;
-    padding: 15px 20px;
-    text-align: center;
-    font-size: 14px;
-    z-index: 9999;
-    display: none;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-">
-    This website uses cookies to ensure you get the best experience. 
-    <button id="accept-cookies" style="
-        margin-left: 15px;
-        padding: 6px 12px;
-        background: #4b00ff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-    ">Accept</button>
 </div>
-
-<script>
-  if (!localStorage.getItem("cookiesAccepted")) {
-    document.getElementById("cookie-consent").style.display = "block";
-  }
-  document.getElementById("accept-cookies").onclick = function() {
-    localStorage.setItem("cookiesAccepted", "true");
-    document.getElementById("cookie-consent").style.display = "none";
-  }
-</script>
 
 <footer id="site-footer">
   <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
   <p>© 2026 SkylPWorld</p>
 </footer>
 
-<script type="text/javascript" src="https://s.skimresources.com/js/297254X1784727.skimlinks.js"></script>
+<a href="https://wa.me/2347061740924" 
+   target="_blank" 
+   class="whatsapp-float"
+   style="position: fixed; bottom: 100px; right: 20px; background-color: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; box-shadow: 0px 4px 12px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center;">
+   Chat on WhatsApp
+</a>
 
 <script>
   function decodeJWT(token) {
     let base64Url = token.split(".")[1];
     let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    let jsonPayload = decodeURIComponent(
-      atob(base64).split("").map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join("")
-    );
-    return JSON.parse(jsonPayload);
+    return JSON.parse(atob(base64));
   }
 
   function handleCredentialResponse(response) {
     const responsePayload = decodeJWT(response.credential);
-    console.log("Login Successful: " + responsePayload.name);
-    
-    // Unlock and show the website
-    document.getElementById("login-container").style.display = "none";
+    // Hide login box and show tools
+    document.getElementById("login-box").style.display = "none";
     document.getElementById("user-content").style.display = "block";
-    document.getElementById("site-nav").style.display = "block";
-    document.getElementById("site-footer").style.display = "block";
-    
-    // Show hidden main containers and whatsapp
-    const siteBodies = document.querySelectorAll('.site-body');
-    siteBodies.forEach(el => el.style.display = 'block');
-    document.querySelector('.whatsapp-float').style.display = 'flex';
+    console.log("Access granted to " + responsePayload.name);
   }
-</script>
-	
-<script>
+
   const DICT_API_KEY = "b603a6c7-2d98-4162-befb-33458a20aff5";
   async function lookupWord() {
     const word = document.getElementById('wordInput').value.trim();
     const resultDiv = document.getElementById('wordResult');
-    if (!word) { resultDiv.innerHTML = "<p>Please enter a word.</p>"; return; }
-    resultDiv.innerHTML = "Loading...";
+    if (!word) return;
     try {
       const res = await fetch(`https://www.dictionaryapi.com/api/v3/references/ithesaurus/json/${word}?key=${DICT_API_KEY}`);
       const data = await res.json();
-      if (!data || data.length === 0) { resultDiv.innerHTML = "<p>No entries found.</p>"; return; }
-      if (typeof data[0] === 'string') { 
-        resultDiv.innerHTML = "<p>Word not found. Did you mean: " + data.slice(0,5).join(', ') + "?</p>"; 
-        return; 
-      }
       const entry = data[0];
-      const definition = entry.shortdef ? entry.shortdef.join('; ') : "No definition found.";
-      const synonyms = entry.meta.syns ? entry.meta.syns.flat().join(', ') : "No synonyms found.";
-      resultDiv.innerHTML = `
-        <div class="content-card">
-          <h4>${entry.hwi.hw} (${entry.fl})</h4>
-          <p><strong>Definition:</strong> ${definition}</p>
-          <p><strong>Synonyms:</strong> ${synonyms}</p>
-        </div>
-      `;
-    } catch(err) {
-      console.error(err);
-      resultDiv.innerHTML = "<p>Error fetching data. Try again later.</p>";
-    }
+      resultDiv.innerHTML = `<div class="content-card"><h4>${entry.hwi.hw}</h4><p>${entry.shortdef[0]}</p></div>`;
+    } catch(err) { resultDiv.innerHTML = "Error fetching data."; }
   }
 </script>
 
-	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NPPVKR3V"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<script>
-var agConnectConfig = 
-{"agcgw":{"url":"connect-drcn.dbankcloud.cn","backurl":"connect-drcn.hispace.hicloud.com","websocketurl":"connect-ws-drcn.hispace.dbankcloud.cn","websocketbackurl":"connect-ws-drcn.hispace.dbankcloud.com"},"agcgw_all":{"SG":"connect-dra.dbankcloud.cn","SG_back":"connect-dra.hispace.hicloud.com","CN":"connect-drcn.dbankcloud.cn","CN_back":"connect-drcn.hispace.hicloud.com","RU":"connect-drru.hispace.dbankcloud.ru","RU_back":"connect-drru.hispace.dbankcloud.cn","DE":"connect-dre.dbankcloud.cn","DE_back":"connect-dre.hispace.hicloud.com"},"websocketgw_all":{"SG":"connect-ws-dra.hispace.dbankcloud.cn","SG_back":"connect-ws-dra.hispace.dbankcloud.com","CN":"connect-ws-drcn.hispace.dbankcloud.cn","CN_back":"connect-ws-drcn.hispace.dbankcloud.com","RU":"connect-ws-drru.hispace.dbankcloud.ru","RU_back":"connect-ws-drru.hispace.dbankcloud.cn","DE":"connect-ws-dre.hispace.dbankcloud.cn","DE_back":"connect-ws-dre.hispace.dbankcloud.com"},"client":{"cp_id":"30234000021025485","product_id":"101653523863556637","client_id":"1881352522669552960","client_secret":"36A23B36B68A3B2C96321F7DE4927667E2C7247719756D4F8C2A6FD48B56CB1D","project_id":"101653523863556637","app_id":"101653523124683799","api_key":"DgEDAGeAuxU1FkS1BMpDKnyyo5AxGGuvOAzzKbAVnzU8+nhQdTZiGv1ofzB0QPbHQpVYcSyneLK4XHcUQ+AsIH3zF7NAt428case3w=="},"oauth_client":{"client_id":"116935443","client_type":7},"app_info":{"app_id":"101653523124683799"},"service":{"analytics":{"collector_url":"datacollector-drcn.dt.hicloud.com,datacollector-drcn.dt.dbankcloud.cn","collector_url_cn":"datacollector-drcn.dt.hicloud.com,datacollector-drcn.dt.dbankcloud.cn","collector_url_de":"datacollector-dre.dt.hicloud.com,datacollector-dre.dt.dbankcloud.cn","collector_url_ru":"datacollector-drru.dt.dbankcloud.ru,datacollector-drru.dt.hicloud.com","collector_url_sg":"datacollector-dra.dt.hicloud.com,datacollector-dra.dt.dbankcloud.cn","resource_id":"p1","channel_id":""},"ml":{"mlservice_url":"ml-api-drcn.ai.dbankcloud.com,ml-api-drcn.ai.dbankcloud.cn"},"cloudstorage":{"storage_url":"https://agc-storage-drcn.platform.dbankcloud.cn","storage_url_ru":"https://agc-storage-drru.cloud.huawei.ru","storage_url_sg":"https://ops-dra.agcstorage.link","storage_url_de":"https://ops-dre.agcstorage.link","storage_url_cn":"https://agc-storage-drcn.platform.dbankcloud.cn","storage_url_ru_back":"https://agc-storage-drru.cloud.huawei.ru","storage_url_sg_back":"https://agc-storage-dra.cloud.huawei.asia","storage_url_de_back":"https://agc-storage-dre.cloud.huawei.eu","storage_url_cn_back":"https://agc-storage-drcn.cloud.huawei.com.cn","default_storage":""},"search":{"url":"https://search-drcn.cloud.huawei.com"},"edukit":{"edu_url":"edukit.cloud.huawei.com.cn","dh_url":"edukit.cloud.huawei.com.cn"}},"region":"CN","configuration_version":"3.0","processing_location_policy":{"mlkit":"0","map":"0"}};
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+  }
 </script>
 
-	<script src="https://push-static.dbankcdn.com/hms-messaging.js"></script>
-<script>
-    //Your web app's hms configuration
-    var hmsConfig = {
-        "apiKey":"uzVs5ymO1BjGnteY6AyL8QVxnvxAIyOsJmo0gHfN",
-        "projectId":"101653523863556637",
-        "clientId":"116935443",
-        "countryCode":"CN"
-    };
-
-    //Initialize Hms
-    hms.initializeApp(hmsConfig);
-
-    const messaging = hms.messaging();
-    messaging.usePublicVapidKey(
-        "BPqcaOoiGmDtG9WbtPqEBLcAaNWBLe91Uq-uWMslfP0jYUSc7h-M9kW4Al9plDRyH2o6-GCykd9aFqV2lB1DDa0");
-
-    messaging.onMessage((payload) => {
-        console.log('Message received. ', payload);
-        //...
-    });
-</script>
-	
 </body>
 </html>

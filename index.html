@@ -1,225 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SkylPWorld – Knowledge Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"">
-  <meta name="description" content="SkylPWorld – Your all-in-one knowledge hub with latest world news, educational articles, interactive maps, and dictionaries. Explore, learn, and stay informed easily.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldtech TV Network</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #020202; color: #fff; overflow: hidden; height: 100vh; }
 
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+        /* Video Screen Layer */
+        .tv-frame { position: relative; width: 100vw; height: 100vh; background: #000; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        
+        /* The Click Shield to stop users scrubbing the timeline */
+        .click-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
 
-<link rel="icon" type="image/png" sizes="256x256" href="Picture/skylpworld256x256.png">
-<link rel="apple-touch-icon" sizes="256x256" href="Picture/skylpworld256x256.png">
+        /* Top Brand Header */
+        .brand-header {
+            position: absolute; top: 30px; left: 30px; z-index: 20;
+            display: flex; align-items: center; gap: 15px;
+            background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border-radius: 50px;
+            backdrop-filter: blur(8px); border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .brand-logo { height: 40px; width: auto; object-fit: contain; }
+        .brand-name { font-size: 1.4rem; font-weight: 800; color: #FFD700; letter-spacing: 1.5px; text-transform: uppercase; }
 
-	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NPPVKR3V');</script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
-     crossorigin="anonymous"></script>
+        /* The Hub Remote Control UI (Sidebar) */
+        .remote-control {
+            position: absolute; top: 30px; right: 30px; z-index: 20;
+            display: flex; flex-direction: column; gap: 12px;
+            background: rgba(0, 0, 0, 0.75); padding: 20px; border-radius: 12px; 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+        .remote-title { font-size: 0.8rem; font-weight: bold; color: #aaa; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 5px; }
+        .btn-hub {
+            background: rgba(25, 25, 25, 0.8); border: 1px solid rgba(255,255,255,0.08);
+            color: #fff; padding: 12px 20px; border-radius: 6px; cursor: pointer;
+            font-weight: 600; font-size: 0.9rem; text-align: left; min-width: 220px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hub:hover { background: rgba(40, 40, 40, 0.9); border-color: rgba(255, 215, 0, 0.4); }
+        .btn-hub.active { background: #FFD700; color: #000; font-weight: bold; border-color: #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
-	<meta name='admaven-placement' content=BqdYHqHwH>
-
-<meta name="7searchppc" content="c354272ecbedad3706ee65c2c1d58942"/>
-
-<meta name="clckd" content="c354272ecbedad3706ee65c2c1d58942" />
-
-	<meta name="kadam-verification" content="kadamd70d2944c7fb3a77e97547dc1392d29b" />
-	
-	<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0",
-    });
-  });
-</script>
-
-	<script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
-	
-	<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106174379', 'ym');
-
-    ym(106174379, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106174379" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('consent', 'default', {
-        'ad_storage': 'granted',
-        'analytics_storage': 'granted',
-        'functionality_storage': 'granted',
-        'personalization_storage': 'granted',
-        'security_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'wait_for_update': 1500
-    });
-  </script>
-
-  <script async type="text/javascript" src="//clickiocmp.com/t/consent_246906.js"></script>
-
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({ appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0" });
-    });
-  </script>
-
-  <meta name="description" content="SkylPWorld is your online knowledge hub! Explore world news, articles, dictionaries, encyclopaedia entries, and more. Learn and grow your knowledge daily.">
-  <meta property="og:title" content="SkylPWorld – Knowledge Hub">
-  <meta property="og:description" content="Explore news, articles, dictionaries, and encyclopaedia content at SkylPWorld. Stay informed and expand your knowledge.">
-  <meta property="og:image" content="Picture/skylpworld256x256.png">
-  <meta property="og:url" content="https://skyl.name.ng/">
-  <meta property="og:type" content="website">
-
-  <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-3XR1R2P73Y');
-  </script>
-
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; text-align:center; padding-top: 60px; }
-    
-    /* SEO INDEXABLE: Nav, Footer, and Header remain visible */
-    #user-content, #login-container { display: none; }
-    
-    /* Show Login Box by default if not logged in */
-    #login-box { 
-        background: #1f1f2e; 
-        color: white; 
-        padding: 30px; 
-        margin: 20px auto; 
-        max-width: 400px; 
-        border-radius: 15px;
-    }
-
-    nav { background:#1f1f2e; text-align:center; padding:15px; position: fixed; top: 0; width: 100%; z-index: 1000; }
-    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-    nav a:hover { color:#ffcc00; }
-
-    .main-container { max-width:900px; margin:20px auto; padding:20px; }
-    .content-card { 
-      background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 25px; 
-      border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; 
-      max-width: 800px; margin-left:auto; margin-right:auto;
-    }
-
-    input[type=text] { padding:10px; width:60%; font-size:16px; }
-    button { padding:10px 15px; font-size:16px; margin-left:5px; cursor:pointer; }
-
-    footer { background:#222; color:#fff; padding:20px; margin-top:40px; }
-
-    /* Google Search Styling */
-    gcse\:search { max-width: 800px; margin: 20px auto; display: block; }
-  </style>
+        /* Heads Up Display (HUD) Info Box */
+        .hud-overlay {
+            position: absolute; bottom: 30px; left: 30px; right: 30px;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(12px);
+            border-left: 6px solid #FFD700; padding: 25px 30px; border-radius: 6px;
+            z-index: 20; opacity: 0; transition: opacity 0.4s ease;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9); pointer-events: none;
+        }
+        .hud-overlay.visible { opacity: 1; }
+        .hud-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .hud-provider { font-size: 0.85rem; color: #FFD700; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .hud-title { font-size: 1.6rem; font-weight: 700; color: #fff; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+        
+        /* Goldtech Broadcast Progress Line */
+        .timeline-container { width: 100%; height: 5px; background: rgba(255,255,255,0.15); border-radius: 3px; margin-top: 15px; overflow: hidden; }
+        .timeline-fill { height: 100%; background: #FFD700; width: 0%; transition: width 1000ms linear; }
+    </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav>
-  <ul>
-            <li><a href="page1.html">Page 1</a></li>
-            <li><a href="page2.html">Page 2</a></li>
-            <li><a href="page3.html">Page 3</a></li>
-            <li><a
-<li><a href="about.html">About Us</a></li>
-            <li><a href="privacy.html">Privacy Policy</a></li>
-<li><a href="support.html">Support</a></li>           
-</nav>
+    <div class="tv-frame">
+        <div class="click-shield" onclick="toggleHUD()"></div>
+        
+        <video id="sovereign-core-player" autoplay playsinline></video>
 
-<div class="main-container site-body">
-  <img src="Picture/skylpworld256x256.png" alt="Logo" style="width:80px; border-radius:12px;">
-  <h1>SkylPWorld</h1>
-  <h5>Your knowledge hub online</h5>
-</div>
+        <div class="brand-header">
+            <img class="brand-logo" src="https://connectgold.sbs/gold-2.png" alt="Goldtech Logo">
+            <span class="brand-name">Goldtech</span>
+        </div>
 
-<div id="login-box">
-  <p>Sign in with Google to use the Dictionary and Search Tools</p>
-  <div id="g_id_onload"
-       data-client_id="46181700573-l6vs77u2th2vta35j9ic1shoaln7c1ta.apps.googleusercontent.com"
-       data-callback="handleCredentialResponse"
-       data-auto_prompt="false">
-  </div>
-  <div class="g_id_signin" data-type="standard" style="display: flex; justify-content: center;"></div>
-</div>
+        <div class="remote-control">
+            <div class="remote-title">Goldtech Station Hubs</div>
+            <button class="btn-hub active" onclick="tuneToHub('pluto', this)">⚡ Goldtech Pluto TV</button>
+            <button class="btn-hub" onclick="tuneToHub('samsung', this)">📺 Goldtech Samsung Plus</button>
+            <button class="btn-hub" onclick="tuneToHub('roku', this)">🍁 Goldtech Roku Feed</button>
+            <button class="btn-hub" onclick="tuneToHub('lg', this)">✨ Goldtech LG Stream</button>
+        </div>
 
-<div id="user-content">
-  <div id="dictionary-section" style="margin-top:40px;" class="main-container">
-    <h2>📖 Dictionary / Thesaurus</h2>
-    <input type="text" id="wordInput" placeholder="Type a word">
-    <button onclick="lookupWord()">Search</button>
-    <div id="wordResult" style="margin-top:20px;"></div>
-  </div>
+        <div class="hud-overlay" id="tv-hud">
+            <div class="hud-meta">
+                <span class="hud-provider" id="meta-provider">Connecting...</span>
+                <span id="meta-clock" style="color: #FFD700; font-size: 0.85rem; font-weight: bold; letter-spacing: 1px;">● LIVE BROADCAST</span>
+            </div>
+            <div class="hud-title" id="meta-title">Syncing Matrix Streams...</div>
+            <div class="timeline-container">
+                <div class="timeline-fill" id="meta-progress"></div>
+            </div>
+        </div>
+    </div>
 
-  <div class="main-container site-body" style="margin-top:40px;">
-    <h2>🔍 Search the Web</h2>
-    <div class="gcse-search"></div>
-  </div>
-  <script async src="https://cse.google.com/cse.js?cx=0367484b4c806434c"></script>
-</div>
+    <script>
+        const providerEndpoints = {
+            pluto: "https://raw.githubusercontent.com/matthuisman/i.mjh.nz/master/PlutoTV/us.m3u8", 
+            samsung: "https://www.apsattv.com/ssungusa.m3u",
+            roku: "https://www.apsattv.com/rok.m3u",
+            lg: "https://www.apsattv.com/lg.m3u"
+        };
 
-<footer id="site-footer">
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>© 2026 SkylPWorld</p>
-</footer>
+        const player = document.getElementById('sovereign-core-player');
+        let hudTimeout;
+        let progressInterval;
+        let virtualTimeTracker = 0;
 
-<a href="https://wa.me/2347061740924" 
-   target="_blank" 
-   class="whatsapp-float"
-   style="position: fixed; bottom: 100px; right: 20px; background-color: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; box-shadow: 0px 4px 12px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center;">
-   Chat on WhatsApp
-</a>
+        async function tuneToHub(providerKey, UI_Button) {
+            triggerHUD();
+            document.getElementById('meta-provider').innerText = `Connecting to Goldtech ${providerKey.toUpperCase()}...`;
+            document.getElementById('meta-title').innerText = "Parsing Channel Metadata Lineup...";
+            
+            document.querySelectorAll('.btn-hub').forEach(btn => btn.classList.remove('active'));
+            UI_Button.classList.add('active');
 
-<script>
-  function decodeJWT(token) {
-    let base64Url = token.split(".")[1];
-    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(atob(base64));
-  }
+            try {
+                const response = await fetch(providerEndpoints[providerKey]);
+                if (!response.ok) throw new Error("Network configuration failure.");
+                const manifestText = await response.text();
 
-  function handleCredentialResponse(response) {
-    const responsePayload = decodeJWT(response.credential);
-    // Hide login box and show tools
-    document.getElementById("login-box").style.display = "none";
-    document.getElementById("user-content").style.display = "block";
-    console.log("Access granted to " + responsePayload.name);
-  }
+                const lines = manifestText.split('\n');
+                let parsedStreams = [];
 
-  const DICT_API_KEY = "b603a6c7-2d98-4162-befb-33458a20aff5";
-  async function lookupWord() {
-    const word = document.getElementById('wordInput').value.trim();
-    const resultDiv = document.getElementById('wordResult');
-    if (!word) return;
-    try {
-      const res = await fetch(`https://www.dictionaryapi.com/api/v3/references/ithesaurus/json/${word}?key=${DICT_API_KEY}`);
-      const data = await res.json();
-      const entry = data[0];
-      resultDiv.innerHTML = `<div class="content-card"><h4>${entry.hwi.hw}</h4><p>${entry.shortdef[0]}</p></div>`;
-    } catch(err) { resultDiv.innerHTML = "Error fetching data."; }
-  }
-</script>
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].startsWith('#EXTINF:')) {
+                        let title = "Goldtech Premium Feed";
+                        const titleMatch = lines[i].match(/,(.+)$/);
+                        if (titleMatch) title = titleMatch[1].trim();
 
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
-  }
-</script>
+                        let streamUrl = "";
+                        for (let j = i + 1; j < lines.length; j++) {
+                            if (lines[j].trim().startsWith('http')) {
+                                streamUrl = lines[j].trim();
+                                break;
+                            }
+                            if (lines[j].startsWith('#EXTINF:')) break; 
+                        }
 
+                        if (streamUrl) {
+                            parsedStreams.push({ title: title, url: streamUrl });
+                        }
+                    }
+                }
+
+                if (parsedStreams.length === 0) throw new Error("Empty Matrix array stream.");
+
+                // Time-Slicing Select Logic to enforce uniform playback globally
+                const currentMinuteStamp = Math.floor(new Date().getTime() / 60000);
+                const selectedIndex = currentMinuteStamp % parsedStreams.length;
+                const activeFeed = parsedStreams[selectedIndex];
+
+                player.src = activeFeed.url;
+                player.load();
+                
+                document.getElementById('meta-provider').innerText = `GOLDTECH • ${providerKey.toUpperCase()} FEED`;
+                document.getElementById('meta-title').innerText = activeFeed.title;
+
+                resetVirtualProgressTracker();
+
+            } catch (error) {
+                console.error("Pipeline failure: ", error);
+                document.getElementById('meta-title').innerText = "Stream Offline or Protected by CORS Block Policy";
+                document.getElementById('meta-provider').innerText = "GOLDTECH ERROR";
+                player.src = ""; 
+            }
+        }
+
+        function resetVirtualProgressTracker() {
+            clearInterval(progressInterval);
+            virtualTimeTracker = Math.floor(Math.random() * 40) + 10; 
+            
+            progressInterval = setInterval(() => {
+                virtualTimeTracker += 0.2; 
+                if (virtualTimeTracker >= 100) virtualTimeTracker = 0; 
+                document.getElementById('meta-progress').style.width = `${virtualTimeTracker}%`;
+            }, 1000);
+        }
+
+        function triggerHUD() {
+            const hud = document.getElementById('tv-hud');
+            hud.classList.add('visible');
+            clearTimeout(hudTimeout);
+            hudTimeout = setTimeout(() => {
+                hud.classList.remove('visible');
+            }, 6000); 
+        }
+
+        function toggleHUD() {
+            const hud = document.getElementById('tv-hud');
+            if (hud.classList.contains('visible')) {
+                hud.classList.remove('visible');
+            } else {
+                triggerHUD();
+            }
+        }
+
+        window.onload = () => {
+            tuneToHub('pluto', document.querySelector('.btn-hub'));
+        };
+    </script>
 </body>
 </html>

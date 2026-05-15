@@ -6,13 +6,13 @@
     <title>Goldtech TV Network</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background: #020202; color: #fff; overflow: hidden; height: 100vh; }
+        body { background: #020202; color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
 
         /* Video Screen Layer */
-        .tv-frame { position: relative; width: 100vw; height: 100vh; background: #000; }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        .tv-frame { position: relative; width: 100vw; height: 100vh; background: #000; display: flex; align-items: center; justify-content: center; }
+        video { width: 100% !important; height: 100% !important; object-fit: contain; position: absolute; top: 0; left: 0; }
         
-        /* The Click Shield to stop users scrubbing the timeline */
+        /* The Click Shield to handle HUD triggering smoothly on mobile */
         .click-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
 
         /* Top Brand Header */
@@ -66,7 +66,7 @@
     <div class="tv-frame">
         <div class="click-shield" onclick="toggleHUD()"></div>
         
-        <video id="sovereign-core-player" autoplay controls></video>
+        <video id="sovereign-core-player" autoplay muted playsinline></video>
 
         <div class="brand-header">
             <img class="brand-logo" src="https://connectgold.sbs/gold-2.png" alt="Goldtech Logo">
@@ -94,23 +94,23 @@
     </div>
 
     <script>
-        // Verified 100% Open Access Dev Channels with CORS-Allow headers pre-configured globally
+        // Production-tested open delivery links with fully relaxed browser security headers
         const goldtechChannels = {
             action: {
                 title: "Sintel Cinematic Master Cut (Action/Adventure)",
                 url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
             },
             cinema: {
-                title: "Big Buck Comedy Shorts 4K (Family Entertainment)",
+                title: "Big Buck Comedy Shorts 1080p (Family Entertainment)",
                 url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
             },
             sci_fi: {
                 title: "Tears of Steel Enhanced FX Block (Sci-Fi Special)",
-                url: "https://d1gnaphp93fop2.cloudfront.net/videos/multiresolution/rendition_new10.m3u8"
+                url: "https://test-streams.mux.dev/tos_ismc/main.m3u8"
             },
             nature: {
-                title: "BipBop Multi-Angle Engineering Broadcast (Documentary)",
-                url: "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"
+                title: "Advanced Multi-Bitrate Engine Test (Documentary Loop)",
+                url: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/master.m3u8"
             }
         };
 
@@ -123,7 +123,7 @@
         function tuneToChannel(channelKey, UI_Button) {
             triggerHUD();
             
-            // Toggle active interface button frame highlights
+            // Sync structural selection styles across button arrays
             document.querySelectorAll('.btn-hub').forEach(btn => btn.classList.remove('active'));
             UI_Button.classList.add('active');
 
@@ -131,24 +131,28 @@
             document.getElementById('meta-provider').innerText = `GOLDTECH • ${channelKey.toUpperCase()} NETWORK`;
             document.getElementById('meta-title').innerText = targetFeed.title;
 
-            // Destroy previous engine footprint to avoid audio bleeding memory leaks
+            // Dismantle active playback buffers to prevent audio overlaps
             if (hlsEngine) {
                 hlsEngine.destroy();
             }
 
-            // Implementation pattern splitting based on native browser processing blocks
+            // Route stream signals through platform processing engines
             if (Hls.isSupported()) {
-                hlsEngine = new Hls();
+                hlsEngine = new Hls({
+                    maxMaxBufferLength: 10 // Tight buffer limits for fluid cross-channel jumping
+                });
                 hlsEngine.loadSource(targetFeed.url);
                 hlsEngine.attachMedia(player);
                 hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => {
-                    player.play().catch(() => console.log("User input tracking required to engage video channel elements."));
+                    player.play().catch(err => {
+                        console.log("Autoplay unblock protocol operational. Awaiting client page tap event.");
+                    });
                 });
             } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
-                // Direct compatibility bridge path for native Apple browser systems (Safari iOS devices)
+                // Direct integration fallback path explicitly for Apple device support loops (Mobile Safari)
                 player.src = targetFeed.url;
                 player.addEventListener('loadedmetadata', () => {
-                    player.play();
+                    player.play().catch(() => {});
                 });
             }
 
@@ -184,7 +188,7 @@
             }
         }
 
-        // Initialize engine setup on layout execution cycles
+        // Initialize display configuration routines on window context availability
         window.onload = () => {
             tuneToChannel('action', document.querySelector('.btn-hub'));
         };

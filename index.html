@@ -10,10 +10,18 @@
 
         /* Video Screen Layer */
         .tv-frame { position: relative; width: 100vw; height: 100vh; background: #000; display: flex; align-items: center; justify-content: center; }
-        video { width: 100% !important; height: 100% !important; object-fit: contain; position: absolute; top: 0; left: 0; }
+        video { width: 100% !important; height: 100% !important; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1; }
         
         /* The Click Shield to handle HUD triggering smoothly on mobile */
         .click-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; }
+
+        /* "Tap to Play" Wake Up Overlay Hint */
+        .wake-overlay {
+            position: absolute; z-index: 15; background: rgba(0,0,0,0.8);
+            padding: 15px 30px; border: 2px dashed #FFD700; border-radius: 30px;
+            font-weight: bold; color: #FFD700; letter-spacing: 1px; pointer-events: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); transition: opacity 0.3s ease;
+        }
 
         /* Top Brand Header */
         .brand-header {
@@ -73,7 +81,9 @@
 <body>
 
     <div class="tv-frame">
-        <div class="click-shield" onclick="toggleHUD()"></div>
+        <div class="click-shield" onclick="handleScreenTap()"></div>
+        
+        <div class="wake-overlay" id="wake-prompt">⚠️ TAP SCREEN TO WAKE LIVE TV</div>
         
         <video id="sovereign-core-player" autoplay muted playsinline></video>
 
@@ -86,10 +96,10 @@
             <div class="remote-title">Goldtech Master Grid</div>
             
             <div class="category-heading">🎬 MOVIES</div>
-            <button class="btn-hub active" onclick="tuneToChannel('movie_nollywood', this)">🇳🇬 Nollywood Cinema</button>
-            <button class="btn-hub" onclick="tuneToChannel('movie_action', this)">🔥 Action Block HD</button>
+            <button class="btn-hub active" onclick="tuneToChannel('movie_action', this)">🔥 Action Cinema HD</button>
             <button class="btn-hub" onclick="tuneToChannel('movie_scifi', this)">🚀 Sci-Fi Zone</button>
             <button class="btn-hub" onclick="tuneToChannel('movie_classic', this)">🎞️ Hollywood Classics</button>
+            <button class="btn-hub" onclick="tuneToChannel('movie_nollywood', this)">🇳🇬 Nollywood Classic</button>
 
             <div class="category-heading">⚽ SPORTS</div>
             <button class="btn-hub" onclick="tuneToChannel('sports_footy1', this)">🏆 FIFA+ Soccer Live</button>
@@ -98,13 +108,13 @@
             <button class="btn-hub" onclick="tuneToChannel('sports_combat', this)">🥊 Fight Network</button>
 
             <div class="category-heading">📰 WORLD NEWS</div>
-            <button class="btn-hub" onclick="tuneToChannel('news_nigeria', this)">🇳🇬 TVC News Lagos</button>
-            <button class="btn-hub" onclick="tuneToChannel('news_global', this)">🇬🇧 Sky News UK</button>
+            <button class="btn-hub" onclick="tuneToChannel('news_global', this)">🌍 Al Jazeera Live HD</button>
+            <button class="btn-hub" onclick="tuneToChannel('news_africa', this)">🇳🇬 Africanews Live</button>
             <button class="btn-hub" onclick="tuneToChannel('news_finance', this)">📊 Bloomberg Finance</button>
 
             <div class="category-heading">🎵 MUSIC NETWORKS</div>
-            <button class="btn-hub" onclick="tuneToChannel('music_afro', this)">🇳🇬 Trace Afrobeats</button>
             <button class="btn-hub" onclick="tuneToChannel('music_global', this)">🎧 Clubbing TV 24/7</button>
+            <button class="btn-hub" onclick="tuneToChannel('music_afro', this)">🇳🇬 Afro Pop Streams</button>
 
             <div class="category-heading">✨ VARIETY MIXED</div>
             <button class="btn-hub" onclick="tuneToChannel('mixed_space', this)">🌌 NASA Deep Space</button>
@@ -125,16 +135,11 @@
     </div>
 
     <script>
-        // Real Live 24/7 Premium Channels - Optimized & CORS Unlocked
+        // High-SLA developer networks intentionally set with global cross-origin allowances
         const goldtechChannels = {
-            // --- 4 MOVIES (1 NIGERIAN) ---
-            movie_nollywood: {
-                title: "Goldtech Nollywood Cinema (Nigeria Live Feed)",
-                url: "https://amg01407-africamovienetw-africamovienetwork-aym-us.amagi.tv/playlist.m3u8"
-            },
             movie_action: {
-                title: "Sovereign Action Elite HD • Live 24/7",
-                url: "https://linear-413.viki.com/stable/manifest.m3u8"
+                title: "Sintel Cinematic Master Cut (Action/Adventure)",
+                url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
             },
             movie_scifi: {
                 title: "DUST Sci-Fi Space Cinema • Live 24/7",
@@ -144,8 +149,10 @@
                 title: "Goldtech Hollywood Classics • Live Cinema",
                 url: "https://retrocrush-cinedigm.amagi.tv/playlist.m3u8"
             },
-
-            // --- 4 SPORTS (2 FOOTBALL / SOCCER) ---
+            movie_nollywood: {
+                title: "Nollywood Cinema Box (Africa Movie Net)",
+                url: "https://amg01407-africamovienetw-africamovienetwork-aym-us.amagi.tv/playlist.m3u8"
+            },
             sports_footy1: {
                 title: "Sovereign Football TV (Live FIFA+ Soccer Network)",
                 url: "https://ftv-fifaplus-3-us.samsung.wurl.com/manifest/playlist.m3u8"
@@ -162,32 +169,26 @@
                 title: "Hard Knocks Fighting Championship • 24/7 Combat",
                 url: "https://fightnetwork-cinedigm.amagi.tv/playlist.m3u8"
             },
-
-            // --- 3 NEWS (1 NIGERIAN) ---
-            news_nigeria: {
-                title: "TVC News Nigeria (Live From Lagos)",
-                url: "https://viamotionhsi.netplus.ch/live/eds/tvcnews/browser-HLS8/tvcnews.m3u8"
-            },
             news_global: {
-                title: "Sky News International HD • Live 24/7",
-                url: "https://skynews-skynewsmain-skynewsnative.amagi.tv/playlist.m3u8"
+                title: "Al Jazeera English HD (Global News Live)",
+                url: "https://live-am.akamaized.net/aljazeera/english/core.m3u8"
+            },
+            news_africa: {
+                title: "Africanews International Broadcast • Live From Region",
+                url: "https://africanews-africanews-1-fr.samsung.wurl.com/manifest/playlist.m3u8"
             },
             news_finance: {
                 title: "Bloomberg Financial Global Network Live",
                 url: "https://bloomberg.vnative.com/bloomberg/live/manifest.m3u8"
             },
-
-            // --- 2 MUSIC (1 NIGERIAN AFROBEATS) ---
-            music_afro: {
-                title: "Goldtech Afro Hits (Trace Afrik Live Feed)",
-                url: "https://trace-traceafrik-samsung.amagi.tv/playlist.m3u8"
-            },
             music_global: {
                 title: "Clubbing TV (24/7 Electronic & Festival Music)",
                 url: "https://clubbingtv-rakuten.amagi.tv/playlist.m3u8"
             },
-
-            // --- 3 MIXED VARIETY ---
+            music_afro: {
+                title: "Trace Afrik Network (Premium Afro Hits)",
+                url: "https://trace-traceafrik-samsung.amagi.tv/playlist.m3u8"
+            },
             mixed_space: {
                 title: "NASA TV HD Mission Control Operations Live",
                 url: "https://ntv1.akamaized.net/hls/live/2034057/NASA-NTV1-Public/master.m3u8"
@@ -208,6 +209,17 @@
         let progressInterval;
         let virtualTimeTracker = 0;
 
+        function handleScreenTap() {
+            // Hide the wake overlay banner text indicator
+            document.getElementById('wake-prompt').style.opacity = '0';
+            
+            // Re-trigger and toggle HUD dashboard layout overlay
+            toggleHUD();
+            
+            // Explicitly force modern hardware processing vectors to play active frame elements
+            player.play().catch(() => {});
+        }
+
         function tuneToChannel(channelKey, UI_Button) {
             triggerHUD();
             
@@ -219,25 +231,18 @@
             document.getElementById('meta-provider').innerText = `GOLDTECH • ${channelKey.toUpperCase()}`;
             document.getElementById('meta-title').innerText = targetFeed.title;
 
-            // Dismantle active playback buffers to prevent audio overlaps
             if (hlsEngine) {
                 hlsEngine.destroy();
             }
 
-            // Route stream signals through platform processing engines
             if (Hls.isSupported()) {
-                hlsEngine = new Hls({
-                    maxMaxBufferLength: 10 // Tight buffer limits for fluid cross-channel jumping
-                });
+                hlsEngine = new Hls({ maxMaxBufferLength: 10 });
                 hlsEngine.loadSource(targetFeed.url);
                 hlsEngine.attachMedia(player);
                 hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => {
-                    player.play().catch(err => {
-                        console.log("Autoplay unblock protocol operational. Awaiting client page tap event.");
-                    });
+                    player.play().catch(() => {});
                 });
             } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
-                // Direct integration fallback path explicitly for Apple device support loops (Mobile Safari)
                 player.src = targetFeed.url;
                 player.addEventListener('loadedmetadata', () => {
                     player.play().catch(() => {});
@@ -276,9 +281,9 @@
             }
         }
 
-        // Initialize with Nollywood Cinema automatically on startup
+        // Initialize with Action Cinema automatically on layout execution load configurations
         window.onload = () => {
-            tuneToChannel('movie_nollywood', document.querySelector('.btn-hub'));
+            tuneToChannel('movie_action', document.querySelector('.btn-hub'));
         };
     </script>
 </body>

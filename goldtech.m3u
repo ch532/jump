@@ -1,0 +1,373 @@
+#EXTM3U
+
+# ====================================================================
+# NIGERIAN NEWS & GENERAL
+# ====================================================================
+#EXTINF:-1 tvg-id="AriseNews.ng" group-title="Nigerian News" tvg-logo="https://alllivecast.com/assets/images/logo.png",Arise News
+https://alllivecast.com:1936/arisenews/arisenews/playlist.m3u8
+
+#EXTINF:-1 tvg-id="TVCNews.ng" group-title="Nigerian News" tvg-logo="https://tvcnews.tv/wp-content/uploads/2020/09/tvcnews-logo.png",TVC News Nigeria
+https://rtmp.tvcnews.tv/live/tvcnews/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ChannelsTV.ng" group-title="Nigerian News" tvg-logo="https://www.channelstv.com/wp-content/uploads/2018/01/channels-logo.png",Channels TV
+https://channelstv-live.tcdn.live/channelstv/live/playlist.m3u8
+
+#EXTINF:-1 tvg-id="WazobiaMax.ng" group-title="Nigerian News" tvg-logo="http://wazobiamax.tv/wp-content/uploads/2017/04/wazobia-logo.png",Wazobia Max TV
+http://wazobiamax.itvrad.io/wazobiamax/live.m3u8
+
+#EXTINF:-1 tvg-id="NTA.ng" group-title="Nigerian News" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/e/e1/NTA_logo.png",NTA International
+https://5b32607e408bf.streamlock.net/ntatv/live/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Silverbird.ng" group-title="Nigerian News" tvg-logo="https://silverbirdtv.com/wp-content/uploads/2019/08/STV-Logo-1.png",Silverbird TV
+https://5b32607e408bf.streamlock.net/silverbirdtv/live/playlist.m3u8
+
+# ====================================================================
+# GLOBAL NEWS & BUSINESS (100% Stable CDNs)
+# ====================================================================
+#EXTINF:-1 tvg-id="ABCNews.us" group-title="Global News" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/3/33/ABC_News_3_Logos.svg",ABC News Live
+https://content.uplynk.com/channel/3324f2467c41432bb33c6ef34f731506.m3u8
+
+#EXTINF:-1 tvg-id="SkyNews.uk" group-title="Global News" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/7/77/Sky_News_logo_2021.svg",Sky News International
+https://skynews-skynewsinternational-sub.akamaized.net/hls/live/2002879/skynewsinternational/master.m3u8
+
+#EXTINF:-1 tvg-id="BBCNews.uk" group-title="Global News",BBC News Global
+https://vs-hls-push-uk-live.akamaized.net/x=3/i=urn:bbc:pips:service:bbc_news_channel_hd/t=30452/v=pv14/b=3500000/main.m3u8
+
+#EXTINF:-1 tvg-id="CBSNews.us" group-title="Global News",CBS News Live
+https://cbsn-us.cbsnstream.cbsnews.com/main/master.m3u8
+
+#EXTINF:-1 tvg-id="AlJazeera.qa" group-title="Global News",Al Jazeera English
+https://live-hls-web-aje.getaj.net/AJE/index.m3u8
+
+#EXTINF:-1 tvg-id="DWEnglish.de" group-title="Global News",DW News English
+https://dwstream72-lh.akamaihd.net/i/dwstream72_live@123556/master.m3u8
+
+#EXTINF:-1 tvg-id="France24.fr" group-title="Global News",France 24 English
+https://static.france24.com/live/F24_EN_LO_HLS/live_tv.m3u8
+
+#EXTINF:-1 tvg-id="Bloomberg.us" group-title="Global News",Bloomberg TV US
+https://live.bloomberg.com/bulletin/us/master.m3u8
+
+#EXTINF:-1 tvg-id="CNA.sg" group-title="Global News",CNA Asia News
+https://mediacorp-cna-hls.akamaized.net/hls/live/2034739/cna_web/master.m3u8
+
+#EXTINF:-1 tvg-id="TRTWorld.tr" group-title="Global News",TRT World News
+https://tv-trtworld.meditg.com/hls/trtworld_live.m3u8
+
+#EXTINF:-1 tvg-id="Africanews.fr" group-title="Global News",AfricaNews English
+https://africanews-africanews-eng-sub.akamaized.net/hls/live/2012641/africanews_eng/master.m3u8
+
+#EXTINF:-1 tvg-id="RTNews.ru" group-title="Global News",RT News International
+https://rt-eng.meditg.com/hls/rt_eng.m3u8
+
+#EXTINF:-1 tvg-id="EuroNews.eu" group-title="Global News",EuroNews English
+https://euronews-euronews-eng-sub.akamaized.net/hls/live/2012431/euronews_eng/master.m3u8
+
+#EXTINF:-1 tvg-id="NHKWorld.jp" group-title="Global News",NHK World Japan
+https://nhkworld.akamaized.net/hls/live/2023584/nhkworld/master.m3u8
+
+# ====================================================================
+# SPORTS & OUTDOORS
+# ====================================================================
+#EXTINF:-1 tvg-id="RedBullTV" group-title="Sports" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/b/b2/Red_Bull_TV_logo.svg",Red Bull TV
+https://rbmn-live.akamaized.net/hls/live/590945/global/master.m3u8
+
+#EXTINF:-1 tvg-id="EdgeSport" group-title="Sports",Edge Sport HD
+https://edgesport-edgesport-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="WorldPokerTour" group-title="Sports",World Poker Tour
+https://wpt-wpt-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FuboSports" group-title="Sports",Fubo Sports Network
+https://fubosports-fubosportsnetwork-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ImpactWrestling" group-title="Sports",Impact Wrestling Zone
+https://impactwrestling-impactwrestling-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ACCMobile" group-title="Sports",ACC Digital Network
+https://acc-accdigitalnetwork-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="OriginSports" group-title="Sports",Origin Sports Network
+https://originsports-originsports-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Pac12" group-title="Sports",Pac-12 Insider
+https://pac12-pac12insider-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="HardKnockWrestling" group-title="Sports",Hard Knock Boxing & MMA
+https://hardknock-hardknockboxing-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="EstrellaTVDeportes" group-title="Sports",Estrella TV Deportes
+https://estrellatv-estrelladeportes-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PowerNation" group-title="Sports",PowerNation Automotive Racing
+https://powernation-powernation-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="GannettSports" group-title="Sports",USA Today Sports Wire
+https://gannett-usatodaysportswire-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="SportsGrid" group-title="Sports",SportsGrid Network Live
+https://sportsgrid-sportsgrid-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PursuitUp" group-title="Sports",PursuitUp Hunting & Fishing
+https://pursuit-pursuitup-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RealmadridTV" group-title="Sports",Real Madrid TV English
+https://realmadrid-realmadrideng-1-us.wurl.tv/playlist.m3u8
+
+# ====================================================================
+# ENTERTAINMENT, LIFESTYLE & MOVIES
+# ====================================================================
+#EXTINF:-1 tvg-id="FilmriseAction" group-title="Movies & Entertainment",FilmRise Action Movies
+https://filmrise-filmriseaction-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FilmriseFree" group-title="Movies & Entertainment",FilmRise Free Movies
+https://filmrise-filmrisefreemovies-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ShoutFactory" group-title="Movies & Entertainment",Shout! Factory TV
+https://shoutfactory-shoutfactorytv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PlutoSpotlight" group-title="Movies & Entertainment",Pluto TV Movies Spotlight
+https://pluto-spotlight-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Cinevault" group-title="Movies & Entertainment",Cinevault Westerns
+https://sony-cinevaultwesterns-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="DustSciFi" group-title="Movies & Entertainment",DUST Sci-Fi Channel
+https://dust-dust-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="TheAsylum" group-title="Movies & Entertainment",The Asylum Movie Channel
+https://asylum-theasylum-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RuntimeTV" group-title="Movies & Entertainment",Runtime TV & Movies
+https://runtime-runtimetv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="MaverickMovies" group-title="Movies & Entertainment",Maverick Black Cinema
+https://maverick-maverickblackcinema-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ElectricNow" group-title="Movies & Entertainment",ElectricNow TV
+https://electricnow-electricnow-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Tastemade" group-title="Movies & Entertainment",Tastemade Food & Travel
+https://tastemade-tastemade-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FashionTV" group-title="Movies & Entertainment",Fashion TV Global
+https://fashiontv-fashiontv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PeopleTV" group-title="Movies & Entertainment",People TV Celebrity News
+https://people-peopletv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ComedyDynamics" group-title="Movies & Entertainment",Comedy Dynamics Standup
+https://comedydynamics-comedydynamics-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Buzzr" group-title="Movies & Entertainment",BUZZR Classic Game Shows
+https://fremantle-buzzr-1-us.samsung.wurl.tv/playlist.m3u8
+
+# ====================================================================
+# DOCUMENTARIES & EDUCATION
+# ====================================================================
+#EXTINF:-1 tvg-id="MagellanTV" group-title="Documentaries",MagellanTV Now
+https://magellan-magellantv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Docurama" group-title="Documentaries",Docurama Documentaries
+https://cinedigm-docurama-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="LoveNature" group-title="Documentaries",Love Nature Wildlife HD
+https://lovenature-lovenature-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="HistoryTime" group-title="Documentaries",HistoryTime Channels
+https://historytime-historytime-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RealWild" group-title="Documentaries",Real Wild Expeditions
+https://realwild-realwild-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="TimelineDocs" group-title="Documentaries",Timeline History Docs
+https://timeline-timeline-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="SparkDocs" group-title="Documentaries",Spark Science & Tech Docs
+https://spark-spark-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ChasingHistory" group-title="Documentaries",Chasing History Outdoors
+https://chasinghistory-chasinghistory-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="NASA.us" group-title="Documentaries",NASA TV Public Broadcast
+https://ntvpublic.akamaized.net/hls/live/2022197/ntvpublic/master.m3u8
+
+# ====================================================================
+# MUSIC CHANNELS
+# ====================================================================
+#EXTINF:-1 tvg-id="ClubbingTV" group-title="Music",Clubbing TV Electronic Dance
+https://clubbingtv-clubbingtv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="StingrayHitList" group-title="Music",Stingray Hit List Pop
+https://stingray-stingrayhitlist-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="StingrayClassic" group-title="Music",Stingray Classic Rock
+https://stingray-classicrock-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="StingrayHipHop" group-title="Music",Stingray Hip Hop & R&B
+https://stingray-hiphop-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="QelloConcerts" group-title="Music",Stingray Qello Live Concerts
+https://stingray-qelloconcerts-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="VevoPop" group-title="Music",Vevo Pop Music Videos
+https://vevo-pop-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="VevoHipHop" group-title="Music",Vevo Hip Hop Music Videos
+https://vevo-hiphop-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="VevoCountry" group-title="Music",Vevo Country Music Videos
+https://vevo-country-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="VevoReggaeton" group-title="Music",Vevo Reggaeton & Latino
+https://vevo-latino-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="LatidoMusic" group-title="Music",Latido Music Network
+https://latido-latidomusic-1-us.samsung.wurl.tv/playlist.m3u8
+
+# ====================================================================
+# KIDS & ANIMATION
+# ====================================================================
+#EXTINF:-1 tvg-id="ToonGoggles" group-title="Kids",Toon Goggles Cartoons
+https://toongoggles-toongoggles-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PocketWatch" group-title="Kids",Pocket.watch Kids Network
+https://pocketwatch-pocketwatch-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RyanAndFriends" group-title="Kids",Ryan & Friends Live
+https://pocketwatch-ryansfriends-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BratTV" group-title="Kids",Brat TV Teen Series
+https://brat-brattv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Kabillion" group-title="Kids",Kabillion Free Cartoons
+https://kabillion-kabillion-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ZooMoo" group-title="Kids",ZooMoo Nature for Kids
+https://zoomoo-zoomoo-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="KidoodleTV" group-title="Kids",Kidoodle.TV Safe Streaming
+https://kidoodle-kidoodletv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="KartoonChannel" group-title="Kids",Kartoon Channel Live
+https://genius-kartoonchannel-1-us.samsung.wurl.tv/playlist.m3u8
+
+# ====================================================================
+# RELIGIOUS & FAITH
+# ====================================================================
+#EXTINF:-1 tvg-id="EmmanuelTV" group-title="Religious" tvg-logo="https://emmanuel.tv/wp-content/uploads/2018/06/emmanuel-logo.png",Emmanuel TV Africa
+https://emmanueltv-live.tcdn.live/emmanueltv/live/playlist.m3u8
+
+#EXTINF:-1 tvg-id="TheWordNetwork" group-title="Religious",The Word Network Global
+https://thewordnetwork-thewordnetwork-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="CBNNews" group-title="Religious",CBN Christian Broadcasting News
+https://cbn-cbnnews-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="TBNToday" group-title="Religious",TBN Trinity Broadcasting Network
+https://tbn-tbntoday-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="GodTV" group-title="Religious",GOD TV Live Broadcast
+https://godtv-godtv-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="3ABN" group-title="Religious",Three Angels Broadcasting Network
+https://threeabn-threeabntv-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="HopeChannel" group-title="Religious",Hope Channel International
+https://hope-hopechannel-1-us.wurl.tv/playlist.m3u8
+
+# ====================================================================
+# POPULAR ADDITIONAL GLOBAL CDN STREAMS
+# ====================================================================
+#EXTINF:-1 tvg-id="WeatherNation" group-title="Global Weather",WeatherNation Live
+https://weathernation-weathernation-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="AccuWeather" group-title="Global Weather",AccuWeather Network
+https://accuweather-accuweather-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Revry" group-title="Movies & Entertainment",Revry TV Live
+https://revry-revry-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="SoReal" group-title="Movies & Entertainment",SoReal Reality TV
+https://soreal-soreal-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FailArmy" group-title="Movies & Entertainment",FailArmy Funny Videos
+https://failarmy-failarmy-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="ThePetCollective" group-title="Movies & Entertainment",The Pet Collective
+https://petcollective-thepetcollective-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="PeopleAreAwesome" group-title="Movies & Entertainment",People Are Awesome Sports
+https://paa-peopleareawesome-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="WeatherSpy" group-title="Global Weather",WeatherSpy Outdoor Climate
+https://weatherspy-weatherspy-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="RealStories" group-title="Documentaries",Real Stories Documentaries
+https://realstories-realstories-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="WonderDocs" group-title="Documentaries",Wonder Science & Tech
+https://wonder-wonder-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="AbsoluteHistory" group-title="Documentaries",Absolute History UK
+https://absolutehistory-absolutehistory-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="StingrayJazz" group-title="Music",Stingray Jazz & Blues Live
+https://stingray-jazz-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Cinevault70s" group-title="Movies & Entertainment",Cinevault 70s Movies
+https://sony-cinevault70s-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Cinevault80s" group-title="Movies & Entertainment",Cinevault 80s Movies
+https://sony-cinevault80s-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FilmriseComedy" group-title="Movies & Entertainment",FilmRise Comedy Channels
+https://filmrise-filmrisecomedy-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FilmriseHorror" group-title="Movies & Entertainment",FilmRise Horror Movies
+https://filmrise-filmrisehorror-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="MST3K" group-title="Movies & Entertainment",Mystery Science Theater 3000
+https://shoutfactory-mst3k-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="AETNEnglish" group-title="Movies & Entertainment",A&E Network Classic Clips
+https://aetn-aefree-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="HistoryFree" group-title="Documentaries",History Channel Free Vault
+https://aetn-historyfree-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="LifetimeMovies" group-title="Movies & Entertainment",Lifetime Real Women Vault
+https://aetn-lifetimemovies-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="LuchaLibre" group-title="Sports",Lucha Libre AAA Wrestling
+https://luchalibre-luchalibreaaa-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="GloryKickboxing" group-title="Sports",Glory Kickboxing Network
+https://glory-glorykickboxing-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="CombateGlobal" group-title="Sports",Combate Global MMA Live
+https://combateglobal-combateglobal-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="FTFDeportes" group-title="Sports",For The Fans Deportes
+https://ftf-ftfsports-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="GOLTV" group-title="Sports",GOLTV Soccer English
+https://goltv-goltveng-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="Motorvision" group-title="Sports",Motorvision TV Motorsports
+https://motorvision-motorvisioneng-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="UnbeatenSports" group-title="Sports",Unbeaten Sports Network
+https://unbeaten-unbeatensports-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="WhistleTV" group-title="Sports",Whistle TV Sports Documentaries
+https://whistle-whistletv-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="SuperToons" group-title="Kids",Super Toons Classic Animation
+https://supertoons-supertoons-1-us.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="BabyFirst" group-title="Kids",BabyFirst TV Live Educational
+https://babyfirst-babyfirst-1-us.samsung.wurl.tv/playlist.m3u8
+
+#EXTINF:-1 tvg-id="HappyKids" group-title="Kids",HappyKids TV Broadcast
+https://happykids-happykidstv-1-us.wurl.tv/playlist.m3u8

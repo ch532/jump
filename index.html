@@ -1,287 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Goldtech</title>
-  
-  <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectgold AI Chat</title>
+    <style>
+        /* Remove default margins and padding from the body */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevents double scrollbars */
+            background-color: #f9f9f9;
+        }
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+        /* Container to hold the iframe and ensure it scales correctly */
+        .chat-container {
+            width: 100%;
+            height: 100%;
+        }
 
-    /* Video Player Area */
-    .player-container {
-      position: relative;
-      flex: 1;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Overlaying Video & Ad layer properly */
-    video, #ad-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Allow clicking elements inside ad layer only during an ad */
-    #ad-container {
-      pointer-events: none;
-      z-index: 10;
-    }
-    #ad-container.playing-ad {
-      pointer-events: auto;
-    }
-
-    /* Channels Sidebar Layout */
-    .channel-sidebar {
-      width: 300px;
-      background: #1e1e1e;
-      border-left: 2px solid #333;
-      display: flex;
-      flex-direction: column;
-      z-index: 20;
-    }
-    .sidebar-header {
-      padding: 15px;
-      background: #292929;
-      font-weight: bold;
-      text-align: center;
-      border-bottom: 1px solid #333;
-    }
-    .channel-list {
-      flex: 1;
-      overflow-y: auto;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .channel-item {
-      padding: 12px 15px;
-      border-bottom: 1px solid #2a2a2a;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-size: 14px;
-    }
-    .channel-item:hover {
-      background: #333;
-    }
-    .channel-item.active {
-      background: #0288d1;
-      font-weight: bold;
-    }
-  </style>
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="player-container">
-    <video id="video" controls autoplay muted></video>
-    
-    <div id="ad-container"></div>
-  </div>
+    <div class="chat-container">
+        <iframe 
+            src="https://app.relevanceai.com/agents/bcbe5a/b00cfd1a-f6fc-4d2c-a931-cd0c32dc3f80/9566649f-0dd3-4a63-bfe2-d0bf50c3522b/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false" 
+            allow="microphone">
+        </iframe>
+    </div>
 
-  <div class="channel-sidebar">
-    <div class="sidebar-header">🏅 Live Sports Channels</div>
-    <ul id="channel-list" class="channel-list">
-      <li class="channel-item">Parsing IPTV list...</li>
-    </ul>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.0/dist/hls.min.js"></script>
-
-  <script>
-    // Configuration URLs
-    const playlistUrl = 'https://iptv-org.github.io/iptv/categories/sport.m3u';
-    const vastTagUrl = 'https://exalted-engineering.com/dym/F.zEdTGUNovGZEGUUW/te/mr9HuCZdULlAkePsTGYfzuNcTEExwVMDTpEmteNBjRM/1oMyT/AwxcMuiRZ/sCawW-1UpgdmD/0/xE';
-
-    // Global DOM and Player Variables
-    const video = document.getElementById('video');
-    const adContainer = document.getElementById('ad-container');
-    const channelListUI = document.getElementById('channel-list');
-    
-    let hls = null;
-    let adsLoader;
-    let adsManager;
-    let adDisplayContainer;
-    let pendingStreamUrl = null;
-
-    // ==========================================
-    // 1. AD MANAGEMENT LOGIC (Google IMA SDK)
-    // ==========================================
-    function initAds() {
-      adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
-      adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-      
-      adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, onAdsManagerLoaded, false);
-      adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
-    }
-
-    function requestAd(streamUrlToLoadAfterAd) {
-      // Save target stream URL to launch right after ad cycles finish/error out
-      pendingStreamUrl = streamUrlToLoadAfterAd;
-      
-      // Initialize layout surface
-      adDisplayContainer.initialize();
-      
-      const adsRequest = new google.ima.AdsRequest();
-      adsRequest.adTagUrl = vastTagUrl;
-      adsRequest.linearAdSlotWidth = video.clientWidth;
-      adsRequest.linearAdSlotHeight = video.clientHeight;
-      
-      adsLoader.requestAds(adsRequest);
-    }
-
-    function onAdsManagerLoaded(adsManagerLoadedEvent) {
-      const adsRenderingSettings = new google.ima.AdsRenderingSettings();
-      adsRenderingSettings.restorePlayerStateOnAdHtml5 = true;
-      
-      adsManager = adsManagerLoadedEvent.getAdsManager(video, adsRenderingSettings);
-      
-      adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
-      
-      // Event: Ad starts playing -> Pause the backend stream
-      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, () => {
-        video.pause();
-        adContainer.classList.add('playing-ad');
-      });
-      
-      // Event: Ad completes -> Hide overlay, execute actual live stream startup
-      adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, () => {
-        adContainer.classList.remove('playing-ad');
-        startHlsStream(pendingStreamUrl);
-      });
-      
-      try {
-        adsManager.init(video.clientWidth, video.clientHeight, google.ima.ViewMode.NORMAL);
-        adsManager.start();
-      } catch (adError) {
-        // Safe fallback if initialization errors out
-        startHlsStream(pendingStreamUrl);
-      }
-    }
-
-    function onAdError(adErrorEvent) {
-      console.warn('Ad Event Issue/Timeout, skipping to live stream directly: ', adErrorEvent.getError().toString());
-      if (adsManager) { adsManager.destroy(); }
-      adContainer.classList.remove('playing-ad');
-      
-      // Fallback: Launch stream right away if Ad block/CORS issues pop up
-      startHlsStream(pendingStreamUrl);
-    }
-
-    // ==========================================
-    // 2. VIDEO STREAMING LOGIC (Hls.js)
-    // ==========================================
-    function startHlsStream(url) {
-      if (hls) {
-        hls.destroy(); // Clear running tasks from last active channel selection
-      }
-
-      if (Hls.isSupported()) {
-        hls = new Hls({ maxLiveSyncPlaybackRate: 1.5 });
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().catch(() => console.log("Autoplay context initialization fallback applied."));
-        });
-
-        // Monitor connection breaks / dead links from public playlist
-        hls.on(Hls.Events.ERROR, function (event, data) {
-          if (data.fatal) {
-            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-              hls.startLoad();
-            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-              hls.recoverMediaError();
-            }
-          }
-        });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native support (Safari/iOS fallback)
-        video.src = url;
-      }
-    }
-
-    // ==========================================
-    // 3. M3U PARSING & COMPONENT GENERATION
-    // ==========================================
-    async function loadPlaylist() {
-      try {
-        const response = await fetch(playlistUrl);
-        const data = await response.text();
-        const channels = parseM3U(data);
-        renderChannels(channels);
-      } catch (error) {
-        channelListUI.innerHTML = '<li class="channel-item" style="color:#ef5350;">Failed to load M3U feed.</li>';
-        console.error("Fetch Exception:", error);
-      }
-    }
-
-    function parseM3U(m3uText) {
-      const lines = m3uText.split('\n');
-      const channels = [];
-      let currentName = '';
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line.startsWith('#EXTINF:')) {
-          const commaIndex = line.lastIndexOf(',');
-          currentName = commaIndex !== -1 ? line.substring(commaIndex + 1).trim() : 'Live Channel';
-        } else if (line.startsWith('http')) {
-          channels.push({ name: currentName || 'Live Stream', url: line });
-          currentName = '';
-        }
-      }
-      return channels;
-    }
-
-    function renderChannels(channels) {
-      channelListUI.innerHTML = '';
-      
-      if (channels.length === 0) {
-        channelListUI.innerHTML = '<li class="channel-item">No records found.</li>';
-        return;
-      }
-
-      channels.forEach((channel, index) => {
-        const li = document.createElement('li');
-        li.className = 'channel-item';
-        li.textContent = channel.name;
-        
-        li.addEventListener('click', () => {
-          document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
-          li.classList.add('active');
-          
-          // Request ad first. The live stream will handle launching in its callback triggers.
-          requestAd(channel.url);
-        });
-        
-        channelListUI.appendChild(li);
-      });
-
-      // Autoplay initialization sequence (Plays ad + channel 1 automatically)
-      if(channels.length > 0) {
-        channelListUI.children[0].classList.add('active');
-        requestAd(channels[0].url);
-      }
-    }
-
-    // Core Init Run triggers
-    initAds();
-    loadPlaylist();
-  </script>
 </body>
 </html>

@@ -15,20 +15,9 @@
     <meta property="og:image" content="https://skyl.name.ng/connectgold_copy_320x320_copy_512x512.png">
     <meta property="og:type" content="website">
 
-    <script src="https://cdns.dbankcloud.com/js/agc/agc-core/1.5.1/agc-core.js"></script>
-
-    <script src="https://cdns.dbankcloud.com/js/agc/agc-instance/1.5.1/agc-instance.js"></script>
-
-    <script src="https://cdns.dbankcloud.com/js/agc/agc-auth/1.5.1/agc-auth.js"></script>
-    <script src="https://cdns.dbankcloud.com/js/agc/agc-remoteconfig/1.5.1/agc-remoteconfig.js"></script>
-
-    <script>
-        var agConnectConfig =  {
-    // App configurations.
-};
-// Initialize AppGallery Connect.
-agconnect.instance().configInstance(agConnectConfig);
-    </script>
+    <meta name="client_id" content="101653523124915928" />
+    <meta name="redirect_uri" content="https://skyl.name.ng" />
+    <meta name="scope" content="openid+profile" />
 
     <link rel="icon" type="image/png" href="https://skyl.name.ng/connectgold_copy_320x320_copy_512x512.png">
     <link rel="apple-touch-icon" href="https://skyl.name.ng/connectgold_copy_320x320_copy_512x512.png">
@@ -120,48 +109,31 @@ agconnect.instance().configInstance(agConnectConfig);
 </head>
 <body>
 
-    <div id="paywall-gate" class="paywall-screen">
-        <div class="paywall-card">
-            <img src="https://skyl.name.ng/connectgold_copy_320x320_copy_512x512.png" alt="Connectgold Logo" class="brand-logo">
-            <h2 class="paywall-title">Unlock Connectgold AI</h2>
-            <p class="paywall-subtitle">Subscribe to gain unlimited access to 28 premium workflows including live SEO audits, marketplace scraping, and automated workspace tools.</p>
-            
-            <div class="paypal-btn-container">
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top"> 
-                    <input type="hidden" name="cmd" value="_s-xclick" /> 
-                    <input type="hidden" name="hosted_button_id" value="5UAX4VNLVG7FU" /> 
-                    <input type="hidden" name="currency_code" value="USD" /> 
-                    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_subscribe_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Subscribe" /> 
-                </form>
-            </div>
-        </div>
-    </div>
+   <p> <button id="hwlogin" onclick=redirect()>HUAWEIID login</button></p>
 
-    <div id="chat-container" class="chat-container">
-        <iframe 
-            src="https://app.relevanceai.com/agents/bcbe5a/b00cfd1a-f6fc-4d2c-a931-cd0c32dc3f80/9566649f-0dd3-4a63-bfe2-d0bf50c3522b/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Ask+me+to%3A+Research+the+web%2C+analyze+business+data%2C+automate+workspaces%2C+or+manage+customer+outreach...&hide_logo=false&hide_description=false" 
-            allow="microphone">
-        </iframe>
-    </div>
-
-    <script>
-        /**
-         * Operational Logic Note:
-         * To automatically unlock the agent right after payment without manual code deployment, 
-         * go back to your PayPal Button settings, open "Advanced Settings," and add your 
-         * website link (e.g., https://yourdomain.com/?premium=true) into the Auto-Return URL field.
-         */
-        
-        // Check the browser window's URL for a successful premium payment parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const hasPaid = urlParams.get('premium');
-
-        // If the query parameter indicates payment is successful, drop the lock screen
-        if (hasPaid === 'true') {
-            document.getElementById("paywall-gate").style.display = "none";
-            document.getElementById("chat-container").style.display = "block";
-        }
-    </script>
+    <script type="text/javascript">
+         var client_id ='',redirect_uri='',scope='';
+         for(var metas=document.getElementsByTagName("meta"),i=0;i<metas.length;++i){
+                   switch(metas[i].name) {
+              case 'client_id':
+                 client_id = metas[i].content;
+                 break;
+              case 'redirect_uri':
+                  redirect_uri = metas[i].content;
+                 break;
+              case 'scope':
+                 scope = metas[i].content;
+                 break;
+              default:break
+                   }
+         }
+         var redirectUrl='https://oauth-login.cloud.huawei.com/oauth2/v3/authorize?'+
+ 'response_type=code&access_type=offline&state=state_parameter_passthrough_value&client_id='+client_id +'&redirect_uri='+ redirect_uri +'&scope='+ scope;
+ 
+function redirect() {
+         window.location.href=redirectUrl;
+}
+</script>
 
     <script>
     var agConnectConfig = 

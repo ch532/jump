@@ -10,6 +10,20 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
         
+        /* 1. Global Security Gate Overlay Wall */
+        #login-gate-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0f172a; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: #ffffff; text-align: center;
+        }
+        .gate-box { background: #1e293b; padding: 40px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+        .gate-box h1 { margin: 0 0 10px 0; font-size: 28px; letter-spacing: -0.5px; }
+        .gate-box p { margin: 0 0 25px 0; color: #94a3b8; font-size: 15px; }
+
+        /* 2. Hidden Content Container Framework */
+        #protected-workspace-root { display: none; }
+        
         /* Top Navigation Styles */
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 18px; text-decoration: none; }
@@ -18,9 +32,6 @@
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
         .nav-item:hover { color: #f8fafc; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; padding-bottom: 2px; }
-
-        /* Auth Container Override */
-        .google-auth-nav-wrap { min-width: 150px; height: 40px; display: flex; align-items: center; }
 
         .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; pointer-events: auto; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
@@ -33,37 +44,19 @@
         
         /* Main Workspace Panels */
         .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; opacity: 0.95; color: #1e293b; }
-        
-        /* Custom Search Wrapper Styling */
         .search-engine-wrapper { margin-bottom: 25px; min-height: 60px; }
 
-        /* Weather Monitoring Station Layout Matrix */
+        /* Weather Station Matrix Styles */
         .weather-section-title { font-size: 14px; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px 0; }
-        
-        .ow-auto-card {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            color: #ffffff; padding: 20px; border-radius: 8px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 15px;
-        }
-
-        /* Carousel Rotating Grid Viewport */
-        .weather-grid-matrix { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; 
-            transition: opacity 0.4s ease-in-out; opacity: 1;
-        }
+        .ow-auto-card { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .weather-grid-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; transition: opacity 0.4s ease-in-out; opacity: 1; }
         .weather-grid-matrix.fade-out { opacity: 0; }
         @media (max-width: 580px) { .weather-grid-matrix { grid-template-columns: 1fr; } }
 
-        .ow-static-card {
-            background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px;
-            display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
+        .ow-static-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; }
         .ow-static-card h5 { margin: 0; font-size: 16px; color: #1e293b; font-weight: bold; }
         .ow-static-card p { margin: 4px 0; font-size: 12px; color: #64748b; text-transform: capitalize; }
         .ow-static-temp { font-size: 1.5rem; font-weight: 800; color: #0284c7; margin-top: 5px; }
-
         .ow-location-info h4 { margin: 0; font-size: 20px; font-weight: bold; }
         .ow-location-info p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; text-transform: capitalize; }
         .ow-metrics { display: flex; align-items: center; gap: 15px; }
@@ -77,10 +70,7 @@
         .awareness-card { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .awareness-card h4 { margin: 0 0 8px 0; color: #475569; font-size: 12px; text-transform: uppercase; }
         .awareness-value { font-size: 15px; font-weight: bold; color: #0284c7; }
-
         .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 10px; text-align: center; border-radius: 8px; opacity: 0.95; }
-
-        /* Yandex Map Wrap Box Style */
         .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 25px; overflow: hidden; }
     </style>
 </head>
@@ -94,78 +84,103 @@
      data-auto_prompt="false">
 </div>
 
-<nav class="top-nav">
-    <a href="index.html" class="nav-brand">ContextOS</a>
-    <div class="nav-right-block">
-        <div class="nav-links">
-            <a href="index.html" class="nav-item active">Dashboard</a>
-            <a href="page2.html" class="nav-item">Page 2</a>
-        </div>
-        <div class="google-auth-nav-wrap">
-            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="medium" data-logo_alignment="left"></div>
+<div id="login-gate-overlay">
+    <div class="gate-box">
+        <h1>ContextOS Terminal</h1>
+        <p>Authentication required to access this system.</p>
+        <div style="display: flex; justify-content: center;">
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
         </div>
     </div>
-</nav>
+</div>
 
-<div class="container">
-    <div class="grid">
-        <main class="main-content">
-            <h2>Web Workspace Search</h2>
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
-            
-            <div class="search-engine-wrapper">
-                <script async src="https://cse.google.com/cse.js?cx=f1ec786fdb3a8416c"></script>
-                <div class="gcse-search"></div>
+<div id="protected-workspace-root">
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">ContextOS</a>
+        <div class="nav-right-block">
+            <div class="nav-links">
+                <a href="index.html" class="nav-item active">Dashboard</a>
+                <a href="page2.html" class="nav-item">Page 2</a>
             </div>
+        </div>
+    </nav>
 
-            <div class="weather-section-title">Live Target Node (Automatic Position)</div>
-            <div class="ow-auto-card" id="weather-panel">
-                <div class="ow-location-info">
-                    <h4 id="ow-city">Detecting Local Climate...</h4>
-                    <p id="ow-desc">Syncing tracking framework telemetry...</p>
-                </div>
-                <div class="ow-metrics">
-                    <div class="ow-temp" id="ow-temp">--°C</div>
-                    <img id="ow-icon" class="ow-icon-canvas" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'/>" alt="Weather Status">
-                </div>
-            </div>
-
-            <div class="weather-section-title">Global Weather Hub Matrix (Rotating Live Data)</div>
-            <div class="weather-grid-matrix" id="multi-weather-grid">
+    <div class="container">
+        <div class="grid">
+            <main class="main-content">
+                <h2>Web Workspace Search</h2>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
+                
+                <div class="search-engine-wrapper">
+                    <script async src="https://cse.google.com/cse.js?cx=f1ec786fdb3a8416c"></script>
+                    <div class="gcse-search"></div>
                 </div>
 
-            <h3>Complete Native Context Awareness Suite</h3>
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
-            <div class="awareness-dashboard">
-                <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
-                <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
-                <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
-                <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
-                <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
-                <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
-                <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
-                <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
-            </div>
-
-            <div class="yandex-map-container">
-                <div style="position:relative;overflow:hidden;">
-                    <a href="https://yandex.com/maps?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Яндекс Карты</a>
-                    <a href="https://yandex.com/maps/?ll=38.583678%2C55.221603&utm_medium=mapframe&utm_source=maps&z=7" style="color:#eee;font-size:12px;position:absolute;top:14px;">Yandex Maps — transportation, navigation, and place search</a>
-                    <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="1" style="position:relative; display:block;"></iframe>
+                <div class="weather-section-title">Live Target Node (Automatic Position)</div>
+                <div class="ow-auto-card" id="weather-panel">
+                    <div class="ow-location-info">
+                        <h4 id="ow-city">Detecting Local Climate...</h4>
+                        <p id="ow-desc">Syncing tracking framework telemetry...</p>
+                    </div>
+                    <div class="ow-metrics">
+                        <div class="ow-temp" id="ow-temp">--°C</div>
+                        <img id="ow-icon" class="ow-icon-canvas" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'/>" alt="Weather Status">
+                    </div>
                 </div>
-            </div>
-        </main>
 
-        <aside>
-            <div class="ad-slot-sidebar"><small style="color:#aaa; display:block; margin-bottom:5px;">Sponsored Banner</small></div>
-        </aside>
+                <div class="weather-section-title">Global Weather Hub Matrix (Rotating Live Data)</div>
+                <div class="weather-grid-matrix" id="multi-weather-grid"></div>
+
+                <h3>Complete Native Context Awareness Suite</h3>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
+                <div class="awareness-dashboard">
+                    <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
+                    <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
+                    <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
+                    <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
+                    <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
+                    <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
+                    <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
+                    <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
+                </div>
+
+                <div class="yandex-map-container">
+                    <div style="position:relative;overflow:hidden;">
+                        <a href="https://yandex.com/maps?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Яндекс Карты</a>
+                        <a href="https://yandex.com/maps/?ll=38.583678%2C55.221603&utm_medium=mapframe&utm_source=maps&z=7" style="color:#eee;font-size:12px;position:absolute;top:14px;">Yandex Maps — transportation, navigation, and place search</a>
+                        <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="1" style="position:relative; display:block;"></iframe>
+                    </div>
+                </div>
+            </main>
+
+            <aside>
+                <div class="ad-slot-sidebar"><small style="color:#aaa; display:block; margin-bottom:5px;">Sponsored Banner</small></div>
+            </aside>
+        </div>
     </div>
 </div>
 
 <script>
     function handleCredentialResponse(response) {
-        console.log("Encoded JWT ID token secure handshake package payload: " + response.credential);
+        // Set authorization state for the entire domain/session
+        sessionStorage.setItem('contextos_global_authenticated', 'true');
+        unlockDashboardContent();
     }
+
+    function unlockDashboardContent() {
+        document.getElementById('login-gate-overlay').style.display = 'none';
+        document.getElementById('protected-workspace-root').style.display = 'block';
+        
+        // Initialize interactive telemetry
+        renderMatrixBatch();
+        startHardwareTelemetryTracking();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if(sessionStorage.getItem('contextos_global_authenticated') === 'true') {
+            unlockDashboardContent();
+        }
+    });
 </script>
 
 <script>
@@ -183,7 +198,7 @@
             })
             .catch(() => {
                 document.getElementById('ow-city').textContent = "Abuja, NG";
-                document.getElementById('ow-desc').textContent = "Clear Sky Dynamic Fallback";
+                document.getElementById('ow-desc').textContent = "Clear Sky Fallback";
                 document.getElementById('ow-temp').textContent = "27°C";
             });
     }
@@ -193,7 +208,7 @@
 
     function renderMatrixBatch() {
         const gridContainer = document.getElementById('multi-weather-grid');
-        if (!gridContainer) return;
+        if (!gridContainer || sessionStorage.getItem('contextos_global_authenticated') !== 'true') return;
         
         const activeBatch = [
             globalMonitoringPool[(currentMatrixPointer) % globalMonitoringPool.length],
@@ -205,7 +220,6 @@
 
         setTimeout(() => {
             gridContainer.innerHTML = '';
-
             let fetchPromises = activeBatch.map(city => {
                 const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${openWeatherKey}&units=metric`;
                 return fetch(url)
@@ -223,7 +237,7 @@
                     .catch(() => `
                         <div class="ow-static-card">
                             <h5>${city}</h5>
-                            <p>Data Offline</p>
+                            <p>Offline</p>
                             <div class="ow-static-temp">--°C</div>
                         </div>
                     `);
@@ -234,52 +248,46 @@
                 gridContainer.classList.remove('fade-out');
                 currentMatrixPointer = (currentMatrixPointer + 3) % globalMonitoringPool.length;
             });
-
         }, 400);
     }
-
-    renderMatrixBatch();
     setInterval(renderMatrixBatch, 5000);
 </script>
 
 <script>
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((p) => {
-            const lat = p.coords.latitude; const lon = p.coords.longitude;
-            document.getElementById('awareness-gps').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
-            fetchAutoWeather(lat, lon);
-        }, () => { 
-            document.getElementById('awareness-gps').textContent = "Default Baseline (Abuja)";
+    function startHardwareTelemetryTracking() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((p) => {
+                const lat = p.coords.latitude; const lon = p.coords.longitude;
+                document.getElementById('awareness-gps').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+                fetchAutoWeather(lat, lon);
+            }, () => { 
+                document.getElementById('awareness-gps').textContent = "Abuja baseline";
+                fetchAutoWeather(9.0578, 7.4893);
+            });
+        } else {
             fetchAutoWeather(9.0578, 7.4893);
-        });
-    } else {
-        fetchAutoWeather(9.0578, 7.4893);
-    }
-
-    if (navigator.getBattery) {
-        navigator.getBattery().then((b) => {
-            const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
-            up(); b.addEventListener('levelchange', up); b.addEventListener('chargingchange', up);
-        });
-    }
-    const upNet = () => {
-        document.getElementById('awareness-network').textContent = navigator.onLine ? "Online" : "Offline Mode";
-        if (navigator.connection) {
-            document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown").toUpperCase() + (navigator.connection.downlink ? ` (${navigator.connection.downlink} Mbps)` : "");
         }
-    };
-    upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (e) => {
-            if (e.beta !== null) document.getElementById('awareness-motion').textContent = `Tilt X: ${Math.round(e.gamma)}°, Tilt Y: ${Math.round(e.beta)}°`;
-        });
+
+        if (navigator.getBattery) {
+            navigator.getBattery().then((b) => {
+                const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
+                up(); b.addEventListener('levelchange', up); b.addEventListener('chargingchange', up);
+            });
+        }
+        const upNet = () => {
+            document.getElementById('awareness-network').textContent = navigator.onLine ? "Online" : "Offline";
+            if (navigator.connection) {
+                document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown").toUpperCase();
+            }
+        };
+        upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
+        const thm = window.matchMedia('(prefers-color-scheme: dark)');
+        const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Mode" : "Light Mode";
+        upThm(thm); thm.addEventListener('change', upThm);
+        if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase();
+        let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle"; }, 10000); };
+        ['mousemove', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
     }
-    const thm = window.matchMedia('(prefers-color-scheme: dark)');
-    const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Theme Preferred" : "Light Theme Preferred";
-    upThm(thm); thm.addEventListener('change', upThm);
-    if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase();
-    let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active Now"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle (Inactive)"; }, 10000); };
-    ['mousemove', 'keydown', 'touchstart', 'scroll'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
 </script>
 
 </body>

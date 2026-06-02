@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Page 1</title>
     
-    <script src="https://cdn.commoninja.com/sdk/latest/commonninja.js" defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
@@ -13,16 +13,22 @@
         /* Top Navigation Styles */
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 18px; text-decoration: none; }
+        .nav-right-block { display: flex; align-items: center; gap: 25px; }
         .nav-links { display: flex; gap: 20px; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
         .nav-item:hover { color: #f8fafc; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; padding-bottom: 2px; }
+
+        /* Auth Container Override */
+        .google-auth-nav-wrap { min-width: 150px; height: 40px; display: flex; align-items: center; }
 
         .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; pointer-events: auto; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
         
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; gap: 20px; }
+            .top-nav { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .nav-right-block { width: 100%; justify-content: space-between; }
         }
         
         /* Main Workspace Panels */
@@ -80,11 +86,24 @@
 </head>
 <body>
 
+<div id="g_id_onload"
+     data-client_id="652683865516-2g0avcns421ui3d1al8a5jm9mfcos7ie.apps.googleusercontent.com"
+     data-context="signin"
+     data-ux_mode="popup"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+</div>
+
 <nav class="top-nav">
     <a href="index.html" class="nav-brand">ContextOS</a>
-    <div class="nav-links">
-        <a href="index.html" class="nav-item active">Dashboard</a>
-        <a href="page2.html" class="nav-item">Page 2</a>
+    <div class="nav-right-block">
+        <div class="nav-links">
+            <a href="index.html" class="nav-item active">Dashboard</a>
+            <a href="page2.html" class="nav-item">Page 2</a>
+        </div>
+        <div class="google-auth-nav-wrap">
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="medium" data-logo_alignment="left"></div>
+        </div>
     </div>
 </nav>
 
@@ -138,16 +157,20 @@
         </main>
 
         <aside>
-            <div class="commonninja_component pid-4cf8700f-0e33-4abc-b607-9bd8c050d61f"></div>
             <div class="ad-slot-sidebar"><small style="color:#aaa; display:block; margin-bottom:5px;">Sponsored Banner</small></div>
         </aside>
     </div>
 </div>
 
 <script>
+    function handleCredentialResponse(response) {
+        console.log("Encoded JWT ID token secure handshake package payload: " + response.credential);
+    }
+</script>
+
+<script>
     const openWeatherKey = 'a65d564a892d82cd09d48a43888a1139'; 
 
-    // 1. Automatic Core Engine Handler
     function fetchAutoWeather(lat, lon) {
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}&units=metric`;
         fetch(url)
@@ -165,14 +188,13 @@
             });
     }
 
-    // 2. Rotational Multi-Location Network Engine Array Pool
     const globalMonitoringPool = ['London', 'New York', 'Tokyo', 'Paris', 'Dubai', 'Sydney', 'Cairo', 'Rio de Janeiro'];
     let currentMatrixPointer = 0;
 
     function renderMatrixBatch() {
         const gridContainer = document.getElementById('multi-weather-grid');
+        if (!gridContainer) return;
         
-        // Pick the next 3 target metrics sequentially from the pool loop
         const activeBatch = [
             globalMonitoringPool[(currentMatrixPointer) % globalMonitoringPool.length],
             globalMonitoringPool[(currentMatrixPointer + 1) % globalMonitoringPool.length],
@@ -182,7 +204,7 @@
         gridContainer.classList.add('fade-out');
 
         setTimeout(() => {
-            gridContainer.innerHTML = ''; // Wipe panel container canvas
+            gridContainer.innerHTML = '';
 
             let fetchPromises = activeBatch.map(city => {
                 const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${openWeatherKey}&units=metric`;
@@ -210,16 +232,14 @@
             Promise.all(fetchPromises).then(htmlBlocks => {
                 gridContainer.innerHTML = htmlBlocks.join('');
                 gridContainer.classList.remove('fade-out');
-                // Advance tracking matrix loop context index by 3 steps forward
                 currentMatrixPointer = (currentMatrixPointer + 3) % globalMonitoringPool.length;
             });
 
-        }, 400); // Transitions timing synchronization offset
+        }, 400);
     }
 
-    // Fire baseline grid array render loop patterns
     renderMatrixBatch();
-    setInterval(renderMatrixBatch, 5000); // Automatically rotates batch every 5000 milliseconds
+    setInterval(renderMatrixBatch, 5000);
 </script>
 
 <script>

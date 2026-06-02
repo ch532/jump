@@ -7,12 +7,6 @@
     
     <script src="https://cdn.commoninja.com/sdk/latest/commonninja.js" defer></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
         
@@ -36,14 +30,6 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #475569; }
         .form-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        
-        /* Navigation Controls Panel */
-        .routing-controls { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-mode { background: #fff; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-mode.active { background: #0284c7; color: #fff; border-color: #0284c7; }
-        .search-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .btn-search { background: #0284c7; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
         .weather-widget-wrapper { margin: 20px 0; width: 100%; border-radius: 6px; overflow: hidden; }
 
@@ -56,9 +42,8 @@
 
         .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 10px; text-align: center; border-radius: 8px; opacity: 0.95; }
 
-        /* Mapping Container Style Fixes */
-        .main-map-block { width: 100%; height: 450px; margin-top: 25px; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; position: relative; }
-        .leaflet-routing-container { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); max-height: 180px; overflow-y: auto; font-size: 12px; }
+        /* Yandex Map Wrap Box Style */
+        .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 25px; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -77,17 +62,16 @@
             <h2>Spatial Routing & Global Search</h2>
             <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
             
-            <div class="routing-controls">
-                <div class="search-row">
-                    <input type="text" id="destination-input" class="form-input" placeholder="Enter destination city or address..." style="margin-bottom:0;">
-                    <button class="btn-search" onclick="searchAndRoute()">Route</button>
+            <form id="address-form">
+                <div class="form-group">
+                    <label for="address-input">Street Address</label>
+                    <input type="text" id="address-input" class="form-input" placeholder="Enter street details...">
                 </div>
-                <div class="btn-group">
-                    <button id="mode-car" class="btn-mode active" onclick="changeTransportMode('car')">🚗 Driving</button>
-                    <button id="mode-bike" class="btn-mode" onclick="changeTransportMode('bike')">🚲 Cycling</button>
-                    <button id="mode-walk" class="btn-mode" onclick="changeTransportMode('walk')">🚶 Walking</button>
+                <div class="form-group">
+                    <label for="city-input">City</label>
+                    <input type="text" id="city-input" class="form-input">
                 </div>
-            </div>
+            </form>
 
             <div class="weather-widget-wrapper">
                 <div id="ww_eaf7d8cc25de2" v='1.3' loc='auto' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":[],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>More forecasts: <a href="https://oneweather.org/orlando/30_days/" id="ww_eaf7d8cc25de2_u" target="_blank">30 day forecast Orlando FL</a></div>
@@ -97,17 +81,23 @@
             <h3>Complete Native Context Awareness Suite</h3>
             <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
             <div class="awareness-dashboard">
-                <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">9.0578°, 7.4893°</div></div>
-                <div class="awareness-card"><h4>Route Distance</h4><div class="awareness-value" id="route-distance">0.00 km</div></div>
-                <div class="awareness-card"><h4>Estimated Time</h4><div class="awareness-value" id="route-time">0 mins</div></div>
-                <div class="awareness-card"><h4>Active Target Info</h4><div class="awareness-value" id="target-info">No destination set</div></div>
+                <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
                 <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
                 <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
                 <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
-                <div class="awareness-card"><h4>Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
+                <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
+                <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
+                <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
+                <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
             </div>
 
-            <div id="osm-map" class="main-map-block"></div>
+            <div class="yandex-map-container">
+                <div style="position:relative;overflow:hidden;">
+                    <a href="https://yandex.com/maps?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Яндекс Карты</a>
+                    <a href="https://yandex.com/maps/?ll=38.583678%2C55.221603&utm_medium=mapframe&utm_source=maps&z=7" style="color:#eee;font-size:12px;position:absolute;top:14px;">Yandex Maps — transportation, navigation, and place search</a>
+                    <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="1" style="position:relative; display:block;"></iframe>
+                </div>
+            </div>
         </main>
 
         <aside>
@@ -118,91 +108,12 @@
 </div>
 
 <script>
-    let userLat = 9.0578;
-    let userLng = 7.4893;
-    let transportMode = 'car';
-
-    const map = L.map('osm-map').setView([userLat, userLng], 4);
-
-    const standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    let userMarker = L.marker([userLat, userLng]).addTo(map).bindPopup('Current Map Center').openPopup();
-    let routingEngine = null;
-
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((p) => {
-            userLat = p.coords.latitude;
-            userLng = p.coords.longitude;
-            document.getElementById('awareness-gps').textContent = `${userLat.toFixed(4)}°, ${userLng.toFixed(4)}°`;
-            userMarker.setLatLng([userLat, userLng]).setPopupContent('Your Current Position');
-            map.setView([userLat, userLng], 13);
-        });
+            const lat = p.coords.latitude.toFixed(4); const lon = p.coords.longitude.toFixed(4);
+            document.getElementById('awareness-gps').textContent = `${lat}°, ${lon}°`;
+        }, () => { document.getElementById('awareness-gps').textContent = "Permission Denied"; });
     }
-
-    function searchAndRoute() {
-        const query = document.getElementById('destination-input').value;
-        if (!query) return alert('Please enter a destination first.');
-
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) return alert('Location not found. Try adding a city name.');
-                
-                const destLat = parseFloat(data[0].lat);
-                const destLng = parseFloat(data[0].lon);
-                const destName = data[0].display_name.split(',')[0] + ", " + (data[0].address?.city || data[0].display_name.split(',')[1] || "");
-
-                document.getElementById('target-info').textContent = destName;
-
-                if (routingEngine) {
-                    map.removeControl(routingEngine);
-                }
-
-                routingEngine = L.Routing.control({
-                    waypoints: [
-                        L.latLng(userLat, userLng),
-                        L.latLng(destLat, destLng)
-                    ],
-                    router: L.Routing.osrmv1({
-                        serviceUrl: `https://router.project-osrm.org/route/v1`,
-                        profile: transportMode === 'car' ? 'driving' : transportMode === 'bike' ? 'bicycle' : 'foot'
-                    }),
-                    lineOptions: {
-                        styles: [{ color: '#0284c7', weight: 6, opacity: 0.85 }]
-                    },
-                    createMarker: function(i, wp) {
-                        return L.marker(wp.latLng).bindPopup(i === 0 ? "Start" : "Destination");
-                    }
-                }).addTo(map);
-
-                routingEngine.on('routesfound', function(e) {
-                    const routes = e.routes;
-                    const summary = routes[0].summary;
-                    
-                    const distanceKm = (summary.totalDistance / 1000).toFixed(2);
-                    const durationMins = Math.round(summary.totalTime / 60);
-
-                    document.getElementById('route-distance').textContent = `${distanceKm} km`;
-                    document.getElementById('route-time').textContent = `${durationMins} mins`;
-                });
-
-            }).catch(() => alert('Error running coordinate matrix fetch routing patterns.'));
-    }
-
-    function changeTransportMode(mode) {
-        transportMode = mode;
-        document.querySelectorAll('.btn-mode').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`mode-${mode}`).classList.add('active');
-        if (document.getElementById('destination-input').value) {
-            searchAndRoute();
-        }
-    }
-</script>
-
-<script>
     if (navigator.getBattery) {
         navigator.getBattery().then((b) => {
             const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
@@ -216,6 +127,15 @@
         }
     };
     upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (e) => {
+            if (e.beta !== null) document.getElementById('awareness-motion').textContent = `Tilt X: ${Math.round(e.gamma)}°, Tilt Y: ${Math.round(e.beta)}°`;
+        });
+    }
+    const thm = window.matchMedia('(prefers-color-scheme: dark)');
+    const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Theme Preferred" : "Light Theme Preferred";
+    upThm(thm); thm.addEventListener('change', upThm);
+    if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase();
     let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active Now"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle (Inactive)"; }, 10000); };
     ['mousemove', 'keydown', 'touchstart', 'scroll'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
 </script>

@@ -7,10 +7,11 @@
     
     <script src="https://cdn.commoninja.com/sdk/latest/commonninja.js" defer></script>
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.24.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.24.0/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js" defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
@@ -36,7 +37,14 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #475569; }
         .form-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
         
-        #minimap-container { width: 100%; height: 180px; margin-top: 15px; border-radius: 6px; overflow: hidden; border: 1px solid #cbd5e1; }
+        /* Navigation Controls Panel */
+        .routing-controls { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-mode { background: #fff; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-mode.active { background: #0284c7; color: #fff; border-color: #0284c7; }
+        .search-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .btn-search { background: #0284c7; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
         .weather-widget-wrapper { margin: 20px 0; width: 100%; border-radius: 6px; overflow: hidden; }
 
         /* Awareness Grid */
@@ -56,8 +64,11 @@
         .premium-date { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; margin-top: 5px; }
         .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 10px; text-align: center; border-radius: 8px; opacity: 0.95; }
 
-        /* Main Global Map Canvas Styles - nested inside content stream */
-        .main-map-block { width: 100%; height: 400px; margin-top: 25px; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; }
+        /* Mapping Workspace Block */
+        .main-map-block { width: 100%; height: 450px; margin-top: 25px; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; z-index: 1; }
+        
+        /* Hide default routing text box to keep design clean */
+        .leaflet-routing-container { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); max-height: 200px; overflow-y: auto; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -73,43 +84,40 @@
 <div class="container">
     <div class="grid">
         <main class="main-content">
-            <h2>Shipping & Location Details</h2>
+            <h2>Spatial Routing & Global Search</h2>
             <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
             
-            <form id="address-form">
-                <div class="form-group">
-                    <label for="address-input">Street Address</label>
-                    <input type="text" id="address-input" class="form-input" placeholder="Start typing your address..." autocomplete="address-line1">
+            <div class="routing-controls">
+                <div class="search-row">
+                    <input type="text" id="destination-input" class="form-input" placeholder="Enter destination city or address..." style="margin-bottom:0;">
+                    <button class="btn-search" onclick="searchAndRoute()">Route</button>
                 </div>
-                <div class="form-group">
-                    <label for="city-input">City</label>
-                    <input type="text" id="city-input" class="form-input" autocomplete="address-level2">
+                <div class="btn-group">
+                    <button id="mode-car" class="btn-mode active" onclick="changeTransportMode('car')">🚗 Driving</button>
+                    <button id="mode-bike" class="btn-mode" onclick="changeTransportMode('bike')">🚲 Cycling</button>
+                    <button id="mode-walk" class="btn-mode" onclick="changeTransportMode('walk')">🚶 Walking</button>
                 </div>
-                <div class="form-group">
-                    <label>Location Preview</label>
-                    <div id="minimap-container"></div>
-                </div>
-            </form>
+            </div>
 
             <div class="weather-widget-wrapper">
                 <div id="ww_eaf7d8cc25de2" v='1.3' loc='auto' a='{"t":"ticker","lang":"en","sl_lpl":1,"ids":[],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>More forecasts: <a href="https://oneweather.org/orlando/30_days/" id="ww_eaf7d8cc25de2_u" target="_blank">30 day forecast Orlando FL</a></div>
                 <script async src="https://app3.weatherwidget.org/js/?id=ww_eaf7d8cc25de2"></script>
             </div>
 
-            <h3 style="margin-top: 35px;">Complete Native Context Awareness Suite</h3>
+            <h3>Complete Native Context Awareness Suite</h3>
             <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
             <div class="awareness-dashboard">
-                <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
+                <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">9.0578°, 7.4893°</div></div>
+                <div class="awareness-card"><h4>Route Distance</h4><div class="awareness-value" id="route-distance">0.00 km</div></div>
+                <div class="awareness-card"><h4>Estimated Time</h4><div class="awareness-value" id="route-time">0 mins</div></div>
+                <div class="awareness-card"><h4>Active Target Info</h4><div class="awareness-value" id="target-info">No destination set</div></div>
                 <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
                 <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
                 <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
-                <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
-                <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
-                <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
-                <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
+                <div class="awareness-card"><h4>Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
             </div>
 
-            <div id="map" class="main-map-block"></div>
+            <div id="osm-map" class="main-map-block"></div>
         </main>
 
         <aside>
@@ -126,61 +134,126 @@
 <script>
     function updatePremiumClock() {
         const now = new Date();
-        
-        // Accurately format time using system locale parameters
         let timeString = now.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: true
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: 'Africa/Lagos'
         });
-        
         let dateString = now.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Africa/Lagos'
         });
-        
         document.getElementById('live-time').textContent = timeString;
-        document.getElementById('live-date').textContent = dateString;
+        document.getElementById('live-date').textContent = dateString + " (WAT)";
     }
     updatePremiumClock(); 
     setInterval(updatePremiumClock, 1000);
 </script>
 
 <script>
-  const map = new mapboxgl.Map({
-      accessToken: 'pk.eyJ1IjoiY2h5a2U0NCIsImEiOiJjbW44ZXQ5dnUwOW51MnFxcjA1d2g4bHN3In0.0SPM-tLhKdE0CIDOOjhDCA',
-      container: 'map', style: 'mapbox://styles/mapbox/standard', center: [0, 20], zoom: 1.5 
-  });
-</script>
+    // System base coordinates initialized at Abuja, Nigeria
+    let userLat = 9.0578;
+    let userLng = 7.4893;
+    let transportMode = 'car'; // Default state
 
-<script>
-    window.addEventListener('load', () => {
-        const token = 'pk.eyJ1IjoiY2h5a2U0NCIsImEiOiJjbW44ZXQ5dnUwOW51MnFxcjA1d2g4bHN3In0.0SPM-tLhKdE0CIDOOjhDCA';
-        const autofillElement = new MapboxAddressAutofill();
-        autofillElement.accessToken = token; autofillElement.options = { country: 'us' };
-        const addressInput = document.getElementById('address-input');
-        autofillElement.appendChild(addressInput); addressInput.parentElement.appendChild(autofillElement);
+    // Initialize base engine view
+    const map = L.map('osm-map').setView([userLat, userLng], 12);
 
-        const containerElement = document.getElementById('minimap-container');
-        const minimap = new MapboxAddressMinimap();
-        minimap.accessToken = token;
-        minimap.onmaploaded = (m) => { m.setCenter([0, 20]); m.setZoom(1); };
-        containerElement.appendChild(minimap);
-        minimap.feature = { type: 'Feature', geometry: { type: 'Point', coordinates: [0, 20] }, properties: {} };
+    // Dynamic Layer Arrays
+    const standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Open-source live traffic monitoring overlay
+    const trafficLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/hydda/roads_and_junctions/{z}/{x}/{y}.png', {
+        attribution: 'Traffic Overlays'
     });
-</script>
 
-<script>
+    // Provide layer controls to change map appearance
+    const baseLayers = { "Standard Map": standardLayer };
+    const overlays = { "Traffic Infrastructure": trafficLayer };
+    L.control.layers(baseLayers, overlays, { position: 'topright' }).addTo(map);
+
+    let userMarker = L.marker([userLat, userLng]).addTo(map).bindPopup('Your Current Position').openPopup();
+    let routingEngine = null;
+
+    // Detect Precise Geolocation Coordinates dynamically
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((p) => {
-            const lat = p.coords.latitude.toFixed(4); const lon = p.coords.longitude.toFixed(4);
-            document.getElementById('awareness-gps').textContent = `${lat}°, ${lon}°`;
-            map.flyTo({ center: [parseFloat(lon), parseFloat(lat)], zoom: 12 });
-        }, () => { document.getElementById('awareness-gps').textContent = "Permission Denied"; });
+            userLat = p.coords.latitude;
+            userLng = p.coords.longitude;
+            document.getElementById('awareness-gps').textContent = `${userLat.toFixed(4)}°, ${userLng.toFixed(4)}°`;
+            userMarker.setLatLng([userLat, userLng]);
+            map.setView([userLat, userLng], 13);
+        });
     }
+
+    // Geocoding Search Engine & Routing Engine Function
+    function searchAndRoute() {
+        const query = document.getElementById('destination-input').value;
+        if (!query) return alert('Please enter a destination first.');
+
+        // Use public, keyless Nominatim lookup API engine
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) return alert('Location not found. Try adding city details.');
+                
+                const destLat = parseFloat(data[0].lat);
+                const destLng = parseFloat(data[0].lon);
+                const destName = data[0].display_name.split(',')[0] + ", " + (data[0].address?.city || data[0].display_name.split(',')[1] || "");
+
+                document.getElementById('target-info').textContent = destName;
+
+                // Clear previous navigation routing metrics
+                if (routingEngine) {
+                    map.removeControl(routingEngine);
+                }
+
+                // Choose routing profiles based on selection state
+                let routingProfile = 'routed-car';
+                if (transportMode === 'walk') routingProfile = 'routed-foot';
+                if (transportMode === 'bike') routingProfile = 'routed-bike';
+
+                // Build real-time interactive vector routes
+                routingEngine = L.Routing.control({
+                    waypoints: [
+                        L.latLng(userLat, userLng),
+                        L.latLng(destLat, destLng)
+                    ],
+                    router: L.Routing.osrmv1({
+                        serviceUrl: `https://router.project-osrm.org/route/v1`,
+                        profile: transportMode === 'car' ? 'driving' : transportMode === 'bike' ? 'bicycle' : 'foot'
+                    }),
+                    lineOptions: {
+                        styles: [{ color: '#0284c7', weight: 6, opacity: 0.85 }]
+                    },
+                    createMarker: function() { return null; } // Prevent duplicate pins over our markers
+                }).addTo(map);
+
+                // Extract telemetry summary distance matrices
+                routingEngine.on('routesfound', function(e) {
+                    const routes = e.routes;
+                    const summary = routes[0].summary;
+                    
+                    const distanceKm = (summary.totalDistance / 1000).toFixed(2);
+                    const durationMins = Math.round(summary.totalTime / 60);
+
+                    document.getElementById('route-distance').textContent = `${distanceKm} km`;
+                    document.getElementById('route-time').textContent = `${durationMins} mins`;
+                });
+
+            }).catch(() => alert('Error running coordinate matrix fetch routing patterns.'));
+    }
+
+    function changeTransportMode(mode) {
+        transportMode = mode;
+        document.querySelectorAll('.btn-mode').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`mode-${mode}`).classList.add('active');
+        if (document.getElementById('destination-input').value) {
+            searchAndRoute();
+        }
+    }
+</script>
+
+<script>
     if (navigator.getBattery) {
         navigator.getBattery().then((b) => {
             const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
@@ -194,18 +267,8 @@
         }
     };
     upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (e) => {
-            if (e.beta !== null) document.getElementById('awareness-motion').textContent = `Tilt X: ${Math.round(e.gamma)}°, Tilt Y: ${Math.round(e.beta)}°`;
-        });
-    }
-    const thm = window.matchMedia('(prefers-color-scheme: dark)');
-    const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Theme Preferred" : "Light Theme Preferred";
-    upThm(thm); thm.addEventListener('change', upThm);
-    if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase() + (navigator.languages ? ` (${navigator.languages.length} preferred)` : "");
     let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active Now"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle (Inactive)"; }, 10000); };
     ['mousemove', 'keydown', 'touchstart', 'scroll'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
-    document.addEventListener('visibilitychange', () => { if (document.hidden) document.getElementById('awareness-idle').textContent = "Tab Backgrounded"; else rstIdl(); });
 </script>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Page 1</title>
+    <title>SkyIPworld - Control Terminal</title>
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -18,7 +18,7 @@
             color: #ffffff; text-align: center;
         }
         .gate-box { background: #1e293b; padding: 40px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
-        .gate-box h1 { margin: 0 0 10px 0; font-size: 28px; letter-spacing: -0.5px; }
+        .gate-box h1 { margin: 0 0 10px 0; font-size: 28px; letter-spacing: -0.5px; color: #38bdf8; }
         .gate-box p { margin: 0 0 25px 0; color: #94a3b8; font-size: 15px; }
 
         /* Hidden Content Container Framework */
@@ -26,7 +26,8 @@
         
         /* Top Navigation Styles */
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .nav-brand { color: #f8fafc; font-weight: bold; font-size: 18px; text-decoration: none; }
+        .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; letter-spacing: -0.3px; }
+        .nav-brand span { color: #38bdf8; }
         .nav-right-block { display: flex; align-items: center; gap: 25px; }
         .nav-links { display: flex; gap: 20px; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
@@ -89,8 +90,8 @@
 
 <div id="login-gate-overlay">
     <div class="gate-box">
-        <h1>ContextOS Terminal</h1>
-        <p>Authentication required to access this system.</p>
+        <h1>SkyIPworld Terminal</h1>
+        <p>Authentication required to access this node workspace.</p>
         <div style="display: flex; justify-content: center;">
             <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
         </div>
@@ -99,7 +100,7 @@
 
 <div id="protected-workspace-root">
     <nav class="top-nav">
-        <a href="index.html" class="nav-brand">ContextOS</a>
+        <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
         <div class="nav-right-block">
             <div class="nav-links">
                 <a href="index.html" class="nav-item active">Dashboard</a>
@@ -111,7 +112,7 @@
     <div class="container">
         <div class="grid">
             <main class="main-content">
-                <h2>Web Workspace Search</h2>
+                <h2>Network Workspace Search</h2>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
                 
                 <div class="search-engine-wrapper">
@@ -167,8 +168,12 @@
 </div>
 
 <script>
+    const IDLE_TIMEOUT_LIMIT = 1800000; 
+    let securityWatchdogTimer;
+
     function handleCredentialResponse(response) {
         sessionStorage.setItem('contextos_global_authenticated', 'true');
+        updateActivityTimestamp();
         unlockDashboardContent();
     }
 
@@ -178,9 +183,61 @@
         
         renderMatrixBatch();
         startHardwareTelemetryTracking();
+        initializeSecurityWatchdog();
+    }
+
+    function terminateSecureSession() {
+        console.warn("Google auto-signout triggered due to prolonged inactivity.");
+        sessionStorage.removeItem('contextos_global_authenticated');
+        sessionStorage.removeItem('last_active_timestamp');
+        
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            google.accounts.id.disableAutoSelect();
+        }
+        
+        document.getElementById('protected-workspace-root').style.display = 'none';
+        document.getElementById('login-gate-overlay').style.display = 'flex';
+    }
+
+    function updateActivityTimestamp() {
+        sessionStorage.setItem('last_active_timestamp', Date.now().toString());
+    }
+
+    function checkSessionValidity() {
+        const lastActive = sessionStorage.getItem('last_active_timestamp');
+        if (lastActive && sessionStorage.getItem('contextos_global_authenticated') === 'true') {
+            const elapsed = Date.now() - parseInt(lastActive, 10);
+            if (elapsed >= IDLE_TIMEOUT_LIMIT) {
+                terminateSecureSession();
+            }
+        }
+    }
+
+    function initializeSecurityWatchdog() {
+        if (securityWatchdogTimer) clearTimeout(securityWatchdogTimer);
+
+        const trackEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        trackEvents.forEach(evt => {
+            window.addEventListener(evt, () => {
+                updateActivityTimestamp();
+                resetWatchdogTimeout();
+            });
+        });
+
+        window.addEventListener('focus', () => {
+            checkSessionValidity();
+        });
+
+        resetWatchdogTimeout();
+    }
+
+    function resetWatchdogTimeout() {
+        clearTimeout(securityWatchdogTimer);
+        securityWatchdogTimer = setTimeout(terminateSecureSession, IDLE_TIMEOUT_LIMIT);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        checkSessionValidity();
         if(sessionStorage.getItem('contextos_global_authenticated') === 'true') {
             unlockDashboardContent();
         }
@@ -250,7 +307,7 @@
         }, 400);
     }
     
-    setInterval(renderMatrixBatch, 5000);
+    setInterval(renderMatrixBatch, 60000);
 </script>
 
 <script>

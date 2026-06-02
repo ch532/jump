@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - Page 1</title>
     
     <script src="https://cdn.commoninja.com/sdk/latest/commonninja.js" defer></script>
 
@@ -13,50 +13,62 @@
     <script src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js" defer></script>
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f8fafc; transition: background-color 0.3s, color 0.3s; }
-        .container { max-width: 1000px; margin: 0 auto; position: relative; z-index: 10; pointer-events: none; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
+        
+        /* Top Navigation Styles */
+        .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-brand { color: #f8fafc; font-weight: bold; font-size: 18px; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
+        .nav-item:hover { color: #f8fafc; }
+        .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; padding-bottom: 2px; }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; pointer-events: auto; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
         
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; gap: 20px; }
+        }
+        
         /* Main Workspace Panels */
-        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; opacity: 0.95; pointer-events: auto; color: #1e293b; }
+        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; opacity: 0.95; color: #1e293b; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #475569; }
         .form-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
         
-        /* Minimap Layout Wrapper */
         #minimap-container { width: 100%; height: 180px; margin-top: 15px; border-radius: 6px; overflow: hidden; border: 1px solid #cbd5e1; }
-        
-        /* Weather Container Block Spacing */
         .weather-widget-wrapper { margin: 20px 0; width: 100%; border-radius: 6px; overflow: hidden; }
 
-        /* Expanded Native Awareness Grid Display */
+        /* Awareness Grid */
         .awareness-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        .awareness-card { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; transition: background 0.3s; }
-        .awareness-card h4 { margin: 0 0 8px 0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .awareness-value { font-size: 15px; font-weight: bold; color: #0284c7; word-break: break-word; }
+        @media (max-width: 480px) { .awareness-dashboard { grid-template-columns: 1fr; } }
+        .awareness-card { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .awareness-card h4 { margin: 0 0 8px 0; color: #475569; font-size: 12px; text-transform: uppercase; }
+        .awareness-value { font-size: 15px; font-weight: bold; color: #0284c7; }
 
         /* Premium Clock UI Styles */
         .premium-clock-card {
             background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: #38bdf8;
-            border: 1px solid #334155;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            font-family: 'Courier New', Courier, monospace;
-            margin-bottom: 20px;
-            pointer-events: auto;
+            color: #38bdf8; border: 1px solid #334155; padding: 20px; border-radius: 12px; text-align: center;
+            font-family: 'Courier New', Courier, monospace; margin-bottom: 20px;
         }
-        .premium-time { font-size: 2rem; font-weight: bold; letter-spacing: 2px; color: #f8fafc; text-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-        .premium-date { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+        .premium-time { font-size: 2rem; font-weight: bold; color: #f8fafc; }
+        .premium-date { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; margin-top: 5px; }
+        .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 10px; text-align: center; margin-top: 20px; border-radius: 8px; opacity: 0.95; }
 
-        .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 10px; text-align: center; margin-top: 20px; border-radius: 8px; pointer-events: auto; opacity: 0.95; }
+        /* Main Global Map Canvas Styles */
+        .main-map-block { max-width: 1000px; height: 500px; margin: 30px auto; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
-    <meta name="clckd" content="c354272ecbedad3706ee65c2c1d58942" />
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">ContextOS</a>
+    <div class="nav-links">
+        <a href="index.html" class="nav-item active">Dashboard</a>
+        <a href="page2.html" class="nav-item">Telemetry Logs</a>
+    </div>
+</nav>
 
 <div class="container">
     <div class="grid">
@@ -69,12 +81,10 @@
                     <label for="address-input">Street Address</label>
                     <input type="text" id="address-input" class="form-input" placeholder="Start typing your address..." autocomplete="address-line1">
                 </div>
-                
                 <div class="form-group">
                     <label for="city-input">City</label>
                     <input type="text" id="city-input" class="form-input" autocomplete="address-level2">
                 </div>
-
                 <div class="form-group">
                     <label>Location Preview</label>
                     <div id="minimap-container"></div>
@@ -86,43 +96,17 @@
                 <script async src="https://app3.weatherwidget.org/js/?id=ww_eaf7d8cc25de2"></script>
             </div>
 
-            <h3 style="margin-top: 30px;">Complete Native Context Awareness Suite</h3>
+            <h3 style="margin-top: 35px;">Complete Native Context Awareness Suite</h3>
             <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
-            
             <div class="awareness-dashboard">
-                <div class="awareness-card">
-                    <h4>Device Hardware GPS</h4>
-                    <div class="awareness-value" id="awareness-gps">Detecting Location...</div>
-                </div>
-                <div class="awareness-card">
-                    <h4>Battery Status</h4>
-                    <div class="awareness-value" id="awareness-battery">Reading Battery...</div>
-                </div>
-                <div class="awareness-card">
-                    <h4>Network State</h4>
-                    <div class="awareness-value" id="awareness-network">Checking Connection...</div>
-                </div>
-                <div class="awareness-card">
-                    <h4>Connection Speed</h4>
-                    <div class="awareness-value" id="awareness-speed">Measuring...</div>
-                </div>
-
-                <div class="awareness-card">
-                    <h4>Device Motion/Orientation</h4>
-                    <div class="awareness-value" id="awareness-motion">Flat / Stationary</div>
-                </div>
-                <div class="awareness-card">
-                    <h4>OS Theme Preference</h4>
-                    <div class="awareness-value" id="awareness-theme">Checking Preference...</div>
-                </div>
-                <div class="awareness-card">
-                    <h4>User Native Language</h4>
-                    <div class="awareness-value" id="awareness-lang">Reading Locale...</div>
-                </div>
-                <div class="awareness-card">
-                    <h4>User Engagement State</h4>
-                    <div class="awareness-value" id="awareness-idle">Active on Page</div>
-                </div>
+                <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
+                <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
+                <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
+                <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
+                <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
+                <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
+                <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
+                <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
             </div>
         </main>
 
@@ -131,17 +115,13 @@
                 <div class="premium-time" id="live-time">00:00:00 AM</div>
                 <div class="premium-date" id="live-date">LOADING DATE...</div>
             </div>
-
             <div class="commonninja_component pid-4cf8700f-0e33-4abc-b607-9bd8c050d61f"></div>
-
-            <div class="ad-slot-sidebar">
-                <small style="color:#aaa; display:block; margin-bottom:5px;">Sponsored Banner</small>
-            </div>
+            <div class="ad-slot-sidebar"><small style="color:#aaa; display:block; margin-bottom:5px;">Sponsored Banner</small></div>
         </aside>
     </div>
 </div>
 
-<div id="map" style="position: absolute; top: 0; bottom: 0; width: 100%;"></div>
+<div id="map" class="main-map-block"></div>
 
 <script>
     function updatePremiumClock() {
@@ -150,157 +130,71 @@
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
-        
-        hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours % 12; hours = hours ? hours : 12; 
         const formattedHours = String(hours).padStart(2, '0');
-        
-        const timeString = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const dateString = now.toLocaleDateString('en-US', options);
-        
-        document.getElementById('live-time').textContent = timeString;
-        document.getElementById('live-date').textContent = dateString;
+        document.getElementById('live-time').textContent = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+        document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
-    updatePremiumClock();
-    setInterval(updatePremiumClock, 1000);
+    updatePremiumClock(); setInterval(updatePremiumClock, 1000);
 </script>
 
 <script>
   const map = new mapboxgl.Map({
       accessToken: 'pk.eyJ1IjoiY2h5a2U0NCIsImEiOiJjbW44ZXQ5dnUwOW51MnFxcjA1d2g4bHN3In0.0SPM-tLhKdE0CIDOOjhDCA',
-      container: 'map', 
-      style: 'mapbox://styles/mapbox/standard',
-      center: [0, 20], 
-      zoom: 1.5 
+      container: 'map', style: 'mapbox://styles/mapbox/standard', center: [0, 20], zoom: 1.5 
   });
 </script>
 
 <script>
     window.addEventListener('load', () => {
         const token = 'pk.eyJ1IjoiY2h5a2U0NCIsImEiOiJjbW44ZXQ5dnUwOW51MnFxcjA1d2g4bHN3In0.0SPM-tLhKdE0CIDOOjhDCA';
-
         const autofillElement = new MapboxAddressAutofill();
-        autofillElement.accessToken = token;
-        autofillElement.options = { country: 'us' };
-
+        autofillElement.accessToken = token; autofillElement.options = { country: 'us' };
         const addressInput = document.getElementById('address-input');
-        const addressFormGroup = addressInput.parentElement;
-
-        autofillElement.appendChild(addressInput);
-        addressFormGroup.appendChild(autofillElement);
+        autofillElement.appendChild(addressInput); addressInput.parentElement.appendChild(autofillElement);
 
         const containerElement = document.getElementById('minimap-container');
         const minimap = new MapboxAddressMinimap();
         minimap.accessToken = token;
-        
-        minimap.onmaploaded = (mapInstance) => {
-            mapInstance.setCenter([0, 20]);
-            mapInstance.setZoom(1);
-        };
-        
+        minimap.onmaploaded = (m) => { m.setCenter([0, 20]); m.setZoom(1); };
         containerElement.appendChild(minimap);
-        
-        minimap.feature = {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 20] },
-            properties: {}
-        };
+        minimap.feature = { type: 'Feature', geometry: { type: 'Point', coordinates: [0, 20] }, properties: {} };
     });
 </script>
 
 <script>
-    // 1. Native GPS Tracking
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude.toFixed(4);
-                const lon = position.coords.longitude.toFixed(4);
-                document.getElementById('awareness-gps').textContent = `${lat}°, ${lon}°`;
-                map.flyTo({ center: [parseFloat(lon), parseFloat(lat)], zoom: 12 });
-            },
-            () => { document.getElementById('awareness-gps').textContent = "Permission Denied"; }
-        );
+        navigator.geolocation.getCurrentPosition((p) => {
+            const lat = p.coords.latitude.toFixed(4); const lon = p.coords.longitude.toFixed(4);
+            document.getElementById('awareness-gps').textContent = `${lat}°, ${lon}°`;
+            map.flyTo({ center: [parseFloat(lon), parseFloat(lat)], zoom: 12 });
+        }, () => { document.getElementById('awareness-gps').textContent = "Permission Denied"; });
     }
-
-    // 2. Native Battery Hardware Monitoring
     if (navigator.getBattery) {
-        navigator.getBattery().then((battery) => {
-            function updateBatteryUI() {
-                const level = Math.round(battery.level * 100);
-                document.getElementById('awareness-battery').textContent = `${level}% (${battery.charging ? "Charging" : "Discharging"})`;
-            }
-            updateBatteryUI();
-            battery.addEventListener('levelchange', updateBatteryUI);
-            battery.addEventListener('chargingchange', updateBatteryUI);
+        navigator.getBattery().then((b) => {
+            const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
+            up(); b.addEventListener('levelchange', up); b.addEventListener('chargingchange', up);
         });
     }
-
-    // 3. Native Network Connection Tracker
-    function updateNetworkUI() {
+    const upNet = () => {
         document.getElementById('awareness-network').textContent = navigator.onLine ? "Online" : "Offline Mode";
         if (navigator.connection) {
-            const speed = navigator.connection.effectiveType || "Unknown";
-            const downlink = navigator.connection.downlink ? ` (${navigator.connection.downlink} Mbps)` : "";
-            document.getElementById('awareness-speed').textContent = speed.toUpperCase() + downlink;
+            document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown").toUpperCase() + (navigator.connection.downlink ? ` (${navigator.connection.downlink} Mbps)` : "");
         }
-    }
-    updateNetworkUI();
-    window.addEventListener('online', updateNetworkUI);
-    window.addEventListener('offline', updateNetworkUI);
-
-    // 4. NEW: Device Gyroscope / Orientation Aware (Detect Tilt/Movement changes)
+    };
+    upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
     if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (event) => {
-            if (event.beta !== null || event.gamma !== null) {
-                const tiltX = Math.round(event.gamma);
-                const tiltY = Math.round(event.beta);
-                document.getElementById('awareness-motion').textContent = `Tilt X: ${tiltX}°, Tilt Y: ${tiltY}°`;
-            }
+        window.addEventListener('deviceorientation', (e) => {
+            if (e.beta !== null) document.getElementById('awareness-motion').textContent = `Tilt X: ${Math.round(e.gamma)}°, Tilt Y: ${Math.round(e.beta)}°`;
         });
     }
-
-    // 5. NEW: Operating System System Theme Light/Dark Mode Aware
-    const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    function evaluateThemePreference(e) {
-        const isDark = e.matches;
-        document.getElementById('awareness-theme').textContent = isDark ? "Dark Theme Preferred" : "Light Theme Preferred";
-    }
-    evaluateThemePreference(darkThemeMediaQuery);
-    darkThemeMediaQuery.addEventListener('change', evaluateThemePreference);
-
-    // 6. NEW: User Local System Language Identity Aware
-    if (navigator.language) {
-        const primaryLang = navigator.language;
-        const backupLanguages = navigator.languages ? ` (${navigator.languages.length} preferred)` : "";
-        document.getElementById('awareness-lang').textContent = primaryLang.toUpperCase() + backupLanguages;
-    }
-
-    // 7. NEW: User Active Presence/Idle Aware (Tracks if user switches tabs or is away)
-    let idleTimer;
-    function resetIdleState() {
-        document.getElementById('awareness-idle').textContent = "Active Now";
-        clearTimeout(idleTimer);
-        // Flags user as idle if no typing/mouse activity happens within 10 seconds
-        idleTimer = setTimeout(() => {
-            document.getElementById('awareness-idle').textContent = "Idle (Inactive)";
-        }, 10000);
-    }
-    
-    // Wire activity event triggers to user engagement routines
-    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
-        window.addEventListener(evt, resetIdleState);
-    });
-    resetIdleState();
-
-    // Instantly notice if they change browser tabs or minimize the window
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            document.getElementById('awareness-idle').textContent = "Tab Backgrounded";
-        } else {
-            resetIdleState();
-        }
-    });
+    const thm = window.matchMedia('(prefers-color-scheme: dark)');
+    const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Theme Preferred" : "Light Theme Preferred";
+    upThm(thm); thm.addEventListener('change', upThm);
+    if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase() + (navigator.languages ? ` (${navigator.languages.length} preferred)` : "");
+    let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active Now"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle (Inactive)"; }, 10000); };
+    ['mousemove', 'keydown', 'touchstart', 'scroll'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
+    document.addEventListener('visibilitychange', () => { if (document.hidden) document.getElementById('awareness-idle').textContent = "Tab Backgrounded"; else rstIdl(); });
 </script>
 
 </body>

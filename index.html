@@ -5,355 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyIPworld - Control Terminal</title>
     
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
-        
-        /* Global Security Gate Overlay Wall */
-        #login-gate-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #0f172a; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: #ffffff; text-align: center;
-        }
-        .gate-box { background: #1e293b; padding: 40px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
-        .gate-box h1 { margin: 0 0 10px 0; font-size: 28px; letter-spacing: -0.5px; color: #38bdf8; }
-        .gate-box p { margin: 0 0 25px 0; color: #94a3b8; font-size: 15px; }
-
-        /* Hidden Content Container Framework */
-        #protected-workspace-root { display: none; }
-        
-        /* Top Navigation Styles */
-        .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; letter-spacing: -0.3px; }
-        .nav-brand span { color: #38bdf8; }
-        .nav-right-block { display: flex; align-items: center; gap: 25px; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; transition: color 0.2s; }
-        .nav-item:hover { color: #f8fafc; }
-        .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; padding-bottom: 2px; }
-
-        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; pointer-events: auto; }
-        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; gap: 20px; }
-            .top-nav { flex-direction: column; gap: 15px; align-items: flex-start; }
-            .nav-right-block { width: 100%; justify-content: space-between; }
-        }
-        
-        /* Main Workspace Panels */
-        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; opacity: 0.95; color: #1e293b; }
-        .search-engine-wrapper { margin-bottom: 25px; min-height: 60px; }
-
-        /* Weather Station Matrix Styles */
-        .weather-section-title { font-size: 14px; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px 0; }
-        .ow-auto-card { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .weather-grid-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; transition: opacity 0.4s ease-in-out; opacity: 1; }
-        .weather-grid-matrix.fade-out { opacity: 0; }
-        @media (max-width: 580px) { .weather-grid-matrix { grid-template-columns: 1fr; } }
-
-        .ow-static-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; }
-        .ow-static-card h5 { margin: 0; font-size: 16px; color: #1e293b; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-        .ow-static-card p { margin: 4px 0; font-size: 12px; color: #64748b; text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-        .ow-static-temp { font-size: 1.5rem; font-weight: 800; color: #0284c7; margin-top: 5px; }
-        .ow-location-info h4 { margin: 0; font-size: 20px; font-weight: bold; }
-        .ow-location-info p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; text-transform: capitalize; }
-        .ow-metrics { display: flex; align-items: center; gap: 15px; }
-        .ow-temp { font-size: 2.5rem; font-weight: 800; }
-        .ow-icon-canvas { width: 50px; height: 50px; background: rgba(255,255,255,0.15); border-radius: 50%; }
-        .ow-static-icon { width: 45px; height: 45px; }
-
-        /* Awareness Grid */
-        .awareness-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        @media (max-width: 480px) { .awareness-dashboard { grid-template-columns: 1fr; } }
-        .awareness-card { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .awareness-card h4 { margin: 0 0 8px 0; color: #475569; font-size: 12px; text-transform: uppercase; }
-        .awareness-value { font-size: 15px; font-weight: bold; color: #0284c7; }
-        
-        /* Sidebar Advertising Container Block */
-        .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 15px; text-align: center; border-radius: 8px; opacity: 0.95; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; }
-        
-        .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 25px; overflow: hidden; }
-    </style>
-</head>
-<body>
-
-<div id="g_id_onload"
-     data-client_id="652683865516-2g0avcns421ui3d1al8a5jm9mfcos7ie.apps.googleusercontent.com"
-     data-context="signin"
-     data-ux_mode="popup"
-     data-callback="handleCredentialResponse"
-     data-auto_prompt="false">
-</div>
-
-<div id="login-gate-overlay">
-    <div class="gate-box">
-        <h1>SkyIPworld Terminal</h1>
-        <p>Authentication required to access this node workspace.</p>
-        <div style="display: flex; justify-content: center;">
-            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
-        </div>
-    </div>
-</div>
-
-<div id="protected-workspace-root">
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
-        <div class="nav-right-block">
-            <div class="nav-links">
-                <a href="index.html" class="nav-item active">Dashboard</a>
-                <a href="page2.html" class="nav-item">Page 2</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="grid">
-            <main class="main-content">
-                <h2>Network Workspace Search</h2>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
-                
-                <div class="search-engine-wrapper">
-                    <script async src="https://cse.google.com/cse.js?cx=f1ec786fdb3a8416c"></script>
-                    <div class="gcse-search"></div>
-                </div>
-
-                <div class="weather-section-title">Live Target Node (Automatic Position)</div>
-                <div class="ow-auto-card" id="weather-panel">
-                    <div class="ow-location-info">
-                        <h4 id="ow-city">Detecting Local Climate...</h4>
-                        <p id="ow-desc">Syncing tracking framework telemetry...</p>
-                    </div>
-                    <div class="ow-metrics">
-                        <div class="ow-temp" id="ow-temp">--°C</div>
-                        <img id="ow-icon" class="ow-icon-canvas" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'/>" alt="Weather Status">
-                    </div>
-                </div>
-
-                <div class="weather-section-title">Global Weather Hub Matrix (Infinite True Random Cities Loop)</div>
-                <div class="weather-grid-matrix" id="multi-weather-grid"></div>
-
-                <h3>Complete Native Context Awareness Suite</h3>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
-                <div class="awareness-dashboard">
-                    <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
-                    <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
-                    <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
-                    <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
-                    <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
-                    <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
-                    <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
-                    <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
-                </div>
-
-                <div class="yandex-map-container">
-                    <div style="position:relative;overflow:hidden;">
-                        <a href="https://yandex.com/maps?utm_medium=mapframe&utm_source=maps" style="color:#eee;font-size:12px;position:absolute;top:0px;">Яндекс Карты</a>
-                        <a href="https://yandex.com/maps/?ll=38.583678%2C55.221603&utm_medium=mapframe&utm_source=maps&z=7" style="color:#eee;font-size:12px;position:absolute;top:14px;">Yandex Maps — transportation, navigation, and place search</a>
-                        <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="1" style="position:relative; display:block;"></iframe>
-                    </div>
-                </div>
-            </main>
-
-            <aside>
-                <div class="ad-slot-sidebar">
-                    <small style="color:#aaa; display:block; margin-bottom:10px; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">Sponsored Advertisement</small>
-                    <ins style="width: 0px;height:0px" data-width="0" data-height="0" class="t4ff62fa82e" data-domain="//data527.click" data-affquery="/1c8c155842dd075ef2e2/4ff62fa82e/?placementName=Grow"><script src="//data527.click/js/responsive.js" async></script></ins>
-                </div>
-            </aside>
-        </div>
-    </div>
-</div>
-
-<script>
-    const IDLE_TIMEOUT_LIMIT = 1800000; 
-    let securityWatchdogTimer;
-
-    function handleCredentialResponse(response) {
-        sessionStorage.setItem('contextos_global_authenticated', 'true');
-        updateActivityTimestamp();
-        unlockDashboardContent();
-    }
-
-    function unlockDashboardContent() {
-        document.getElementById('login-gate-overlay').style.display = 'none';
-        document.getElementById('protected-workspace-root').style.display = 'block';
-        
-        renderMatrixBatch();
-        startHardwareTelemetryTracking();
-        initializeSecurityWatchdog();
-    }
-
-    function terminateSecureSession() {
-        console.warn("Google auto-signout triggered due to prolonged inactivity.");
-        sessionStorage.removeItem('contextos_global_authenticated');
-        sessionStorage.removeItem('last_active_timestamp');
-        
-        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-            google.accounts.id.disableAutoSelect();
-        }
-        
-        document.getElementById('protected-workspace-root').style.display = 'none';
-        document.getElementById('login-gate-overlay').style.display = 'flex';
-    }
-
-    function updateActivityTimestamp() {
-        sessionStorage.setItem('last_active_timestamp', Date.now().toString());
-    }
-
-    function checkSessionValidity() {
-        const lastActive = sessionStorage.getItem('last_active_timestamp');
-        if (lastActive && sessionStorage.getItem('contextos_global_authenticated') === 'true') {
-            const elapsed = Date.now() - parseInt(lastActive, 10);
-            if (elapsed >= IDLE_TIMEOUT_LIMIT) {
-                terminateSecureSession();
-            }
-        }
-    }
-
-    function initializeSecurityWatchdog() {
-        if (securityWatchdogTimer) clearTimeout(securityWatchdogTimer);
-
-        const trackEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-        trackEvents.forEach(evt => {
-            window.addEventListener(evt, () => {
-                updateActivityTimestamp();
-                resetWatchdogTimeout();
-            });
-        });
-
-        window.addEventListener('focus', () => {
-            checkSessionValidity();
-        });
-
-        resetWatchdogTimeout();
-    }
-
-    function resetWatchdogTimeout() {
-        clearTimeout(securityWatchdogTimer);
-        securityWatchdogTimer = setTimeout(terminateSecureSession, IDLE_TIMEOUT_LIMIT);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        checkSessionValidity();
-        if(sessionStorage.getItem('contextos_global_authenticated') === 'true') {
-            unlockDashboardContent();
-        }
-    });
-</script>
-
-<script>
-    const openWeatherKey = 'a65d564a892d82cd09d48a43888a1139'; 
-
-    function fetchAutoWeather(lat, lon) {
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}&units=metric`;
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('ow-city').textContent = data.name + `, ${data.sys.country}`;
-                document.getElementById('ow-desc').textContent = data.weather[0].description;
-                document.getElementById('ow-temp').textContent = `${Math.round(data.main.temp)}°C`;
-                document.getElementById('ow-icon').src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-            })
-            .catch(() => {
-                document.getElementById('ow-city').textContent = "Abuja, NG";
-                document.getElementById('ow-desc').textContent = "Clear Sky Fallback";
-                document.getElementById('ow-temp').textContent = "27°C";
-            });
-    }
-
-    function fetchSingleRandomValidCityCard() {
-        const lat = (Math.random() * 140) - 60; 
-        const lon = (Math.random() * 360) - 180; 
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}&units=metric`;
-
-        return fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                if (!data.name || data.name.trim() === "" || data.sys.country === undefined) {
-                    return fetchSingleRandomValidCityCard(); 
-                }
-                return `
-                    <div class="ow-static-card">
-                        <h5>${data.name}, ${data.sys.country}</h5>
-                        <p>${data.weather[0].description}</p>
-                        <img class="ow-static-icon" src="https://openweathermap.org/img/wn/${data.weather[0].icon}.png" alt="Weather Icon">
-                        <div class="ow-static-temp">${Math.round(data.main.temp)}°C</div>
-                    </div>
-                `;
-            })
-            .catch(() => {
-                return fetchSingleRandomValidCityCard();
-            });
-    }
-
-    function renderMatrixBatch() {
-        const gridContainer = document.getElementById('multi-weather-grid');
-        if (!gridContainer || sessionStorage.getItem('contextos_global_authenticated') !== 'true') return;
-
-        gridContainer.classList.add('fade-out');
-
-        setTimeout(() => {
-            Promise.all([
-                fetchSingleRandomValidCityCard(),
-                fetchSingleRandomValidCityCard(),
-                fetchSingleRandomValidCityCard()
-            ]).then(htmlBlocks => {
-                gridContainer.innerHTML = htmlBlocks.join('');
-                gridContainer.classList.remove('fade-out');
-            });
-        }, 400);
-    }
-    
-    setInterval(renderMatrixBatch, 60000);
-</script>
-
-<script>
-    function startHardwareTelemetryTracking() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((p) => {
-                const lat = p.coords.latitude; const lon = p.coords.longitude;
-                document.getElementById('awareness-gps').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
-                fetchAutoWeather(lat, lon);
-            }, () => { 
-                document.getElementById('awareness-gps').textContent = "Abuja baseline";
-                fetchAutoWeather(9.0578, 7.4893);
-            });
-        } else {
-            fetchAutoWeather(9.0578, 7.4893);
-        }
-
-        if (navigator.getBattery) {
-            navigator.getBattery().then((b) => {
-                const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
-                up(); b.addEventListener('levelchange', up); b.addEventListener('chargingchange', up);
-            });
-        }
-        const upNet = () => {
-            document.getElementById('awareness-network').textContent = navigator.onLine ? "Online" : "Offline";
-            if (navigator.connection) {
-                document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown").toUpperCase();
-            }
-        };
-        upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
-        const thm = window.matchMedia('(prefers-color-scheme: dark)');
-        const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Mode" : "Light Mode";
-        upThm(thm); thm.addEventListener('change', upThm);
-        if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase();
-        let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle"; }, 10000); };
-        ['mousemove', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
-    }
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyIPworld - Control Terminal</title>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "x0mezp3yoh");
+    </script>
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -518,76 +176,35 @@
 </div>
 
 <script>
-    const IDLE_TIMEOUT_LIMIT = 1800000; 
-    let securityWatchdogTimer;
-
     function handleCredentialResponse(response) {
+        console.log("Google Authentication successful.");
         sessionStorage.setItem('contextos_global_authenticated', 'true');
-        updateActivityTimestamp();
         unlockDashboardContent();
     }
 
     function unlockDashboardContent() {
-        document.getElementById('login-gate-overlay').style.display = 'none';
-        document.getElementById('protected-workspace-root').style.display = 'block';
+        const gate = document.getElementById('login-gate-overlay');
+        const root = document.getElementById('protected-workspace-root');
         
-        renderMatrixBatch();
-        startHardwareTelemetryTracking();
-        initializeSecurityWatchdog();
-    }
-
-    function terminateSecureSession() {
-        console.warn("Google auto-signout triggered due to prolonged inactivity.");
-        sessionStorage.removeItem('contextos_global_authenticated');
-        sessionStorage.removeItem('last_active_timestamp');
+        if (gate) gate.style.display = 'none';
+        if (root) root.style.display = 'block';
         
-        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-            google.accounts.id.disableAutoSelect();
-        }
-        
-        document.getElementById('protected-workspace-root').style.display = 'none';
-        document.getElementById('login-gate-overlay').style.display = 'flex';
-    }
+        console.log("SkyIPworld Workspace UI Unlocked.");
 
-    function updateActivityTimestamp() {
-        sessionStorage.setItem('last_active_timestamp', Date.now().toString());
-    }
-
-    function checkSessionValidity() {
-        const lastActive = sessionStorage.getItem('last_active_timestamp');
-        if (lastActive && sessionStorage.getItem('contextos_global_authenticated') === 'true') {
-            const elapsed = Date.now() - parseInt(lastActive, 10);
-            if (elapsed >= IDLE_TIMEOUT_LIMIT) {
-                terminateSecureSession();
+        try {
+            if (typeof renderMatrixBatch === 'function') {
+                renderMatrixBatch();
             }
-        }
-    }
+        } catch (e) { console.error("Weather Engine Init Error: ", e); }
 
-    function initializeSecurityWatchdog() {
-        if (securityWatchdogTimer) clearTimeout(securityWatchdogTimer);
-
-        const trackEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-        trackEvents.forEach(evt => {
-            window.addEventListener(evt, () => {
-                updateActivityTimestamp();
-                resetWatchdogTimeout();
-            });
-        });
-
-        window.addEventListener('focus', () => {
-            checkSessionValidity();
-        });
-
-        resetWatchdogTimeout();
-    }
-
-    function resetWatchdogTimeout() {
-        clearTimeout(securityWatchdogTimer);
-        securityWatchdogTimer = setTimeout(terminateSecureSession, IDLE_TIMEOUT_LIMIT);
+        try {
+            if (typeof startHardwareTelemetryTracking === 'function') {
+                startHardwareTelemetryTracking();
+            }
+        } catch (e) { console.error("Telemetry Tracker Init Error: ", e); }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        checkSessionValidity();
         if(sessionStorage.getItem('contextos_global_authenticated') === 'true') {
             unlockDashboardContent();
         }

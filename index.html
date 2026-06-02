@@ -54,21 +54,11 @@
         .awareness-card h4 { margin: 0 0 8px 0; color: #475569; font-size: 12px; text-transform: uppercase; }
         .awareness-value { font-size: 15px; font-weight: bold; color: #0284c7; }
 
-        /* Accurate Live Clock Box UI Styles */
-        .premium-clock-card {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: #38bdf8; border: 1px solid #334155; padding: 20px; border-radius: 12px; text-align: center;
-            font-family: 'Courier New', Courier, monospace; margin-bottom: 20px;
-        }
-        .premium-time { font-size: 2rem; font-weight: bold; color: #f8fafc; }
-        .premium-date { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; margin-top: 5px; }
         .ad-slot-sidebar { background: #fff; border: 1px solid #e2e8f0; padding: 10px; text-align: center; border-radius: 8px; opacity: 0.95; }
 
-        /* Mapping Workspace Block */
-        .main-map-block { width: 100%; height: 450px; margin-top: 25px; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; z-index: 1; }
-        
-        /* Hide default routing text box to keep design clean */
-        .leaflet-routing-container { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); max-height: 200px; overflow-y: auto; font-size: 12px; }
+        /* Mapping Container Style Fixes */
+        .main-map-block { width: 100%; height: 450px; margin-top: 25px; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; position: relative; }
+        .leaflet-routing-container { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); max-height: 180px; overflow-y: auto; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -121,10 +111,6 @@
         </main>
 
         <aside>
-            <div class="premium-clock-card">
-                <div class="premium-time" id="live-time">00:00:00 AM</div>
-                <div class="premium-date" id="live-date">LOADING DATE...</div>
-            </div>
             <div class="commonninja_component pid-4cf8700f-0e33-4abc-b607-9bd8c050d61f"></div>
             <div class="ad-slot-sidebar"><small style="color:#aaa; display:block; margin-bottom:5px;">Sponsored Banner</small></div>
         </aside>
@@ -132,69 +118,38 @@
 </div>
 
 <script>
-    function updatePremiumClock() {
-        const now = new Date();
-        let timeString = now.toLocaleTimeString('en-US', {
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: 'Africa/Lagos'
-        });
-        let dateString = now.toLocaleDateString('en-US', { 
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Africa/Lagos'
-        });
-        document.getElementById('live-time').textContent = timeString;
-        document.getElementById('live-date').textContent = dateString + " (WAT)";
-    }
-    updatePremiumClock(); 
-    setInterval(updatePremiumClock, 1000);
-</script>
-
-<script>
-    // System base coordinates initialized at Abuja, Nigeria
     let userLat = 9.0578;
     let userLng = 7.4893;
-    let transportMode = 'car'; // Default state
+    let transportMode = 'car';
 
-    // Initialize base engine view
-    const map = L.map('osm-map').setView([userLat, userLng], 12);
+    const map = L.map('osm-map').setView([userLat, userLng], 4);
 
-    // Dynamic Layer Arrays
     const standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Open-source live traffic monitoring overlay
-    const trafficLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/hydda/roads_and_junctions/{z}/{x}/{y}.png', {
-        attribution: 'Traffic Overlays'
-    });
-
-    // Provide layer controls to change map appearance
-    const baseLayers = { "Standard Map": standardLayer };
-    const overlays = { "Traffic Infrastructure": trafficLayer };
-    L.control.layers(baseLayers, overlays, { position: 'topright' }).addTo(map);
-
-    let userMarker = L.marker([userLat, userLng]).addTo(map).bindPopup('Your Current Position').openPopup();
+    let userMarker = L.marker([userLat, userLng]).addTo(map).bindPopup('Current Map Center').openPopup();
     let routingEngine = null;
 
-    // Detect Precise Geolocation Coordinates dynamically
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((p) => {
             userLat = p.coords.latitude;
             userLng = p.coords.longitude;
             document.getElementById('awareness-gps').textContent = `${userLat.toFixed(4)}°, ${userLng.toFixed(4)}°`;
-            userMarker.setLatLng([userLat, userLng]);
+            userMarker.setLatLng([userLat, userLng]).setPopupContent('Your Current Position');
             map.setView([userLat, userLng], 13);
         });
     }
 
-    // Geocoding Search Engine & Routing Engine Function
     function searchAndRoute() {
         const query = document.getElementById('destination-input').value;
         if (!query) return alert('Please enter a destination first.');
 
-        // Use public, keyless Nominatim lookup API engine
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
             .then(res => res.json())
             .then(data => {
-                if (data.length === 0) return alert('Location not found. Try adding city details.');
+                if (data.length === 0) return alert('Location not found. Try adding a city name.');
                 
                 const destLat = parseFloat(data[0].lat);
                 const destLng = parseFloat(data[0].lon);
@@ -202,17 +157,10 @@
 
                 document.getElementById('target-info').textContent = destName;
 
-                // Clear previous navigation routing metrics
                 if (routingEngine) {
                     map.removeControl(routingEngine);
                 }
 
-                // Choose routing profiles based on selection state
-                let routingProfile = 'routed-car';
-                if (transportMode === 'walk') routingProfile = 'routed-foot';
-                if (transportMode === 'bike') routingProfile = 'routed-bike';
-
-                // Build real-time interactive vector routes
                 routingEngine = L.Routing.control({
                     waypoints: [
                         L.latLng(userLat, userLng),
@@ -225,10 +173,11 @@
                     lineOptions: {
                         styles: [{ color: '#0284c7', weight: 6, opacity: 0.85 }]
                     },
-                    createMarker: function() { return null; } // Prevent duplicate pins over our markers
+                    createMarker: function(i, wp) {
+                        return L.marker(wp.latLng).bindPopup(i === 0 ? "Start" : "Destination");
+                    }
                 }).addTo(map);
 
-                // Extract telemetry summary distance matrices
                 routingEngine.on('routesfound', function(e) {
                     const routes = e.routes;
                     const summary = routes[0].summary;

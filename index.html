@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyIPworld - Control Terminal</title>
+    <title>SkyIPworld - Global Weather Explorer</title>
     
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
@@ -73,7 +73,7 @@
         .ow-icon-canvas { width: 50px; height: 50px; background: rgba(255,255,255,0.15); border-radius: 50%; }
         .ow-static-icon { width: 45px; height: 45px; }
 
-        /* Awareness Grid */
+        /* Core Environmental Context Suite Styling */
         .awareness-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
         @media (max-width: 480px) { .awareness-dashboard { grid-template-columns: 1fr; } }
         .awareness-card { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
@@ -120,7 +120,7 @@
     <div class="container">
         <div class="grid">
             <main class="main-content">
-                <h2>Network Workspace Search</h2>
+                <h2>Global Meteorological Intelligence Search</h2>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
                 
                 <div class="search-engine-wrapper">
@@ -128,7 +128,7 @@
                     <div class="gcse-search"></div>
                 </div>
 
-                <div class="weather-section-title">Live Target Node (Automatic Position)</div>
+                <div class="weather-section-title">Live Node Vector (Your Detected Position)</div>
                 <div class="ow-auto-card" id="weather-panel">
                     <div class="ow-location-info">
                         <h4 id="ow-city">Detecting Local Climate...</h4>
@@ -143,17 +143,12 @@
                 <div class="weather-section-title">Global Weather Hub Matrix (Infinite True Random Cities Loop)</div>
                 <div class="weather-grid-matrix" id="multi-weather-grid"></div>
 
-                <h3>Complete Native Context Awareness Suite</h3>
+                <h3>Network Node Core Connectivity Awareness</h3>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
                 <div class="awareness-dashboard">
-                    <div class="awareness-card"><h4>Device Hardware GPS</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
-                    <div class="awareness-card"><h4>Battery Status</h4><div class="awareness-value" id="awareness-battery">Reading...</div></div>
-                    <div class="awareness-card"><h4>Network State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
-                    <div class="awareness-card"><h4>Connection Speed</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
-                    <div class="awareness-card"><h4>Device Motion/Orientation</h4><div class="awareness-value" id="awareness-motion">Stationary</div></div>
-                    <div class="awareness-card"><h4>OS Theme Preference</h4><div class="awareness-value" id="awareness-theme">Checking...</div></div>
-                    <div class="awareness-card"><h4>User Native Language</h4><div class="awareness-value" id="awareness-lang">Reading...</div></div>
-                    <div class="awareness-card"><h4>User Engagement State</h4><div class="awareness-value" id="awareness-idle">Active</div></div>
+                    <div class="awareness-card"><h4>Hardware Coordinate Array</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
+                    <div class="awareness-card"><h4>Network Infrastructure Node State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
+                    <div class="awareness-card"><h4>Data Transmission Velocity</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
                 </div>
 
                 <div class="yandex-map-container">
@@ -232,6 +227,7 @@
     }
 
     function fetchSingleRandomValidCityCard() {
+        // Safe global bounding box tracking logic
         const lat = (Math.random() * 140) - 60; 
         const lon = (Math.random() * 360) - 180; 
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}&units=metric`;
@@ -239,6 +235,7 @@
         return fetch(url)
             .then(res => res.json())
             .then(data => {
+                // If coordinates land in ocean/unpopulated areas, recursively call again to maintain true target loop
                 if (!data.name || data.name.trim() === "" || data.sys.country === undefined) {
                     return fetchSingleRandomValidCityCard(); 
                 }
@@ -292,25 +289,13 @@
             fetchAutoWeather(9.0578, 7.4893);
         }
 
-        if (navigator.getBattery) {
-            navigator.getBattery().then((b) => {
-                const up = () => document.getElementById('awareness-battery').textContent = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
-                up(); b.addEventListener('levelchange', up); b.addEventListener('chargingchange', up);
-            });
-        }
         const upNet = () => {
-            document.getElementById('awareness-network').textContent = navigator.onLine ? "Online" : "Offline";
+            document.getElementById('awareness-network').textContent = navigator.onLine ? "Online Connection" : "Offline Interrupt";
             if (navigator.connection) {
-                document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown").toUpperCase();
+                document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown Connection Class").toUpperCase();
             }
         };
         upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
-        const thm = window.matchMedia('(prefers-color-scheme: dark)');
-        const upThm = (e) => document.getElementById('awareness-theme').textContent = e.matches ? "Dark Mode" : "Light Mode";
-        upThm(thm); thm.addEventListener('change', upThm);
-        if (navigator.language) document.getElementById('awareness-lang').textContent = navigator.language.toUpperCase();
-        let idl; const rstIdl = () => { document.getElementById('awareness-idle').textContent = "Active"; clearTimeout(idl); idl = setTimeout(() => { document.getElementById('awareness-idle').textContent = "Idle"; }, 10000); };
-        ['mousemove', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, rstIdl)); rstIdl();
     }
 </script>
 

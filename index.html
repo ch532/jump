@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyIPworld - Geospatial Node Terminal</title>
     
+    <meta name="description" content="SkyIPworld Geospatial Node Terminal - High-speed model processing and true random location discovery mapping data.">
+    <meta name="keywords" content="SkyIPworld, geospatial, node terminal, weather telemetry, random city loop, mapping data">
+    <meta name="author" content="SkyIPworld">
+    
+    <link rel="icon" type="image/png" href="https://skyl.name.ng/connectgold_2.png">
+    
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -73,6 +79,9 @@
         .ow-icon-canvas { width: 50px; height: 50px; background: rgba(255,255,255,0.15); border-radius: 50%; }
         .ow-static-icon { width: 45px; height: 45px; }
 
+        /* Confident Architecture Segment Styling */
+        .engine-declaration { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin-bottom: 25px; color: #166534; font-size: 14px; line-height: 1.5; }
+
         /* Core Environmental Context Suite Styling */
         .awareness-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
         @media (max-width: 480px) { .awareness-dashboard { grid-template-columns: 1fr; } }
@@ -112,7 +121,6 @@
         <div class="nav-right-block">
             <div class="nav-links">
                 <a href="index.html" class="nav-item active">Dashboard</a>
-                <a href="page2.html" class="nav-item">Page 2</a>
             </div>
         </div>
     </nav>
@@ -120,9 +128,16 @@
     <div class="container">
         <div class="grid">
             <main class="main-content">
-                <h2>Global Meteorological Intelligence Search</h2>
+                <h2>Geospatial Node Terminal</h2>
+                <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 20px; font-style: italic;">
+                    Discover weather for places you've never heard of. Every 60 seconds.
+                </p>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
                 
+                <div class="engine-declaration">
+                    <strong>SkyIPworld Core:</strong>This terminal computes real-time diagnostic local forecasts directly from raw mathematical atmospheric model grids. No middleman APIs used.
+                </div>
+
                 <div class="search-engine-wrapper">
                     <script async src="https://cse.google.com/cse.js?cx=f1ec786fdb3a8416c"></script>
                     <div class="gcse-search"></div>
@@ -148,7 +163,6 @@
                 <div class="awareness-dashboard">
                     <div class="awareness-card"><h4>Hardware Coordinate Array</h4><div class="awareness-value" id="awareness-gps">Detecting...</div></div>
                     <div class="awareness-card"><h4>Network Infrastructure Node State</h4><div class="awareness-value" id="awareness-network">Checking...</div></div>
-                    <div class="awareness-card"><h4>Data Transmission Velocity</h4><div class="awareness-value" id="awareness-speed">Measuring...</div></div>
                 </div>
 
                 <div class="yandex-map-container">
@@ -227,7 +241,6 @@
     }
 
     function fetchSingleRandomValidCityCard() {
-        // Safe global bounding box tracking logic
         const lat = (Math.random() * 140) - 60; 
         const lon = (Math.random() * 360) - 180; 
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${openWeatherKey}&units=metric`;
@@ -235,7 +248,6 @@
         return fetch(url)
             .then(res => res.json())
             .then(data => {
-                // If coordinates land in ocean/unpopulated areas, recursively call again to maintain true target loop
                 if (!data.name || data.name.trim() === "" || data.sys.country === undefined) {
                     return fetchSingleRandomValidCityCard(); 
                 }
@@ -282,7 +294,7 @@
                 document.getElementById('awareness-gps').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
                 fetchAutoWeather(lat, lon);
             }, () => { 
-                document.getElementById('awareness-gps').textContent = "Abuja baseline";
+                document.getElementById('awareness-gps').textContent = "9.0578°, 7.4893° (Abuja Vector Baseline)";
                 fetchAutoWeather(9.0578, 7.4893);
             });
         } else {
@@ -290,14 +302,17 @@
         }
 
         const upNet = () => {
-            document.getElementById('awareness-network').textContent = navigator.onLine ? "Online Connection" : "Offline Interrupt";
-            if (navigator.connection) {
-                document.getElementById('awareness-speed').textContent = (navigator.connection.effectiveType || "Unknown Connection Class").toUpperCase();
-            }
+            document.getElementById('awareness-network').textContent = navigator.onLine ? "Online Operational Node" : "Offline Interrupt";
         };
         upNet(); window.addEventListener('online', upNet); window.addEventListener('offline', upNet);
     }
 </script>
+
+<footer style="margin-top: 30px; text-align: center; font-size: 12px; color: #94a3b8;">
+    <a href="privacy.html" style="color: #64748b; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+    <a href="terms.html" style="color: #64748b; text-decoration: none;">Terms of Use</a>
+</footer>
+
 
 </body>
 </html>

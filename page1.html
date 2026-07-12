@@ -59,6 +59,7 @@
         .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
         .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 0; }
+        .bubble-system-action { background: #fef08a; color: #713f12; font-family: monospace; font-size: 12px; align-self: center; border-radius: 4px; padding: 4px 10px; border: 1px solid #fef08a; width: 90%; text-align: center; }
 
         /* Dynamic Asset Output Styling */
         .studio-media-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
@@ -123,15 +124,15 @@
         <div class="grid">
             <main class="main-content">
                 
-                <h2>Autonomous OpenRouter Terminal</h2>
+                <h2>Autonomous Agentic OpenRouter Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Direct client-side inference pipeline. Bring your own OpenRouter key to chat for free.
+                    True Agentic Loop: Fully equipped with programmatic live web-search context tool schemas.
                 </p>
 
-                <!-- 💡 Custom OpenRouter Terminal Interface -->
+                <!-- 💡 Agentic Terminal Interface Box -->
                 <div class="ai-terminal-box">
                     <div class="ai-terminal-header" style="background: #111827;">
-                        <strong>SkyIP OpenRouter Core</strong>
+                        <strong>SkyIP Agent Core v2</strong>
                         <div class="ai-status-indicator" style="color: #38bdf8; font-size: 11px;">
                             <input type="password" id="userApiKey" placeholder="Paste OpenRouter Key Here" style="background: #1f2937; border: 1px solid #4b5563; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; outline: none; width: 160px;">
                             <button onclick="saveApiKey()" style="background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Save</button>
@@ -139,20 +140,21 @@
                     </div>
                     
                     <div class="agent-tools-bar">
-                        <span>Active Model:</span>
-                        <div class="tool-pill active">🚀 openrouter/free</div>
-                        <div class="tool-pill active">⚡ Pure Frontend Stream</div>
+                        <span>Active Capabilities:</span>
+                        <div class="tool-pill active">🌐 Live Search Tool</div>
+                        <div class="tool-pill active">🤖 Function Calling Loop</div>
+                        <div class="tool-pill active">⚡ Text Stream</div>
                     </div>
                     
                     <div class="ai-chat-screen" id="orChatScreen">
                         <div class="chat-bubble bubble-ai">
-                            Terminal initialized. To protect this website's resource infrastructure, please input your OpenRouter API Key in the header field above to start generating free stream answers.
+                            Agent initialized. I am running on a continuous programmatic tool-execution loop. Save your OpenRouter key above and try testing my web-grounding capabilities by asking a real-time question (e.g., "What is the price of Bitcoin today?").
                         </div>
                     </div>
 
                     <div class="ai-input-bar">
-                        <input type="text" class="ai-text-input" id="orUserInput" placeholder="Ask anything (e.g., How many r's are in strawberry?)..." onkeydown="if(event.key === 'Enter') runFrontendOpenRouterChat()">
-                        <button class="control-btn btn-send" onclick="runFrontendOpenRouterChat()">Send</button>
+                        <input type="text" class="ai-text-input" id="orUserInput" placeholder="Ask agent to search or answer something..." onkeydown="if(event.key === 'Enter') runAgenticLoop()">
+                        <button class="control-btn btn-send" onclick="runAgenticLoop()">Send</button>
                     </div>
                 </div>
 
@@ -203,7 +205,7 @@
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Sovereign Processing:</strong> Browser-side streaming limits data risks and bypasses third-party proxy dependencies.</li>
+                        <li><strong>&bull; Tool-Calling Autonomy:</strong> The engine automatically breaks down requests, deciding when to crawl data versus when to answer immediately.</li>
                         <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage free cloud weights to combine high-speed text analysis with active video outputs.</li>
                     </ul>
                 </div>
@@ -217,7 +219,24 @@
 <div class="adsense-autoad-stripe"></div>
 
 <script>
-    // Load local OpenRouter key on launch if saved
+    // System Configurations and Tool Definition Arrays
+    const AGENT_TOOLS_SCHEMA = [
+        {
+            type: "function",
+            function: {
+                name: "google_web_search",
+                description: "Queries the internet to discover live facts, news, and current real-time data.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        searchQuery: { type: "string", description: "The clear query text to search for on the live web." }
+                    },
+                    required: ["searchQuery"]
+                }
+            }
+        }
+    ];
+
     document.addEventListener('DOMContentLoaded', () => {
         if(document.getElementById('userApiKey')) {
             document.getElementById('userApiKey').value = localStorage.getItem('skyip_or_key') || '';
@@ -236,59 +255,127 @@
         }
     }
 
-    async function runFrontendOpenRouterChat() {
+    // 🌐 Executable Tool Function: Fetch live web descriptions without backend server configs
+    async function executeWebSearchTool(queryText) {
+        try {
+            const targetUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://html.duckduckgo.com/html/?q=' + encodeURIComponent(queryText))}`;
+            const res = await fetch(targetUrl);
+            const data = await res.json();
+            
+            // Clean up basic HTML structure to isolate summary text snippets
+            const doc = new DOMParser().parseFromString(data.contents, 'text/html');
+            const links = Array.from(doc.querySelectorAll('.result__snippet')).slice(0, 3);
+            
+            if(links.length === 0) return "Web Search returned no immediate summary pages. Fallback to basic inference knowledge.";
+            
+            return links.map((el, idx) => `[Result ${idx+1}]: ${el.textContent.trim()}`).join('\n');
+        } catch (e) {
+            console.error(e);
+            return "Search Tool failed to reach external gateway nodes. Proceed with standard baseline memory.";
+        }
+    }
+
+    // 🤖 Agent execution orchestration loop
+    async function runAgenticLoop() {
         const inputEl = document.getElementById('orUserInput');
-        const prompt = inputEl.value.trim();
-        if (!prompt) return;
+        const promptText = inputEl.value.trim();
+        if (!promptText) return;
 
         const apiKey = localStorage.getItem('skyip_or_key') || document.getElementById('userApiKey').value.trim();
         if (!apiKey) {
-            alert("Security Check: Please provide your own OpenRouter API key inside the layout header box to prompt!");
+            alert("Security Check: Provide an OpenRouter API key inside the layout input header to grant tool activation!");
             return;
         }
 
         const screen = document.getElementById('orChatScreen');
 
-        // Add User Bubble
+        // Append User Dialogue
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
-        userBubble.textContent = prompt;
+        userBubble.textContent = promptText;
         screen.appendChild(userBubble);
         inputEl.value = '';
         screen.scrollTop = screen.scrollHeight;
 
-        // Add Placeholder AI Bubble
-        const aiBubble = document.createElement('div');
-        aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Connecting to OpenRouter context weights...";
-        screen.appendChild(aiBubble);
+        // Append System Diagnostic State
+        const loaderBubble = document.createElement('div');
+        loaderBubble.className = 'chat-bubble bubble-ai';
+        loaderBubble.textContent = "Analyzing query parameters for tool requirements...";
+        screen.appendChild(loaderBubble);
         screen.scrollTop = screen.scrollHeight;
 
         try {
+            // Initial payload evaluation call to check if tools are required
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${apiKey}`,
                     "Content-Type": "application/json",
                     "HTTP-Referer": window.location.href,
-                    "X-Title": "SkyIP Hub App"
+                    "X-Title": "SkyIP Agent Hub"
                 },
                 body: JSON.stringify({
-                    model: "openrouter/free",
-                    messages: [{ role: "user", content: prompt }],
-                    stream: true
+                    model: "meta-llama/llama-3-70b-instruct:free", // High quality model built for accurate function selection
+                    messages: [{ role: "user", content: promptText }],
+                    tools: AGENT_TOOLS_SCHEMA,
+                    tool_choice: "auto"
                 })
             });
 
-            if (!response.ok) {
-                throw new Error("API rejection routing criteria response.");
+            if(!response.ok) throw new Error("API Route Blocked.");
+            const payload = await response.json();
+            const messageObj = payload.choices[0]?.message;
+
+            let dialogueChain = [{ role: "user", content: promptText }];
+
+            // Check if the AI decided it needs to execute the search function
+            if (messageObj?.tool_calls && messageObj.tool_calls.length > 0) {
+                const callInfo = messageObj.tool_calls[0];
+                const args = JSON.parse(callInfo.function.arguments);
+                
+                // Alert the user on UI that the AI has taken autonomous action
+                const actionNotification = document.createElement('div');
+                actionNotification.className = 'bubble-system-action';
+                actionNotification.textContent = `⚙️ [AGENT ACTION]: Decided to execute google_web_search("${args.searchQuery}")`;
+                screen.appendChild(actionNotification);
+                screen.scrollTop = screen.scrollHeight;
+
+                // Execute the tool client-side
+                const toolResultText = await executeWebSearchTool(args.searchQuery);
+                
+                // Build the contextual narrative history to send back to the AI model
+                dialogueChain.push(messageObj);
+                dialogueChain.push({
+                    role: "tool",
+                    name: "google_web_search",
+                    tool_call_id: callInfo.id,
+                    content: toolResultText
+                });
+
+                loaderBubble.textContent = "Grounding response layers with fetched data vectors...";
             }
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            aiBubble.innerHTML = ""; 
+            // Secondary final generation call with the tool payload context attached
+            const finalResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": window.location.href,
+                    "X-Title": "SkyIP Agent Hub"
+                },
+                body: JSON.stringify({
+                    model: "meta-llama/llama-3-70b-instruct:free",
+                    messages: dialogueChain,
+                    stream: true // Stream out final response
+                })
+            });
 
-            let combinedText = "";
+            const reader = finalResponse.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            loaderBubble.innerHTML = ""; // Clear diagnostics status
+
+            let streamTextAccumulator = "";
 
             while (true) {
                 const { value, done } = await reader.read();
@@ -299,24 +386,25 @@
 
                 for (const line of lines) {
                     if (line.startsWith("data: ")) {
-                        const dataStr = line.slice(6).trim();
-                        if (dataStr === "[DONE]") break;
+                        const rawStr = line.slice(6).trim();
+                        if (rawStr === "[DONE]") break;
 
                         try {
-                            const parsed = JSON.parse(dataStr);
-                            const content = parsed.choices[0]?.delta?.content;
-                            if (content) {
-                                combinedText += content;
-                                aiBubble.innerHTML = combinedText.replace(/\n/g, "<br>");
+                            const parsed = JSON.parse(rawStr);
+                            const textDelta = parsed.choices[0]?.delta?.content;
+                            if (textDelta) {
+                                streamTextAccumulator += textDelta;
+                                loaderBubble.innerHTML = streamTextAccumulator.replace(/\n/g, "<br>");
                                 screen.scrollTop = screen.scrollHeight;
                             }
                         } catch (e) {}
                     }
                 }
             }
-        } catch (error) {
-            console.error(error);
-            aiBubble.textContent = "Error: Connection refused. Verify that your saved key is accurate and has an active credit tier balance.";
+
+        } catch (err) {
+            console.error(err);
+            loaderBubble.textContent = "Pipeline Error: Failed to coordinate agentic loop processing arrays.";
         }
     }
 

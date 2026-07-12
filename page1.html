@@ -223,25 +223,25 @@
 
 <div class="adsense-autoad-stripe"></div>
 
-<!-- PROGRAMMATIC CONTEXT INJECTION PIPELINE ENGINE -->
+<!-- CORRECTED CONTEXT INJECTION PIPELINE ENGINE -->
 <script type="module">
-    // Maintain a live contextual stack cache log directly in script state memory
     const conversationHistory = [];
 
     window.executeAgentQuery = async function(promptText) {
         try {
-            // DYNAMIC UPDATE: Automatically compute real-time clock array data and active utility matrices
             const activeBrowserTime = new Date().toString();
             
+            // FIXED: Added absolute system directives forbidding the generation of structural JSON tool calling strings
             const operationalSystemDirectives = {
                 role: "system",
                 content: `You are SkyIP Agent Core, an elite full-stack programming and technical assistant. 
                 The interface context tools are fully ACTIVE. Use the following parameters to ground your calculations:
-                - CURRENT REAL-TIME CLOCK: ${activeBrowserTime} (Ground your date/time answers accurately in this parameter).
-                - PIPELINE UTILITIES ENABLED: Web Search Grounding, Local Thread Cache, Real-Time Information Array.`
+                - CURRENT REAL-TIME CLOCK: ${activeBrowserTime}.
+                - PIPELINE UTILITIES ENABLED: Web Search Grounding, Local Thread Cache, Real-Time Information Array.
+                
+                CRITICAL INSTRUCTION: Do NOT generate or emit raw code function schemas, JSON tool blocks, 'tool_calls' arrays, or code-arguments patterns. You must handle search requirements implicitly and output ONLY plain, raw conversational text and markdown responses directly to the user.`
             };
 
-            // Build out the message matrix ensuring the freshly synchronized context is always at index 0
             const structuredPayloadMessages = [
                 operationalSystemDirectives,
                 ...conversationHistory,

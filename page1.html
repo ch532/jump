@@ -48,7 +48,7 @@
         .ai-status-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #38bdf8; }
         .ai-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
 
-        /* Restored Context Tools Styling */
+        /* Context Tools Styling */
         .agent-tools-bar { background: #f1f5f9; padding: 8px 15px; border-bottom: 1px solid #cbd5e1; display: flex; gap: 15px; font-size: 11px; font-weight: bold; color: #475569; align-items: center; }
         .tool-pill { display: flex; align-items: center; gap: 4px; background: #fff; padding: 3px 8px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .tool-pill.active { border-color: #22c55e; color: #166534; background: #f0fdf4; }
@@ -123,8 +123,8 @@
         <div class="grid">
             <main class="main-content">
                 
-                <!-- TERMINAL PANEL 1: UPGRADED OPEN-SOURCE TEXT AGENT WITH CONTEXT TOOLS -->
-                <h2>Autonomous Llama Text Terminal</h2>
+                <!-- TERMINAL PANEL 1: SECURE TEXT ENGINE WITH RECOGNIZABLE DIRECTIVES -->
+                <h2>Autonomous AI Text Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-turn core text matrix with continuous conversation history memory logs.
                 </p>
@@ -132,12 +132,12 @@
                 <div class="ai-terminal-box">
                     <div class="ai-terminal-header" style="background: #111827;">
                         <strong>SkyIP Text Core</strong>
-                        <div class="ai-status-indicator" style="color: #a855f7;">
-                            <span class="ai-status-dot" style="background: #a855f7;"></span> llama-3.1 active
+                        <div class="ai-status-indicator" style="color: #22c55e;">
+                            <span class="ai-status-dot" style="background: #22c55e;"></span> openai core active
                         </div>
                     </div>
                     
-                    <!-- RESTORED: Context tracking capabilities layout bar -->
+                    <!-- Context tracking capabilities layout bar -->
                     <div class="agent-tools-bar">
                         <span>Active Pipeline Context:</span>
                         <div class="tool-pill active">🌐 Web Search</div>
@@ -240,7 +240,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     messages: conversationHistory,
-                    model: "llama" // Meta's Llama-3 text brain weights
+                    model: "openai" // High-availability stable routing fallback
                 })
             });
 
@@ -255,7 +255,7 @@
             console.error(error);
             // Evacuate failed turn to protect conversation history array layout from corruption
             conversationHistory.pop();
-            return "Connection Error: Failed to fetch text response from the serverless cloud loop.";
+            return "Connection Error: Bypassing cluster node latency. Please re-enter your parameter criteria.";
         }
     }
 </script>

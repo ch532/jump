@@ -51,7 +51,7 @@
         
         .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         
-        /* Terminal Framework Layout Mappings */
+        /* Terminal Layout Styling */
         .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 420px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .ai-terminal-header { background: #1e293b; color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
         .ai-terminal-header.multimedia-theme { background: #0f172a; border-bottom: 2px solid #ec4899; }
@@ -63,7 +63,7 @@
         .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 0; }
 
-        /* Dynamic Asset Output Blocks */
+        /* Dynamic Asset Output Styling */
         .studio-media-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
         .studio-media-output img, .studio-media-output video { max-width: 100%; max-height: 280px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; }
 
@@ -98,7 +98,7 @@
         .quick-links-list { list-style: none; padding: 0; margin: 0; }
         .quick-links-list li { margin-bottom: 10px; font-size: 13px; color: #475569; line-height: 1.5;}
 
-        /* Auto-Ads Structural Slots */
+        /* Auto-Ads Slots */
         .adsense-autoad-stripe { width: 100%; margin: 25px 0; display: block; clear: both; min-height: 60px; }
         .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
         .adsense-inline-feed { width: 100%; margin: 20px 0; display: block; min-height: 50px; }
@@ -128,29 +128,14 @@
             isTokenAutoRefreshEnabled: true
         });
 
+        // Initialize free-tier text/analysis engine securely
         const ai = getAI(firebaseApp, { backend: "googleAI" });
         const geminiCore = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
 
-        // Maintain conversation log cleanly inside state cache
-        let conversationHistoryLog = "";
-
-        window.executeAgentQuery = async function(promptText, customContext = "") {
-            // Append history into structural context arrays for the generation frame
-            let structuralPrompt = "";
-            if (conversationHistoryLog) {
-                structuralPrompt += `Prior chat log for context:\n${conversationHistoryLog}\n\n`;
-            }
-            if (customContext) {
-                structuralPrompt += `${customContext}\n`;
-            }
-            structuralPrompt += `User Question: ${promptText}`;
-
-            const result = await geminiCore.generateContent(structuralPrompt);
-            const aiResponseText = result.response.text();
-
-            // Append the turns into local script memory strings
-            conversationHistoryLog += `User: ${promptText}\nModel: ${aiResponseText}\n`;
-            return aiResponseText;
+        window.executeAgentQuery = async function(promptText) {
+            // Native free-tier call processing configuration
+            const result = await geminiCore.generateContent(promptText);
+            return result.response.text();
         }
     </script>
 </head>
@@ -181,7 +166,7 @@
                 <!-- TERMINAL PANEL 1: GEMINI TEXT AGENT -->
                 <h2>Gemini Autonomous Agent Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Multi-modal data engine running file parsing, live context loops, and web pipelines.
+                    Multi-modal data engine running core syntax workflows and processing text arrays.
                 </p>
 
                 <div class="ai-terminal-box">
@@ -194,7 +179,7 @@
                     
                     <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
-                            System initialized with active chat memory. Feel free to reference prior conversation details or upload structural references.
+                            System initialized. Submit text questions here to process real-time technical answers.
                         </div>
                     </div>
 
@@ -202,7 +187,7 @@
 
                     <div class="ai-input-bar">
                         <input type="file" id="mediaUpload" style="display:none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
-                        <button class="control-btn" title="Inject Local Context File" onclick="document.getElementById('mediaUpload').click()">📎</button>
+                        <button class="control-btn" title="Inject Local File Context" onclick="document.getElementById('mediaUpload').click()">📎</button>
                         <input type="text" class="ai-text-input" id="agentInput" placeholder="Ask the agent to research or analyze something..." onkeydown="if(event.key === 'Enter') processAgentMessage()">
                         <button class="control-btn btn-send" onclick="processAgentMessage()">Send</button>
                     </div>
@@ -256,8 +241,8 @@
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Context Memory:</strong> Implemented static conversation caching so Gemini actively retains back-and-forth interactions.</li>
-                        <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage high-speed cloud weights to combine text analysis with active media outputs.</li>
+                        <li><strong>&bull; Split Mappings:</strong> Completely isolated pipelines separating data-processing streams from graphic generation wrappers.</li>
+                        <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage free cloud weights to combine high-speed text analysis with active video outputs.</li>
                     </ul>
                 </div>
 
@@ -335,7 +320,7 @@
 
         const screen = document.getElementById('agentScreen');
         let userMessage = text;
-        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[ Attached Context File: ${activeFile.name}]</small>`;
+        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[📁 Attached Context File: ${activeFile.name}]</small>`;
         
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
@@ -348,14 +333,13 @@
 
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Processing agentic query parameters...";
+        aiBubble.textContent = "Processing query parameters...";
         screen.appendChild(aiBubble);
         screen.scrollTop = screen.scrollHeight;
 
         try {
             if (typeof window.executeAgentQuery === 'function') {
-                let contextAddon = activeFile ? `User uploaded an asset file reference named "${activeFile.name}".` : "";
-                const aiResult = await window.executeAgentQuery(text, contextAddon);
+                const aiResult = await window.executeAgentQuery(text);
                 aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
             } else {
                 aiBubble.textContent = "Local Error: Connection initialization failure.";

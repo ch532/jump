@@ -99,7 +99,9 @@
         .quick-links-list a { color: #334155; text-decoration: none; transition: color 0.1s; }
         .quick-links-list a:hover { color: #0284c7; }
 
-        .ad-slot-sidebar { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; }
+        /* Dedicated Auto-Ads Structural Container Extensions */
+        .adsense-autoad-stripe { width: 100%; margin: 20px 0; display: block; clear: both; min-height: 50px; }
+        .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
     </style>
 
     <script type="module">
@@ -118,21 +120,17 @@
             measurementId: "G-K4Z4GJ2JLN"
         };
 
-        // Initialize Core Firebase Services
         const firebaseApp = initializeApp(firebaseConfig);
         const analytics = getAnalytics(firebaseApp);
 
-        // App Check Token Verification Layer
         initializeAppCheck(firebaseApp, {
             provider: new ReCaptchaV3Provider('6LfgLU8tAAAAADwNu0RbuYtfoASFFx8BbxgUhyMQ'),
             isTokenAutoRefreshEnabled: true
         });
 
-        // Initialize Gemini Developer API Engine
         const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
         const model = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
 
-        // Expose function globally to bind with Chat UI
         window.executeAIEngineQuery = async function(promptText) {
             try {
                 const result = await model.generateContent(promptText);
@@ -161,6 +159,8 @@
             </div>
         </div>
     </nav>
+
+    <div class="adsense-autoad-stripe"></div>
 
     <div class="container">
         <div class="grid">
@@ -199,6 +199,8 @@
                     </div>
                 </div>
 
+                <div class="adsense-autoad-stripe"></div>
+
                 <h3 class="feed-container-title">📚 Curated Content Hub</h3>
                 <p style="color: #64748b; font-size: 14px; margin-top: -5px; margin-bottom: 20px; font-style: italic;">
                     Synchronized dual-stream interest feeds and global feature stories.
@@ -211,6 +213,8 @@
             </main>
 
             <aside>
+                <div class="adsense-sidebar-space"></div>
+
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Terminal Features</h4>
                     <ul class="quick-links-list">
@@ -220,13 +224,18 @@
                     </ul>
                 </div>
 
-        
+                <div class="adsense-sidebar-space"></div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<div class="adsense-autoad-stripe"></div>
 
 <script>
     let activeFile = null;
     let isVoiceActive = false;
 
-    // Asynchronous processor to handle and unify both RSS endpoints concurrently
     async function loadCuratedRSSFeed() {
         const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
         const feed2 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wim3m0bf6IV.rss');
@@ -235,7 +244,6 @@
         const endpoint2 = `https://api.rss2json.com/v1/api.json?rss_url=${feed2}`;
         
         try {
-            // Fetch both target feed configurations in parallel vectors
             const [res1, res2] = await Promise.all([
                 fetch(endpoint1).then(r => r.json()).catch(() => null),
                 fetch(endpoint2).then(r => r.json()).catch(() => null)
@@ -247,19 +255,14 @@
             if (res2 && res2.status === 'ok') combinedItems = combinedItems.concat(res2.items);
             
             if (combinedItems.length > 0) {
-                // Chronological sort matrix logic: newest records bubble to the top
-                combinedItems.sort((a, b) => {
-                    return new Date(b.pubDate || 0) - new Date(a.pubDate || 0);
-                });
+                combinedItems.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
                 
                 let feedHtml = '';
-                
                 combinedItems.forEach(item => {
                     let cleanExcerpt = item.description ? item.description.replace(/<[^>]*>/g, '').trim() : '';
                     if (cleanExcerpt.length > 220) {
                         cleanExcerpt = cleanExcerpt.substring(0, 220) + '...';
                     }
-                    
                     if(!cleanExcerpt) {
                         cleanExcerpt = "Click below to review full structural insights regarding this verified interest point stream tracking target.";
                     }
@@ -285,10 +288,8 @@
         }
     }
 
-    // Launch integration parsing loops on dashboard initialization
     window.addEventListener('DOMContentLoaded', loadCuratedRSSFeed);
 
-    // Handle File upload mapping pipeline
     document.getElementById('mediaUpload').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -299,7 +300,6 @@
         }
     });
 
-    // Handle core messaging execution interface logic
     async function processTerminalMessage() {
         const inputEl = document.getElementById('userInput');
         const text = inputEl.value.trim();
@@ -327,30 +327,29 @@
         screen.appendChild(aiBubble);
         screen.scrollTop = screen.scrollHeight;
 
-        let aiResult = "";
-        
-        if (text.toLowerCase().includes('generate image') || text.toLowerCase().includes('draw') || text.toLowerCase().includes('picture')) {
-            aiResult = `I have received your structural design vector instructions. Processing generation parameters via your attached prompt "${text}". Here is the computed visualization canvas target:`;
-            aiBubble.innerHTML = aiResult + `<br><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80" alt="Generated Canvas Layer">`;
-        } else if (activeFile) {
-            aiResult = `Parsed attachment stream "${activeFile.name}" successfully under system parameters. The model verified the document content matches your query parameters: "${text || 'Analyze file context'}". No structural data anomalies found.`;
-        } else {
-            if (typeof window.executeAIEngineQuery === 'function') {
-                aiResult = await window.executeAIEngineQuery(text);
+        try {
+            if (text.toLowerCase().includes('generate image') || text.toLowerCase().includes('draw') || text.toLowerCase().includes('picture')) {
+                let aiResult = `I have received your structural design vector instructions. Processing generation parameters via your attached prompt "${text}". Here is the computed visualization canvas target:`;
+                aiBubble.innerHTML = aiResult + `<br><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80" alt="Generated Canvas Layer">`;
+            } else if (activeFile) {
+                aiBubble.textContent = `Parsed attachment stream "${activeFile.name}" successfully under system parameters. The model verified the document content matches your query parameters: "${text || 'Analyze file context'}". No structural data anomalies found.`;
             } else {
-                aiResult = "Local Error: Connection pipeline block missing or initialization failed.";
+                if (typeof window.executeAIEngineQuery === 'function') {
+                    const aiResult = await window.executeAIEngineQuery(text);
+                    aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
+                } else {
+                    aiBubble.textContent = "Local Error: Connection pipeline block missing or initialization failed.";
+                }
             }
-        }
-
-        if (!text.toLowerCase().includes('generate image') || activeFile) {
-            aiBubble.textContent = aiResult;
+        } catch (error) {
+            console.error("Terminal runtime update failure:", error);
+            aiBubble.textContent = "Engine Error: Core execution thread interrupted during response aggregation.";
         }
         
         activeFile = null;
         screen.scrollTop = screen.scrollHeight;
     }
 
-    // Toggle voice stream processing framework interface simulated loop
     function toggleVoiceTransmission() {
         const btn = document.getElementById('voiceBtn');
         const screen = document.getElementById('chatScreen');

@@ -103,46 +103,6 @@
         .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
         .adsense-inline-feed { width: 100%; margin: 20px 0; display: block; min-height: 50px; }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
-        import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
-            authDomain: "air-skye.firebaseapp.com",
-            projectId: "air-skye",
-            storageBucket: "air-skye.appspot.com",
-            messagingSenderId: "46181700573",
-            appId: "1:46181700573:web:1b5d21e443067bba26dc34",
-            measurementId: "G-K4Z4GJ2JLN"
-        };
-
-        const firebaseApp = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(firebaseApp);
-
-        // App Check Token Security Wrapper
-        try {
-            initializeAppCheck(firebaseApp, {
-                provider: new ReCaptchaV3Provider('6LfgLU8tAAAAADwNu0RbuYtfoASFFx8BbxgUhyMQ'),
-                isTokenAutoRefreshEnabled: true
-            });
-        } catch (e) {
-            console.warn("App Check failed validation. Moving to fallback routing.", e);
-        }
-
-        // Initialize Gemini Developer API Engine per strict documentation console criteria
-        const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
-        const model = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
-
-        window.executeAgentQuery = async function(promptText) {
-            const result = await model.generateContent(promptText);
-            const response = result.response;
-            return response.text();
-        }
-    </script>
 </head>
 <body>
 
@@ -256,6 +216,46 @@
 </div>
 
 <div class="adsense-autoad-stripe"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
+    import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
+        authDomain: "air-skye.firebaseapp.com",
+        projectId: "air-skye",
+        storageBucket: "air-skye.appspot.com",
+        messagingSenderId: "46181700573",
+        appId: "1:46181700573:web:1b5d21e443067bba26dc34",
+        measurementId: "G-K4Z4GJ2JLN"
+    };
+
+    // Initialize FirebaseApp
+    const firebaseApp = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(firebaseApp);
+
+    // Keep reCAPTCHA App Check active and verified
+    initializeAppCheck(firebaseApp, {
+        provider: new ReCaptchaV3Provider('6LfgLU8tAAAAADwNu0RbuYtfoASFFx8BbxgUhyMQ'),
+        isTokenAutoRefreshEnabled: true
+    });
+
+    // Initialize the Gemini Developer API backend service exactly per Console Documentation
+    const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
+    
+    // Create a GenerativeModel instance with a model that supports your use case
+    const model = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
+
+    // Expose structural handle cleanly to interface fields
+    window.executeAgentQuery = async function(promptText) {
+        const result = await model.generateContent(promptText);
+        const response = result.response;
+        return response.text();
+    }
+</script>
 
 <script>
     let activeFile = null;

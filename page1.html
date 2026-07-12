@@ -123,7 +123,6 @@
         <div class="grid">
             <main class="main-content">
                 
-                <!-- TERMINAL PANEL 1: CONTEXT TERMINAL -->
                 <h2>Autonomous AI Text Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-turn core text matrix with continuous conversation history memory logs.
@@ -133,11 +132,10 @@
                     <div class="ai-terminal-header" style="background: #111827;">
                         <strong>SkyIP Text Core</strong>
                         <div class="ai-status-indicator" style="color: #22c55e;">
-                            <span class="ai-status-dot" style="background: #22c55e;"></span> background context active
+                            <span class="ai-status-dot" style="background: #22c55e;"></span> web grounding active
                         </div>
                     </div>
                     
-                    <!-- Context tracking capabilities layout bar -->
                     <div class="agent-tools-bar">
                         <span>Active Pipeline Context:</span>
                         <div class="tool-pill active">🌐 Web Search</div>
@@ -148,7 +146,7 @@
                     
                     <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
-                            System initialized. Ask a real-time question and search data will process seamlessly in the background.
+                            System initialized. Ask any real-time question and fact-checked search data will process seamlessly in the background.
                         </div>
                     </div>
 
@@ -162,7 +160,6 @@
                     </div>
                 </div>
 
-                <!-- TERMINAL PANEL 2: OPEN-SOURCE MULTIMEDIA DESIGN STUDIO (IMAGE & VIDEO) -->
                 <h2>Open-Source Multimedia Generation Studio</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Autonomous synthesis matrix calculating real-time image renders and dynamic motion videos.
@@ -223,7 +220,6 @@
 
 <div class="adsense-autoad-stripe"></div>
 
-<!-- SILENT BACKGROUND PROCESSING ENGINE -->
 <script type="module">
     const conversationHistory = [];
 
@@ -231,13 +227,11 @@
         try {
             const activeBrowserTime = new Date().toString();
             
-            // Cleaned directives to stop the model from spitting out structural backend thoughts
             const operationalSystemDirectives = {
                 role: "system",
-                content: `You are SkyIP Agent Core, an elite programming and full-stack technical assistant. 
-                Answer questions directly and conversationally using standard paragraphs and clean markdown formatting. 
-                Do not output raw database records, inner code loops, JSON snippets, or statements like 'I need to browse the web' or 'Use search'. Just state your finalized informational answer immediately.
-                Current Reference Time: ${activeBrowserTime}.`
+                content: `You are SkyIP Agent Core, an elite programming and research assistant.
+                Answer questions directly and conversationally using standard paragraphs and clean markdown formatting.
+                Current Reference Time context parameter: ${activeBrowserTime}.`
             };
 
             const structuredPayloadMessages = [
@@ -251,36 +245,17 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     messages: structuredPayloadMessages,
-                    model: "openai"
+                    model: "searchgpt" // Routes natively to the real-time web verification framework
                 })
             });
 
-            if (!response.ok) throw new Error("Network request failure.");
-            const aiRawResponseText = await response.text();
-
-            let displayableOutputText = aiRawResponseText;
-
-            // Strict sanitization step to strip out any raw inner thought data if the server fails to hide it
-            try {
-                const parsedJsonResponse = JSON.parse(aiRawResponseText);
-                if (parsedJsonResponse.content) {
-                    displayableOutputText = parsedJsonResponse.content;
-                } else if (parsedJsonResponse.choices && parsedJsonResponse.choices[0]?.message?.content) {
-                    displayableOutputText = parsedJsonResponse.choices[0].message.content;
-                }
-            } catch (e) {
-                // Not a JSON string, raw markdown response is ready to output
-            }
-
-            // Remove internal system thought labels from printing out to users
-            if (displayableOutputText.includes('"reasoning":') || displayableOutputText.includes('"tool_calls":')) {
-                displayableOutputText = "Processing exchange parameters. Please re-verify the input array metrics.";
-            }
+            if (!response.ok) throw new Error("Network grounding layer failure.");
+            const aiTextResponse = await response.text();
 
             conversationHistory.push({ role: "user", content: promptText });
-            conversationHistory.push({ role: "assistant", content: displayableOutputText });
+            conversationHistory.push({ role: "assistant", content: aiTextResponse });
             
-            return displayableOutputText;
+            return aiTextResponse;
 
         } catch (error) {
             console.error(error);

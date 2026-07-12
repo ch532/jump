@@ -132,13 +132,20 @@
             isTokenAutoRefreshEnabled: true
         });
 
-        // Initialize stable free-tier text/analysis provider pipeline
         const ai = getAI(firebaseApp, { backend: "googleAI" });
         const geminiCore = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
 
+        // UPDATED: Initialize an active multi-turn chat instance to automatically retain history context
+        const agentChatSession = geminiCore.startChat({
+            history: []
+        });
+
         window.executeAgentQuery = async function(promptText, customContext = "") {
-            const finalPrompt = customContext ? `${customContext}\n\nUser Query: ${promptText}` : promptText;
-            const result = await geminiCore.generateContent(finalPrompt);
+            // If context is attached, prepend it gracefully to maintain memory continuity
+            const messagePayload = customContext ? `${customContext}\n\nUser Query: ${promptText}` : promptText;
+            
+            // Use sendMessage to let the SDK preserve the local conversation tree
+            const result = await agentChatSession.sendMessage(messagePayload);
             return result.response.text();
         }
     </script>
@@ -167,6 +174,7 @@
         <div class="grid">
             <main class="main-content">
                 
+                <!-- TERMINAL PANEL 1: GEMINI TEXT AGENT -->
                 <h2>Gemini Autonomous Agent Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-modal data engine running file parsing, live context loops, and web pipelines.
@@ -190,7 +198,7 @@
                     
                     <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
-                            System initialized. Ask me to cross-reference concepts, check code snippets, or analyze uploaded data streams.
+                            System initialized with active chat memory. Feel free to reference prior conversation details or upload structural references.
                         </div>
                     </div>
 
@@ -204,6 +212,7 @@
                     </div>
                 </div>
 
+                <!-- TERMINAL PANEL 2: OPEN-SOURCE MULTIMEDIA DESIGN STUDIO (IMAGE & VIDEO) -->
                 <h2>Open-Source Multimedia Generation Studio</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Autonomous synthesis matrix calculating real-time image renders and dynamic motion videos.
@@ -251,7 +260,7 @@
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Decoupled Core:</strong> Separate network tasks isolate text processing models from dynamic rendering logic.</li>
+                        <li><strong>&bull; Context Memory:</strong> Implemented chat session arrays so Gemini actively remembers back-and-forth interactions.</li>
                         <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage free cloud weights to combine high-speed text analysis with active video outputs.</li>
                     </ul>
                 </div>
@@ -323,7 +332,6 @@
         }
     });
 
-    // Router 1: Secure Text Processing Agent
     async function processAgentMessage() {
         const inputEl = document.getElementById('agentInput');
         const text = inputEl.value.trim();
@@ -364,7 +372,6 @@
         screen.scrollTop = screen.scrollHeight;
     }
 
-    // Router 2: High-Speed Free Image & Video Synthesis Engine
     async function processStudioMedia(mode) {
         const inputEl = document.getElementById('studioInput');
         const text = inputEl.value.trim();
@@ -387,14 +394,11 @@
         screen.scrollTop = screen.scrollHeight;
 
         try {
-            // Clean characters to prevent URI encoding crashes
             const safePrompt = encodeURIComponent(text);
             const seedVal = Math.floor(Math.random() * 999999);
 
             if (mode === 'image') {
-                // Instantly query high-density Diffusion arrays natively via URL allocation
                 const targetImageUrl = `https://image.pollinations.ai/p/${safePrompt}?width=512&height=512&seed=${seedVal}&enhance=true`;
-                
                 aiBubble.innerHTML = `
                     Static image matrix for prompt <em>"${text}"</em> computed successfully:<br>
                     <div class="studio-media-output">
@@ -402,9 +406,7 @@
                     </div>
                 `;
             } else if (mode === 'video') {
-                // Pass request to Pollinations open-source video frame aggregation streaming pipelines
                 const targetVideoUrl = `https://video.pollinations.ai/p/${safePrompt}?seed=${seedVal}`;
-                
                 aiBubble.innerHTML = `
                     Motion video animation sequence for prompt <em>"${text}"</em> computed successfully:<br>
                     <div class="studio-media-output">

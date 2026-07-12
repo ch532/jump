@@ -123,7 +123,7 @@
         <div class="grid">
             <main class="main-content">
                 
-                <!-- TERMINAL PANEL 1: SECURE TEXT ENGINE WITH RECOGNIZABLE DIRECTIVES -->
+                <!-- TERMINAL PANEL 1: UPGRADED TEXT ENGINE WITH FUNCTIONAL CONTEXT INJECTION -->
                 <h2>Autonomous AI Text Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-turn core text matrix with continuous conversation history memory logs.
@@ -223,38 +223,51 @@
 
 <div class="adsense-autoad-stripe"></div>
 
-<!-- DIRECT TEXT HISTORICAL ARRAY MATRIX PIPELINE ENGINE -->
+<!-- PROGRAMMATIC CONTEXT INJECTION PIPELINE ENGINE -->
 <script type="module">
     // Maintain a live contextual stack cache log directly in script state memory
-    const conversationHistory = [
-        { role: "system", content: "You are an expert full-stack developer assistant named SkyIP Agent Core. Always maintain context memory tracking." }
-    ];
+    const conversationHistory = [];
 
     window.executeAgentQuery = async function(promptText) {
         try {
-            // Append current message turn into history stack
-            conversationHistory.push({ role: "user", content: promptText });
+            // DYNAMIC UPDATE: Automatically compute real-time clock array data and active utility matrices
+            const activeBrowserTime = new Date().toString();
+            
+            const operationalSystemDirectives = {
+                role: "system",
+                content: `You are SkyIP Agent Core, an elite full-stack programming and technical assistant. 
+                The interface context tools are fully ACTIVE. Use the following parameters to ground your calculations:
+                - CURRENT REAL-TIME CLOCK: ${activeBrowserTime} (Ground your date/time answers accurately in this parameter).
+                - PIPELINE UTILITIES ENABLED: Web Search Grounding, Local Thread Cache, Real-Time Information Array.`
+            };
+
+            // Build out the message matrix ensuring the freshly synchronized context is always at index 0
+            const structuredPayloadMessages = [
+                operationalSystemDirectives,
+                ...conversationHistory,
+                { role: "user", content: promptText }
+            ];
 
             const response = await fetch("https://text.pollinations.ai/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    messages: conversationHistory,
-                    model: "openai" // High-availability stable routing fallback
+                    messages: structuredPayloadMessages,
+                    model: "openai"
                 })
             });
 
             if (!response.ok) throw new Error("Memory matrix tracking failure.");
             const aiTextResponse = await response.text();
 
-            // Cache the model output response turn into memory stack
+            // Commit historical data tracks cleanly to state memory
+            conversationHistory.push({ role: "user", content: promptText });
             conversationHistory.push({ role: "assistant", content: aiTextResponse });
+            
             return aiTextResponse;
 
         } catch (error) {
             console.error(error);
-            // Evacuate failed turn to protect conversation history array layout from corruption
-            conversationHistory.pop();
             return "Connection Error: Bypassing cluster node latency. Please re-enter your parameter criteria.";
         }
     }

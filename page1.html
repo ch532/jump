@@ -69,6 +69,7 @@
 
         .file-preview-strip { padding: 5px 15px; background: #f1f5f9; font-size: 12px; color: #64748b; display: none; gap: 10px; align-items: center; border-top: 1px solid #e2e8f0; }
         .ai-input-bar { border-top: 1px solid #cbd5e1; padding: 10px; display: flex; gap: 10px; background: #fff; align-items: center; }
+        .adsense-autoad-stripe { width: 100%; margin: 25px 0; display: block; clear: both; min-height: 60px; }
         .ai-text-input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
         .ai-text-input:focus { border-color: #0284c7; }
         
@@ -99,7 +100,6 @@
         .quick-links-list li { margin-bottom: 10px; font-size: 13px; color: #475569; line-height: 1.5;}
 
         /* Auto-Ads Slots */
-        .adsense-autoad-stripe { width: 100%; margin: 25px 0; display: block; clear: both; min-height: 60px; }
         .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
         .adsense-inline-feed { width: 100%; margin: 20px 0; display: block; min-height: 50px; }
     </style>
@@ -108,7 +108,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
-        import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
+        import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
@@ -120,22 +120,25 @@
             measurementId: "G-K4Z4GJ2JLN"
         };
 
+        // Initialize Firebase App
         const firebaseApp = initializeApp(firebaseConfig);
         const analytics = getAnalytics(firebaseApp);
 
+        // App Check Token Security Verification Loop
         initializeAppCheck(firebaseApp, {
             provider: new ReCaptchaV3Provider('6LfgLU8tAAAAADwNu0RbuYtfoASFFx8BbxgUhyMQ'),
             isTokenAutoRefreshEnabled: true
         });
 
-        // Initialize free-tier text/analysis engine securely
-        const ai = getAI(firebaseApp, { backend: "googleAI" });
-        const geminiCore = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
+        // Initialize the Gemini Developer API backend service exactly per documentation specs
+        const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
+        const model = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
 
+        // Expose operational handle cleanly to interface fields
         window.executeAgentQuery = async function(promptText) {
-            // Native free-tier call processing configuration
-            const result = await geminiCore.generateContent(promptText);
-            return result.response.text();
+            const result = await model.generateContent(promptText);
+            const response = result.response;
+            return response.text();
         }
     </script>
 </head>
@@ -163,7 +166,6 @@
         <div class="grid">
             <main class="main-content">
                 
-                <!-- TERMINAL PANEL 1: GEMINI TEXT AGENT -->
                 <h2>Gemini Autonomous Agent Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-modal data engine running core syntax workflows and processing text arrays.
@@ -193,7 +195,6 @@
                     </div>
                 </div>
 
-                <!-- TERMINAL PANEL 2: OPEN-SOURCE MULTIMEDIA DESIGN STUDIO (IMAGE & VIDEO) -->
                 <h2>Open-Source Multimedia Generation Studio</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Autonomous synthesis matrix calculating real-time image renders and dynamic motion videos.

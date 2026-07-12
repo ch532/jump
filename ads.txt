@@ -1,3 +1,6 @@
+google.com, pub-877351541430254, DIRECT, f08c47fec0942fa0
+
+
 smartyads.com, 20457, DIRECT,  fd2bde0ff2e62c5d
 
 pubmatic.com, 161970, RESELLER, 5d62403b186f2ace

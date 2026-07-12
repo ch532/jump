@@ -150,8 +150,43 @@
     </div>
 </div>
 
+    <div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; text-align: left; max-width: 500px;">
+    <p style="margin: 0 0 15px 0; font-size: 14px; line-height: 1.5;">
+        SkyIPworld uses cookies to optimize your terminal layouts, verify system tokens, and deliver customized advertisements safely.
+    </p>
+    <div style="text-align: right;">
+        <button onclick="acceptSiteCookies()" style="background: #38bdf8; color: #1e293b; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px;">
+            Accept Cookies
+        </button>
+    </div>
+</div>
+
+<script>
+    // Execution pipeline: Runs instantly when the page loads
+    window.addEventListener('DOMContentLoaded', function() {
+        // Check if the cookie acceptance state was previously recorded
+        const hasConsented = getCookie("skyip_user_consent");
+        
+        if (!hasConsented) {
+            // Show banner if tracking status is fresh/empty
+            document.getElementById('cookie-consent-banner').style.display = 'block';
+        }
+    });
+
+    // Triggers when user clicks "Accept"
+    function acceptSiteCookies() {
+        // Store a cookie named "skyip_user_consent" with value "accepted" valid for 30 days
+        setCookie("skyip_user_consent", "accepted", 30);
+        
+        // Hide banner smoothly
+        document.getElementById('cookie-consent-banner').style.display = 'none';
+        console.log("Tracking consent cookie initialized successfully.");
+    }
+</script>
+
+
 <footer style="margin-top: 30px; text-align: center; font-size: 12px; color: #94a3b8;">
-    <a href="privacy8.html" style="color: #64748b; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
+    <a href="privacy.html" style="color: #64748b; text-decoration: none; margin-right: 15px;">Privacy Policy</a>
     <a href="terms.html" style="color: #64748b; text-decoration: none;">Terms of Use</a>
 </footer>
 

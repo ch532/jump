@@ -189,7 +189,8 @@
 
     async function loadRegionalRSSFeed() {
         const feedUrl = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wiom48hoE0g.rss');
-        const endpoint = `https://fetchrss.com/feed/1wilwQEyZ4Yc1wiom48hoE0g.rss}`;
+        const endpoint = `https://api.rss2json.com/v1/api.json?rss_url=${feedUrl}`;
+        
         
         try {
             const response = await fetch(endpoint).then(res => res.json());

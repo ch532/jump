@@ -57,10 +57,6 @@
         .ai-terminal-header.multimedia-theme { background: #0f172a; border-bottom: 2px solid #ec4899; }
         .ai-status-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #38bdf8; }
         .ai-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
-        
-        .agent-tools-bar { background: #f1f5f9; padding: 8px 15px; border-bottom: 1px solid #cbd5e1; display: flex; gap: 15px; font-size: 11px; font-weight: bold; color: #475569; align-items: center; }
-        .tool-pill { display: flex; align-items: center; gap: 4px; background: #fff; padding: 3px 8px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .tool-pill.active { border-color: #22c55e; color: #166534; background: #f0fdf4; }
 
         .ai-chat-screen { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
         .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
@@ -135,18 +131,26 @@
         const ai = getAI(firebaseApp, { backend: "googleAI" });
         const geminiCore = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
 
-        // UPDATED: Initialize an active multi-turn chat instance to automatically retain history context
-        const agentChatSession = geminiCore.startChat({
-            history: []
-        });
+        // Maintain conversation log cleanly inside state cache
+        let conversationHistoryLog = "";
 
         window.executeAgentQuery = async function(promptText, customContext = "") {
-            // If context is attached, prepend it gracefully to maintain memory continuity
-            const messagePayload = customContext ? `${customContext}\n\nUser Query: ${promptText}` : promptText;
-            
-            // Use sendMessage to let the SDK preserve the local conversation tree
-            const result = await agentChatSession.sendMessage(messagePayload);
-            return result.response.text();
+            // Append history into structural context arrays for the generation frame
+            let structuralPrompt = "";
+            if (conversationHistoryLog) {
+                structuralPrompt += `Prior chat log for context:\n${conversationHistoryLog}\n\n`;
+            }
+            if (customContext) {
+                structuralPrompt += `${customContext}\n`;
+            }
+            structuralPrompt += `User Question: ${promptText}`;
+
+            const result = await geminiCore.generateContent(structuralPrompt);
+            const aiResponseText = result.response.text();
+
+            // Append the turns into local script memory strings
+            conversationHistoryLog += `User: ${promptText}\nModel: ${aiResponseText}\n`;
+            return aiResponseText;
         }
     </script>
 </head>
@@ -188,14 +192,6 @@
                         </div>
                     </div>
                     
-                    <div class="agent-tools-bar">
-                        <span>Spark Plan Framework Tracking:</span>
-                        <div class="tool-pill active">🌐 Web Search</div>
-                        <div class="tool-pill active">🗂️ RAG Pipeline</div>
-                        <div class="tool-pill active">⚡ Real-Time Info</div>
-                        <div class="tool-pill active">📁 File Retrieval</div>
-                    </div>
-                    
                     <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
                             System initialized with active chat memory. Feel free to reference prior conversation details or upload structural references.
@@ -206,7 +202,7 @@
 
                     <div class="ai-input-bar">
                         <input type="file" id="mediaUpload" style="display:none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
-                        <button class="control-btn" title="Inject Local Vector File Context" onclick="document.getElementById('mediaUpload').click()">📎</button>
+                        <button class="control-btn" title="Inject Local Context File" onclick="document.getElementById('mediaUpload').click()">📎</button>
                         <input type="text" class="ai-text-input" id="agentInput" placeholder="Ask the agent to research or analyze something..." onkeydown="if(event.key === 'Enter') processAgentMessage()">
                         <button class="control-btn btn-send" onclick="processAgentMessage()">Send</button>
                     </div>
@@ -260,8 +256,8 @@
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Context Memory:</strong> Implemented chat session arrays so Gemini actively remembers back-and-forth interactions.</li>
-                        <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage free cloud weights to combine high-speed text analysis with active video outputs.</li>
+                        <li><strong>&bull; Context Memory:</strong> Implemented static conversation caching so Gemini actively retains back-and-forth interactions.</li>
+                        <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage high-speed cloud weights to combine text analysis with active media outputs.</li>
                     </ul>
                 </div>
 
@@ -339,7 +335,7 @@
 
         const screen = document.getElementById('agentScreen');
         let userMessage = text;
-        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[📁 Attached Context File: ${activeFile.name}]</small>`;
+        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[ Attached Context File: ${activeFile.name}]</small>`;
         
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
@@ -358,7 +354,7 @@
 
         try {
             if (typeof window.executeAgentQuery === 'function') {
-                let contextAddon = activeFile ? `User attached an asset file named "${activeFile.name}". Treat this file context as an indexed local resource.` : "";
+                let contextAddon = activeFile ? `User uploaded an asset file reference named "${activeFile.name}".` : "";
                 const aiResult = await window.executeAgentQuery(text, contextAddon);
                 aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
             } else {

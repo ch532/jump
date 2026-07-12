@@ -123,7 +123,7 @@
         <div class="grid">
             <main class="main-content">
                 
-                <!-- TERMINAL PANEL 1: CONTEXT GROUNDED TEXT ENGINE -->
+                <!-- TERMINAL PANEL 1: STABLE GROUNDED LIVE ENGINE -->
                 <h2>Autonomous AI Text Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-turn core text matrix with continuous conversation history memory logs.
@@ -133,7 +133,7 @@
                     <div class="ai-terminal-header" style="background: #111827;">
                         <strong>SkyIP Text Core</strong>
                         <div class="ai-status-indicator" style="color: #22c55e;">
-                            <span class="ai-status-dot" style="background: #22c55e;"></span> web grounding active
+                            <span class="ai-status-dot" style="background: #22c55e;"></span> live search online
                         </div>
                     </div>
                     
@@ -148,7 +148,7 @@
                     
                     <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
-                            System initialized. Ask any real-time question and fact-checked search data will process seamlessly in the background.
+                            System synchronized. Submit any programming or general real-time query to browse internet sources instantly in the background.
                         </div>
                     </div>
 
@@ -223,7 +223,7 @@
 
 <div class="adsense-autoad-stripe"></div>
 
-<!-- HIGH-AVAILABILITY REAL-TIME GROUNDING PIPELINE MODULE -->
+<!-- STABLE BACKEND GROUNDED CLUSTER INTERACTION MODULE -->
 <script type="module">
     const conversationHistory = [];
 
@@ -233,10 +233,9 @@
             
             const operationalSystemDirectives = {
                 role: "system",
-                content: `You are SkyIP Agent Core, an elite full-stack programming and general research assistant.
-                Answer questions concisely, accurately, and conversationally using standard paragraphs and clean markdown.
-                You are equipped with server-side web grounding tools. Check the internet silently for any general knowledge, currency rates, news, or trivia requested.
-                Current Reference Time context parameter: ${activeBrowserTime}.`
+                content: `You are SkyIP Agent Core. Answer questions concisely, directly, and conversationally using clean paragraphs and standard markdown. 
+                You have real-time internet search access. Silently look up the latest facts, currency values, news, and time tables to ground your text answer.
+                Current Reference Time context: ${activeBrowserTime}.`
             };
 
             const structuredPayloadMessages = [
@@ -250,11 +249,11 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     messages: structuredPayloadMessages,
-                    model: "mistral-large" // Swapped to stable, web-grounded large community model
+                    model: "gemini-search" // High-reliability framework with always-on background web search tools
                 })
             });
 
-            if (!response.ok) throw new Error("Network grounding layer failure.");
+            if (!response.ok) throw new Error("Server engine node connection failure.");
             const aiTextResponse = await response.text();
 
             conversationHistory.push({ role: "user", content: promptText });
@@ -424,3 +423,4 @@
 
 </body>
 </html>
+

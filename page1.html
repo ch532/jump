@@ -43,17 +43,16 @@
         
         .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         
+        /* AgentBase Embedded Container */
+        .agent-container { position: relative; width: 100%; height: 500px; margin-bottom: 30px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .agent-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
         /* Terminal Layout Styling */
         .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 420px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .ai-terminal-header { background: #1e293b; color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
         .ai-terminal-header.multimedia-theme { background: #0f172a; border-bottom: 2px solid #ec4899; }
         .ai-status-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #38bdf8; }
         .ai-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
-
-        /* Context Tools Styling */
-        .agent-tools-bar { background: #f1f5f9; padding: 8px 15px; border-bottom: 1px solid #cbd5e1; display: flex; gap: 15px; font-size: 11px; font-weight: bold; color: #475569; align-items: center; }
-        .tool-pill { display: flex; align-items: center; gap: 4px; background: #fff; padding: 3px 8px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .tool-pill.active { border-color: #22c55e; color: #166534; background: #f0fdf4; }
 
         .ai-chat-screen { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
         .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
@@ -64,7 +63,6 @@
         .studio-media-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
         .studio-media-output img, .studio-media-output video { max-width: 100%; max-height: 280px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; }
 
-        .file-preview-strip { padding: 5px 15px; background: #f1f5f9; font-size: 12px; color: #64748b; display: none; gap: 10px; align-items: center; border-top: 1px solid #e2e8f0; }
         .ai-input-bar { border-top: 1px solid #cbd5e1; padding: 10px; display: flex; gap: 10px; background: #fff; align-items: center; }
         .adsense-autoad-stripe { width: 100%; margin: 25px 0; display: block; clear: both; min-height: 60px; }
         .ai-text-input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
@@ -72,8 +70,6 @@
         
         .control-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 9px 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s; }
         .control-btn:hover { background: #e2e8f0; }
-        .btn-send { background: #0284c7; color: #fff; border-color: #0284c7; font-weight: bold; font-size: 14px; }
-        .btn-send:hover { background: #0369a1; }
         
         .btn-multimedia { background: #0f172a; color: #ec4899; border-color: #334155; font-size: 13px; font-weight: bold; padding: 10px 15px; }
         .btn-multimedia:hover { background: #1e293b; }
@@ -99,6 +95,10 @@
         /* Auto-Ads Slots */
         .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
         .adsense-inline-feed { width: 100%; margin: 20px 0; display: block; min-height: 50px; }
+
+        @media (max-width: 600px) {
+            .agent-container { height: 420px; }
+        }
     </style>
 </head>
 <body>
@@ -125,41 +125,18 @@
         <div class="grid">
             <main class="main-content">
                 
-                <h2>Autonomous AI Text Terminal</h2>
+                <h2>Autonomous Agentic Search Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Multi-turn core text matrix with continuous conversation history memory logs.
+                    Interactive open-source sandbox pipeline running specialized autonomous information workflows.
                 </p>
 
-                <div class="ai-terminal-box">
-                    <div class="ai-terminal-header" style="background: #111827;">
-                        <strong>SkyIP Text Core</strong>
-                        <div class="ai-status-indicator" style="color: #38bdf8;">
-                            <span class="ai-status-dot" style="background: #38bdf8;"></span> agent tools enabled
-                        </div>
-                    </div>
-                    
-                    <div class="agent-tools-bar">
-                        <span>Active Pipeline Context:</span>
-                        <div class="tool-pill active">🌐 Web Search</div>
-                        <div class="tool-pill active">🗂️ Thread Caching</div>
-                        <div class="tool-pill active">⚡ Real-Time Info</div>
-                        <div class="tool-pill active">📁 Local Context</div>
-                    </div>
-                    
-                    <div class="ai-chat-screen" id="agentScreen">
-                        <div class="chat-bubble bubble-ai">
-                            System initialized via non-Google agentic architecture. Web grounding search capabilities are fully supported in the backend execution engine.
-                        </div>
-                    </div>
-
-                    <div class="file-preview-strip" id="previewStrip"></div>
-
-                    <div class="ai-input-bar">
-                        <input type="file" id="mediaUpload" style="display:none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
-                        <button class="control-btn" title="Inject Local File Context" onclick="document.getElementById('mediaUpload').click()">📎</button>
-                        <input type="text" class="ai-text-input" id="agentInput" placeholder="Ask AI to process or analyze something..." onkeydown="if(event.key === 'Enter') processAgentMessage()">
-                        <button class="control-btn btn-send" onclick="processAgentMessage()">Send</button>
-                    </div>
+                <!-- 💡 Embedded AgentBase Platform Matrix -->
+                <div class="agent-container">
+                    <iframe
+                        src="https://agentsearch-agentbase-platform.hf.space"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
                 </div>
 
                 <h2>Open-Source Multimedia Generation Studio</h2>
@@ -209,7 +186,7 @@
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Persistent Memory:</strong> Structural conversational array tracking allows full multi-turn contextual tracking logs.</li>
+                        <li><strong>&bull; Agentic Discovery:</strong> Tap into distributed open framework routing via direct workspace sandboxing.</li>
                         <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage free cloud weights to combine high-speed text analysis with active video outputs.</li>
                     </ul>
                 </div>
@@ -223,50 +200,6 @@
 <div class="adsense-autoad-stripe"></div>
 
 <script>
-    let conceptualChatHistory = [];
-
-    window.executeAgentQuery = async function(promptText) {
-        try {
-            const activeBrowserTime = new Date().toString();
-            
-            // Explicitly pass an injection tool schema telling Puter to intercept requests with web grounding
-            const foundationalDirective = `You are SkyIP Agent Core, an elite programming and research assistant.
-            Format answers using standard paragraphs and clean markdown.
-            You have active web context tools. Check the internet silently for any general knowledge, news, or figures.
-            Current Reference Time: ${activeBrowserTime}.`;
-
-            let operationalMessages = [
-                { role: "system", content: foundationalDirective }
-            ];
-
-            conceptualChatHistory.forEach(item => {
-                operationalMessages.push({ role: item.role, content: item.content });
-            });
-
-            operationalMessages.push({ role: "user", content: promptText });
-
-            // We invoke the pro open-source non-Google gateway while activating client-side feature flags
-            const response = await puter.ai.chat(operationalMessages, {
-                model: 'deepseek/deepseek-v4-pro'
-            });
-
-            const textOutput = response.message.content;
-
-            conceptualChatHistory.push({ role: "user", content: promptText });
-            conceptualChatHistory.push({ role: "assistant", content: textOutput });
-
-            return textOutput;
-
-        } catch (error) {
-            console.error("Agent Pipeline Error: ", error);
-            return "Routing Error: Could not resolve real-time background context nodes. Please try again.";
-        }
-    }
-</script>
-
-<script>
-    let activeFile = null;
-
     async function loadCuratedRSSFeed() {
         const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
         const feed2 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wimz071V2qY.rss');
@@ -312,55 +245,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', loadCuratedRSSFeed);
-
-    document.getElementById('mediaUpload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            activeFile = file;
-            const strip = document.getElementById('previewStrip');
-            strip.style.display = 'flex';
-            strip.textContent = `📎 Context Attached: ${file.name} (${Math.round(file.size/1024)} KB)`;
-        }
-    });
-
-    async function processAgentMessage() {
-        const inputEl = document.getElementById('agentInput');
-        const text = inputEl.value.trim();
-        if (!text && !activeFile) return;
-
-        const screen = document.getElementById('agentScreen');
-        let userMessage = text;
-        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[📁 Attached Context File: ${activeFile.name}]</small>`;
-        
-        const userBubble = document.createElement('div');
-        userBubble.className = 'chat-bubble bubble-user';
-        userBubble.innerHTML = userMessage;
-        screen.appendChild(userBubble);
-        screen.scrollTop = screen.scrollHeight;
-
-        inputEl.value = '';
-        document.getElementById('previewStrip').style.display = 'none';
-
-        const aiBubble = document.createElement('div');
-        aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Processing query parameters...";
-        screen.appendChild(aiBubble);
-        screen.scrollTop = screen.scrollHeight;
-
-        try {
-            if (typeof window.executeAgentQuery === 'function') {
-                const aiResult = await window.executeAgentQuery(text);
-                aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
-            } else {
-                aiBubble.textContent = "Local Error: Connection initialization failure.";
-            }
-        } catch (error) {
-            console.error(error);
-            aiBubble.textContent = "Engine Error: Connection pipeline rejected prompt criteria.";
-        }
-        activeFile = null;
-        screen.scrollTop = screen.scrollHeight;
-    }
 
     async function processStudioMedia(mode) {
         const inputEl = document.getElementById('studioInput');
@@ -419,5 +303,6 @@
 
 </body>
 </html>
+
 
 

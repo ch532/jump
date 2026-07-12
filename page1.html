@@ -109,7 +109,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
-        import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
+        // FIXED: Explicitly imported getImagenModel to handle graphic creation packages natively
+        import { getAI, getGenerativeModel, getImagenModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
@@ -131,20 +132,19 @@
 
         const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
         
-        // Live Engine 1: Text & Analysis Engine
+        // Model 1: Conversational Parsing Engine
         const textModel = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
         
-        // Live Engine 2: Real-time Image Generation Engine
-        const imageModel = getGenerativeModel(ai, { model: "imagen-3.0-generate-002" });
+        // FIXED: Mapped configuration specifically using getImagenModel for the system runtime
+        const imageModel = getImagenModel(ai, { model: "imagen-3.0-generate-002" });
 
-        // Expose Live Queries to Global Scope
+        // Bind logic securely to the global scope frame
         window.executeAIEngineQuery = async function(promptText) {
             const result = await textModel.generateContent(promptText);
             return result.response.text();
         }
 
         window.executeImageGenerationQuery = async function(promptText) {
-            // Using the native SDK generateImages array framework method
             const response = await imageModel.generateImages({
                 prompt: promptText,
                 numberOfImages: 1,
@@ -152,10 +152,9 @@
             });
             
             if (response && response.images && response.images[0]) {
-                // Convert bytes to clean base64 image data source dynamically
                 return `data:image/jpeg;base64,${response.images[0].base64}`;
             }
-            throw new Error("No image data array returned from backend cloud vector.");
+            throw new Error("No payload matrix parsed.");
         }
     </script>
 </head>
@@ -256,7 +255,7 @@
     let isVoiceActive = false;
 
     async function loadCuratedRSSFeed() {
-        const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
+        const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wiom48hoE0g.rss');
         const feed2 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wimz071V2qY.rss');
         
         const endpoint1 = `https://api.rss2json.com/v1/api.json?rss_url=${feed1}`;
@@ -318,7 +317,6 @@
         }
     });
 
-    // RE-ENGINEERED: Fully operational split task router for genuine multimodal output processing
     async function processTerminalMessage() {
         const inputEl = document.getElementById('userInput');
         const text = inputEl.value.trim();
@@ -347,7 +345,6 @@
         screen.scrollTop = screen.scrollHeight;
 
         try {
-            // 1. GENUINE LIVE IMAGE GENERATION CALL
             if (text.toLowerCase().includes('generate image') || text.toLowerCase().includes('draw') || text.toLowerCase().includes('picture')) {
                 if (typeof window.executeImageGenerationQuery === 'function') {
                     aiBubble.textContent = "Synthesizing live Imagen vector layers... please wait.";
@@ -358,11 +355,9 @@
                     aiBubble.textContent = "Local Error: Image synthesis initialization pipeline broken.";
                 }
             } 
-            // 2. FILE INPUT LOGIC
             else if (activeFile) {
                 aiBubble.textContent = `Parsed attachment stream "${activeFile.name}" successfully under system parameters. The model verified the document content matches your query parameters: "${text || 'Analyze file context'}". No structural data anomalies found.`;
             } 
-            // 3. GENUINE LIVE TEXT GENERATION CALL
             else {
                 if (typeof window.executeAIEngineQuery === 'function') {
                     const aiResult = await window.executeAIEngineQuery(text);
@@ -416,4 +411,3 @@
 
 </body>
 </html>
-

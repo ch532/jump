@@ -123,7 +123,7 @@
         <div class="grid">
             <main class="main-content">
                 
-                <!-- TERMINAL PANEL 1: BACKGROUND CONTEXT EXECUTOR TERMINAL -->
+                <!-- TERMINAL PANEL 1: CONTEXT TERMINAL -->
                 <h2>Autonomous AI Text Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-turn core text matrix with continuous conversation history memory logs.
@@ -223,20 +223,21 @@
 
 <div class="adsense-autoad-stripe"></div>
 
-<!-- SILENT BACKGROUND CONTEXT INTERCEPTION PROCESSING ENGINE -->
+<!-- SILENT BACKGROUND PROCESSING ENGINE -->
 <script type="module">
     const conversationHistory = [];
 
     window.executeAgentQuery = async function(promptText) {
         try {
-            // Automatically capture browser system metrics and exact time array structures
             const activeBrowserTime = new Date().toString();
             
+            // Cleaned directives to stop the model from spitting out structural backend thoughts
             const operationalSystemDirectives = {
                 role: "system",
-                content: `You are SkyIP Agent Core, an elite programming and research assistant.
-                - Current Time Parameter: ${activeBrowserTime}.
-                - Capabilities Enabled: Background web search grounding and context tools.`
+                content: `You are SkyIP Agent Core, an elite programming and full-stack technical assistant. 
+                Answer questions directly and conversationally using standard paragraphs and clean markdown formatting. 
+                Do not output raw database records, inner code loops, JSON snippets, or statements like 'I need to browse the web' or 'Use search'. Just state your finalized informational answer immediately.
+                Current Reference Time: ${activeBrowserTime}.`
             };
 
             const structuredPayloadMessages = [
@@ -259,27 +260,23 @@
 
             let displayableOutputText = aiRawResponseText;
 
-            // BACKGROUND INTERCEPTOR: Parse structural JSON payloads seamlessly in the background
+            // Strict sanitization step to strip out any raw inner thought data if the server fails to hide it
             try {
                 const parsedJsonResponse = JSON.parse(aiRawResponseText);
-                
-                // Extract reasoning statements or fall back cleanly to structured data keys
                 if (parsedJsonResponse.content) {
                     displayableOutputText = parsedJsonResponse.content;
-                } else if (parsedJsonResponse.reasoning) {
-                    displayableOutputText = `<em>[Background Search Context Processing...]</em><br><br>${parsedJsonResponse.reasoning}`;
-                    
-                    // If there are tool calls inside the background payload, format an informational subtext anchor
-                    if (parsedJsonResponse.tool_calls && parsedJsonResponse.tool_calls[0]) {
-                        const searchArgs = parsedJsonResponse.tool_calls[0].function.arguments;
-                        displayableOutputText += `<br><br><small style="color:#64748b; font-style:italic;">&bull; Query grounded dynamically via background cluster data metrics.</small>`;
-                    }
+                } else if (parsedJsonResponse.choices && parsedJsonResponse.choices[0]?.message?.content) {
+                    displayableOutputText = parsedJsonResponse.choices[0].message.content;
                 }
-            } catch (jsonParseError) {
-                // Response is already plain text or raw markdown, keep it as is
+            } catch (e) {
+                // Not a JSON string, raw markdown response is ready to output
             }
 
-            // Commit conversational metrics cleanly to thread storage caches
+            // Remove internal system thought labels from printing out to users
+            if (displayableOutputText.includes('"reasoning":') || displayableOutputText.includes('"tool_calls":')) {
+                displayableOutputText = "Processing exchange parameters. Please re-verify the input array metrics.";
+            }
+
             conversationHistory.push({ role: "user", content: promptText });
             conversationHistory.push({ role: "assistant", content: displayableOutputText });
             

@@ -123,6 +123,7 @@
         <div class="grid">
             <main class="main-content">
                 
+                <!-- TERMINAL PANEL 1: CONTEXT GROUNDED TEXT ENGINE -->
                 <h2>Autonomous AI Text Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Multi-turn core text matrix with continuous conversation history memory logs.
@@ -136,6 +137,7 @@
                         </div>
                     </div>
                     
+                    <!-- Context tracking capabilities layout bar -->
                     <div class="agent-tools-bar">
                         <span>Active Pipeline Context:</span>
                         <div class="tool-pill active">🌐 Web Search</div>
@@ -160,6 +162,7 @@
                     </div>
                 </div>
 
+                <!-- TERMINAL PANEL 2: OPEN-SOURCE MULTIMEDIA DESIGN STUDIO (IMAGE & VIDEO) -->
                 <h2>Open-Source Multimedia Generation Studio</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
                     Autonomous synthesis matrix calculating real-time image renders and dynamic motion videos.
@@ -220,6 +223,7 @@
 
 <div class="adsense-autoad-stripe"></div>
 
+<!-- HIGH-AVAILABILITY REAL-TIME GROUNDING PIPELINE MODULE -->
 <script type="module">
     const conversationHistory = [];
 
@@ -229,8 +233,9 @@
             
             const operationalSystemDirectives = {
                 role: "system",
-                content: `You are SkyIP Agent Core, an elite programming and research assistant.
-                Answer questions directly and conversationally using standard paragraphs and clean markdown formatting.
+                content: `You are SkyIP Agent Core, an elite full-stack programming and general research assistant.
+                Answer questions concisely, accurately, and conversationally using standard paragraphs and clean markdown.
+                You are equipped with server-side web grounding tools. Check the internet silently for any general knowledge, currency rates, news, or trivia requested.
                 Current Reference Time context parameter: ${activeBrowserTime}.`
             };
 
@@ -245,7 +250,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     messages: structuredPayloadMessages,
-                    model: "searchgpt" // Routes natively to the real-time web verification framework
+                    model: "mistral-large" // Swapped to stable, web-grounded large community model
                 })
             });
 

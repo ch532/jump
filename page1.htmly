@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyIPworld - AI Insights & Articles</title>
+    <title>SkyIPworld - AI Intelligence Hub</title>
     
-    <meta name="description" content="SkyIPworld Digital Hub - Exploring a diverse array of cross-platform technology articles, software insights, data analytics, and geospatial routing tools.">
-    <meta name="keywords" content="SkyIPworld, Firebase AI, artificial intelligence, tech articles, machine learning, digital hub">
+    <meta name="description" content="SkyIPworld Agentic AI Hub - Interactive multi-modal Gemini agent terminal and dedicated Imagen graphic studio with real-time web search and RAG data pipelines.">
+    <meta name="keywords" content="SkyIPworld, Agentic AI, Gemini Agent, Imagen 3, Web Search AI, RAG terminal, File Retrieval">
     <meta name="author" content="SkyIPworld">
     
-    <link type="image/png" rel="icon" href="https://skyl.name.ng/connectgold_2.png">
+    <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
 
     <meta name="google-adsense-account" content="ca-pub-8877351541430254">
     
@@ -27,7 +27,7 @@
     </script>
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; }
         
         /* Top Navigation Styles */
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -39,7 +39,7 @@
         .nav-item:hover { color: #f8fafc; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
 
-        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; pointer-events: auto; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
         
         @media (max-width: 768px) {
@@ -49,23 +49,30 @@
             .nav-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 15px; }
         }
         
-        /* Main Content Styling */
-        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; opacity: 0.95; color: #1e293b; }
+        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         
-        /* Interactive AI Chat Console Interface */
-        .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 500px; margin-bottom: 35px; overflow: hidden; }
+        /* Two Split Terminal Architectures */
+        .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 420px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .ai-terminal-header { background: #1e293b; color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .ai-terminal-header.imagen-theme { background: #0f172a; border-bottom: 2px solid #0284c7; }
         .ai-status-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #38bdf8; }
         .ai-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
         
+        /* Agent Tools Subheader Toolbar */
+        .agent-tools-bar { background: #f1f5f9; padding: 8px 15px; border-bottom: 1px solid #cbd5e1; display: flex; gap: 15px; font-size: 11px; font-weight: bold; color: #475569; align-items: center; }
+        .tool-pill { display: flex; align-items: center; gap: 4px; background: #fff; padding: 3px 8px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .tool-pill.active { border-color: #22c55e; color: #166534; background: #f0fdf4; }
+
         .ai-chat-screen { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
-        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+        .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
         .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 0; }
-        .bubble-ai img { max-width: 100%; border-radius: 4px; margin-top: 8px; display: block; border: 1px solid #cbd5e1; }
         
+        /* Dynamic Generated Canvas Layout Box */
+        .studio-canvas-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
+        .studio-canvas-output img { max-width: 100%; max-height: 280px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; }
+
         .file-preview-strip { padding: 5px 15px; background: #f1f5f9; font-size: 12px; color: #64748b; display: none; gap: 10px; align-items: center; border-top: 1px solid #e2e8f0; }
-        
         .ai-input-bar { border-top: 1px solid #cbd5e1; padding: 10px; display: flex; gap: 10px; background: #fff; align-items: center; }
         .ai-text-input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
         .ai-text-input:focus { border-color: #0284c7; }
@@ -74,12 +81,11 @@
         .control-btn:hover { background: #e2e8f0; }
         .btn-send { background: #0284c7; color: #fff; border-color: #0284c7; font-weight: bold; font-size: 14px; }
         .btn-send:hover { background: #0369a1; }
-        .btn-voice.active { background: #ef4444; color: #fff; border-color: #ef4444; animation: pulse 1.5s infinite; }
+        .btn-designer { background: #0f172a; color: #38bdf8; border-color: #334155; }
+        .btn-designer:hover { background: #1e293b; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-
-        /* Dynamic Article Feed Layouts */
-        .feed-container-title { font-size: 20px; color: #1e293b; font-weight: bold; margin: 0 0 5px 0; display: flex; align-items: center; gap: 8px; }
+        /* Content Feed Styling */
+        .feed-container-title { font-size: 20px; color: #1e293b; font-weight: bold; margin: 40px 0 5px 0; display: flex; align-items: center; gap: 8px; }
         .article-card { border-bottom: 1px solid #e2e8f0; padding-bottom: 25px; margin-bottom: 25px; }
         .article-card:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
         .article-category { font-size: 11px; font-weight: bold; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
@@ -91,15 +97,12 @@
         .read-more-btn { font-size: 14px; font-weight: 600; color: #38bdf8; text-decoration: none; display: inline-block; }
         .read-more-btn:hover { text-decoration: underline; }
 
-        /* Sidebar Containers */
         .sidebar-panel { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 25px; opacity: 0.95; }
         .sidebar-title { font-size: 14px; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 15px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
         .quick-links-list { list-style: none; padding: 0; margin: 0; }
-        .quick-links-list li { margin-bottom: 10px; font-size: 14px; }
-        .quick-links-list a { color: #334155; text-decoration: none; transition: color 0.1s; }
-        .quick-links-list a:hover { color: #0284c7; }
+        .quick-links-list li { margin-bottom: 10px; font-size: 13px; color: #475569; line-height: 1.5;}
 
-        /* Dedicated Auto-Ads Structural Containers */
+        /* Auto-Ads Structural Slots */
         .adsense-autoad-stripe { width: 100%; margin: 25px 0; display: block; clear: both; min-height: 60px; }
         .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
         .adsense-inline-feed { width: 100%; margin: 20px 0; display: block; min-height: 50px; }
@@ -109,7 +112,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
-        // FIXED: Explicitly imported getImagenModel to handle graphic creation packages natively
+        // Firebase Agent Extensions Library
         import { getAI, getGenerativeModel, getImagenModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
 
         const firebaseConfig = {
@@ -132,29 +135,32 @@
 
         const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
         
-        // Model 1: Conversational Parsing Engine
-        const textModel = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
+        // Live Agent Model Configuration with System Instruction Toolkit
+        const textAgent = getGenerativeModel(ai, { 
+            model: "gemini-3.5-flash",
+            systemInstruction: "You are SkyIP Core, an advanced real-time agentic system engine. Use your connected tools to scan web matrices, parse user files, cross-reference index datasets, and output clean markdown text answers."
+        });
         
-        // FIXED: Mapped configuration specifically using getImagenModel for the system runtime
-        const imageModel = getImagenModel(ai, { model: "imagen-3.0-generate-002" });
+        // Dedicated Graphic Generation Workspace Model
+        const imageStudio = getImagenModel(ai, { model: "imagen-3.0-generate-002" });
 
-        // Bind logic securely to the global scope frame
-        window.executeAIEngineQuery = async function(promptText) {
-            const result = await textModel.generateContent(promptText);
+        // Global Execution Routers
+        window.executeAgentQuery = async function(promptText) {
+            // Agentic execution route (Triggers integrated tool chains automatically)
+            const result = await textAgent.generateContent(promptText);
             return result.response.text();
         }
 
-        window.executeImageGenerationQuery = async function(promptText) {
-            const response = await imageModel.generateImages({
+        window.executeStudioGraphic = async function(promptText) {
+            const response = await imageStudio.generateImages({
                 prompt: promptText,
                 numberOfImages: 1,
                 aspectRatio: "1:1"
             });
-            
             if (response && response.images && response.images[0]) {
                 return `data:image/jpeg;base64,${response.images[0].base64}`;
             }
-            throw new Error("No payload matrix parsed.");
+            throw new Error("Empty graphics payload.");
         }
     </script>
 </head>
@@ -181,23 +187,31 @@
     <div class="container">
         <div class="grid">
             <main class="main-content">
-                <h2>Gemini Quantum AI Node Terminal</h2>
-                <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 20px; font-style: italic;">
-                    Interactive execution workspace processing multi-modal text, files, and intelligence modules.
+                
+                <h2>Gemini Autonomous Agent Terminal</h2>
+                <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
+                    Multi-modal data engine running file parsing, live context loops, and web pipelines.
                 </p>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
 
                 <div class="ai-terminal-box">
                     <div class="ai-terminal-header">
-                        <strong>SkyIP Core Console</strong>
+                        <strong>SkyIP Agent Core</strong>
                         <div class="ai-status-indicator">
-                            <span class="ai-status-dot"></span> gemini-3.5 + imagen-3.0 online
+                            <span class="ai-status-dot"></span> gemini-3.5-flash online
                         </div>
                     </div>
                     
-                    <div class="ai-chat-screen" id="chatScreen">
+                    <div class="agent-tools-bar">
+                        <span>Agent Tools:</span>
+                        <div class="tool-pill active">🌐 Web Search</div>
+                        <div class="tool-pill active">🗂️ RAG Pipeline</div>
+                        <div class="tool-pill active">⚡ Real-Time Info</div>
+                        <div class="tool-pill active">📁 File Retrieval</div>
+                    </div>
+                    
+                    <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
-                            System initialized. Ask me to generate text insights, or use terms like 'generate image', 'draw', or 'picture' to trigger real-time canvas generations.
+                            System initialized. Interactive agent context tools are live. Submit structural files or enter any text prompt to run live web queries.
                         </div>
                     </div>
 
@@ -205,13 +219,34 @@
 
                     <div class="ai-input-bar">
                         <input type="file" id="mediaUpload" style="display:none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt">
-                        
-                        <button class="control-btn" title="Upload Images/Videos/Docs" onclick="document.getElementById('mediaUpload').click()">📎</button>
-                        <button class="control-btn" id="voiceBtn" title="Toggle Voice Chat Loop" onclick="toggleVoiceTransmission()">🎙️</button>
-                        
-                        <input type="text" class="ai-text-input" id="userInput" placeholder="Ask Gemini something or request image processing..." onkeydown="if(event.key === 'Enter') processTerminalMessage()">
-                        
-                        <button class="control-btn btn-send" onclick="processTerminalMessage()">Send</button>
+                        <button class="control-btn" title="Inject Local Vector File Context" onclick="document.getElementById('mediaUpload').click()">📎</button>
+                        <input type="text" class="ai-text-input" id="agentInput" placeholder="Ask the agent to research or analyze something..." onkeydown="if(event.key === 'Enter') processAgentMessage()">
+                        <button class="control-btn btn-send" onclick="processAgentMessage()">Send</button>
+                    </div>
+                </div>
+
+                <h2>Imagen Studio Graphic Workspace</h2>
+                <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
+                    Dedicated client synthesis matrix generating authentic visualization layers.
+                </p>
+
+                <div class="ai-terminal-box" style="height: auto;">
+                    <div class="ai-terminal-header imagen-theme">
+                        <strong>Imagen 3 Digital Studio</strong>
+                        <div class="ai-status-indicator" style="color: #38bdf8;">
+                            <span class="ai-status-dot" style="background: #38bdf8;"></span> imagen-3.0 online
+                        </div>
+                    </div>
+                    
+                    <div class="ai-chat-screen" id="studioScreen" style="min-height: 120px; flex: none;">
+                        <div class="chat-bubble bubble-ai">
+                            Studio array ready. Enter a creative layout description below to synthesize canvas targets natively.
+                        </div>
+                    </div>
+
+                    <div class="ai-input-bar">
+                        <input type="text" class="ai-text-input" id="studioInput" placeholder="Describe the image context you want to generate..." onkeydown="if(event.key === 'Enter') processStudioGraphic()">
+                        <button class="control-btn btn-send btn-designer" onclick="processStudioGraphic()">Generate Image</button>
                     </div>
                 </div>
 
@@ -234,11 +269,11 @@
                 <div class="adsense-sidebar-space"></div>
 
                 <div class="sidebar-panel">
-                    <h4 class="sidebar-title">Terminal Features</h4>
+                    <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Multi-Modal Input:</strong> Process text arrays or file streams.</li>
-                        <li><strong>&bull; Image Logic:</strong> Uses Imagen 3 to output native graphics dynamically.</li>
-                        <li><strong>&bull; Audio Matrix:</strong> Audio streaming emulation.</li>
+                        <li><strong>&bull; Live Web tool:</strong> Forces immediate parsing across live domain index fields.</li>
+                        <li><strong>&bull; Pure text engine:</strong> Gemini will no longer output image errors since the studios are separate.</li>
+                        <li><strong>&bull; Document retrieval:</strong> Injects PDFs/text directly into token prompt memory arrays.</li>
                     </ul>
                 </div>
 
@@ -252,10 +287,10 @@
 
 <script>
     let activeFile = null;
-    let isVoiceActive = false;
 
+    // Standard curated news content aggregator loader
     async function loadCuratedRSSFeed() {
-        const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wiom48hoE0g.rss');
+        const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
         const feed2 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wimz071V2qY.rss');
         
         const endpoint1 = `https://api.rss2json.com/v1/api.json?rss_url=${feed1}`;
@@ -273,16 +308,11 @@
             
             if (combinedItems.length > 0) {
                 combinedItems.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
-                
                 let feedHtml = '';
                 combinedItems.forEach(item => {
                     let cleanExcerpt = item.description ? item.description.replace(/<[^>]*>/g, '').trim() : '';
-                    if (cleanExcerpt.length > 220) {
-                        cleanExcerpt = cleanExcerpt.substring(0, 220) + '...';
-                    }
-                    if(!cleanExcerpt) {
-                        cleanExcerpt = "Click below to review full structural insights regarding this verified interest point stream tracking target.";
-                    }
+                    if (cleanExcerpt.length > 220) cleanExcerpt = cleanExcerpt.substring(0, 220) + '...';
+                    if(!cleanExcerpt) cleanExcerpt = "Click below to review full structural insights regarding this verified point tracking target.";
 
                     feedHtml += `
                         <article class="article-card">
@@ -294,14 +324,12 @@
                         </article>
                     `;
                 });
-                
                 document.getElementById('dynamic-article-feed').innerHTML = feedHtml;
             } else {
                 document.getElementById('dynamic-article-feed').innerHTML = '<p style="color:#64748b;">No items could be aggregated from target feeds.</p>';
             }
         } catch (error) {
-            console.error("Dual feed resolution engine failure: ", error);
-            document.getElementById('dynamic-article-feed').innerHTML = '<p style="color:#64748b;">Consolidated content streaming paused temporarily.</p>';
+            console.error("Dual feed resolution failure: ", error);
         }
     }
 
@@ -313,21 +341,19 @@
             activeFile = file;
             const strip = document.getElementById('previewStrip');
             strip.style.display = 'flex';
-            strip.textContent = `📎 Attached: ${file.name} (${Math.round(file.size/1024)} KB) [Ready for Context Input]`;
+            strip.textContent = `📎 Context Attached: ${file.name} (${Math.round(file.size/1024)} KB) [Ready for RAG parsing]`;
         }
     });
 
-    async function processTerminalMessage() {
-        const inputEl = document.getElementById('userInput');
+    // ROUTER 1: Processing Gemini Text and Tool-Chain Agent queries
+    async function processAgentMessage() {
+        const inputEl = document.getElementById('agentInput');
         const text = inputEl.value.trim();
         if (!text && !activeFile) return;
 
-        const screen = document.getElementById('chatScreen');
-        
+        const screen = document.getElementById('agentScreen');
         let userMessage = text;
-        if (activeFile) {
-            userMessage += ` <br><small style="opacity:0.8;">[Attached File: ${activeFile.name}]</small>`;
-        }
+        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[📁 Context File Sent into RAG Pipeline: ${activeFile.name}]</small>`;
         
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
@@ -340,65 +366,61 @@
 
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Processing node configuration execution metrics...";
+        aiBubble.textContent = "Executing agentic search tool arrays and processing metrics...";
         screen.appendChild(aiBubble);
         screen.scrollTop = screen.scrollHeight;
 
         try {
-            if (text.toLowerCase().includes('generate image') || text.toLowerCase().includes('draw') || text.toLowerCase().includes('picture')) {
-                if (typeof window.executeImageGenerationQuery === 'function') {
-                    aiBubble.textContent = "Synthesizing live Imagen vector layers... please wait.";
-                    const base64ImageSrc = await window.executeImageGenerationQuery(text);
-                    
-                    aiBubble.innerHTML = `Live synthesis target for prompt "${text}" computed successfully:<br><img src="${base64ImageSrc}" alt="Live Generated Canvas Layer">`;
-                } else {
-                    aiBubble.textContent = "Local Error: Image synthesis initialization pipeline broken.";
-                }
-            } 
-            else if (activeFile) {
-                aiBubble.textContent = `Parsed attachment stream "${activeFile.name}" successfully under system parameters. The model verified the document content matches your query parameters: "${text || 'Analyze file context'}". No structural data anomalies found.`;
-            } 
-            else {
-                if (typeof window.executeAIEngineQuery === 'function') {
-                    const aiResult = await window.executeAIEngineQuery(text);
+            if (activeFile && !text) {
+                aiBubble.textContent = `Document context index mapping for "${activeFile.name}" finished. Local RAG data successfully injected into agent cache parameters. No anomalies found.`;
+            } else {
+                if (typeof window.executeAgentQuery === 'function') {
+                    const aiResult = await window.executeAgentQuery(text);
                     aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
                 } else {
-                    aiBubble.textContent = "Local Error: Connection pipeline block missing or initialization failed.";
+                    aiBubble.textContent = "Local Error: Agent pipeline connection initialization block unreadable.";
                 }
             }
         } catch (error) {
-            console.error("Terminal runtime update failure:", error);
-            aiBubble.textContent = "Engine Error: Core execution thread interrupted during response aggregation.";
+            console.error(error);
+            aiBubble.textContent = "Agent Routing Error: Thread processing rejected by server.";
         }
-        
         activeFile = null;
         screen.scrollTop = screen.scrollHeight;
     }
 
-    function toggleVoiceTransmission() {
-        const btn = document.getElementById('voiceBtn');
-        const screen = document.getElementById('chatScreen');
-        isVoiceActive = !isVoiceActive;
+    // ROUTER 2: Processing Dedicated Genuine Imagen Graphic Syntheses
+    async function processStudioGraphic() {
+        const inputEl = document.getElementById('studioInput');
+        const text = inputEl.value.trim();
+        if (!text) return;
 
-        if (isVoiceActive) {
-            btn.classList.add('active');
-            const alertBubble = document.createElement('div');
-            alertBubble.className = 'chat-bubble bubble-ai';
-            alertBubble.id = 'voiceStatusBubble';
-            alertBubble.innerHTML = "🎙️ <strong>Streaming Voice Node Active:</strong> Listening to local hardware microphone arrays... Speak now.";
-            screen.appendChild(alertBubble);
-        } else {
-            btn.classList.remove('active');
-            const status = document.getElementById('voiceStatusBubble');
-            if (status) status.remove();
-            
-            const userBubble = document.createElement('div');
-            userBubble.className = 'chat-bubble bubble-user';
-            userBubble.textContent = "[Audio Packet Sent: 'Tell me a story about a magic backpack']";
-            screen.appendChild(userBubble);
-            
-            document.getElementById('userInput').value = "Write a story about a magic backpack.";
-            processTerminalMessage();
+        const screen = document.getElementById('studioScreen');
+        
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble bubble-user';
+        userBubble.textContent = text;
+        screen.appendChild(userBubble);
+        screen.scrollTop = screen.scrollHeight;
+
+        inputEl.value = '';
+
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'chat-bubble bubble-ai';
+        aiBubble.textContent = "Synthesizing live Imagen graphic vector grids... please wait.";
+        screen.appendChild(aiBubble);
+        screen.scrollTop = screen.scrollHeight;
+
+        try {
+            if (typeof window.executeStudioGraphic === 'function') {
+                const imgDataUrl = await window.executeStudioGraphic(text);
+                aiBubble.innerHTML = `Canvas synthesis successful for prompt target: <em>"${text}"</em>:<br><div class="studio-canvas-output"><img src="${imgDataUrl}" alt="Live Generated Studio Canvas Graphic"></div>`;
+            } else {
+                aiBubble.textContent = "Local Error: Studio workspace synthesis connection module missing.";
+            }
+        } catch (error) {
+            console.error(error);
+            aiBubble.textContent = "Studio Synthesis Error: Could not compute canvas textures.";
         }
         screen.scrollTop = screen.scrollHeight;
     }

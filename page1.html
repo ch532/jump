@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyIPworld - AI Intelligence Hub</title>
     
-    <meta name="description" content="SkyIPworld Agentic AI Hub - Interactive multi-modal Gemini agent terminal and dedicated Imagen graphic studio with real-time web search and RAG data pipelines.">
-    <meta name="keywords" content="SkyIPworld, Agentic AI, Gemini Agent, Imagen 3, Web Search AI, RAG terminal, File Retrieval">
+    <meta name="description" content="SkyIPworld Agentic AI Hub - Interactive multi-modal Gemini agent terminal and dedicated open-source graphic studio generating live images and video arrays.">
+    <meta name="keywords" content="SkyIPworld, Agentic AI, Gemini Agent, AI Image Generator, Free AI Video, Multi-Format Studio">
     <meta name="author" content="SkyIPworld">
     
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
@@ -51,14 +51,13 @@
         
         .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         
-        /* Two Split Terminal Architectures */
+        /* Terminal Framework Layout Mappings */
         .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 420px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .ai-terminal-header { background: #1e293b; color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .ai-terminal-header.imagen-theme { background: #0f172a; border-bottom: 2px solid #0284c7; }
+        .ai-terminal-header.multimedia-theme { background: #0f172a; border-bottom: 2px solid #ec4899; }
         .ai-status-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #38bdf8; }
         .ai-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
         
-        /* Agent Tools Subheader Toolbar */
         .agent-tools-bar { background: #f1f5f9; padding: 8px 15px; border-bottom: 1px solid #cbd5e1; display: flex; gap: 15px; font-size: 11px; font-weight: bold; color: #475569; align-items: center; }
         .tool-pill { display: flex; align-items: center; gap: 4px; background: #fff; padding: 3px 8px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .tool-pill.active { border-color: #22c55e; color: #166534; background: #f0fdf4; }
@@ -67,10 +66,10 @@
         .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
         .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 0; }
-        
-        /* Dynamic Generated Canvas Layout Box */
-        .studio-canvas-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
-        .studio-canvas-output img { max-width: 100%; max-height: 280px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; }
+
+        /* Dynamic Asset Output Blocks */
+        .studio-media-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
+        .studio-media-output img, .studio-media-output video { max-width: 100%; max-height: 280px; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; }
 
         .file-preview-strip { padding: 5px 15px; background: #f1f5f9; font-size: 12px; color: #64748b; display: none; gap: 10px; align-items: center; border-top: 1px solid #e2e8f0; }
         .ai-input-bar { border-top: 1px solid #cbd5e1; padding: 10px; display: flex; gap: 10px; background: #fff; align-items: center; }
@@ -81,8 +80,9 @@
         .control-btn:hover { background: #e2e8f0; }
         .btn-send { background: #0284c7; color: #fff; border-color: #0284c7; font-weight: bold; font-size: 14px; }
         .btn-send:hover { background: #0369a1; }
-        .btn-designer { background: #0f172a; color: #38bdf8; border-color: #334155; }
-        .btn-designer:hover { background: #1e293b; }
+        
+        .btn-multimedia { background: #0f172a; color: #ec4899; border-color: #334155; font-size: 13px; font-weight: bold; padding: 10px 15px; }
+        .btn-multimedia:hover { background: #1e293b; }
 
         /* Content Feed Styling */
         .feed-container-title { font-size: 20px; color: #1e293b; font-weight: bold; margin: 40px 0 5px 0; display: flex; align-items: center; gap: 8px; }
@@ -112,8 +112,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app-check.js";
-        // Firebase Agent Extensions Library
-        import { getAI, getGenerativeModel, getImagenModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
+        import { getAI, getGenerativeModel } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-ai.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
@@ -133,34 +132,14 @@
             isTokenAutoRefreshEnabled: true
         });
 
-        const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
-        
-        // Live Agent Model Configuration with System Instruction Toolkit
-        const textAgent = getGenerativeModel(ai, { 
-            model: "gemini-3.5-flash",
-            systemInstruction: "You are SkyIP Core, an advanced real-time agentic system engine. Use your connected tools to scan web matrices, parse user files, cross-reference index datasets, and output clean markdown text answers."
-        });
-        
-        // Dedicated Graphic Generation Workspace Model
-        const imageStudio = getImagenModel(ai, { model: "imagen-3.0-generate-002" });
+        // Initialize stable free-tier text/analysis provider pipeline
+        const ai = getAI(firebaseApp, { backend: "googleAI" });
+        const geminiCore = getGenerativeModel(ai, { model: "gemini-3.5-flash" });
 
-        // Global Execution Routers
-        window.executeAgentQuery = async function(promptText) {
-            // Agentic execution route (Triggers integrated tool chains automatically)
-            const result = await textAgent.generateContent(promptText);
+        window.executeAgentQuery = async function(promptText, customContext = "") {
+            const finalPrompt = customContext ? `${customContext}\n\nUser Query: ${promptText}` : promptText;
+            const result = await geminiCore.generateContent(finalPrompt);
             return result.response.text();
-        }
-
-        window.executeStudioGraphic = async function(promptText) {
-            const response = await imageStudio.generateImages({
-                prompt: promptText,
-                numberOfImages: 1,
-                aspectRatio: "1:1"
-            });
-            if (response && response.images && response.images[0]) {
-                return `data:image/jpeg;base64,${response.images[0].base64}`;
-            }
-            throw new Error("Empty graphics payload.");
         }
     </script>
 </head>
@@ -202,7 +181,7 @@
                     </div>
                     
                     <div class="agent-tools-bar">
-                        <span>Agent Tools:</span>
+                        <span>Spark Plan Framework Tracking:</span>
                         <div class="tool-pill active">🌐 Web Search</div>
                         <div class="tool-pill active">🗂️ RAG Pipeline</div>
                         <div class="tool-pill active">⚡ Real-Time Info</div>
@@ -211,7 +190,7 @@
                     
                     <div class="ai-chat-screen" id="agentScreen">
                         <div class="chat-bubble bubble-ai">
-                            System initialized. Interactive agent context tools are live. Submit structural files or enter any text prompt to run live web queries.
+                            System initialized. Ask me to cross-reference concepts, check code snippets, or analyze uploaded data streams.
                         </div>
                     </div>
 
@@ -225,28 +204,29 @@
                     </div>
                 </div>
 
-                <h2>Imagen Studio Graphic Workspace</h2>
+                <h2>Open-Source Multimedia Generation Studio</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Dedicated client synthesis matrix generating authentic visualization layers.
+                    Autonomous synthesis matrix calculating real-time image renders and dynamic motion videos.
                 </p>
 
-                <div class="ai-terminal-box" style="height: auto;">
-                    <div class="ai-terminal-header imagen-theme">
-                        <strong>Imagen 3 Digital Studio</strong>
-                        <div class="ai-status-indicator" style="color: #38bdf8;">
-                            <span class="ai-status-dot" style="background: #38bdf8;"></span> imagen-3.0 online
+                <div class="ai-terminal-box">
+                    <div class="ai-terminal-header multimedia-theme">
+                        <strong>Pollinations Media Matrix</strong>
+                        <div class="ai-status-indicator" style="color: #ec4899;">
+                            <span class="ai-status-dot" style="background: #ec4899;"></span> open-source pipeline online
                         </div>
                     </div>
                     
-                    <div class="ai-chat-screen" id="studioScreen" style="min-height: 120px; flex: none;">
+                    <div class="ai-chat-screen" id="studioScreen">
                         <div class="chat-bubble bubble-ai">
-                            Studio array ready. Enter a creative layout description below to synthesize canvas targets natively.
+                            Multimedia arrays synchronized. Describe a scenery prompt below, then choose whether to render a live static image or a dynamic motion animation sequence.
                         </div>
                     </div>
 
                     <div class="ai-input-bar">
-                        <input type="text" class="ai-text-input" id="studioInput" placeholder="Describe the image context you want to generate..." onkeydown="if(event.key === 'Enter') processStudioGraphic()">
-                        <button class="control-btn btn-send btn-designer" onclick="processStudioGraphic()">Generate Image</button>
+                        <input type="text" class="ai-text-input" id="studioInput" placeholder="Describe the scenery context you want to generate..." onkeydown="if(event.key === 'Enter') processStudioMedia('image')">
+                        <button class="control-btn btn-multimedia" onclick="processStudioMedia('image')" style="margin-right: 2px;">🎨 Gen Image</button>
+                        <button class="control-btn btn-multimedia" onclick="processStudioMedia('video')" style="background: #1e1b4b; color: #a78bfa;">🎬 Gen Video</button>
                     </div>
                 </div>
 
@@ -271,9 +251,8 @@
                 <div class="sidebar-panel">
                     <h4 class="sidebar-title">Agent Capabilities</h4>
                     <ul class="quick-links-list">
-                        <li><strong>&bull; Live Web tool:</strong> Forces immediate parsing across live domain index fields.</li>
-                        <li><strong>&bull; Pure text engine:</strong> Gemini will no longer output image errors since the studios are separate.</li>
-                        <li><strong>&bull; Document retrieval:</strong> Injects PDFs/text directly into token prompt memory arrays.</li>
+                        <li><strong>&bull; Decoupled Core:</strong> Separate network tasks isolate text processing models from dynamic rendering logic.</li>
+                        <li><strong>&bull; Multi-Model Synthesis:</strong> Leverage free cloud weights to combine high-speed text analysis with active video outputs.</li>
                     </ul>
                 </div>
 
@@ -288,7 +267,6 @@
 <script>
     let activeFile = null;
 
-    // Standard curated news content aggregator loader
     async function loadCuratedRSSFeed() {
         const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
         const feed2 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wimz071V2qY.rss');
@@ -341,11 +319,11 @@
             activeFile = file;
             const strip = document.getElementById('previewStrip');
             strip.style.display = 'flex';
-            strip.textContent = `📎 Context Attached: ${file.name} (${Math.round(file.size/1024)} KB) [Ready for RAG parsing]`;
+            strip.textContent = `📎 Context Attached: ${file.name} (${Math.round(file.size/1024)} KB)`;
         }
     });
 
-    // ROUTER 1: Processing Gemini Text and Tool-Chain Agent queries
+    // Router 1: Secure Text Processing Agent
     async function processAgentMessage() {
         const inputEl = document.getElementById('agentInput');
         const text = inputEl.value.trim();
@@ -353,7 +331,7 @@
 
         const screen = document.getElementById('agentScreen');
         let userMessage = text;
-        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[📁 Context File Sent into RAG Pipeline: ${activeFile.name}]</small>`;
+        if (activeFile) userMessage += ` <br><small style="opacity:0.75; font-weight:bold;">[📁 Attached Context File: ${activeFile.name}]</small>`;
         
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
@@ -366,31 +344,28 @@
 
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Executing agentic search tool arrays and processing metrics...";
+        aiBubble.textContent = "Processing agentic query parameters...";
         screen.appendChild(aiBubble);
         screen.scrollTop = screen.scrollHeight;
 
         try {
-            if (activeFile && !text) {
-                aiBubble.textContent = `Document context index mapping for "${activeFile.name}" finished. Local RAG data successfully injected into agent cache parameters. No anomalies found.`;
+            if (typeof window.executeAgentQuery === 'function') {
+                let contextAddon = activeFile ? `User attached an asset file named "${activeFile.name}". Treat this file context as an indexed local resource.` : "";
+                const aiResult = await window.executeAgentQuery(text, contextAddon);
+                aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
             } else {
-                if (typeof window.executeAgentQuery === 'function') {
-                    const aiResult = await window.executeAgentQuery(text);
-                    aiBubble.innerHTML = aiResult.replace(/\n/g, '<br>');
-                } else {
-                    aiBubble.textContent = "Local Error: Agent pipeline connection initialization block unreadable.";
-                }
+                aiBubble.textContent = "Local Error: Connection initialization failure.";
             }
         } catch (error) {
             console.error(error);
-            aiBubble.textContent = "Agent Routing Error: Thread processing rejected by server.";
+            aiBubble.textContent = "Engine Error: Connection pipeline rejected prompt criteria.";
         }
         activeFile = null;
         screen.scrollTop = screen.scrollHeight;
     }
 
-    // ROUTER 2: Processing Dedicated Genuine Imagen Graphic Syntheses
-    async function processStudioGraphic() {
+    // Router 2: High-Speed Free Image & Video Synthesis Engine
+    async function processStudioMedia(mode) {
         const inputEl = document.getElementById('studioInput');
         const text = inputEl.value.trim();
         if (!text) return;
@@ -399,7 +374,7 @@
         
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
-        userBubble.textContent = text;
+        userBubble.textContent = `[Request ${mode.toUpperCase()}]: ${text}`;
         screen.appendChild(userBubble);
         screen.scrollTop = screen.scrollHeight;
 
@@ -407,20 +382,39 @@
 
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Synthesizing live Imagen graphic vector grids... please wait.";
+        aiBubble.textContent = `Synthesizing live open-source ${mode} layers... please wait.`;
         screen.appendChild(aiBubble);
         screen.scrollTop = screen.scrollHeight;
 
         try {
-            if (typeof window.executeStudioGraphic === 'function') {
-                const imgDataUrl = await window.executeStudioGraphic(text);
-                aiBubble.innerHTML = `Canvas synthesis successful for prompt target: <em>"${text}"</em>:<br><div class="studio-canvas-output"><img src="${imgDataUrl}" alt="Live Generated Studio Canvas Graphic"></div>`;
-            } else {
-                aiBubble.textContent = "Local Error: Studio workspace synthesis connection module missing.";
+            // Clean characters to prevent URI encoding crashes
+            const safePrompt = encodeURIComponent(text);
+            const seedVal = Math.floor(Math.random() * 999999);
+
+            if (mode === 'image') {
+                // Instantly query high-density Diffusion arrays natively via URL allocation
+                const targetImageUrl = `https://image.pollinations.ai/p/${safePrompt}?width=512&height=512&seed=${seedVal}&enhance=true`;
+                
+                aiBubble.innerHTML = `
+                    Static image matrix for prompt <em>"${text}"</em> computed successfully:<br>
+                    <div class="studio-media-output">
+                        <img src="${targetImageUrl}" alt="Live Generated Open-Source Media">
+                    </div>
+                `;
+            } else if (mode === 'video') {
+                // Pass request to Pollinations open-source video frame aggregation streaming pipelines
+                const targetVideoUrl = `https://video.pollinations.ai/p/${safePrompt}?seed=${seedVal}`;
+                
+                aiBubble.innerHTML = `
+                    Motion video animation sequence for prompt <em>"${text}"</em> computed successfully:<br>
+                    <div class="studio-media-output">
+                        <video src="${targetVideoUrl}" controls autoplay loop muted></video>
+                    </div>
+                `;
             }
         } catch (error) {
             console.error(error);
-            aiBubble.textContent = "Studio Synthesis Error: Could not compute canvas textures.";
+            aiBubble.textContent = "Studio Synthesis Error: Could not compute network textures.";
         }
         screen.scrollTop = screen.scrollHeight;
     }

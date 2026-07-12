@@ -1,183 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Privacy Policy – SkylPWorld</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0", maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" type="image/png" sizes="512x512" href="Picture/skylpworld256x256.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy – SkyIPworld</title>
+    
+    <meta name="description" content="SkyIPworld Privacy Policy - Outlining our commitment to user data protection, cookie processing, and platform tracking disclosure configurations.">
+    <meta name="robots" content="noindex, follow">
+    <meta name="author" content="SkyIPworld">
+    
+    <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
+  
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "x0mezp3yoh");
+    </script>
 
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "ccfe118f-f2e6-4c21-815d-83ebdf7b46d0",
-    });
-  });
-</script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
 
-  <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106174379', 'ym');
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
+            authDomain: "air-skye.firebaseapp.com",
+            projectId: "air-skye",
+            storageBucket: "air-skye.appspot.com",
+            messagingSenderId: "46181700573",
+            appId: "1:46181700573:web:1b5d21e443067bba26dc34",
+            measurementId: "G-K4Z4GJ2JLN"
+        };
 
-    ym(106174379, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/106174379" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
 
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; color:#000; line-height:1.6; }
-    nav { background:#1f1f2e; text-align:center; padding:12px; }
-    nav a { color:#fff; text-decoration:none; margin:0 15px; font-weight:600; }
-    nav a:hover { color:#ffcc00; }
-    body {
-  padding-top: 30px; /* adjust to nav height */
-}
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #334155; }
+        
+        /* Top Navigation Styles */
+        .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; letter-spacing: -0.3px; }
+        .nav-brand span { color: #38bdf8; }
+        .nav-right-block { display: flex; align-items: center; gap: 25px; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
+        .nav-item:hover { color: #f8fafc; }
+        .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
 
-    .main-container { max-width:1000px; margin:20px auto; padding:20px; background:#fff; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
-    h1, h2, h3 { color:#4b00ff; }
-    h1 { text-align:center; margin-bottom:20px; }
-    p { margin-bottom:12px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        
+        /* Legal Content Styling */
+        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 40px; border-radius: 8px; color: #1e293b; line-height: 1.7; }
+        .main-content h2 { color: #0f172a; font-size: 28px; margin-top: 0; margin-bottom: 10px; }
+        .main-content h3 { color: #1e293b; font-size: 20px; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+        .main-content p { font-size: 15px; color: #334155; margin-bottom: 20px; }
+        .main-content ul { padding-left: 20px; margin-bottom: 20px; }
+        .main-content li { font-size: 15px; color: #334155; margin-bottom: 8px; }
+        
+        .effective-date { font-size: 13px; color: #64748b; font-style: italic; margin-bottom: 30px; }
 
-    .main-nav {
-  display: flex;
-  flex-wrap: wrap;        /* 🔥 THIS is the key */
-  justify-content: center;
-  gap: 10px;
-  padding: 6px;
-  background: #1c1c2b;
-}
-
-.main-nav a {
-  display: inline-block; /* ensures visibility */
-  padding: 3px 5px;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.12);
-  white-space: nowrap;   /* prevents text breaking */
-}
-
-    footer { background:#222; color:#fff; padding:20px; margin-top:40px; text-align:center; }
-  </style>
+        footer { background: #1e293b; color: #94a3b8; padding: 25px 20px; margin-top: 40px; text-align: center; font-size: 13px; }
+        footer p { margin: 5px 0; }
+        footer a { color: #64748b; text-decoration: none; margin: 0 10px; }
+        footer a:hover { color: #38bdf8; }
+    </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav>
-  <ul>
-            <li><a href="page1.html">Page 1</a></li>
-            <li><a href="page2.html">Page 2</a></li>
-            <li><a href="page3.html">Page 3</a></li>
-            <li><a
-<li><a href="about.html">About Us</a></li>
-            <li><a href="privacy.html">Privacy Policy</a></li>
-<li><a href="support.html">Support</a></li>           
-</nav>
+<div id="protected-workspace-root">
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
+        <div class="nav-right-block">
+            <div class="nav-links">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="page1.html" class="nav-item">Page 1</a>
+                <a href="page2.html" class="nav-item">Page 2</a>
+                <a href="page3.html" class="nav-item">Page 3</a>
+                <a href="about.html" class="nav-item">About Us</a>
+                <a href="privacy.html" class="nav-item active">Privacy Policy</a>
+                <a href="support.html" class="nav-item">Support</a>
+            </div>
+        </div>
+    </nav>
 
-<script>
-    // Rewarded ad links (external websites)
-    const rewardedLinks = [
-        "https://www.boomplay.com/share/playlist/30019697",  // Music
-        "https://connectgold.sbs/videoplayback-1.mp4"       // Video
-    ];
+    <div class="container">
+        <main class="main-content">
+            <h2>Privacy Policy</h2>
+            <div class="effective-date">Effective Date: July 12, 2026</div>
+            
+            <p>Welcome to SkyIPworld. We value your privacy and are committed to safeguarding your personal data when you interact with our technology dashboards, artificial intelligence modules, mapping interfaces, and educational tools. This document details how we collect, process, utilize, and protect your information.</p>
 
-    // Internal pages for interstitial ads
-    const interstitialLinks = [
-        "index.html","page1.html","page2.html","page3.html","page4.html",
-        "about.html","contact.html","privacy.html","terms.html","support.html"
-    ];
+            <h3>1. Information We Collect</h3>
+            <p>When operating our web platform framework, tracking telemetry systems monitor minimal specific categories of data automatically to maintain performance integrity:</p>
+            <ul>
+                <li><strong>Device Metrics:</strong> Technical details including your IP address, browser type, operating system structure, referring URLs, and engagement timestamps.</li>
+                <li><strong>User-Provided Context:</strong> Text prompts entered directly into our integrated AI models, or file properties metadata you voluntarily attach during diagnostic multi-modal test runs.</li>
+                <li><strong>Location Real-Time Frames:</strong> Approximate regional location variables inferred purely via client browser data pipelines.</li>
+            </ul>
 
-    // Show interstitial ad before navigating to internal page
-    function showInterstitialAndNavigate(url) {
-        if (window.WebAppBridge && typeof WebAppBridge.showInterstitial === "function") {
-            WebAppBridge.showInterstitial();
-        }
-        setTimeout(() => { window.location.href = url; }, 1000);
-    }
+            <h3>2. Third-Party Integration Disclosures</h3>
+            <p>Our platform incorporates core structural utilities supplied by external networks to deliver localized, high-performance interfaces. These third parties implement cookie files and collect anonymous data points:</p>
+            <ul>
+                <li><strong>Google AdSense:</strong> Google, as a third-party vendor, uses cookie records to serve contextually relevant advertisements based on your visit history to this and other domains across the internet. Users can opt out of personalized tracking by adjusting Google Ad Settings.</li>
+                <li><strong>Firebase Infrastructure Suite:</strong> Firebase tracks technical diagnostic execution logs, user interactions, and anonymous session states to facilitate safe storage bucket handling and programmatic token verification cycles.</li>
+                <li><strong>Microsoft Clarity & Google Analytics:</strong> These network frameworks capture interaction performance logs, clickmaps, scrolls, and conversion vectors to optimize our visual layouts and terminal efficiency passes.</li>
+                <li><strong>reCAPTCHA Enterprise Protection:</strong> Implemented to mitigate spam risks, this package evaluates your client configuration signatures anonymously to verify standard human activity behaviors.</li>
+            </ul>
 
-    // Show rewarded ad before navigating to external site
-    function showRewardedAndNavigate(url) {
-        if (window.WebAppBridge && typeof WebAppBridge.showRewarded === "function") {
-            WebAppBridge.showRewarded();
-        } else {
-            window.location.href = url; // fallback for normal browser
-        }
-    }
+            <h3>3. Cookies and Tracking Mechanisms</h3>
+            <p>SkyIPworld employs standard internet cookies and web beacons to save platform style selections, verify App Check tokens, and support active advertising performance passes. You hold complete administrative controls to disable cookies entirely via your unique hardware browser preferences pane, although doing so may restrict functionality across localized client views.</p>
 
-    // Attach click events to all links
-    document.querySelectorAll("a").forEach(link => {
-        link.onclick = function(e) {
-            const url = this.href;
+            <h3>4. Purpose of Data Processing</h3>
+            <p>We leverage mapped technical components strictly to:</p>
+            <ul>
+                <li>Deliver active geospatial maps and interactive conversational AI responses cleanly.</li>
+                <li>Analyze terminal navigation performance properties and solve layoutpass dependencies.</li>
+                <li>Comply with strict advertising platform safety targets to eliminate duplicate impressions or automated bot activity blocks.</li>
+            </ul>
 
-            if (rewardedLinks.includes(url)) {
-                e.preventDefault();
-                showRewardedAndNavigate(url);
-            } else if (interstitialLinks.includes(url)) {
-                e.preventDefault();
-                showInterstitialAndNavigate(url);
-            }
-            // Other links will navigate normally
-        }
-    });
+            <h3>5. User Data Rights and Protection Controls</h3>
+            <p>We do not lease, trade, or distribute user identification records to unregulated foreign marketers or unlisted database networks. Your programmatic input remains protected inside secure cloud boundaries managed through our integrated Firebase encryption layers.</p>
 
-    // Callback after rewarded ad completes
-    window.onRewardGranted = function() {
-        console.log("Reward granted! Unlock content if needed.");
-    };
-</script>
-  
-<!-- Main Content -->
-<div class="main-container">
-  <h1>Privacy Policy – SkylPWorld</h1>
-  <p><strong>Effective Date:</strong> January 7, 2026</p>
+            <h3>6. Updates to This Privacy Protocol</h3>
+            <p>SkyIPworld reserves operational privileges to re-align this configuration layout profile periodically to match modern data privacy standards or publisher mandate changes. We advise users to review this page occasionally to verify tracking adjustments.</p>
 
-  <p>SkylPWorld (“we,” “our,” or “us”) respects your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use our website <strong>SkylPWorld.com</strong>.</p>
-
-  <h2>1. How We Use Your Information</h2>
-  <p>To allow access to members-only content.</p>
-  <p>To improve the website experience and provide content updates.</p>
-  <p>To monitor website performance and analytics.</p>
-
-  <h2>2. Cookies and Tracking</h2>
-  <p>We may use cookies or local storage for session management, including keeping you logged in for a limited time.</p>
-  <p>Google Analytics may use cookies to collect anonymous usage information.</p>
-
-  <h2>3. Sharing Your Information</h2>
-  <p>We <strong>do not sell or share</strong> your personal information with third parties, except to provide services or as required by law.</p>
-  <p>External content displayed from RSS feeds or Wikipedia APIs is subject to their respective privacy policies.</p>
-
-  <h2>4. Security</h2>
-  <p>We take reasonable measures to protect your data but cannot guarantee complete security.</p>
-
-  <h2>5. Your Rights</h2>
-  <p>You can log out or delete your session at any time.</p>
-  <p>You may contact us to request removal of your personal data.</p>
-
-  <h2>6. Children’s Privacy</h2>
-  <p>Our website is not intended for children under 13. We do not knowingly collect personal information from children.</p>
-
-  <h2>7. Changes to this Policy</h2>
-  <p>We may update this policy occasionally. Updated versions will be posted on this page with the effective date.</p>
-
-  <h2>Contact Us</h2>
-  <p>For questions about this Privacy Policy, please contact:</p>
-  <p>Email: <a href="mailto:trustconnect713@gmail.com">trustconnect713@gmail.com</a></p>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+            <h3>7. Contact and Support Details</h3>
+            <p>For questions or requests regarding data policies, please navigate directly to our active Support section or message our digital content administrators directly.</p>
+        </main>
+    </div>
 </div>
 
 <footer>
-  <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
-  <p>
-    <a href="privacy.html">Privacy Policy</a> |
-    <a href="support.html">Support</a>
-  </p>
-  <p>© 2026 SkylPWorld</p>
+    <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
+    <p>© 2026 SkyIPworld. All Rights Reserved.</p>
+    <div style="margin-top:10px;">
+        <a href="privacy.html" style="color: #38bdf8;">Privacy Policy</a> | <a href="terms.html">Terms of Use</a>
+    </div>
 </footer>
 
 </body>

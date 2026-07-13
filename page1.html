@@ -59,7 +59,7 @@
         .ai-input-bar { display: flex; padding: 10px; background: #fff; border-top: 1px solid #cbd5e1; gap: 10px; }
         
         /* Custom styled bubble layout with native markdown block styling rules */
-        .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+        .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
         .chat-bubble h1, .chat-bubble h2, .chat-bubble h3 { margin-top: 5px; margin-bottom: 5px; font-size: 16px; color: inherit; }
         .chat-bubble p { margin: 4px 0; }
         .chat-bubble ul, .chat-bubble ol { margin: 5px 0; padding-left: 20px; }
@@ -104,7 +104,7 @@
         .sidebar-panel { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 25px; opacity: 0.95; }
         .sidebar-title { font-size: 14px; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 15px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
         .quick-links-list { list-style: none; padding: 0; margin: 0; }
-        .quick-links-list li { margin-bottom: 10px; font-size: 13px; color: #475569; line-height: 1.5;}
+        .quick-links-list li { margin-bottom: 10px; font-size: 13px; color: #475569; line-height: 1.5; }
 
         /* Auto-Ads Slots */
         .adsense-sidebar-space { width: 100%; margin-bottom: 25px; display: block; min-height: 100px; }
@@ -137,14 +137,14 @@
                 
                 <h2>Autonomous 30-Model Agent Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Direct client-side execution framework featuring auto-search tools. Paste your OpenRouter key to test 30 brains.
+                    Direct client-side execution framework. Paste your OpenRouter key to test 30 brains.
                 </p>
 
                 <div class="ai-terminal-box">
                     <div class="ai-terminal-header" style="background: #111827;">
                         <strong style="font-size: 14px; color: #fff;">SkyIP Dynamic Core</strong>
                         <div class="ai-status-indicator">
-                            <!-- 30 Model Menu Selector -->
+                            <!-- 30 Model Dropdown Selection -->
                             <select id="modelSelector" style="background: #1f2937; border: 1px solid #4b5563; color: #fff; padding: 5px; border-radius: 4px; font-size: 11px; outline: none; max-width: 180px;">
                                 <optgroup label="🆓 Free Tier Models">
                                     <option value="openrouter/free">Auto-Select Free Router</option>
@@ -200,7 +200,7 @@
                     
                     <div class="ai-chat-screen" id="orChatScreen">
                         <div class="chat-bubble bubble-ai">
-                            Terminal Matrix Active. Save your OpenRouter API Key and select any of the 30 integrated target weights to test live agentic query pipelines with automatic web search context tools.
+                            Terminal Matrix Active. Paste your OpenRouter API Key (`sk-or-v1-...`) and select any of the 30 integrated target models to begin high-speed client streaming loops.
                         </div>
                     </div>
 
@@ -303,7 +303,7 @@
         const chosenModel = document.getElementById('modelSelector').value;
         const screen = document.getElementById('orChatScreen');
 
-        // Append User Dialogue
+        // Append User Dialogue Bubble
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
         userBubble.textContent = promptText;
@@ -311,7 +311,7 @@
         inputEl.value = '';
         screen.scrollTop = screen.scrollHeight;
 
-        // Append Streaming AI Bubble
+        // Append Streaming AI Placeholder Bubble
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble bubble-ai';
         aiBubble.textContent = `Connecting to ${chosenModel} routing layers...`;
@@ -324,7 +324,7 @@
                 headers: {
                     "Authorization": `Bearer ${apiKey}`,
                     "Content-Type": "application/json",
-                    "HTTP-Referer": window.location.href,
+                    "HTTP-Referer": window.location.origin,
                     "X-Title": "SkyIP Agent Hub"
                 },
                 body: JSON.stringify({
@@ -332,36 +332,41 @@
                     messages: [
                         { 
                             role: "system", 
-                            content: "You are a precise AI assistant. Provide answers directly and briefly. Break data down visually into clean markdown tables or bold lists when appropriate. If the user query demands recent facts or parameters, utilize the provided search tool context natively." 
+                            content: "You are a precise AI assistant. Provide answers directly and briefly. Break data down visually into clean markdown tables or bold lists when appropriate." 
                         },
                         { role: "user", content: promptText }
-                    ],
-                    // 🚀 Injects OpenRouter's native Server-Side search tool directly into the model inference execution path
-                    tools: [
-                        { "type": "openrouter:web_search" }
                     ],
                     stream: true
                 })
             });
 
-            if (!finalResponse.ok) throw new Error("Inference pipeline stream connection failed.");
+            // Catch Raw Server-Side Responses
+            if (!finalResponse.ok) {
+                const errorText = await finalResponse.text();
+                throw new Error(`Server Error (${finalResponse.status}): ${errorText}`);
+            }
 
             const reader = finalResponse.body.getReader();
             const decoder = new TextDecoder("utf-8");
             aiBubble.innerHTML = ""; 
 
             let streamTextAccumulator = "";
+            let buffer = "";
 
             while (true) {
                 const { value, done } = await reader.read();
                 if (done) break;
 
-                const chunk = decoder.decode(value);
-                const lines = chunk.split("\n");
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                
+                // Keep the last partial line in the buffer
+                buffer = lines.pop();
 
                 for (const line of lines) {
-                    if (line.startsWith("data: ")) {
-                        const rawStr = line.slice(6).trim();
+                    const cleanedLine = line.trim();
+                    if (cleanedLine.startsWith("data: ")) {
+                        const rawStr = cleanedLine.slice(6).trim();
                         if (rawStr === "[DONE]") break;
 
                         try {
@@ -379,7 +384,9 @@
 
         } catch (err) {
             console.error(err);
-            aiBubble.textContent = "Connection Error: Failed to resolve current stream. Check your API key entry updates or balance.";
+            aiBubble.style.color = "#ef4444";
+            aiBubble.textContent = `Pipeline Blocked 🛑 -> ${err.message}`;
+            screen.scrollTop = screen.scrollHeight;
         }
     }
 

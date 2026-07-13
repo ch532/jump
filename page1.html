@@ -186,14 +186,13 @@
                     
                     <div class="ai-chat-screen" id="studioScreen">
                         <div class="chat-bubble bubble-ai">
-                            Multimedia arrays synchronized. Describe a scenery prompt below, then choose whether to render a live static image or a dynamic motion animation sequence.
+                            Multimedia arrays synchronized. Describe a scenery prompt below, then choose to render a live static image.
                         </div>
                     </div>
 
                     <div class="ai-input-bar">
-                        <input type="text" class="ai-text-input" id="studioInput" placeholder="Describe the scenery context you want to generate..." onkeydown="if(event.key === 'Enter') processStudioMedia('image')">
-                        <button class="btn-multimedia" onclick="processStudioMedia('image')" style="margin-right: 2px;">🎨 Gen Image</button>
-                        <button class="btn-multimedia" onclick="processStudioMedia('video')" style="background: #1e1b4b; color: #a78bfa;">🎬 Gen Video</button>
+                        <input type="text" class="ai-text-input" id="studioInput" placeholder="Describe the scenery context you want to generate..." onkeydown="if(event.key === 'Enter') processStudioMedia()">
+                        <button class="btn-multimedia" onclick="processStudioMedia()">🎨 Gen Image</button>
                     </div>
                 </div>
 
@@ -368,6 +367,7 @@
                 descWeatherEl.textContent = "Cooler temperature bracket. Requires baseline seasonal layering adjustments.";
             }
 
+            // Authentic Consolidated Summary Text Generation
             document.getElementById("telemetryNarrative").innerHTML = `<strong>Live node metrics verified for ${addressInput} at ${new Date().toLocaleTimeString()}.</strong> Route network maps yield an <strong>${stateTrafficEl.textContent.toLowerCase()}</strong> status. True sensor results show <strong>${stateAirEl.textContent.toLowerCase()}</strong> parameters coupled with an <strong>${stateAgriEl.textContent.toLowerCase()}</strong> vegetative background profile.`;
             
             status.textContent = `● Live Synced: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
@@ -381,7 +381,7 @@
     }
 
     // Multimedia Studio Generative Engine
-    async function processStudioMedia(mode) {
+    async function processStudioMedia() {
         const inputEl = document.getElementById('studioInput');
         const text = inputEl.value.trim();
         if (!text) return;
@@ -389,24 +389,20 @@
         const screen = document.getElementById('studioScreen');
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
-        userBubble.textContent = `[${mode.toUpperCase()}]: ${text}`;
+        userBubble.textContent = `[IMAGE]: ${text}`;
         screen.appendChild(userBubble);
         inputEl.value = '';
 
         const aiBubble = document.createElement('div');
         aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = `Synthesizing open-source ${mode} layers...`;
+        aiBubble.textContent = "Synthesizing open-source image layers...";
         screen.appendChild(aiBubble);
         screen.scrollTop = screen.scrollHeight;
 
         try {
             const safePrompt = encodeURIComponent(text);
             const seedVal = Math.floor(Math.random() * 999999);
-            if (mode === 'image') {
-                aiBubble.innerHTML = `<div class="studio-media-output"><img src="https://image.pollinations.ai/p/${safePrompt}?width=512&height=512&seed=${seedVal}&enhance=true"></div>`;
-            } else {
-                aiBubble.innerHTML = `<div class="studio-media-output"><video src="https://video.pollinations.ai/p/${safePrompt}?seed=${seedVal}" controls autoplay loop muted></video></div>`;
-            }
+            aiBubble.innerHTML = `<div class="studio-media-output"><img src="https://image.pollinations.ai/p/${safePrompt}?width=512&height=512&seed=${seedVal}&enhance=true"></div>`;
         } catch (error) {
             aiBubble.textContent = "Synthesis failed.";
         }
@@ -416,4 +412,3 @@
 
 </body>
 </html>
-

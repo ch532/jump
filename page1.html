@@ -117,9 +117,9 @@
         <div class="grid">
             <main class="main-content">
                 
-                <h2>Native Multi-Network BYOK Terminal (With Free Background Search Tools)</h2>
+                <h2>Native Multi-Network BYOK Terminal (With Free Distributed Search Matrix)</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Direct browser routing across 40 options. Secure a Groq key to enable 100% free, unlimited pre-inference web crawl assets.
+                    Direct client routing across 40 options. Secure a Groq key to enable 100% free, unlimited pre-inference web crawl assets.
                 </p>
 
                 <div class="ai-terminal-box">
@@ -194,7 +194,7 @@
                     
                     <div class="ai-chat-screen" id="orChatScreen">
                         <div class="chat-bubble bubble-ai">
-                            Direct Endpoint Terminal Online. Input your model tokens alongside your **Groq Key** to route 100% unrestricted public web search text variables directly to all 40 system weights.
+                            Direct Endpoint Terminal Online. Lock your chosen model tokens alongside your **Groq Key** to route 100% unrestricted public web search text variables directly to all 40 system weights.
                         </div>
                     </div>
 
@@ -240,7 +240,7 @@
                     <h4 class="sidebar-title">Terminal Capabilities</h4>
                     <ul class="quick-links-list">
                         <li><strong>&bull; Direct Pipeline Routing:</strong> Travel safely from client browser directly to target infrastructure layers.</li>
-                        <li><strong>&bull; Zero-Key Web Tools:</strong> Leverages open-source client data extractors to read public web pages with no API request ceilings.</li>
+                        <li><strong>&bull; Native JSON Matrix:</strong> Leverages distributed public APIs to fetch real-time facts securely without proxy blocks.</li>
                     </ul>
                 </div>
                 <div class="adsense-sidebar-space"></div>
@@ -270,7 +270,7 @@
                 localStorage.removeItem(`skyvault_key_${prov}`);
             }
         });
-        alert('Vault secure configuration parameters locked down inside local browser allocation.');
+        alert('Vault secure parameters locked down.');
         toggleActiveKeyHighlight();
     }
 
@@ -291,7 +291,7 @@
         });
     }
 
-    // 🧠 UNIVERSAL PRE-INFERENCE QUERY MANAGER
+    // 🧠 UNIVERSAL PRE-INFERENCE QUERY INTENT MANAGER
     async function checkSearchIntent(userQuery, groqApiKey) {
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -305,7 +305,7 @@
                     messages: [
                         {
                             role: "system",
-                            content: "You are an intent routing tool. Read the user message. If it demands real-time data, current year facts, exchange rates, weather, current news, sports standings, or search lookups, reply exactly with the word 'YES'. Otherwise, reply exactly with 'NO'."
+                            content: "You are an intent routing tool. Read the user question. If it demands real-time data, current calendar statistics, exchange rates, current news, sports scores, or immediate search lookups, reply exactly with the word 'YES'. Otherwise, reply exactly with 'NO'."
                         },
                         { role: "user", content: userQuery }
                     ],
@@ -321,41 +321,42 @@
         }
     }
 
-    // 🦆 100% FREE UNRESTRICTED GLOBAL SEARCH EXTRACTOR (Zero Keys, Infinite Scale)
+    // 🌐 HIGH-SPEED DISTRIBUTED JSON METASEARCH MATRIX (100% Free, Zero Key, No Scraper Blocks)
     async function fetchLiveFreeSearchContext(userQuery) {
-        try {
-            // Routes through open JSON micro-proxies to parse the public engine data structure client-side
-            const proxyUrl = "https://api.allorigins.win/raw?url=";
-            const targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(userQuery)}`;
-            
-            const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
-            if (!response.ok) return "";
-            
-            const rawHtmlText = await response.text();
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(rawHtmlText, "text/html");
-            const resultElements = htmlDoc.querySelectorAll(".result__body");
-            
-            if (resultElements.length === 0) return "";
+        // Redundant list of trusted public SearXNG nodes that allow native open JSON formats
+        const publicNodes = [
+            "https://searxng.website/search",
+            "https://searxng.canine.tools/search",
+            "https://failsearx.culturanerd.it/search"
+        ];
 
-            let contextBlock = "\n\n[LIVE SEARCH TOOL INTENT CONTEXT DATA]:\n";
-            let count = 0;
-
-            for (let el of resultElements) {
-                if (count >= 3) break;
-                const titleNode = el.querySelector(".result__title a");
-                const snippetNode = el.querySelector(".result__snippet");
+        for (let baseUrl of publicNodes) {
+            try {
+                const targetUrl = `${baseUrl}?q=${encodeURIComponent(userQuery)}&format=json`;
+                const response = await fetch(targetUrl, { method: "GET" });
                 
-                if (titleNode && snippetNode) {
-                    contextBlock += `- Source: ${titleNode.textContent.trim()}\n  Data Snippet: "${snippetNode.textContent.trim()}"\n\n`;
-                    count++;
+                if (!response.ok) continue; // If an instance drops the request, instantly failover to the next fallback node
+                
+                const searchData = await response.json();
+                if (!searchData.results || searchData.results.length === 0) continue;
+
+                let contextBlock = "\n\n[CRITICAL LIVE WEB KNOWLEDGE CONTEXT]:\n";
+                let count = 0;
+
+                for (let res of searchData.results) {
+                    if (count >= 4) break;
+                    if (res.title && res.content) {
+                        contextBlock += `- Domain: ${res.engines.join('/')}\n  Context Data: "${res.title} - ${res.content}"\n\n`;
+                        count++;
+                    }
                 }
+                console.log("Web Search Context Captured Successfully from " + baseUrl);
+                return contextBlock;
+            } catch (e) {
+                console.warn(`Node fallback triggered for endpoint: ${baseUrl}`, e);
             }
-            return contextBlock;
-        } catch (e) {
-            console.warn("Free crawler lookup failed, bypassing tool segment gracefully: ", e);
-            return "";
         }
+        return ""; // Gracefully bypass tool injection if all nodes are momentarily unresponsive
     }
 
     async function runSovereignDirectStream() {
@@ -368,14 +369,14 @@
         
         const apiKey = localStorage.getItem(`skyvault_key_${provider}`) || document.getElementById(`key_${provider}`).value.trim();
         if (!apiKey) {
-            alert(`Sovereign Authentication Check: Please fill and secure the ${provider.toUpperCase()} key field above to execute this model path.`);
+            alert(`Sovereign Authentication Check: Please fill and secure the ${provider.toUpperCase()} key field.`);
             return;
         }
 
         const groqKey = localStorage.getItem('skyvault_key_groq') || document.getElementById('key_groq').value.trim();
         const screen = document.getElementById('orChatScreen');
 
-        // Render User Dialogue Bubble
+        // Render User Dialogue
         const userBubble = document.createElement('div');
         userBubble.className = 'chat-bubble bubble-user';
         userBubble.textContent = promptText;
@@ -383,7 +384,7 @@
         inputEl.value = '';
         screen.scrollTop = screen.scrollHeight;
 
-        // Tool Notification Placeholder Bubble
+        // Tool Indicator Setup
         const toolBubble = document.createElement('div');
         toolBubble.className = 'chat-bubble bubble-tool';
         toolBubble.textContent = "Analyzing query parameters for open tool triggers...";
@@ -395,12 +396,13 @@
         if (groqKey) {
             const needSearch = await checkSearchIntent(promptText, groqKey);
             if (needSearch.includes("YES")) {
-                toolBubble.textContent = "Tool Triggered: Scraping public engines for current context data arrays...";
+                toolBubble.textContent = "Tool Triggered: Executing public API metasearch arrays...";
                 liveSearchContext = await fetchLiveFreeSearchContext(promptText);
                 if (liveSearchContext) {
-                    toolBubble.textContent = "Tool Completed: Fresh internet assets successfully injected into model context.";
+                    toolBubble.textContent = "Tool Completed: Real-time internet context successfully integrated.";
                 } else {
-                    toolBubble.remove();
+                    toolBubble.textContent = "Tool Failed: All search channels timed out. Proceeding to base model weights.";
+                    setTimeout(() => toolBubble.remove(), 2000);
                 }
             } else {
                 toolBubble.remove();
@@ -418,9 +420,10 @@
         screen.scrollTop = screen.scrollHeight;
 
         try {
-            let systemInstruction = "You are a precise AI assistant. Provide answers directly and briefly. Break data down visually into clean markdown tables or bold lists when appropriate.";
+            // Strict System Prompt Enforcement Rules
+            let systemInstruction = "You are an expert real-time AI assistant. Rely HEAVILY and primary on the data inside the provided [CRITICAL LIVE WEB KNOWLEDGE CONTEXT] block to generate your responses. If the search data contradicts your older training knowledge, prioritize the search data completely. Present numbers, metrics, or financial values clearly.";
             if (liveSearchContext) {
-                systemInstruction += ` Ground your answer natively using this current live internet lookup context, matching user timing parameters: ${liveSearchContext}`;
+                systemInstruction += liveSearchContext;
             }
 
             let fetchUrl = "";
@@ -518,7 +521,7 @@
 
             if (!response.ok) {
                 const errContext = await response.text();
-                throw new Error(`Connection Rejected (${response.status}): ${errContext}`);
+                throw new Error(`Connection Rejected (${response.statuskeywords}): ${errContext}`);
             }
 
             const reader = response.body.getReader();
@@ -593,6 +596,8 @@
                     }
                 }
             }
+
+            if(toolBubble) setTimeout(() => toolBubble.remove(), 1000);
 
         } catch(err) {
             console.error(err);

@@ -41,18 +41,22 @@
             .top-nav { flex-direction: column; gap: 15px; align-items: flex-start; }
             .nav-right-block { width: 100%; justify-content: space-between; }
             .nav-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 15px; }
+            .ai-terminal-header { flex-direction: column; gap: 10px; align-items: stretch !important; }
+            .ai-status-indicator { flex-direction: column; gap: 8px; width: 100%; }
+            #modelSelector, #userApiKey { width: 100% !important; }
         }
         
         .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         
         /* Terminal Layout Styling */
-        .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 420px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .ai-terminal-header { background: #1e293b; color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .ai-terminal-box { border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; display: flex; flex-direction: column; height: 500px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .ai-terminal-header { background: #1e293b; color: #f8fafc; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         .ai-terminal-header.multimedia-theme { background: #0f172a; border-bottom: 2px solid #ec4899; }
-        .ai-status-indicator { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #38bdf8; }
+        .ai-status-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #38bdf8; }
         .ai-status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
 
         .ai-chat-screen { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
+        .ai-input-bar { display: flex; padding: 10px; background: #fff; border-top: 1px solid #cbd5e1; gap: 10px; }
         
         /* Custom styled bubble layout with native markdown block styling rules */
         .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
@@ -65,7 +69,6 @@
         .chat-bubble th, .chat-bubble td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
         .chat-bubble th { background-color: rgba(0,0,0,0.05); }
 
-        .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 0; }
 
@@ -132,19 +135,79 @@
         <div class="grid">
             <main class="main-content">
                 
-                <h2>Autonomous AI Hub</h2>
+                <h2>Autonomous 30-Model Agent Terminal</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Direct live orchestration pipeline powered by smart tool synthesis models.
+                    Direct client-side execution framework featuring auto-search tools. Paste your OpenRouter key to test 30 brains.
                 </p>
 
-                <!-- Dify Embedded Chatbot Container -->
-                <div style="margin-bottom: 30px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                    <iframe
-                     src="https://udify.app/chatbot/vXNIDbi3TnqsMZ6d"
-                     style="width: 100%; height: 100%; min-height: 720px;"
-                     frameborder="0"
-                     allow="microphone">
-                    </iframe>
+                <div class="ai-terminal-box">
+                    <div class="ai-terminal-header" style="background: #111827;">
+                        <strong style="font-size: 14px; color: #fff;">SkyIP Dynamic Core</strong>
+                        <div class="ai-status-indicator">
+                            <!-- 30 Model Menu Selector -->
+                            <select id="modelSelector" style="background: #1f2937; border: 1px solid #4b5563; color: #fff; padding: 5px; border-radius: 4px; font-size: 11px; outline: none; max-width: 180px;">
+                                <optgroup label="🆓 Free Tier Models">
+                                    <option value="openrouter/free">Auto-Select Free Router</option>
+                                    <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (Free)</option>
+                                    <option value="google/gemini-2.5-flash:free">Gemini 2.5 Flash (Free)</option>
+                                    <option value="nvidia/nemotron-3-super-120b-a12b:free">Nvidia Nemotron 3 Super</option>
+                                    <option value="deepseek/deepseek-r1:free">DeepSeek R1 Distill (Free)</option>
+                                    <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B (Free)</option>
+                                    <option value="microsoft/phi-4:free">Microsoft Phi-4 (Free)</option>
+                                    <option value="cohere/command-r-plus:free">Cohere Command R+ (Free)</option>
+                                </optgroup>
+                                <optgroup label="🎪 Mistral Flagships">
+                                    <option value="mistralai/mistral-large-latest" selected>Mistral Large Latest ★</option>
+                                    <option value="mistralai/mistral-medium">Mistral Medium</option>
+                                    <option value="mistralai/mistral-small-latest">Mistral Small Latest</option>
+                                    <option value="mistralai/pixtral-large-latest">Pixtral Large Vision</option>
+                                </optgroup>
+                                <optgroup label="🎯 OpenAI Engines">
+                                    <option value="openai/gpt-4o">GPT-4o Omniscience</option>
+                                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                    <option value="openai/o1-preview">OpenAI o1 Reasoning</option>
+                                    <option value="openai/o3-mini">OpenAI o3-mini Fast</option>
+                                </optgroup>
+                                <optgroup label="♊ Google Gemini Core">
+                                    <option value="google/gemini-2.5-pro">Gemini 2.5 Pro Ultra</option>
+                                    <option value="google/gemini-2.5-flash">Gemini 2.5 Flash Speed</option>
+                                </optgroup>
+                                <optgroup label="🦙 Meta Llama Weights">
+                                    <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B High-Tier</option>
+                                    <option value="meta-llama/llama-3.1-405b-instruct">Llama 3.1 405b Monster</option>
+                                    <option value="meta-llama/llama-3.2-11b-vision-instruct">Llama 3.2 11B Vision</option>
+                                </optgroup>
+                                <optgroup label="🐋 DeepSeek & Anthropic">
+                                    <option value="deepseek/deepseek-r1">DeepSeek R1 Full Scale</option>
+                                    <option value="deepseek/deepseek-chat">DeepSeek V3 API</option>
+                                    <option value="anthropic/claude-3.7-sonnet">Claude 3.7 Sonnet</option>
+                                    <option value="anthropic/claude-3-haiku">Claude 3 Haiku Speed</option>
+                                </optgroup>
+                                <optgroup label="🚀 Alternative Global Options">
+                                    <option value="x-ai/grok-2">xAI Grok 2 Real-time</option>
+                                    <option value="perplexity/sonar-reasoning">Perplexity Sonar</option>
+                                    <option value="cohere/command-r">Cohere Command R Base</option>
+                                    <option value="amazon/nova-pro-v1">Amazon Nova Pro</option>
+                                    <option value="qwen/qwen-max">Alibaba Qwen Max</option>
+                                    <option value="minimax/minimax-m3">MiniMax M3 Pro</option>
+                                </optgroup>
+                            </select>
+
+                            <input type="password" id="userApiKey" placeholder="Paste OpenRouter Key" style="background: #1f2937; border: 1px solid #4b5563; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; outline: none; width: 140px;">
+                            <button onclick="saveApiKey()" style="background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Save</button>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-chat-screen" id="orChatScreen">
+                        <div class="chat-bubble bubble-ai">
+                            Terminal Matrix Active. Save your OpenRouter API Key and select any of the 30 integrated target weights to test live agentic query pipelines with automatic web search context tools.
+                        </div>
+                    </div>
+
+                    <div class="ai-input-bar">
+                        <input type="text" class="ai-text-input" id="orUserInput" placeholder="Ask anything (e.g., Currency rates, tech documents)..." onkeydown="if(event.key === 'Enter') runTerminalStream()">
+                        <button class="control-btn btn-send" onclick="runTerminalStream()">Send</button>
+                    </div>
                 </div>
 
                 <h2>Open-Source Multimedia Generation Studio</h2>
@@ -152,7 +215,7 @@
                     Autonomous synthesis matrix calculating real-time image renders and dynamic motion videos.
                 </p>
 
-                <div class="ai-terminal-box">
+                <div class="ai-terminal-box" style="height: 420px;">
                     <div class="ai-terminal-header multimedia-theme">
                         <strong>Pollinations Media Matrix</strong>
                         <div class="ai-status-indicator" style="color: #ec4899;">
@@ -209,8 +272,116 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        if(document.getElementById('userApiKey')) {
+            document.getElementById('userApiKey').value = localStorage.getItem('skyip_or_key') || '';
+        }
         loadCuratedRSSFeed();
     });
+
+    function saveApiKey() {
+        const key = document.getElementById('userApiKey').value.trim();
+        if(key) {
+            localStorage.setItem('skyip_or_key', key);
+            alert('Your OpenRouter API Key has been saved safely in your browser storage.');
+        } else {
+            localStorage.removeItem('skyip_or_key');
+            alert('Key cleared from local storage.');
+        }
+    }
+
+    async function runTerminalStream() {
+        const inputEl = document.getElementById('orUserInput');
+        const promptText = inputEl.value.trim();
+        if (!promptText) return;
+
+        const apiKey = localStorage.getItem('skyip_or_key') || document.getElementById('userApiKey').value.trim();
+        if (!apiKey) {
+            alert("Security Check: Provide an OpenRouter API key inside the layout input header to grant access!");
+            return;
+        }
+
+        const chosenModel = document.getElementById('modelSelector').value;
+        const screen = document.getElementById('orChatScreen');
+
+        // Append User Dialogue
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble bubble-user';
+        userBubble.textContent = promptText;
+        screen.appendChild(userBubble);
+        inputEl.value = '';
+        screen.scrollTop = screen.scrollHeight;
+
+        // Append Streaming AI Bubble
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'chat-bubble bubble-ai';
+        aiBubble.textContent = `Connecting to ${chosenModel} routing layers...`;
+        screen.appendChild(aiBubble);
+        screen.scrollTop = screen.scrollHeight;
+
+        try {
+            const finalResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": window.location.href,
+                    "X-Title": "SkyIP Agent Hub"
+                },
+                body: JSON.stringify({
+                    model: chosenModel,
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: "You are a precise AI assistant. Provide answers directly and briefly. Break data down visually into clean markdown tables or bold lists when appropriate. If the user query demands recent facts or parameters, utilize the provided search tool context natively." 
+                        },
+                        { role: "user", content: promptText }
+                    ],
+                    // 🚀 Injects OpenRouter's native Server-Side search tool directly into the model inference execution path
+                    tools: [
+                        { "type": "openrouter:web_search" }
+                    ],
+                    stream: true
+                })
+            });
+
+            if (!finalResponse.ok) throw new Error("Inference pipeline stream connection failed.");
+
+            const reader = finalResponse.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            aiBubble.innerHTML = ""; 
+
+            let streamTextAccumulator = "";
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value);
+                const lines = chunk.split("\n");
+
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        const rawStr = line.slice(6).trim();
+                        if (rawStr === "[DONE]") break;
+
+                        try {
+                            const parsed = JSON.parse(rawStr);
+                            const textDelta = parsed.choices[0]?.delta?.content;
+                            if (textDelta) {
+                                streamTextAccumulator += textDelta;
+                                aiBubble.innerHTML = marked.parse(streamTextAccumulator);
+                                screen.scrollTop = screen.scrollHeight;
+                            }
+                        } catch (e) {}
+                    }
+                }
+            }
+
+        } catch (err) {
+            console.error(err);
+            aiBubble.textContent = "Connection Error: Failed to resolve current stream. Check your API key entry updates or balance.";
+        }
+    }
 
     async function loadCuratedRSSFeed() {
         const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
@@ -313,4 +484,3 @@
 
 </body>
 </html>
-

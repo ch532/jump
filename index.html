@@ -77,13 +77,6 @@
         .news-feed-container { width: 100%; border-radius: 8px; border: 1px solid #e2e8f0; margin: 25px 0; overflow: hidden; background-color: #ffffff; }
         .news-title { background: #f1f5f9; padding: 12px 15px; font-size: 14px; font-weight: bold; color: #475569; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
         .news-items-wrapper { padding: 15px; max-height: 400px; overflow-y: auto; }
-        .feed-article { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
-        .feed-article:last-child { border-bottom: none; }
-        .feed-article h4 { margin: 0 0 8px 0; font-size: 16px; }
-        .feed-article h4 a { color: #1e293b; text-decoration: none; }
-        .feed-article h4 a:hover { color: #0284c7; }
-        .feed-meta { font-size: 12px; color: #64748b; margin-bottom: 8px; font-style: italic; }
-        .feed-excerpt { font-size: 14px; color: #334155; line-height: 1.5; margin: 0; }
 
         .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 25px; overflow: hidden; }
 
@@ -134,9 +127,12 @@
                 <div class="adsense-autoad-stripe"></div>
 
                 <div class="news-feed-container">
-                    <div class="news-title">📰 Regional Intel Stream (Live RSS)</div>
-                    <div id="rss-feed-target" class="news-items-wrapper">
-                        <p style="color: #64748b; font-size: 14px; margin: 0;">Parsing remote target interest streams...</p>
+                    <div class="news-title">🧠 Evergreen Intelligence Stream (Knowledge Feed)</div>
+                    <div class="news-items-wrapper">
+                        <!-- 🐕 RSS DOG EMBEDDED INJECTION CONTAINER -->
+                        <script type="text/javascript" src="https://www.rssdog.com/index.php?url=https%3A%2F%2Fmedium.com%2Ffeed%2Ftag%2Fknowledge&amp;mode=javascript&amp;showonly=&amp;maxitems=15&amp;showdescs=1&amp;desctrim=0&amp;descmax=0&amp;tabwidth=100%25&amp;excltitle=1&amp;showdate=1&amp;xmlbtn=1&amp;utf8=1&amp;linktarget=_self&amp;bordercol=%23d4d0c8&amp;headbgcol=%23999999&amp;headtxtcol=%23ffffff&amp;titlebgcol=%23f1eded&amp;titletxtcol=%23000000&amp;itembgcol=%23ffffff&amp;itemtxtcol=%23000000&amp;ctl=0">
+                        </script>
+                        <noscript> You apparently do not have JavaScript enabled on your browser lest you would be viewing an RSS Feed here from <a href="https://www.rssdog.com/">RSS Dog</a> </noscript>
                     </div>
                 </div>
 
@@ -180,49 +176,10 @@
 
 <script>
     window.addEventListener('DOMContentLoaded', function() {
-        loadRegionalRSSFeed();
-
         if (!getCookie("skyip_user_consent")) {
             document.getElementById('cookie-consent-banner').style.display = 'block';
         }
     });
-
-    async function loadRegionalRSSFeed() {
-        const feedUrl = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wiom48hoE0g.rss');
-        const endpoint = `https://api.rss2json.com/v1/api.json?rss_url=${feedUrl}`;
-        
-        
-        try {
-            const response = await fetch(endpoint).then(res => res.json());
-            if (response && response.status === 'ok' && response.items.length > 0) {
-                let htmlContent = '';
-                
-                response.items.forEach(item => {
-                    let cleanExcerpt = item.description ? item.description.replace(/<[^>]*>/g, '').trim() : '';
-                    if (cleanExcerpt.length > 180) {
-                        cleanExcerpt = cleanExcerpt.substring(0, 180) + '...';
-                    }
-                    if (!cleanExcerpt) {
-                        cleanExcerpt = "Select link parameters to review verified spatial points tracking data.";
-                    }
-
-                    htmlContent += `
-                        <article class="feed-article">
-                            <h4><a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a></h4>
-                            <div class="feed-meta">Published: ${item.pubDate ? item.pubDate.split(' ')[0] : 'Live Stream'}</div>
-                            <p class="feed-excerpt">${cleanExcerpt}</p>
-                        </article>
-                    `;
-                });
-                document.getElementById('rss-feed-target').innerHTML = htmlContent;
-            } else {
-                document.getElementById('rss-feed-target').innerHTML = '<p style="color:#64748b; font-size:14px;">No tracking updates available in target stream node.</p>';
-            }
-        } catch (error) {
-            console.error("RSS parsing module exception caught: ", error);
-            document.getElementById('rss-feed-target').innerHTML = '<p style="color:#64748b; font-size:14px;">Tracking updates currently paused.</p>';
-        }
-    }
 
     function setCookie(name, value, days) {
         let expires = "";
@@ -258,3 +215,4 @@
 
 </body>
 </html>
+

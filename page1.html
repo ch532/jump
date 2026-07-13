@@ -66,7 +66,7 @@
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; }
 
         .studio-media-output { text-align: center; padding: 15px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px; }
-        .studio-media-output img, .studio-media-output video { max-width: 100%; max-height: 280px; border-radius: 6px; }
+        .studio-media-output img { max-width: 100%; max-height: 280px; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 
         .adsense-autoad-stripe { width: 100%; margin: 25px 0; display: block; clear: both; min-height: 60px; }
         .ai-text-input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
@@ -236,12 +236,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // 🚀 LIVE POLL INTERVAL: Re-checks authoritative global nodes cleanly every 30 seconds
         executeComprehensiveEnvironmentalScan(); 
         setInterval(executeComprehensiveEnvironmentalScan, 30000);
     });
 
-    // 🌐 AUTHENTIC MULTI-API TELEMETRY PARSER (No placeholders, no fake logic loops)
+    // 🌐 AUTHENTIC MULTI-API TELEMETRY PARSER
     async function executeComprehensiveEnvironmentalScan() {
         const addressInput = document.getElementById("targetAddress").value.trim();
         const status = document.getElementById("matrixStatus");
@@ -249,7 +248,6 @@
         if (!addressInput) return;
 
         try {
-            // Step 1: Query global OpenStreetMap geolocation nodes
             const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressInput)}&limit=1`;
             const geoResponse = await fetch(geocodeUrl, { headers: { "User-Agent": "SkyIPworldEnvironmentalApp/1.0" } });
             const geoData = await geoResponse.json();
@@ -263,11 +261,8 @@
             const lat = parseFloat(geoData[0].lat).toFixed(4);
             const lng = parseFloat(geoData[0].lon).toFixed(4);
 
-            // Step 2: Query authoritative Open Air Quality & Eco Forecast Labs concurrently
             const urlAirQuality = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&current=pm2_5,pm10`;
             const urlEcosystem = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,rain,soil_moisture_0_to_1cm,vapor_pressure_deficit`;
-            
-            // Step 3: Run live OpenStreetMap infrastructure check (Counts local roads/transit features for structural density profiles)
             const overpassQueryUrl = `https://overpass-api.de/api/interpreter?data=[out:json][timeout:10];way(around:800,${lat},${lng})[highway];out%20count;`;
 
             const [resAir, resEco, resOverpass] = await Promise.all([
@@ -276,7 +271,7 @@
                 fetch(overpassQueryUrl).then(r => r.json()).catch(() => null)
             ]);
 
-            // 🚦 ASPECT 1: URBAN ROUTE DENSITY (Based on real OpenStreetMap infrastructure counts)
+            // 🚦 ASPECT 1: URBAN ROUTE DENSITY
             const highwayCount = resOverpass?.elements?.[0]?.tags?.ways || 15;
             const stateTrafficEl = document.getElementById("stateTraffic");
             const descTrafficEl = document.getElementById("descTraffic");
@@ -373,7 +368,6 @@
                 descWeatherEl.textContent = "Cooler temperature bracket. Requires baseline seasonal layering adjustments.";
             }
 
-            // Authentic Consolidated Summary Text Generation
             document.getElementById("telemetryNarrative").innerHTML = `<strong>Live node metrics verified for ${addressInput} at ${new Date().toLocaleTimeString()}.</strong> Route network maps yield an <strong>${stateTrafficEl.textContent.toLowerCase()}</strong> status. True sensor results show <strong>${stateAirEl.textContent.toLowerCase()}</strong> parameters coupled with an <strong>${stateAgriEl.textContent.toLowerCase()}</strong> vegetative background profile.`;
             
             status.textContent = `● Live Synced: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
@@ -422,3 +416,4 @@
 
 </body>
 </html>
+

@@ -78,13 +78,6 @@
 
         .feed-container-title { font-size: 20px; color: #1e293b; font-weight: bold; margin: 40px 0 5px 0; display: flex; justify-content: space-between; align-items: center; }
         .rss-sync-beacon { font-size: 11px; color: #22c55e; font-weight: 500; display: flex; align-items: center; gap: 5px; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 3px 8px; border-radius: 12px; }
-        .rss-pulse-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; display: inline-block; animation: rssPulse 1.8s infinite ease-in-out; }
-        @keyframes rssPulse { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
-
-        .article-card { border-bottom: 1px solid #e2e8f0; padding-bottom: 25px; margin-bottom: 25px; }
-        .article-title { font-size: 22px; color: #1e293b; margin: 0 0 10px 0; font-weight: bold; }
-        .article-title a { color: #1e293b; text-decoration: none; }
-        .read-more-btn { font-size: 14px; font-weight: 600; color: #38bdf8; text-decoration: none; }
         .sidebar-panel { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
         .sidebar-title { font-size: 14px; font-weight: bold; color: #475569; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 15px 0; }
         .quick-links-list { list-style: none; padding: 0; margin: 0; }
@@ -208,13 +201,22 @@
                 
                 <div class="feed-container-title">
                     <span>📚 Curated Content Hub</span>
-                    <div class="rss-sync-beacon"><span class="rss-pulse-dot"></span> <span id="rssSyncTimestamp">Auto-Updating</span></div>
+                    <div class="rss-sync-beacon"><span class="rss-pulse-dot"></span> <span>Live Dynamic Feed</span></div>
                 </div>
                 
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 25px;">
-                <div id="dynamic-article-feed">
-                    <p style="color: #64748b; font-size: 14px;">Loading consolidated content hub feed streams...</p>
-                </div>
+                
+                <!-- 🐕 RSS DOG EMBEDDED INJECTION GRID BLOCKS -->
+                <script type="text/javascript" src="https://www.rssdog.com/index.php?url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Den-NG%26gl%3DNG%26ceid%3DNG%3Aen&amp;mode=javascript&amp;showonly=&amp;maxitems=10&amp;showdescs=1&amp;desctrim=0&amp;descmax=0&amp;tabwidth=100%25&amp;excltitle=1&amp;showdate=1&amp;xmlbtn=1&amp;utf8=1&amp;linktarget=_self&amp;bordercol=%23d4d0c8&amp;headbgcol=%23999999&amp;headtxtcol=%23ffffff&amp;titlebgcol=%23f1eded&amp;titletxtcol=%23000000&amp;itembgcol=%23ffffff&amp;itemtxtcol=%23000000&amp;ctl=0">
+                </script>
+                <noscript> You apparently do not have JavaScript enabled on your browser lest you would be viewing an RSS Feed here from <a href="https://www.rssdog.com/">RSS Dog</a> </noscript>
+
+                <div style="margin-top: 25px; margin-bottom: 25px;"></div>
+
+                <script type="text/javascript" src="https://www.rssdog.com/index.php?url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Den-US%26gl%3DUS%26ceid%3DUS%3Aen&amp;mode=javascript&amp;showonly=&amp;maxitems=15&amp;showdescs=1&amp;desctrim=0&amp;descmax=0&amp;tabwidth=100%25&amp;excltitle=1&amp;showdate=1&amp;xmlbtn=1&amp;utf8=1&amp;linktarget=_self&amp;bordercol=%23d4d0c8&amp;headbgcol=%23999999&amp;headtxtcol=%23ffffff&amp;titlebgcol=%23f1eded&amp;titletxtcol=%23000000&amp;itembgcol=%23ffffff&amp;itemtxtcol=%23000000&amp;ctl=0">
+                </script>
+                <noscript> You apparently do not have JavaScript enabled on your browser lest you would be viewing an RSS Feed here from <a href="https://www.rssdog.com/">RSS Dog</a> </noscript>
+
             </main>
 
             <aside>
@@ -233,12 +235,7 @@
 </div>
 
 <script>
-    let lastAggregatedArticlesHash = "";
-
     document.addEventListener('DOMContentLoaded', () => {
-        loadCuratedRSSFeed();
-        setInterval(loadCuratedRSSFeed, 60000);
-        
         // 🚀 LIVE POLL INTERVAL: Re-checks authoritative global nodes cleanly every 30 seconds
         executeComprehensiveEnvironmentalScan(); 
         setInterval(executeComprehensiveEnvironmentalScan, 30000);
@@ -386,54 +383,6 @@
             console.error(error);
             status.textContent = "● Telemetry Query Retrying...";
             status.style.color = "#eab308";
-        }
-    }
-
-    // 📚 AUTO-UPDATING RSS CONSOLIDATED FEED MATRIX
-    async function loadCuratedRSSFeed() {
-        const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
-        const feed2 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wimz071V2qY.rss');
-        const endpoint1 = `https://api.rss2json.com/v1/api.json?rss_url=${feed1}`;
-        const endpoint2 = `https://api.rss2json.com/v1/api.json?rss_url=${feed2}`;
-        
-        try {
-            const [res1, res2] = await Promise.all([
-                fetch(endpoint1).then(r => r.json()).catch(() => null),
-                fetch(endpoint2).then(r => r.json()).catch(() => null)
-            ]);
-            let combinedItems = [];
-            if (res1 && res1.status === 'ok') combinedItems = combinedItems.concat(res1.items);
-            if (res2 && res2.status === 'ok') combinedItems = combinedItems.concat(res2.items);
-            
-            if (combinedItems.length > 0) {
-                combinedItems.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
-                
-                const freshContentHash = combinedItems.slice(0, 3).map(i => i.title).join("|");
-                if (freshContentHash === lastAggregatedArticlesHash) {
-                    document.getElementById("rssSyncTimestamp").textContent = `Synced: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                    return;
-                }
-
-                lastAggregatedArticlesHash = freshContentHash;
-                let feedHtml = '';
-                
-                combinedItems.forEach(item => {
-                    let cleanExcerpt = item.description ? item.description.replace(/<[^>]*>/g, '').trim() : '';
-                    if (cleanExcerpt.length > 220) cleanExcerpt = cleanExcerpt.substring(0, 220) + '...';
-                    feedHtml += `
-                        <article class="article-card">
-                            <h3 class="article-title"><a href="${item.link}" target="_blank">${item.title}</a></h3>
-                            <p style="font-size:13px; color:#64748b; font-style:italic; margin:4px 0 10px 0;">Syndicated Feed Layer • ${item.pubDate ? item.pubDate.split(' ')[0] : 'Live'}</p>
-                            <p style="font-size:15px; color:#334155; line-height:1.6; margin-bottom:12px;">${cleanExcerpt}</p>
-                            <a href="${item.link}" target="_blank" class="read-more-btn">Read Full Article &rarr;</a>
-                        </article>
-                    `;
-                });
-                document.getElementById('dynamic-article-feed').innerHTML = feedHtml;
-                document.getElementById("rssSyncTimestamp").textContent = `Updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            }
-        } catch (error) {
-            console.warn(error);
         }
     }
 

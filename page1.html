@@ -66,6 +66,7 @@
         .chat-bubble th { background-color: rgba(0,0,0,0.05); }
 
         .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
+        .bubble-user { background: #0284c7; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 0; }
         .bubble-ai { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 0; }
 
         /* Dynamic Asset Output Styling */
@@ -131,30 +132,19 @@
         <div class="grid">
             <main class="main-content">
                 
-                <h2>Autonomous OpenRouter Terminal</h2>
+                <h2>Autonomous AI Hub</h2>
                 <p style="color: #64748b; font-size: 14px; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                    Direct client-side inference pipeline. Bring your own OpenRouter key to chat for free.
+                    Direct live orchestration pipeline powered by smart tool synthesis models.
                 </p>
 
-                <div class="ai-terminal-box">
-                    <div class="ai-terminal-header" style="background: #111827;">
-                        <strong>SkyIP OpenRouter Core</strong>
-                        <div class="ai-status-indicator" style="color: #38bdf8; font-size: 11px;">
-                            <input type="password" id="userApiKey" placeholder="Paste OpenRouter Key Here" style="background: #1f2937; border: 1px solid #4b5563; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 11px; outline: none; width: 160px;">
-                            <button onclick="saveApiKey()" style="background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">Save</button>
-                        </div>
-                    </div>
-                    
-                    <div class="ai-chat-screen" id="orChatScreen">
-                        <div class="chat-bubble bubble-ai">
-                            Terminal initialized. Save your OpenRouter API Key in the header field above to start generating free stream answers.
-                        </div>
-                    </div>
-
-                    <div class="ai-input-bar">
-                        <input type="text" class="ai-text-input" id="orUserInput" placeholder="Ask anything (e.g., How many r's are in strawberry?)..." onkeydown="if(event.key === 'Enter') runTerminalStream()">
-                        <button class="control-btn btn-send" onclick="runTerminalStream()">Send</button>
-                    </div>
+                <!-- Dify Embedded Chatbot Container -->
+                <div style="margin-bottom: 30px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <iframe
+                     src="https://udify.app/chatbot/vXNIDbi3TnqsMZ6d"
+                     style="width: 100%; height: 100%; min-height: 720px;"
+                     frameborder="0"
+                     allow="microphone">
+                    </iframe>
                 </div>
 
                 <h2>Open-Source Multimedia Generation Studio</h2>
@@ -219,107 +209,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        if(document.getElementById('userApiKey')) {
-            document.getElementById('userApiKey').value = localStorage.getItem('skyip_or_key') || '';
-        }
         loadCuratedRSSFeed();
     });
-
-    function saveApiKey() {
-        const key = document.getElementById('userApiKey').value.trim();
-        if(key) {
-            localStorage.setItem('skyip_or_key', key);
-            alert('Your OpenRouter API Key has been saved safely in your browser storage.');
-        } else {
-            localStorage.removeItem('skyip_or_key');
-            alert('Key cleared from local storage.');
-        }
-    }
-
-    async function runTerminalStream() {
-        const inputEl = document.getElementById('orUserInput');
-        const promptText = inputEl.value.trim();
-        if (!promptText) return;
-
-        const apiKey = localStorage.getItem('skyip_or_key') || document.getElementById('userApiKey').value.trim();
-        if (!apiKey) {
-            alert("Security Check: Provide an OpenRouter API key inside the layout input header to grant access!");
-            return;
-        }
-
-        const screen = document.getElementById('orChatScreen');
-
-        // Append User Dialogue
-        const userBubble = document.createElement('div');
-        userBubble.className = 'chat-bubble bubble-user';
-        userBubble.textContent = promptText;
-        screen.appendChild(userBubble);
-        inputEl.value = '';
-        screen.scrollTop = screen.scrollHeight;
-
-        // Append Streaming AI Bubble
-        const aiBubble = document.createElement('div');
-        aiBubble.className = 'chat-bubble bubble-ai';
-        aiBubble.textContent = "Connecting to OpenRouter context weights...";
-        screen.appendChild(aiBubble);
-        screen.scrollTop = screen.scrollHeight;
-
-        try {
-            const finalResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${apiKey}`,
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": window.location.href,
-                    "X-Title": "SkyIP Agent Hub"
-                },
-                body: JSON.stringify({
-                    model: "openrouter/free",
-                    messages: [{ role: "user", content: promptText }],
-                    stream: true
-                })
-            });
-
-            if (!finalResponse.ok) throw new Error("Inference pipeline stream connection failed.");
-
-            const reader = finalResponse.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            aiBubble.innerHTML = ""; 
-
-            let streamTextAccumulator = "";
-
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-
-                const chunk = decoder.decode(value);
-                const lines = chunk.split("\n");
-
-                for (const line of lines) {
-                    if (line.startsWith("data: ")) {
-                        const rawStr = line.slice(6).trim();
-                        if (rawStr === "[DONE]") break;
-
-                        try {
-                            const parsed = JSON.parse(rawStr);
-                            const textDelta = parsed.choices[0]?.delta?.content;
-                            if (textDelta) {
-                                streamTextAccumulator += textDelta;
-                                
-                                // 💡 Converted from string assignment to marked.parse() to build structured elements natively
-                                aiBubble.innerHTML = marked.parse(streamTextAccumulator);
-                                screen.scrollTop = screen.scrollHeight;
-                            }
-                        } catch (e) {}
-                    }
-                }
-            }
-
-        } catch (err) {
-            console.error(err);
-            aiBubble.textContent = "Connection Error: Failed to resolve current stream. Check your API key entry updates.";
-        }
-    }
 
     async function loadCuratedRSSFeed() {
         const feed1 = encodeURIComponent('https://fetchrss.com/feed/1wilwQEyZ4Yc1wilxeAJr4bz.rss');
@@ -422,3 +313,4 @@
 
 </body>
 </html>
+

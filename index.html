@@ -10,7 +10,6 @@
     <meta name="author" content="SkyIPworld">
     <link rel="canonical" href="https://chyke.online/" />
     
-    
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
     <meta name="google-adsense-account" content="ca-pub-8877351541430254">
     <script src="https://cdn.applixir.com/applixir.app.v6.1.0.js" async></script>
@@ -41,9 +40,19 @@
         .main-layout { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
         .content-section { background: transparent; padding: 0; margin-bottom: 20px; }
         
+        /* Dedicated Auto Ad Spaces */
+        .auto-ad-placeholder {
+            width: 100%;
+            margin: 25px 0;
+            padding: 0;
+            background: transparent;
+            display: block;
+            text-align: center;
+        }
+
         #my-native-feed { margin: 15px 0; }
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #fff; border: 1px solid #e2e8f0; text-align: center; border-radius: 8px; }
+        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #fff; border: 1px dashed #cbd5e1; text-align: center; border-radius: 8px; }
         .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #fff; }
     </style>
 </head>
@@ -64,23 +73,71 @@
     </nav>
 </header>
 
-<!-- Wrapped elements in semantic main container with flex gap spacing -->
 <main class="main-layout">
 
-<script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3">
-</script>
-<div class="gcse-search"></div>
+    <!-- AUTO AD SPACE 1: Directly under navigation, before search -->
+    <div class="auto-ad-placeholder">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8877351541430254"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        </script>
+    </div>
+
+    <!-- Google Custom Search -->
+    <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
+    <div class="gcse-search"></div>
     
+    <!-- AUTO AD SPACE 2: Between Google Search and content feed -->
+    <div class="auto-ad-placeholder">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8877351541430254"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        </script>
+    </div>
+
+    <!-- Content Feed Section -->
     <section class="content-section">
         <div id="my-native-feed">Loading feed...</div>
     </section>
 
-    <!-- Semantic division helps Auto Ads detect transitions between different types of content -->
+    <!-- AUTO AD SPACE 6: Between the content feed and map widget -->
+    <div class="auto-ad-placeholder">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8877351541430254"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        </script>
+    </div>
+
+    <!-- Yandex Map Section -->
     <section class="content-section">
         <div class="yandex-map-container">
             <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
         </div>
     </section>
+
+    <!-- AUTO AD SPACE 7: Bottom of page, before the footer -->
+    <div class="auto-ad-placeholder">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8877351541430254"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        </script>
+    </div>
     
 </main>
 
@@ -96,12 +153,28 @@ async function loadFeed() {
         feedContainer.innerHTML = ''; 
 
         data.items.forEach((item, index) => {
+            // Render the News Item
             const div = document.createElement('div');
             div.className = 'news-item';
-            div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p><a href="${item.link}">Read More</a>`;
+            div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p><a href="${item.link}" target="_blank" rel="noopener">Read More</a>`;
             feedContainer.appendChild(div);
 
-            // Keeps your manual dynamic layout insertion every 4 items
+            // AUTO AD SPACE 3: Injected dynamically after the 2nd article card
+            if (index === 1) {
+                injectAutoAdSpace();
+            }
+
+            // AUTO AD SPACE 4: Injected dynamically in the middle (after the 6th article card)
+            if (index === 5) {
+                injectAutoAdSpace();
+            }
+
+            // AUTO AD SPACE 5: Injected dynamically near the end (after the 10th article card)
+            if (index === 9) {
+                injectAutoAdSpace();
+            }
+
+            // Keeps your manual dynamic layout insertion for native In-Feed Ads every 4 items
             if ((index + 1) % 4 === 0) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'adsense-infeed-space';
@@ -112,15 +185,42 @@ async function loadFeed() {
                          data-ad-layout-key="-6r+di+5g-2m-8y"
                          data-ad-client="ca-pub-8877351541430254"
                          data-ad-slot="5656610761"></ins>
-                    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
                 `;
                 feedContainer.appendChild(adDiv);
+                
+                try {
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                } catch (adError) {
+                    console.log("In-feed ad container processed.");
+                }
             }
         });
     } catch (e) {
         document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
     }
 }
+
+// Helper utility to inject Auto Ad spaces inside the JavaScript article loop
+function injectAutoAdSpace() {
+    const feedContainer = document.getElementById('my-native-feed');
+    const adDiv = document.createElement('div');
+    adDiv.className = 'auto-ad-placeholder';
+    adDiv.innerHTML = `
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-8877351541430254"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+    `;
+    feedContainer.appendChild(adDiv);
+    
+    try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (adError) {
+        console.log("Auto Ad stream slot queued.");
+    }
+}
+
 loadFeed();
 </script>
 
@@ -141,3 +241,4 @@ loadFeed();
 
 </body>
 </html>
+

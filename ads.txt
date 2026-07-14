@@ -1,4 +1,4 @@
-google.com, pub-877351541430254, DIRECT, f08c47fec0942fa0
+google.com, pub-8877351541430254, DIRECT, f08c47fec0942fa0
 
 # AppLixir authorized digital sellers
 google.com, pub-9871897611748477, RESELLER, f08c47fec0942fa0

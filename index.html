@@ -16,7 +16,7 @@
     <meta name="google-site-verification" content="AxO_bs7tBOMhjX5DGp_VT_DYxNCvRf3inf0HQ7NqvvE" />
     <meta name="clckd" content="2d1b4a854cfa03a2a89feb40da2ec757" />
 
-    <!-- Google AdSense Script (Required for Auto Ads) -->
+    <!-- Google AdSense Header Script (For Auto Ads to scan the page) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
@@ -36,23 +36,30 @@
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         
-        /* Layout updates for Auto Ad placement */
         .main-layout { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
         .content-section { background: transparent; padding: 0; margin-bottom: 20px; }
         
-        /* Dedicated Auto Ad Spaces */
+        /* Styled placeholders for Auto Ads to discover and populate naturally */
         .auto-ad-placeholder {
             width: 100%;
+            min-height: 100px;
             margin: 25px 0;
-            padding: 0;
             background: transparent;
             display: block;
-            text-align: center;
         }
 
         #my-native-feed { margin: 15px 0; }
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #fff; border: 1px dashed #cbd5e1; text-align: center; border-radius: 8px; }
+        
+        /* Styled frame for your manual In-Feed ads */
+        .adsense-infeed-space { 
+            margin: 25px 0; 
+            padding: 20px; 
+            background: #fff; 
+            border: 1px dashed #cbd5e1; 
+            border-radius: 8px; 
+        }
+        
         .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #fff; }
     </style>
 </head>
@@ -75,50 +82,23 @@
 
 <main class="main-layout">
 
-    <!-- AUTO AD SPACE 1: Directly under navigation, before search -->
-    <div class="auto-ad-placeholder">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-        </script>
-    </div>
+    <!-- AUTO AD SPACE 1: Under Navigation -->
+    <div class="auto-ad-placeholder"></div>
 
     <!-- Google Custom Search -->
     <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
     <div class="gcse-search"></div>
     
-    <!-- AUTO AD SPACE 2: Between Google Search and content feed -->
-    <div class="auto-ad-placeholder">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-        </script>
-    </div>
+    <!-- AUTO AD SPACE 2: Under Search -->
+    <div class="auto-ad-placeholder"></div>
 
     <!-- Content Feed Section -->
     <section class="content-section">
         <div id="my-native-feed">Loading feed...</div>
     </section>
 
-    <!-- AUTO AD SPACE 6: Between the content feed and map widget -->
-    <div class="auto-ad-placeholder">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-        </script>
-    </div>
+    <!-- AUTO AD SPACE 6: Under News Feed -->
+    <div class="auto-ad-placeholder"></div>
 
     <!-- Yandex Map Section -->
     <section class="content-section">
@@ -127,17 +107,8 @@
         </div>
     </section>
 
-    <!-- AUTO AD SPACE 7: Bottom of page, before the footer -->
-    <div class="auto-ad-placeholder">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-        </script>
-    </div>
+    <!-- AUTO AD SPACE 7: Bottom of Page -->
+    <div class="auto-ad-placeholder"></div>
     
 </main>
 
@@ -153,28 +124,27 @@ async function loadFeed() {
         feedContainer.innerHTML = ''; 
 
         data.items.forEach((item, index) => {
-            // Render the News Item
             const div = document.createElement('div');
             div.className = 'news-item';
             div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p><a href="${item.link}" target="_blank" rel="noopener">Read More</a>`;
             feedContainer.appendChild(div);
 
-            // AUTO AD SPACE 3: Injected dynamically after the 2nd article card
+            // AUTO AD SPACE 3: Middle of feed (after article 2)
             if (index === 1) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // AUTO AD SPACE 4: Injected dynamically in the middle (after the 6th article card)
+            // AUTO AD SPACE 4: Middle of feed (after article 6)
             if (index === 5) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // AUTO AD SPACE 5: Injected dynamically near the end (after the 10th article card)
+            // AUTO AD SPACE 5: Middle of feed (after article 10)
             if (index === 9) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // Keeps your manual dynamic layout insertion for native In-Feed Ads every 4 items
+            // MANUAL IN-FEED AD: Injected after every 4 articles using your exact ad code
             if ((index + 1) % 4 === 0) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'adsense-infeed-space';
@@ -188,10 +158,11 @@ async function loadFeed() {
                 `;
                 feedContainer.appendChild(adDiv);
                 
+                // Initialize the in-feed ad
                 try {
                     (adsbygoogle = window.adsbygoogle || []).push({});
-                } catch (adError) {
-                    console.log("In-feed ad container processed.");
+                } catch (e) {
+                    console.log("In-feed ad slot initialized.");
                 }
             }
         });
@@ -200,25 +171,12 @@ async function loadFeed() {
     }
 }
 
-// Helper utility to inject Auto Ad spaces inside the JavaScript article loop
-function injectAutoAdSpace() {
+// Helper to inject empty containers for Google's Auto Ads to naturally target
+function injectEmptyAutoAdSpace() {
     const feedContainer = document.getElementById('my-native-feed');
     const adDiv = document.createElement('div');
     adDiv.className = 'auto-ad-placeholder';
-    adDiv.innerHTML = `
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-    `;
     feedContainer.appendChild(adDiv);
-    
-    try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (adError) {
-        console.log("Auto Ad stream slot queued.");
-    }
 }
 
 loadFeed();
@@ -235,10 +193,7 @@ loadFeed();
     }
 </script>
 
-<footer style="margin-top: 40px; padding: 20px 0; text-align: center; font-size: 12px; color: #94a3b8;">
-    <a href="privacy.html" style="color: #94a3b8; text-decoration: none;">Privacy Policy</a>
-</footer>
-
 </body>
 </html>
+
 

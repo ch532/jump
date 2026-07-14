@@ -15,6 +15,7 @@
     <meta name="google-site-verification" content="AxO_bs7tBOMhjX5DGp_VT_DYxNCvRf3inf0HQ7NqvvE" />
     <meta name="clckd" content="2d1b4a854cfa03a2a89feb40da2ec757" />
 
+    <!-- Google AdSense Script (Required for Auto Ads) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
@@ -33,34 +34,49 @@
         .nav-links { display: flex; gap: 20px; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
-        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-        #my-native-feed { margin: 25px 0; }
-        .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; border-radius: 8px; }
-        .adsense-infeed-space { margin: 20px 0; padding: 20px; background: #fff; border: 1px solid #e2e8f0; text-align: center; }
-        .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 25px; overflow: hidden; }
+        
+        /* Layout updates for Auto Ad placement */
+        .main-layout { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
+        .content-section { background: transparent; padding: 0; margin-bottom: 20px; }
+        
+        #my-native-feed { margin: 15px 0; }
+        .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #fff; border: 1px solid #e2e8f0; text-align: center; border-radius: 8px; }
+        .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #fff; }
     </style>
 </head>
 <body>
 
-<nav class="top-nav">
-    <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
-    <div class="nav-links">
-        <a href="index.html" class="nav-item active">Dashboard</a>
-        <a href="page1.html" class="nav-item">Page 1</a>
-        <a href="page2.html" class="nav-item">Page 2</a>
-        <a href="page3.html" class="nav-item">Page 3</a>
-        <a href="about.html" class="nav-item">About</a>
-        <a href="privacy.html" class="nav-item">Privacy</a>
-        <a href="support.html" class="nav-item">Support</a>
-    </div>
-</nav>
+<header>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-item active">Dashboard</a>
+            <a href="page1.html" class="nav-item">Page 1</a>
+            <a href="page2.html" class="nav-item">Page 2</a>
+            <a href="page3.html" class="nav-item">Page 3</a>
+            <a href="about.html" class="nav-item">About</a>
+            <a href="privacy.html" class="nav-item">Privacy</a>
+            <a href="support.html" class="nav-item">Support</a>
+        </div>
+    </nav>
+</header>
 
-<div class="container">
-    <div id="my-native-feed">Loading feed...</div>
-    <div class="yandex-map-container">
-        <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
-    </div>
-</div>
+<!-- Wrapped elements in semantic main container with flex gap spacing -->
+<main class="main-layout">
+    
+    <section class="content-section">
+        <div id="my-native-feed">Loading feed...</div>
+    </section>
+
+    <!-- Semantic division helps Auto Ads detect transitions between different types of content -->
+    <section class="content-section">
+        <div class="yandex-map-container">
+            <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
+        </div>
+    </section>
+    
+</main>
 
 <script>
 async function loadFeed() {
@@ -79,6 +95,7 @@ async function loadFeed() {
             div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p><a href="${item.link}">Read More</a>`;
             feedContainer.appendChild(div);
 
+            // Keeps your manual dynamic layout insertion every 4 items
             if ((index + 1) % 4 === 0) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'adsense-infeed-space';
@@ -112,13 +129,9 @@ loadFeed();
     }
 </script>
 
-<footer style="margin-top: 30px; text-align: center; font-size: 12px; color: #94a3b8;">
-    <a href="privacy.html">Privacy Policy</a>
+<footer style="margin-top: 40px; padding: 20px 0; text-align: center; font-size: 12px; color: #94a3b8;">
+    <a href="privacy.html" style="color: #94a3b8; text-decoration: none;">Privacy Policy</a>
 </footer>
 
 </body>
 </html>
-
-
-
-

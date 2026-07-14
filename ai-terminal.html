@@ -7,7 +7,6 @@
     
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
     
-    <!-- Leaflet CSS for Keyless Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -62,7 +61,6 @@
 
 <main class="main-layout">
 
-    <!-- Performance Saver Navigation Tabs -->
     <div class="tab-container">
         <button class="tab-btn active" onclick="switchTerminalTab(event, 'environmental')">1. Environmental Radar</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual AI Lab</button>
@@ -71,7 +69,6 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'geospatial')">5. Spatial Direction Map</button>
     </div>
 
-    <!-- 1. ENVIRONMENTAL AI & WEATHER MODULE (Using verified embed format) -->
     <div id="environmental" class="tab-content active">
         <section class="section-card">
             <h2>1. Environmental AI Radar</h2>
@@ -80,7 +77,6 @@
         </section>
     </div>
 
-    <!-- 2. AI GENERATIVE MEDIA LAB (Using active, unpaused space endpoints) -->
     <div id="generator" class="tab-content">
         <section class="section-card">
             <h2>2. Image & Video Generation AI</h2>
@@ -98,7 +94,6 @@
         </section>
     </div>
 
-    <!-- 3. LOCAL POINT OF INTEREST & INTELLIGENCE DATA -->
     <div id="location-intel" class="tab-content">
         <section class="section-card">
             <h2>3. Location Intelligence Engine</h2>
@@ -119,7 +114,6 @@
         </section>
     </div>
 
-    <!-- 4. REALTIME AI LANGUAGE DETECTOR (World Languages) -->
     <div id="language" class="tab-content">
         <section class="section-card">
             <h2>4. Global Language Classification Node</h2>
@@ -140,7 +134,6 @@
         </section>
     </div>
 
-    <!-- 5. GEOSPATIAL NODE TERMINAL MAP -->
     <div id="geospatial" class="tab-content">
         <section class="section-card">
             <h2>5. Keyless Spatial Direction & Route Tracker</h2>
@@ -172,13 +165,13 @@
     SkyIPworld AI Hub © 2026
 </footer>
 
-<!-- Leaflet JavaScript Library -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
     let map = null;
     let activeRouteLayer = null;
 
+    // Fixed tab router handles complete iframe destruction to free page memory
     function switchTerminalTab(evt, tabId) {
         const contents = document.getElementsByClassName("tab-content");
         for (let i = 0; i < contents.length; i++) {
@@ -194,11 +187,12 @@
         const imgContainer = document.getElementById("image-frame-container");
         const vidContainer = document.getElementById("video-frame-container");
         
+        // Lazy-load iframes ONLY when Tab 2 is actively open
         if (tabId === "generator") {
-            // Updated to live, public endpoints that support iframe integration natively
             imgContainer.innerHTML = `<iframe class="ai-iframe" src="https://radames-real-time-text-to-image-latent-consistency-models.hf.space"></iframe>`;
             vidContainer.innerHTML = `<iframe class="ai-iframe" src="https://fffiloni-text-to-video-2-1.hf.space"></iframe>`;
         } else {
+            // Completely erases elements when leaving Tab 2 so it CANNOT hang the browser session
             imgContainer.innerHTML = "";
             vidContainer.innerHTML = "";
         }
@@ -286,7 +280,7 @@
             { lang: 'German (Deutsch)', tokens: [' der ', ' die ', ' das ', ' und ', ' ist ', ' ein ', ' mit ', ' von ', ' den '] },
             { lang: 'Arabic (العربية)', tokens: [' في ', ' من ', ' على ', ' إن ', ' هذا ', ' هه ', ' للم ', ' ال '] },
             { lang: 'Russian (Русский)', tokens: [' и ', ' в ', ' не ', ' на ', ' я ', ' что ', ' то ', ' с ', ' а '] },
-            { lang: 'Portuguese (Português)', tokens: [' o ', ' a ', ' do ', ' da ', ' que ', ' em ', ' um ', ' uma ', ' com ', ' para '] },
+            { lang: 'Portuguese (Português)', tokens: [' o ', ' a ', ' do ', ' da ', ' que ', ' em ', ' um ', ' com ', ' para '] },
             { lang: 'Igbo (West African)', tokens: ['kedu', 'moti', 'nnwo', 'gini', 'di', 'ola', ' obu ', ' na ', ' ga '] },
             { lang: 'Yoruba (West African)', tokens: ['bawo', 'eko', 'oloun', 'se', 'oni', 'funmi', ' lati ', ' ninu '] },
             { lang: 'Hausa (West African)', tokens: ['sannu', 'ina', 'kwana', 'lafiya', 'gida', ' da ', ' na ', ' yake '] },
@@ -319,7 +313,7 @@
             instructionsBox.innerHTML = "Error: Please supply both Departure and Arrival locations.";
             return;
         }
-        instructionsBox.innerHTML = "Resolving street coordinate nodes...";
+        instructionsBox.innerHTML = "Resolving street coordinate nodes... Please wait.";
 
         try {
             const url1 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(startLoc)}&format=json&limit=1`;
@@ -399,5 +393,6 @@
 
 </body>
 </html>
+
 
 

@@ -11,10 +11,6 @@
     
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
 
-    <!-- Yandex Autoplacement 19590314 -->
-<script src="https://yandex.ru/ads/system/context.js" async></script>
-<script data-page-id="19590314" src="https://yandex.ru/ads/system/ap-loader.js" async></script>
-
     <meta name="google-adsense-account" content="ca-pub-8877351541430254">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
@@ -222,6 +218,10 @@
 
             </main>
 
+            <div id="some-id"></div> // This is where the player will be loaded
+
+            <script type="text/javascript" src="https://cdn.applixir.com/applixir.app.v6.1.0.js"></script>
+
             <aside>
                 <div class="adsense-sidebar-space"></div>
                 <div class="sidebar-panel">
@@ -412,6 +412,23 @@
         }
         screen.scrollTop = screen.scrollHeight;
     }
+</script>
+
+    <script type="text/javascript">
+  const options = {
+    apiKey: "91d11bd9-55ec-45dd-bbe5-9628ed26dfc2", // Replace with your actual API key
+    injectionElementId: "some-id" // This is the ID of the div from step 2.
+    adStatusCallbackFn: (status) => { // This is how you can listen for ad statuses (more in Step 4)
+      console.log("OUTSIDE Ad status: ", status);
+    },
+    adErrorCallbackFn: (error) => { // This is how you can listen for errors (more in Step 4)
+      console.log("Error: ", error.getError().data);
+    },
+  };
+
+  document.getElementById("start").addEventListener("click", () => { // Or use any other event to trigger the player
+    initializeAndOpenPlayer(options);
+  });
 </script>
 
 </body>

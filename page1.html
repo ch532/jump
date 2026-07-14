@@ -13,6 +13,7 @@
 
     <!-- External Ad and Integration Services -->
     <script src="https://cdn.applixir.com/applixir.app.v6.1.0.js" async></script>
+    <!-- Google AdSense Header Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <!-- AI and Utility Libraries -->
@@ -41,18 +42,18 @@
         .sidebar-ad-space { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; gap: 20px; height: fit-content; text-align: center; }
         .ad-placeholder-text { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
 
-        /* Dedicated Auto Ad Spaces */
+        /* Empty Auto Ad Placeholder Styles */
         .auto-ad-placeholder {
             width: 100%;
+            min-height: 100px;
             margin: 25px 0;
-            padding: 0;
             background: transparent;
             display: block;
             text-align: center;
         }
 
-        /* In-Feed Native Ad Styling */
-        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #f8fafc; border: 1px dashed #cbd5e1; text-align: center; border-radius: 8px; }
+        /* In-Feed Native Ad Wrapper Style */
+        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #fff; border: 1px dashed #cbd5e1; text-align: center; border-radius: 8px; }
 
         /* News Card Styles */
         #my-native-feed { margin: 15px 0; }
@@ -88,32 +89,14 @@
         <section class="main-layout">
             <h3>📚 Curated Content Hub</h3>
             
-            <!-- AUTO AD SPACE 1: Top of the Column -->
-            <div class="auto-ad-placeholder">
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-8877351541430254"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-                </script>
-            </div>
+            <!-- AUTO AD SPACE 1: Left empty for Google Auto Ads to fill -->
+            <div class="auto-ad-placeholder"></div>
 
-            <!-- The Live Articles Feed (Dynamic feed handles in-feed ads & Auto Ad spaces 2, 3, and 4) -->
+            <!-- The Live Articles Feed -->
             <div id="my-native-feed">Loading Global Mainstream News...</div>
 
-            <!-- AUTO AD SPACE 5: Bottom of the Column -->
-            <div class="auto-ad-placeholder">
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-8877351541430254"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-                </script>
-            </div>
+            <!-- AUTO AD SPACE 5: Left empty for Google Auto Ads to fill -->
+            <div class="auto-ad-placeholder"></div>
         </section>
 
         <!-- Sidebar Column -->
@@ -177,22 +160,22 @@ async function loadFeed() {
             `;
             feedContainer.appendChild(div);
 
-            // AUTO AD SPACE 2: Injected after the first article
+            // AUTO AD SPACE 2: Left empty (after first article)
             if (index === 0) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // AUTO AD SPACE 3: Injected at the middle (after article 5)
+            // AUTO AD SPACE 3: Left empty (after article 5)
             if (index === 4) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // AUTO AD SPACE 4: Injected near the end (after article 10)
+            // AUTO AD SPACE 4: Left empty (after article 10)
             if (index === 9) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // Symmetrically inject your original In-Feed Native Ad unit every 3 items
+            // MANUAL IN-FEED AD: Injected after every 3 articles using your exact ad code
             if ((index + 1) % 3 === 0) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'adsense-infeed-space';
@@ -218,33 +201,31 @@ async function loadFeed() {
     }
 }
 
-// Helper to systematically inject Auto Ad anchors inside the stream
-function injectAutoAdSpace() {
+// Helper utility to inject styled, empty placeholders for Google's Auto Ads to naturally target
+function injectEmptyAutoAdSpace() {
     const feedContainer = document.getElementById('my-native-feed');
     const adDiv = document.createElement('div');
     adDiv.className = 'auto-ad-placeholder';
-    adDiv.innerHTML = `
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-    `;
     feedContainer.appendChild(adDiv);
-    
-    // Trigger rendering layout context for this dynamic Auto Ad slot
-    try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (adError) {
-        console.log("Dynamic Auto Ad slot queued.");
-    }
 }
 
 // Initialize on page load
 loadFeed();
 </script>
 
+<div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; text-align: left; max-width: 500px;">
+    <p>SkyIPworld uses cookies to optimize your terminal layouts.</p>
+    <button onclick="acceptSiteCookies()">Accept Cookies</button>
+</div>
+
+<script>
+    function acceptSiteCookies() {
+        document.getElementById('cookie-consent-banner').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
+
 
 

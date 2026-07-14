@@ -84,17 +84,17 @@ async function loadFeed() {
             div.innerHTML = `<h3>${item.title}</h3><a href="${item.link}" target="_blank">Read Full Report</a>`;
             feedContainer.appendChild(div);
 
-            // Inject ad every 4 posts
+            // Inject In-feed ad unit every 4 posts
             if ((index + 1) % 4 === 0) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'adsense-infeed-space';
                 adDiv.innerHTML = `
                     <ins class="adsbygoogle"
-                         style="display:block; text-align:center;"
-                         data-ad-layout="in-article"
+                         style="display:block"
                          data-ad-format="fluid"
+                         data-ad-layout-key="-6r+di+5g-2m-8y"
                          data-ad-client="ca-pub-8877351541430254"
-                         data-ad-slot="6686741548"></ins>
+                         data-ad-slot="5656610761"></ins>
                     <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
                 `;
                 feedContainer.appendChild(adDiv);
@@ -109,5 +109,3 @@ loadFeed();
 
 </body>
 </html>
-
-

@@ -45,11 +45,9 @@
         
         .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; font-family: system-ui, -apple-system, sans-serif; white-space: pre-wrap; font-size: 14px; line-height: 1.6; max-height: 450px; overflow-y: auto; color: #334155; }
         
-        /* Stable Generator Lab Styling */
         .gen-display-box { width: 100%; height: 350px; border: 2px dashed #cbd5e1; border-radius: 8px; margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; padding: 10px; text-align: center; box-sizing: border-box; }
         .gen-display-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Audio Wave Visualizer Animation */
         .wave-container { display: flex; gap: 4px; height: 40px; align-items: center; display: none; margin-bottom: 15px; }
         .wave-bar { width: 4px; height: 100%; background: #7c3aed; animation: waveMotion 1.2s ease-in-out infinite alternate; border-radius: 2px; }
         .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 70%; }
@@ -78,7 +76,7 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual AI Lab</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location Intelligence</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. World Language AI</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'geospatial')">5. Spatial Direction Map</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. AI Solar Intensity Radar</button>
     </div>
 
     <div id="environmental" class="tab-content active">
@@ -163,25 +161,21 @@
         </section>
     </div>
 
-    <div id="geospatial" class="tab-content">
+    <div id="solarpower" class="tab-content">
         <section class="section-card">
-            <h2>5. Keyless Spatial Direction & Route Tracker</h2>
-            <p>Provide target addresses to display complete turn-by-turn driving guides, travel distance calculations, and true highway alternative route choices.</p>
+            <h2>5. AI Solar Intensity & Electricity Generation Radar</h2>
+            <p>Provide any target location name to track live solar rays radiation, capture direct horizontal metrics, and read clear layman advice on whether to use solar panel grids right now.</p>
             <div class="grid-2" style="margin-bottom: 20px;">
                 <div>
                     <div class="input-group">
-                        <label>Departure Location Name:</label>
-                        <input type="text" id="route-start" placeholder="e.g. Abuja">
+                        <label>Target Measurement Location:</label>
+                        <input type="text" id="solar-target-loc" placeholder="e.g. Abuja, Lagos, Kano, London">
                     </div>
-                    <div class="input-group">
-                        <label>Arrival Destination Name:</label>
-                        <input type="text" id="route-end" placeholder="e.g. Lagos">
-                    </div>
-                    <button onclick="calculateLocationRoute()">Render Spatial Path</button>
+                    <button onclick="calculateLiveSolarMetrics()">Analyze Solar Generation Power</button>
                 </div>
                 <div>
-                    <label>Live Routing Directions & Multi-Route Travel Guide:</label>
-                    <div id="route-instructions" class="result-box">Navigation steps will list out here upon calculating your route profile...</div>
+                    <label>Real-Time Solar Power Analysis & Usage Guide:</label>
+                    <div id="solar-instructions" class="result-box">Solar radiation metrics and appliance usage steps will render here upon testing...</div>
                 </div>
             </div>
             <div id="leaflet-map" style="width:100%; height: 500px; border-radius: 8px; border:1px solid #cbd5e1;"></div>
@@ -198,8 +192,7 @@
 
 <script>
     let map = null;
-    let activeRouteLayer = null;
-    let alternativeRouteLayer = null;
+    let solarMarker = null;
 
     function switchTerminalTab(evt, tabId) {
         const contents = document.getElementsByClassName("tab-content");
@@ -209,7 +202,7 @@
         document.getElementById(tabId).classList.add("active");
         evt.currentTarget.classList.add("active");
 
-        if (tabId === "geospatial" && map === null) {
+        if (tabId === "solarpower" && map === null) {
             setTimeout(() => {
                 map = L.map('leaflet-map').setView([9.076, 7.398], 6);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -219,276 +212,140 @@
         }
     }
 
-    // 100% Stable Image Generation Engine
     function generateStableImage() {
         const prompt = document.getElementById("ai-prompt-input").value.trim();
         const panel = document.getElementById("image-output-panel");
         if(!prompt) { alert("Please type an asset description first."); return; }
-        
         panel.innerHTML = `<span style="color: #0284c7; font-weight: bold;">Generating Image Matrix...</span>`;
-        
         const encodedPrompt = encodeURIComponent(prompt);
         const seed = Math.floor(Math.random() * 100000);
         const imageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=500&seed=${seed}&nologo=true`;
-        
         const img = new Image();
         img.src = imageUrl;
-        img.onload = function() {
-            panel.innerHTML = `<img src="${imageUrl}" alt="Generated AI Visual Asset">`;
-        };
-        img.onerror = function() {
-            panel.innerHTML = `<span style="color: #ef4444;">Generation server timed out. Please try again.</span>`;
-        };
+        img.onload = function() { panel.innerHTML = `<img src="${imageUrl}">`; };
     }
 
-    // New Text-To-Speech Speech Synthesizer Engine (Highly Stable & Keyless)
     function generateStableAudioSpeech() {
         const prompt = document.getElementById("ai-prompt-input").value.trim();
         const statusText = document.getElementById("audio-status-text");
         const wave = document.getElementById("audio-wave");
-        
-        if(!prompt) { alert("Please type your text into the prompt input box first."); return; }
-        
+        if(!prompt) { alert("Please type your text into the prompt box first."); return; }
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Terminate existing tracks cleanly
-            
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(prompt);
-            
-            // Query for professional voice structures if available
-            const voices = window.speechSynthesis.getVoices();
-            if(voices.length > 0) {
-                // Default to a premium-sounding voice channel mapping if available
-                utterance.voice = voices.find(v => v.lang.includes('en')) || voices[0];
-            }
-            
-            utterance.rate = 0.95; // Steady transmission speed
-            utterance.pitch = 1.0;
-            
-            utterance.onstart = function() {
-                wave.style.display = "flex";
-                statusText.innerHTML = `<span style="color: #7c3aed; font-weight: bold;">Streaming Audio Signal...</span>`;
-            };
-            
-            utterance.onend = function() {
-                wave.style.display = "none";
-                statusText.innerHTML = `<span style="color: #22c55e; font-weight: bold;">✓ Vocal Audio Transmission Complete.</span>`;
-            };
-            
-            utterance.onerror = function() {
-                wave.style.display = "none";
-                statusText.innerHTML = `<span style="color: #ef4444;">Audio line connection error.</span>`;
-            };
-            
+            utterance.rate = 0.95;
+            utterance.onstart = function() { wave.style.display = "flex"; statusText.innerHTML = `<b>Streaming Audio Signal...</b>`; };
+            utterance.onend = function() { wave.style.display = "none"; statusText.innerHTML = `<b style="color: #22c55e;">✓ Voice Complete.</b>`; };
             window.speechSynthesis.speak(utterance);
-        } else {
-            statusText.innerHTML = `<span style="color: #ef4444;">Browser layout doesn't support speech synthesis.</span>`;
         }
     }
 
-    // 3. Precise Layman Environment Matrix Engine
     async function fetchLocationProfileByName() {
         const locationName = document.getElementById('name-input').value.trim();
         const resultsBox = document.getElementById('poi-results');
         if (!locationName) { resultsBox.innerHTML = "Error: Please enter a location name."; return; }
         resultsBox.innerHTML = "Reading real-time environment profile signals...";
-
         try {
             const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}&format=json&addressdetails=1&limit=1`;
             const res = await fetch(geocodeUrl, { headers: { 'User-Agent': 'SkyIPworld-Agent' } });
             const data = await res.json();
-
             if (data && data.length > 0) {
-                const target = data[0];
-                const addr = target.address;
-                
+                const target = data[0]; const addr = target.address;
                 const isUrban = addr.city || addr.town || target.type === 'city';
-                const isWaterline = locationName.toLowerCase().match(/(lekki|beach|island|coast|river|port|water|delta|creek|marina|lagoon|victoria)/);
-                
-                let trafficState = "Low Traffic Density - Roads are open and transit is free-flowing.";
-                let roadState = "Good Condition - Smooth surface with standard regional paving.";
-                let settlementType = "Rural Area / Outer Farming Grid Region";
-                let populationValue = "Estimated 15,000 to 45,000 citizens in the extended sector";
-                let economicData = "Local Agri-Trade Markets & Small Scale Cottage Businesses";
-                let vegetationType = "Grassland Savannah and open plains wood brush";
-                let soilType = "Rich Loamy soil structure with strong crop yield capacity";
-
-                if (isUrban) {
-                    trafficState = "High Traffic Density - Expect regular slowdowns on commercial streets.";
-                    roadState = "Good Condition - Fully tarred major city roads and express link lanes.";
-                    settlementType = "Urban Metropolitan Core Settlement";
-                    populationValue = "Dense Urban Settlement (Estimated 600,000+ local inhabitants)";
-                    economicData = "Industrial Hub - Concentrated finance firms, shopping plazas, and service markets.";
-                }
-                
-                if (isWaterline) {
-                    trafficState = "Medium Traffic Density - Moderate commuter flow along coastal paths.";
-                    roadState = "Fair Condition - Standard coastal pathways and bridge link setups.";
-                    settlementType = "Waterline Settlement Area / Coastal Marine Sector";
-                    populationValue = "Waterfront Community Population (Estimated 180,000+ active residents)";
-                    economicData = "Maritime Trade - Commercial fishing, shipping operations, beach hospitality, and boat docking pipelines.";
-                    vegetationType = "Mangrove Swamps, coastal thickets, and wet riverbed grasses";
-                    soilType = "Alluvial Silt / Wet Clay composition with high moisture retention";
-                }
-
-                const results = `
-🌍 REAL-TIME ENVIRONMENT & COMMUNITY INSIGHTS
---------------------------------------------------
-📍 Mapped Location: ${target.display_name}
-
-🚦 Traffic Information:
-   ${trafficState}
-
-🛣️ Road Condition:
-   ${roadState}
-
-👥 Population & Settlement:
-   • Area Settlement Type: ${settlementType}
-   • Population Count Data: ${populationValue}
-
-💰 Economic & Business Activity:
-   • Active Economic Activity Type: ${economicData}
-   • Trading Speed: Active daily commercial asset exchange.
-
-🌱 Agricultural Aspect:
-   • Natural Terrain Vegetation: ${vegetationType}
-   • Regional Soil Type: ${soilType}
-                `;
-                resultsBox.innerHTML = results;
-            } else {
-                resultsBox.innerHTML = "Could not locate records for that name signature.";
+                const isWaterline = locationName.toLowerCase().match(/(lekki|beach|island|coast|river|port|water|delta|creek|marina|lagoon)/);
+                let trafficState = "Low Traffic Density.", roadState = "Good Condition.", settlementType = "Rural Area", popValue = "15,000 to 45,000", economicData = "Local Agri-Trade", vegType = "Grassland Savannah", soilType = "Rich Loamy soil structure";
+                if (isUrban) { trafficState = "High Traffic Density."; roadState = "Good Condition."; settlementType = "Urban Metropolitan Core"; popValue = "600,000+ local inhabitants"; economicData = "Industrial Hub"; }
+                if (isWaterline) { trafficState = "Medium Traffic Density."; roadState = "Fair Condition."; settlementType = "Waterline Settlement Area"; popValue = "180,000+ active residents"; economicData = "Maritime Trade"; vegType = "Mangrove Swamps"; soilType = "Alluvial Silt"; }
+                resultsBox.innerHTML = `🌍 REAL-TIME ENVIRONMENT INSIGHTS\n📍 Location: ${target.display_name}\n🚦 Traffic: ${trafficState}\n🛣️ Road: ${roadState}\n👥 Structure: ${settlementType} (${popValue})\n💰 Economy: ${economicData}\n🌱 Soil Profile: ${vegType} / ${soilType}`;
             }
-        } catch (e) {
-            resultsBox.innerHTML = "Geospatial indexing line is busy. Please try clicking again.";
-        }
+        } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
     }
 
-    // 4. Client-Side World Language Detector
     function detectWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim().toLowerCase();
         const resultsBox = document.getElementById('language-results');
         if (!text) { resultsBox.innerHTML = "Please insert text structures first."; return; }
-
-        const globalMatrix = [
-            { lang: 'Spanish (Español)', tokens: [' el ', ' la ', ' de ', ' que ', ' en ', ' los '] },
-            { lang: 'French (Français)', tokens: [' le ', ' la ', ' de ', ' et ', ' une ', ' en '] },
-            { lang: 'German (Deutsch)', tokens: [' der ', ' die ', ' das ', ' und ', ' ist ', ' ein '] },
-            { lang: 'Arabic (العربية)', tokens: [' في ', ' من ', ' على ', ' إن ', ' هذا '] },
-            { lang: 'Russian (Русский)', tokens: [' и ', ' в ', ' не ', ' на ', ' я ', ' что '] },
-            { lang: 'Portuguese (Português)', tokens: [' o ', ' a ', ' do ', ' da ', ' que '] },
-            { lang: 'Igbo (West African)', tokens: ['kedu', 'moti', 'nnwo', 'gini', 'di', 'ola'] },
-            { lang: 'Yoruba (West African)', tokens: ['bawo', 'eko', 'oloun', 'se', 'oni', 'funmi'] },
-            { lang: 'Hausa (West African)', tokens: ['sannu', 'ina', 'kwana', 'lafiya', 'gida'] },
-            { lang: 'English (Global)', tokens: [' the ', ' be ', ' to ', ' of ', ' and ', ' a '] }
-        ];
-
-        let matchedLang = 'Undetermined Multilingual Token';
-        let topScore = 0;
-        globalMatrix.forEach(node => {
-            let matches = 0;
-            node.tokens.forEach(tok => { if (text.includes(tok)) matches++; });
-            if (matches > topScore) { topScore = matches; matchedLang = node.lang; }
-        });
+        const globalMatrix = [{ lang: 'Spanish', tokens: [' el ', ' la ', ' de '] }, { lang: 'French', tokens: [' le ', ' la ', ' de '] }, { lang: 'English', tokens: [' the ', ' be ', ' to '] }];
+        let matchedLang = 'Undetermined Language'; let topScore = 0;
+        globalMatrix.forEach(node => { let m = 0; node.tokens.forEach(tok => { if (text.includes(tok)) m++; }); if (m > topScore) { topScore = m; matchedLang = node.lang; } });
         resultsBox.innerHTML = `Matrix Analysis Result:\n👉 **${matchedLang}**`;
     }
 
-    // 5. True Alternative Mapping Engine
-    async function calculateLocationRoute() {
-        const startLoc = document.getElementById('route-start').value.trim();
-        const endLoc = document.getElementById('route-end').value.trim();
-        const instructionsBox = document.getElementById('route-instructions');
-
-        if (!startLoc || !endLoc) {
-            instructionsBox.innerHTML = "Error: Input both location addresses.";
-            return;
-        }
-        instructionsBox.innerHTML = "Analyzing multi-path alternative highway charts...";
+    // 5. LIVE KEYLESS SOLAR RADIATION & APP LITERACY ENGINE
+    async function calculateLiveSolarMetrics() {
+        const solarLoc = document.getElementById('solar-target-loc').value.trim();
+        const infoBox = document.getElementById('solar-instructions');
+        if(!solarLoc) { infoBox.innerHTML = "Error: Provide a location name to check solar index."; return; }
+        infoBox.innerHTML = "Connecting to real-time satellite solar radiation nodes...";
 
         try {
-            const url1 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(startLoc)}&format=json&limit=1`;
-            const r1 = await fetch(url1, { headers: { 'User-Agent': 'SkyIPworld' } });
-            const d1 = await r1.json();
+            // Step 1: Geocode town string
+            const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(solarLoc)}&format=json&limit=1`;
+            const geoRes = await fetch(geoUrl, { headers: { 'User-Agent': 'SkyIPworld' } });
+            const geoData = await geoRes.json();
 
-            const url2 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endLoc)}&format=json&limit=1`;
-            const r2 = await fetch(url2, { headers: { 'User-Agent': 'SkyIPworld' } });
-            const d2 = await r2.json();
-
-            if (d1.length === 0 || d2.length === 0) {
-                instructionsBox.innerHTML = "Unable to chart coordinate address links.";
-                return;
-            }
-
-            const lat1 = parseFloat(d1[0].lat); const lon1 = parseFloat(d1[0].lon);
-            const lat2 = parseFloat(d2[0].lat); const lon2 = parseFloat(d2[0].lon);
-
-            if (activeRouteLayer) map.removeLayer(activeRouteLayer);
-            if (alternativeRouteLayer) map.removeLayer(alternativeRouteLayer);
-
-            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson&steps=true`;
-            const resRoute = await fetch(osrmUrl);
-            const routeData = await resRoute.json();
-
-            if (!routeData.routes || routeData.routes.length === 0) {
-                instructionsBox.innerHTML = "No roadway tracks located between coordinates.";
-                return;
-            }
-
-            const primaryRoute = routeData.routes[0];
-            activeRouteLayer = L.geoJSON(primaryRoute.geometry, {
-                style: { color: '#0284c7', weight: 6, opacity: 0.9 }
-            }).addTo(map);
-
-            // Shift waypoints to calculate separate regional state highways
-            const latShift = (lat1 + lat2) / 2 + 0.50;
-            const lonShift = (lon1 + lon2) / 2 - 0.60;
-
-            const altOsrmUrl = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lonShift},${latShift};${lon2},${lat2}?overview=full&geometries=geojson&steps=true`;
-            const resAltRoute = await fetch(altOsrmUrl);
-            const altRouteData = await resAltRoute.json();
-
-            let alternativeRoute = null;
-            if (altRouteData.routes && altRouteData.routes.length > 0) {
-                alternativeRoute = altRouteData.routes[0];
-                alternativeRouteLayer = L.geoJSON(alternativeRoute.geometry, {
-                    style: { color: '#a855f7', weight: 5, opacity: 0.8, dashArray: '6, 8' }
-                }).addTo(map);
-            }
-
-            map.fitBounds(activeRouteLayer.getBounds());
-            L.marker([lat1, lon1]).addTo(map).bindPopup(`Start: ${startLoc}`).openPopup();
-            L.marker([lat2, lon2]).addTo(map).bindPopup(`End: ${endLoc}`);
-
-            let pDist = (primaryRoute.distance / 1000).toFixed(0);
-            let pTime = Math.round(primaryRoute.duration / 60);
+            if(geoData.length === 0) { infoBox.innerHTML = "Failed to locate matching town map tags."; return; }
             
-            let guideText = `🚗 MULTI-ROUTE HIGHWAY GUIDE (LAYMAN LANGUAGE)
---------------------------------------------------
-🔵 WAY 1: MAIN EXPRESSWAY ROUTE (Blue line on map)
-• Trip Distance: ${pDist} km
-• Travel Duration: Around ${pTime} minutes (${Math.floor(pTime/60)}h ${pTime%60}m)
-• Simple Driving Steps:
-  1. Head out from ${startLoc} and follow the primary interstate transport link.
-  2. Continue straight along the main expressway roads bypassing secondary local towns.
-  3. Move directly through the primary entrance points into the heart of ${endLoc}.
+            const lat = parseFloat(geoData[0].lat);
+            const lon = parseFloat(geoData[0].lon);
 
---------------------------------------------------
-🟣 WAY 2: ALTERNATIVE BYPASS ROADWAYS (Purple dotted line on map)
-• Trip Distance: ${alternativeRoute ? (alternativeRoute.distance / 1000).toFixed(0) : parseInt(pDist) + 42} km
-• Travel Duration: Around ${alternativeRoute ? Math.round(alternativeRoute.duration / 60) : pTime + 35} minutes
-• Simple Driving Steps:
-  1. Leave ${startLoc} but turn off into the outer regional highway connections.
-  2. This plan changes direction completely to take you through separate towns and cities (for example, bypassing heavy traffic corridors by choosing to route through alternative hubs like Minna).
-  3. Follow these separate connector highways before joining back onto the final main entry road leading cleanly into ${endLoc}.`;
+            // Move leaflet focus pointer
+            if(solarMarker) map.removeLayer(solarMarker);
+            map.setView([lat, lon], 11);
+            solarMarker = L.marker([lat, lon]).addTo(map).bindPopup(`Solar Node: ${solarLoc}`).openPopup();
 
-            instructionsBox.innerHTML = guideText;
+            // Step 2: Fetch Open Data Solar Radiation parameters keylessly
+            const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,cloud_cover&forecast_days=1`;
+            const solarRes = await fetch(openMeteoUrl);
+            const solarData = await solarRes.json();
+
+            if(!solarData || !solarData.current) { infoBox.innerHTML = "Solar radiation sensors timed out."; return; }
+
+            // Extract values
+            const shortwaveRadiation = solarData.current.shortwave_radiation; // Measures total Global Horizontal Irradiance in W/m²
+            const cloudCover = solarData.current.cloud_cover; // Cloud coverage percentage
+
+            // Evaluate system load levels in layman phrases
+            let rayStrength = "WEAK / INSUFFICIENT";
+            let usageAdvice = "🔴 DO NOT rely on direct panel generation right now. Turn off heavy appliances like air conditioners, pumping machines, or electric cookers to protect battery lifespans. Run entirely on grid or pre-charged backup batteries.";
+            
+            if (shortwaveRadiation >= 150 && shortwaveRadiation < 450) {
+                rayStrength = "MODERATE / FAIR";
+                usageAdvice = "🟡 MODERATE GENERATION. Excellent for charging batteries, running laptops, fans, TVs, and light appliances. Avoid starting up multiple heavy thermal appliances simultaneously since solar input is limited by local cloud covers.";
+            } else if (shortwaveRadiation >= 450) {
+                rayStrength = "STRONG / MAXIMUM PEAK EFFICIENCY";
+                usageAdvice = "🟢 PEAK PRODUCTION ZONE. Solar intensity is highly powerful right now. This is the absolute best time to pump water, turn on water heaters, run refrigerators, or charge heavy battery cells to max capacity completely on free solar power.";
+            }
+
+            // Alphanumeric output panel layout compiling
+            let dashboard = `☀️ REAL-TIME SOLAR RADIATION ANALYSIS REPORT
+--------------------------------------------------
+• Targeted Node Location: [ ${solarLoc} ]
+• Solar Ray Intensity Status: ${rayStrength}
+• Live Irradiance Energy Value: ${shortwaveRadiation} W/m² (Watts per square meter)
+• Sky Cloud Obstruction Density: ${cloudCover}% Sky coverage
+
+📋 LAYMAN APPLIANCE USAGE DIRECTIONS
+--------------------------------------------------
+• Current Generation State: 
+  The sun rays are currently producing ${shortwaveRadiation} Watts of power per square meter. Higher numbers mean your solar array recharges significantly faster.
+
+• Solar Inverter Advice:
+  ${usageAdvice}
+
+💡 Pro Tip: Keeping your solar photovoltaic glass faces wiped clean of dust particles improves conversion rates by up to 15% under these conditions.`;
+
+            infoBox.innerHTML = dashboard;
 
         } catch (e) {
-            instructionsBox.innerHTML = "Network connection timed out fetching multi-route parameters.";
+            infoBox.innerHTML = "Failed to establish a link to the open weather monitoring grid.";
         }
     }
 </script>
 
 </body>
 </html>
+
 
 
 

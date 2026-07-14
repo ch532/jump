@@ -115,7 +115,6 @@
 
     <div class="adsense-autoad-stripe"></div>
 
-    
                 <div class="search-engine-wrapper">
                     <script async src="https://cse.google.com/cse.js?cx=f1ec786fdb3a8416c"></script>
                     <div class="gcse-search"></div>
@@ -126,6 +125,10 @@
                     <script type="text/javascript" src="https://www.rssdog.com/index.php?url=https%3A%2F%2Fwww.bellanaija.com%2Fevent%2Ffeed%2F&amp;mode=javascript&amp;showonly=&amp;maxitems=15&amp;showdescs=1&amp;desctrim=0&amp;descmax=0&amp;tabwidth=100%25&amp;excltitle=1&amp;showdate=1&amp;xmlbtn=1&amp;utf8=1&amp;linktarget=_self&amp;bordercol=%23d4d0c8&amp;headbgcol=%23999999&amp;headtxtcol=%23ffffff&amp;titlebgcol=%23f1eded&amp;titletxtcol=%23000000&amp;itembgcol=%23ffffff&amp;itemtxtcol=%23000000&amp;ctl=0">
     </script>
     <noscript> You apparently do not have JavaScript enabled on your browser lest you would be viewing an RSS Feed here from <a href="https://www.rssdog.com/">RSS Dog</a> </noscript>
+
+    <div id="some-id"></div> // This is where the player will be loaded
+
+    <script type="text/javascript" src="https://cdn.applixir.com/applixir.app.v6.1.0.js"></script>
 
                 <div class="yandex-map-container">
                     <div style="position:relative;overflow:hidden;">
@@ -153,6 +156,23 @@
 </div>
 
 <div class="adsense-autoad-stripe"></div>
+
+    <script type="text/javascript">
+  const options = {
+    apiKey: "91d11bd9-55ec-45dd-bbe5-9628ed26dfc2", // Replace with your actual API key
+    injectionElementId: "some-id" // This is the ID of the div from step 2.
+    adStatusCallbackFn: (status) => { // This is how you can listen for ad statuses (more in Step 4)
+      console.log("OUTSIDE Ad status: ", status);
+    },
+    adErrorCallbackFn: (error) => { // This is how you can listen for errors (more in Step 4)
+      console.log("Error: ", error.getError().data);
+    },
+  };
+
+  document.getElementById("start").addEventListener("click", () => { // Or use any other event to trigger the player
+    initializeAndOpenPlayer(options);
+  });
+</script>
 
 <div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; text-align: left; max-width: 500px;">
     <p style="margin: 0 0 15px 0; font-size: 14px; line-height: 1.5;">

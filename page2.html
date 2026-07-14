@@ -8,6 +8,7 @@
     <meta name="keywords" content="SkyIPworld, Agentic AI, AI Image Generator">
     <meta name="author" content="SkyIPworld">
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
+    <!-- Google AdSense Header Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <style>
@@ -24,11 +25,11 @@
         
         .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         
-        /* Dedicated Auto Ad Spaces */
+        /* Empty Auto Ad Placeholder Styles */
         .auto-ad-placeholder {
             width: 100%;
+            min-height: 100px;
             margin: 25px 0;
-            padding: 0;
             background: transparent;
             display: block;
             text-align: center;
@@ -45,6 +46,7 @@
         .btn-read-more { display: inline-block; background-color: #1e293b; color: #f8fafc; font-weight: bold; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; transition: background-color 0.2s; }
         .btn-read-more:hover { background-color: #38bdf8; color: #1e293b; }
         
+        /* In-Feed Native Ad Wrapper Style */
         .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #f8fafc; border: 1px dashed #cbd5e1; text-align: center; border-radius: 8px; }
     </style>
 </head>
@@ -67,34 +69,16 @@
     <div class="grid">
         <main class="main-content">
             
-            <!-- AUTO AD SPACE 1: Top of the Page -->
-            <div class="auto-ad-placeholder">
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-8877351541430254"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-                </script>
-            </div>
+            <!-- AUTO AD SPACE 1: Left empty for Google Auto Ads to fill -->
+            <div class="auto-ad-placeholder"></div>
             
-            <!-- Target container for our dynamic Dev.to articles, native in-feed ads, and internal Auto Ads -->
+            <!-- Target container for our dynamic Dev.to articles, native in-feed ads, and internal empty Auto Ads -->
             <div id="my-native-feed">
                 <div style="color: #94a3b8; font-style: italic; padding: 20px 0;">Syncing with live global tech nodes...</div>
             </div>
 
-            <!-- AUTO AD SPACE 5: Bottom of the Page -->
-            <div class="auto-ad-placeholder">
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-8877351541430254"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-                </script>
-            </div>
+            <!-- AUTO AD SPACE 5: Left empty for Google Auto Ads to fill -->
+            <div class="auto-ad-placeholder"></div>
         </main>
     </div>
 </div>
@@ -104,7 +88,6 @@
 async function loadLiveDevArticles() {
     const feedContainer = document.getElementById('my-native-feed');
     
-    // Increased target query to 12 articles for clean spacing distribution
     const apiUrl = "https://dev.to/api/articles?per_page=12";
     
     try {
@@ -112,7 +95,7 @@ async function loadLiveDevArticles() {
         if(!response.ok) throw new Error("Network Busy");
         const articles = await response.json();
         
-        feedContainer.innerHTML = ''; // Clear fallback state
+        feedContainer.innerHTML = ''; 
 
         if (!articles || articles.length === 0) {
             throw new Error("No entries found");
@@ -144,22 +127,22 @@ async function loadLiveDevArticles() {
 
             feedContainer.insertAdjacentHTML('beforeend', articleCardHTML);
 
-            // AUTO AD SPACE 2: Injected directly after the first article
+            // AUTO AD SPACE 2: Left empty (after the first article)
             if (index === 0) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // AUTO AD SPACE 3: Injected at the midpoint (after article 5)
+            // AUTO AD SPACE 3: Left empty (after article 5)
             if (index === 4) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // AUTO AD SPACE 4: Injected near the end (after article 10)
+            // AUTO AD SPACE 4: Left empty (after article 10)
             if (index === 9) {
-                injectAutoAdSpace();
+                injectEmptyAutoAdSpace();
             }
 
-            // Symmetrically inject original In-Feed Native Ad unit every 3 articles
+            // MANUAL IN-FEED AD: Injected after every 3 articles using your exact ad code
             if ((index + 1) % 3 === 0) {
                 const adHTML = `
                     <div class="adsense-infeed-space">
@@ -196,30 +179,30 @@ async function loadLiveDevArticles() {
     }
 }
 
-// Helper utility to programmatically append Auto Ad spaces dynamically
-function injectAutoAdSpace() {
+// Helper utility to inject styled, empty placeholders for Google's Auto Ads to naturally target
+function injectEmptyAutoAdSpace() {
     const feedContainer = document.getElementById('my-native-feed');
     const adDiv = document.createElement('div');
     adDiv.className = 'auto-ad-placeholder';
-    adDiv.innerHTML = `
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-8877351541430254"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-    `;
     feedContainer.appendChild(adDiv);
-    
-    try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (adError) {
-        console.log("Auto Ad layout queued.");
-    }
 }
 
 // Start loading the live developer stream immediately on mount
 loadLiveDevArticles();
 </script>
+
+<div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; text-align: left; max-width: 500px;">
+    <p>SkyIPworld uses cookies to optimize your terminal layouts.</p>
+    <button onclick="acceptSiteCookies()">Accept Cookies</button>
+</div>
+
+<script>
+    function acceptSiteCookies() {
+        document.getElementById('cookie-consent-banner').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
+
 

@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyIPworld - Innovation & Startups Terminal</title>
-    
-    <meta name="description" content="SkyIPworld Page 2 - Curated technological innovation highlights, startup insights, and emerging corporate business metrics.">
-    <meta name="keywords" content="SkyIPworld, tech startups, business innovation, venture capital, digital ecosystem, product launches">
+    <title>SkyIPworld - Macro Environmental Tracker</title>
+    <meta name="description" content="SkyIPworld Agentic AI Hub - Interactive multi-modal open-source agent terminal.">
+    <meta name="keywords" content="SkyIPworld, Agentic AI, AI Image Generator">
     <meta name="author" content="SkyIPworld">
-    
-    <link type="image/png" rel="icon" href="https://skyl.name.ng/connectgold_2.png">
-    <meta name="google-adsense-account" content="ca-pub-8877351541430254">
-    
+    <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; }
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; }
         .nav-brand span { color: #38bdf8; }
@@ -24,15 +20,10 @@
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        
-        /* Feed & Ad Styles */
+        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
         #my-native-feed { margin: 25px 0; }
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; border-radius: 8px; }
         .adsense-infeed-space { margin: 20px 0; padding: 20px; background: #fff; border: 1px solid #e2e8f0; text-align: center; }
-        
-        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; }
-        .sidebar-panel { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
-        .sidebar-title { font-size: 14px; font-weight: bold; color: #475569; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 15px 0; }
     </style>
 </head>
 <body>
@@ -41,71 +32,49 @@
     <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
     <div class="nav-links">
         <a href="index.html" class="nav-item">Dashboard</a>
-        <a href="page2.html" class="nav-item active">Page 2</a>
+        <a href="page1.html" class="nav-item active">Page 1</a>
+        <a href="page2.html" class="nav-item">Page 2</a>
+        <a href="page3.html" class="nav-item">Page 3</a>
+        <a href="about.html" class="nav-item">About</a>
+        <a href="privacy.html" class="nav-item">Privacy</a>
+        <a href="support.html" class="nav-item">Support</a>
     </div>
 </nav>
 
 <div class="container">
     <div class="grid">
         <main class="main-content">
-            <h2>Innovation & Startups Terminal</h2>
-            <p style="color: #64748b; font-size: 14px;">Curated tech startup insights and emerging market metrics.</p>
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 25px;">
-            
-            <div id="my-native-feed">Loading startup insights...</div>
+            <h2>Macro Environmental Condition Index</h2>
+            <div id="my-native-feed">Loading Dynamic News...</div>
         </main>
-
-        <aside>
-            <div class="sidebar-panel">
-                <h4 class="sidebar-title">Global Vectors</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li>&bull; Digital Capital Market</li>
-                    <li>&bull; Emerging Frameworks</li>
-                </ul>
-            </div>
-        </aside>
     </div>
 </div>
 
 <script>
 async function loadFeed() {
-    const rssUrl = "https://techcrunch.com/category/startups/feed/";
+    const rssUrl = "https://news.google.com/rss?hl=en-NG&gl=NG&ceid=NG:en";
     const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    
     try {
         const response = await fetch(proxyUrl);
         const data = await response.json();
         const feedContainer = document.getElementById('my-native-feed');
         feedContainer.innerHTML = ''; 
-
         data.items.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'news-item';
             div.innerHTML = `<h3>${item.title}</h3><a href="${item.link}" target="_blank">Read Full Report</a>`;
             feedContainer.appendChild(div);
-
-            // Inject In-feed ad unit every 4 posts
             if ((index + 1) % 4 === 0) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'adsense-infeed-space';
-                adDiv.innerHTML = `
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-format="fluid"
-                         data-ad-layout-key="-6r+di+5g-2m-8y"
-                         data-ad-client="ca-pub-8877351541430254"
-                         data-ad-slot="5656610761"></ins>
-                    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
-                `;
+                adDiv.innerHTML = `<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6r+di+5g-2m-8y" data-ad-client="ca-pub-8877351541430254" data-ad-slot="5656610761"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>`;
                 feedContainer.appendChild(adDiv);
             }
         });
-    } catch (e) {
-        document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
-    }
+    } catch (e) { feedContainer.innerHTML = "Unable to load feed."; }
 }
 loadFeed();
 </script>
-
 </body>
 </html>
+

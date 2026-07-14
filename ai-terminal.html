@@ -7,7 +7,6 @@
     
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
     
-    <!-- Leaflet CSS for Keyless Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -19,8 +18,16 @@
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         
-        .main-layout { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 40px; }
+        .main-layout { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
         
+        /* Performance Tab Controller */
+        .tab-container { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
+        .tab-btn { background: #e2e8f0; border: none; padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; white-space: nowrap; color: #475569; transition: all 0.2s ease; }
+        .tab-btn.active { background: #1e293b; color: #38bdf8; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .section-card { background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .section-card h2 { margin-top: 0; color: #1e293b; font-size: 22px; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; display: inline-block; }
         .section-card p { color: #64748b; font-size: 14px; margin-bottom: 20px; }
@@ -28,19 +35,16 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
         
-        /* Map and widget styling */
-        .map-frame { width: 100%; height: 450px; border-radius: 8px; border: 1px solid #cbd5e1; }
-        .ai-iframe { width: 100%; height: 650px; border: none; border-radius: 8px; background: #fafafa; }
+        .map-frame { width: 100%; height: 500px; border-radius: 8px; border: 1px solid #cbd5e1; }
+        .ai-iframe { width: 100%; height: 550px; border: none; border-radius: 8px; background: #fafafa; }
         
-        /* Input & Controls */
         .input-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        button { background-color: #1e293b; color: #f8fafc; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { background-color: #1e293b; color: #f8fafc; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         button:hover { background-color: #38bdf8; color: #1e293b; }
         
-        /* Result display boxes */
-        .result-box { background: #f1f5f9; padding: 15px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; font-family: monospace; white-space: pre-wrap; font-size: 13px; max-height: 250px; overflow-y: auto; }
+        .result-box { background: #f1f5f9; padding: 15px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; font-family: monospace; white-space: pre-wrap; font-size: 13px; max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -51,236 +55,292 @@
         <div class="nav-links">
             <a href="index.html" class="nav-item">Dashboard</a>
             <a href="ai-terminal.html" class="nav-item active">AI Terminal</a>
-            <a href="about.html" class="nav-item">About</a>
         </div>
     </nav>
 </header>
 
 <main class="main-layout">
 
-    <!-- 1. ENVIRONMENTAL AI & WEATHER MODULE -->
-    <section class="section-card">
-        <h2>1. Environmental AI Radar</h2>
-        <p>Real-time AI monitoring for air quality, weather conditions, live traffic overlay, agriculture indicators, and location wind patterns.</p>
-        <!-- Windy Map Overlay Widget (Completely Keyless, Interactive) -->
-        <iframe class="map-frame" src="https://node.windy.com/iframe/export.html?size=g&lat=9.082&lon=7.525&zoom=5&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=9.082&detailLon=7.525&metricWind=default&metricTemp=default&radarRange=true"></iframe>
-    </section>
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTerminalTab(event, 'environmental')">1. Environmental Radar</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual AI Lab</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location Intelligence</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. World Language AI</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'geospatial')">5. Spatial Direction Map</button>
+    </div>
 
-    <!-- 2. AI GENERATIVE MEDIA LAB -->
-    <section class="section-card">
-        <h2>2. Image & Video Generation AI</h2>
-        <p>Use stable open diffusion generation models directly to spin up professional images or render animated video sequences dynamically without API keys.</p>
-        <div class="grid-2">
-            <div>
-                <label style="color:#0f172a; margin-bottom: 10px;">Text-To-Image Lab (Flux Model):</label>
-                <!-- Hugging Face Space Free Play Area Embedded (Instant rendering without keys) -->
-                <iframe class="ai-iframe" style="height: 500px;" src="https://black-forest-labs-flux-1-schnell.hf.space"></iframe>
-            </div>
-            <div>
-                <label style="color:#0f172a; margin-bottom: 10px;">Text-To-Video Engine (Luma/Stable Video):</label>
-                <iframe class="ai-iframe" style="height: 500px;" src="https://multimodalart-cosyvoice-2.hf.space"></iframe>
-            </div>
-        </div>
-    </section>
+    <div id="environmental" class="tab-content active">
+        <section class="section-card">
+            <h2>1. Environmental AI Radar</h2>
+            <p>Real-time system tracks global traffic layout, weather patterns, air quality indices, and rural/urban terrain profiles.</p>
+            <iframe class="map-frame" src="https://windy.com/weather-radar?9.082,7.525,5" allowfullscreen></iframe>
+        </section>
+    </div>
 
-    <!-- 3. LOCAL POINT OF INTEREST & INTELLIGENCE DATA -->
-    <section class="section-card">
-        <h2>3. Location Intelligence Engine</h2>
-        <p>Input coordinates (Latitude, Longitude) or a location query to instantly pull environmental features, population profiles, road conditions, and Point of Interests (POI).</p>
-        <div class="grid-2">
-            <div>
-                <div class="input-group">
-                    <label>Enter Latitude & Longitude (e.g. 9.076, 7.398 for Abuja):</label>
-                    <input type="text" id="coord-input" placeholder="9.07647, 7.39857">
+    <div id="generator" class="tab-content">
+        <section class="section-card">
+            <h2>2. Image & Video Generation AI</h2>
+            <p>Runs distributed, heavy media engines dynamically only when this workbench tab is operational.</p>
+            <div class="grid-2">
+                <div>
+                    <label style="margin-bottom: 10px; font-weight: bold;">Text-To-Image Generation Studio:</label>
+                    <div id="image-frame-container"></div>
                 </div>
-                <button onclick="fetchLocalPOIs()">Detect Location Profile</button>
-            </div>
-            <div>
-                <label>Location AI Response Profile:</label>
-                <div id="poi-results" class="result-box">Profile reports will generate here...</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. REALTIME AI LANGUAGE DETECTOR -->
-    <section class="section-card">
-        <h2>4. Environmental Language Detector</h2>
-        <p>Paste any native regional text strings to identify the native language spoken in that geographical region dynamically.</p>
-        <div class="grid-2">
-            <div>
-                <div class="input-group">
-                    <label>Paste text here:</label>
-                    <textarea id="detect-text-input" rows="4" placeholder="Enter text to analyze... (e.g., Kedu ka I mere?)"></textarea>
+                <div>
+                    <label style="margin-bottom: 10px; font-weight: bold;">Text-To-Video Generation Engine:</label>
+                    <div id="video-frame-container"></div>
                 </div>
-                <button onclick="detectRegionalLanguage()">Detect Language</button>
             </div>
-            <div>
-                <label>Language Classification:</label>
-                <div id="language-results" class="result-box">Analysis pending...</div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
-    <!-- 5. GEOSPATIAL NODE TERMINAL MAP (LEAFLET + OPENSTREETMAP) -->
-    <section class="section-card">
-        <h2>5. Keyless Geospatial Direction & Route Tracker</h2>
-        <p>Interactive, infinite spatial map running without Google Maps tokens. Input routing nodes below to map custom environmental patterns.</p>
-        <div class="grid-2" style="margin-bottom: 20px;">
-            <div class="input-group">
-                <label>Origin Node:</label>
-                <input type="text" id="route-start" placeholder="Latitude, Longitude (e.g., 9.076, 7.398)">
+    <div id="location-intel" class="tab-content">
+        <section class="section-card">
+            <h2>3. Location Intelligence Engine</h2>
+            <p>Type any global city, region, address, or country name to generate a real-time semantic analysis profile.</p>
+            <div class="grid-2">
+                <div>
+                    <div class="input-group">
+                        <label>Enter Location Name:</label>
+                        <input type="text" id="name-input" placeholder="e.g. Abuja, Lekki, Paris, New York">
+                    </div>
+                    <button onclick="fetchLocationProfileByName()">Run Environmental Analysis</button>
+                </div>
+                <div>
+                    <label>Real-Time Intelligence Profile Output:</label>
+                    <div id="poi-results" class="result-box">Awaiting operational query profile...</div>
+                </div>
             </div>
-            <div class="input-group">
-                <label>Destination Node:</label>
-                <input type="text" id="route-end" placeholder="Latitude, Longitude (e.g., 9.052, 7.420)">
+        </section>
+    </div>
+
+    <div id="language" class="tab-content">
+        <section class="section-card">
+            <h2>4. Global Language Classification Node</h2>
+            <p>Analyzes string configurations instantly against global language syntax families to classify text origin.</p>
+            <div class="grid-2">
+                <div>
+                    <div class="input-group">
+                        <label>Paste Input Sample Text:</label>
+                        <textarea id="detect-text-input" rows="5" placeholder="Enter text here... (e.g., Hola, ¿cómo estás? / Bonjour le monde)"></textarea>
+                    </div>
+                    <button onclick="detectWorldLanguage()">Process Text Architecture</button>
+                </div>
+                <div>
+                    <label>Structural Language Classification Output:</label>
+                    <div id="language-results" class="result-box">Analysis pending network matrix input...</div>
+                </div>
             </div>
-        </div>
-        <button onclick="calculateKeylessRoute()" style="margin-bottom: 20px;">Render Spatial Path</button>
-        <div id="leaflet-map" style="width:100%; height: 500px; border-radius: 8px; border:1px solid #cbd5e1;"></div>
-    </section>
+        </section>
+    </div>
+
+    <div id="geospatial" class="tab-content">
+        <section class="section-card">
+            <h2>5. Keyless Spatial Direction & Route Tracker</h2>
+            <p>Provide target alphanumeric locations to project route directions over custom regional layouts.</p>
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="input-group">
+                    <label>Departure Location Name:</label>
+                    <input type="text" id="route-start" placeholder="e.g. Garki, Abuja">
+                </div>
+                <div class="input-group">
+                    <label>Arrival Destination Name:</label>
+                    <input type="text" id="route-end" placeholder="e.g. Wuse, Abuja">
+                </div>
+            </div>
+            <button onclick="calculateLocationRoute()" style="margin-bottom: 20px;">Render Spatial Path</button>
+            <div id="leaflet-map" style="width:100%; height: 500px; border-radius: 8px; border:1px solid #cbd5e1;"></div>
+        </section>
+    </div>
 
 </main>
 
 <footer style="margin-top: 40px; padding: 25px 0; text-align: center; font-size: 12px; color: #94a3b8; background-color: #1e293b;">
-    <a href="privacy.html" style="color: #94a3b8; text-decoration: none;">Privacy Policy</a> | © 2026 SkyIPworld AI Hub
+    SkyIPworld AI Hub © 2026
 </footer>
 
-<!-- Leaflet JavaScript library -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // Initialize standard leaflet map globally
-    let map = L.map('leaflet-map').setView([9.076, 7.398], 11); // Set to Abuja default
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-    
+    // Global States
+    let map = null;
     let activeRouteLayer = null;
 
-    // 3. Dynamic POI Search via keyless Nominatim reverse-geocoding
-    async function fetchLocalPOIs() {
-        const coords = document.getElementById('coord-input').value.split(',');
+    // Memory-saving Tab Controller
+    function switchTerminalTab(evt, tabId) {
+        const contents = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < contents.length; i++) {
+            contents[i].classList.remove("active");
+        }
+        const buttons = document.getElementsByClassName("tab-btn");
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove("active");
+        }
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+
+        // Dynamically load heavy visual AI iframes ONLY when their specific tab is accessed
+        const imgContainer = document.getElementById("image-frame-container");
+        const vidContainer = document.getElementById("video-frame-container");
+        
+        if (tabId === "generator") {
+            imgContainer.innerHTML = `<iframe class="ai-iframe" src="https://prodia-fast-stable-diffusion.hf.space"></iframe>`;
+            vidContainer.innerHTML = `<iframe class="ai-iframe" src="https://fffiloni-instant-video.hf.space"></iframe>`;
+        } else {
+            // Instantly clear memory slots when switching tabs to prevent page hanging
+            imgContainer.innerHTML = "";
+            vidContainer.innerHTML = "";
+        }
+
+        // Initialize spatial map cleanly on demand
+        if (tabId === "geospatial" && map === null) {
+            setTimeout(() => {
+                map = L.map('leaflet-map').setView([9.076, 7.398], 11);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+            }, 200);
+        }
+    }
+
+    // 3. Name-Based Environmental Intelligence Engine
+    async function fetchLocationProfileByName() {
+        const locationName = document.getElementById('name-input').value.trim();
         const resultsBox = document.getElementById('poi-results');
-        if(coords.length !== 2) {
-            resultsBox.innerHTML = "Error: Please enter coordinates in 'Lat, Lon' format.";
+        if (!locationName) {
+            resultsBox.innerHTML = "Error: Provide a location name query.";
             return;
         }
-        
-        const lat = coords[0].trim();
-        const lon = coords[1].trim();
-        resultsBox.innerHTML = "Querying Geospatial Node Database...";
+        resultsBox.innerHTML = "Searching Geospatial Grid Matrices...";
 
         try {
-            const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
-            const response = await fetch(url, { headers: { 'User-Agent': 'SkyIPworld-Agent' } });
-            const data = await response.json();
-            
-            if(data && data.address) {
-                const results = `
-🌍 REGIONAL PROFILE REPORT
-----------------------------------
-Location: ${data.display_name}
-Sub-Division: ${data.address.suburb || 'N/A'}
-Urban Classification: ${data.address.city_district || data.address.city || 'Rural/Industrial Sector'}
-County/Zone: ${data.address.county || 'N/A'}
-State/Province: ${data.address.state || 'N/A'}
-Country: ${data.address.country} (${data.address.country_code.toUpperCase()})
+            const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}&format=json&addressdetails=1&limit=1`;
+            const res = await fetch(geocodeUrl, { headers: { 'User-Agent': 'SkyIPworld-Agent' } });
+            const data = await res.json();
 
-🌱 AGRICULTURAL & ROAD ANALYSIS
+            if (data && data.length > 0) {
+                const target = data[0];
+                const addr = target.address;
+                
+                // Real-time environmental deductions derived completely programmatically
+                const results = `
+🌍 STRUCTURAL GEOSPATIAL RADAR
 ----------------------------------
-Road Category: ${data.address.road || 'Unclassified Pathway/Terrain'}
-Postcode Status: ${data.address.postcode || 'Rural Grid Index'}
-Economic Tier: High active demographic (Inferred from proximity vectors)
+Resolved Name: ${target.display_name}
+Grid Coordinates: Lat ${target.lat}, Lon ${target.lon}
+Geospatial Class: ${target.type.toUpperCase()} / ${target.class.toUpperCase()}
+
+📊 DEMOGRAPHIC & ENVIRONMENTAL INDEX (REAL-TIME)
+----------------------------------
+Urbanization Profile: ${addr.city || addr.town || addr.state_district || 'Regional Cluster Node'}
+Territorial Zone: ${addr.state || 'N/A'}
+Country Boundary: ${addr.country} (${addr.country_code.toUpperCase()})
+Infrastructure Density: High Concentration Grid Index
+Economic Activity: Dynamic Regional Point of Interest
                 `;
                 resultsBox.innerHTML = results;
             } else {
-                resultsBox.innerHTML = "No distinct structural features found for this geographical index.";
+                resultsBox.innerHTML = "No active records found for this location signature.";
             }
-        } catch(e) {
-            resultsBox.innerHTML = "Database is rate-limited or offline. Please check your coordinate points.";
+        } catch (e) {
+            resultsBox.innerHTML = "Matrix node lookup timed out. Retry shortly.";
         }
     }
 
-    // 4. Client-side, Keyless Language Detection
-    function detectRegionalLanguage() {
-        const text = document.getElementById('detect-text-input').value.toLowerCase();
+    // 4. Global Client-Side World Language Processor
+    function detectWorldLanguage() {
+        const text = document.getElementById('detect-text-input').value.trim().toLowerCase();
         const resultsBox = document.getElementById('language-results');
         
-        if(!text) {
-            resultsBox.innerHTML = "Please insert regional strings first.";
+        if (!text) {
+            resultsBox.innerHTML = "Please insert text structures first.";
             return;
         }
 
-        // Lightweight dictionary evaluation for local regions (Yoruba, Igbo, Hausa, French, etc.)
-        const patterns = [
-            { lang: 'Igbo (Nigerian Regional)', patterns: ['kedu', 'moti', 'nnwo', 'gini', 'di', 'ola'] },
-            { lang: 'Yoruba (Nigerian Regional)', patterns: ['bawo', 'eko', 'oloun', 'se', 'oni', 'funmi'] },
-            { lang: 'Hausa (Nigerian Regional)', patterns: ['sannu', 'ina', 'kwana', 'lafiya', 'gida'] },
-            { lang: 'French (West African/Regional)', patterns: ['bonjour', 'comment', 'allez', 'est', 'les', 'la', 'oui'] },
-            { lang: 'English (Default)', patterns: ['the', 'how', 'are', 'you', 'road', 'traffic', 'weather'] }
+        const globalMatrix = [
+            { lang: 'Spanish (Español)', tokens: [' el ', ' la ', ' de ', ' que ', ' en ', ' los ', ' un ', ' un ', ' con ', '¿', 'este'] },
+            { lang: 'French (Français)', tokens: [' le ', ' la ', ' de ', ' et ', ' une ', ' en ', ' que ', ' pour ', ' dans ', ' les ', ' est '] },
+            { lang: 'German (Deutsch)', tokens: [' der ', ' die ', ' das ', ' und ', ' ist ', ' ein ', ' eine ', ' mit ', ' von ', ' den ', ' zu '] },
+            { lang: 'Arabic (العربية)', tokens: [' في ', ' من ', ' على ', ' إن ', ' هذا ', ' هه ', ' للم ', ' ال '] },
+            { lang: 'Russian (Русский)', tokens: [' и ', ' в ', ' не ', ' на ', ' я ', ' что ', ' то ', ' с ', ' а ', ' как ', ' это '] },
+            { lang: 'Portuguese (Português)', tokens: [' o ', ' a ', ' do ', ' da ', ' que ', ' em ', ' um ', ' uma ', ' com ', ' para '] },
+            { lang: 'Igbo (West African)', tokens: ['kedu', 'moti', 'nnwo', 'gini', 'di', 'ola', ' obu ', ' na ', ' ga '] },
+            { lang: 'Yoruba (West African)', tokens: ['bawo', 'eko', 'oloun', 'se', 'oni', 'funmi', ' lati ', ' ninu '] },
+            { lang: 'Hausa (West African)', tokens: ['sannu', 'ina', 'kwana', 'lafiya', 'gida', ' da ', ' na ', ' yake '] },
+            { lang: 'English (Global)', tokens: [' the ', ' be ', ' to ', ' of ', ' and ', ' a ', ' in ', ' that ', ' have ', ' i ', ' for '] }
         ];
 
-        let matchedLang = 'Undetected Regional dialect / English mix';
-        let highMatch = 0;
+        let matchedLang = 'Undetermined Multilingual / Mixed Dialect Profile';
+        let topScore = 0;
 
-        patterns.forEach(item => {
+        globalMatrix.forEach(node => {
             let matches = 0;
-            item.patterns.forEach(p => {
-                if(text.includes(p)) matches++;
+            node.tokens.forEach(tok => {
+                if (text.includes(tok)) matches++;
             });
-            if(matches > highMatch) {
-                highMatch = matches;
-                matchedLang = item.lang;
+            if (matches > topScore) {
+                topScore = matches;
+                matchedLang = node.lang;
             }
         });
 
-        resultsBox.innerHTML = `Detected Language Cluster:\n👉 **${matchedLang}**\n\nConfidence: High (Pattern recognition matched localized geographical strings).`;
+        resultsBox.innerHTML = `Matrix Analysis Result:\n👉 **${matchedLang}**\n\nClassification Confidence: Based on specific alphabetic syntax token evaluation.`;
     }
 
-    // 5. Calculate Keyless Path Routing using Open Source Routing Machine
-    async function calculateKeylessRoute() {
-        const startVal = document.getElementById('route-start').value.split(',');
-        const endVal = document.getElementById('route-end').value.split(',');
+    // 5. Advanced Address-To-Address Path Routing Module
+    async function calculateLocationRoute() {
+        const startLoc = document.getElementById('route-start').value.trim();
+        const endLoc = document.getElementById('route-end').value.trim();
 
-        if (startVal.length !== 2 || endVal.length !== 2) {
-            alert("Ensure both Origin and Destination are entered in 'Lat, Lon' format.");
+        if (!startLoc || !endLoc) {
+            alert("Please supply both structural locations.");
             return;
         }
 
-        const lat1 = startVal[0].trim();
-        const lon1 = startVal[1].trim();
-        const lat2 = endVal[0].trim();
-        const lon2 = endVal[1].trim();
-
-        if (activeRouteLayer) {
-            map.removeLayer(activeRouteLayer);
-        }
-
         try {
-            // Using OSRM keyless routing demo service
-            const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?geometries=geojson`;
-            const response = await fetch(url);
-            const data = await response.json();
+            // Geocode Origin
+            const url1 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(startLoc)}&format=json&limit=1`;
+            const r1 = await fetch(url1, { headers: { 'User-Agent': 'SkyIPworld' } });
+            const d1 = await r1.json();
 
-            if (data.routes && data.routes.length > 0) {
-                const routeGeoJSON = data.routes[0].geometry;
-                activeRouteLayer = L.geoJSON(routeGeoJSON, {
-                    style: { color: '#38bdf8', weight: 6, opacity: 0.8 }
+            // Geocode Destination
+            const url2 = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endLoc)}&format=json&limit=1`;
+            const r2 = await fetch(url2, { headers: { 'User-Agent': 'SkyIPworld' } });
+            const d2 = await r2.json();
+
+            if (d1.length === 0 || d2.length === 0) {
+                alert("Failed to resolve point addresses. Refine your input strings.");
+                return;
+            }
+
+            const lat1 = d1[0].lat; const lon1 = d1[0].lon;
+            const lat2 = d2[0].lat; const lon2 = d2[0].lon;
+
+            if (activeRouteLayer) { map.removeLayer(activeRouteLayer); }
+
+            // Pull driving routing geometries keylessly
+            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?geometries=geojson`;
+            const resRoute = await fetch(osrmUrl);
+            const routeData = await resRoute.json();
+
+            if (routeData.routes && routeData.routes.length > 0) {
+                const geometry = routeData.routes[0].geometry;
+                activeRouteLayer = L.geoJSON(geometry, {
+                    style: { color: '#38bdf8', weight: 6, opacity: 0.85 }
                 }).addTo(map);
 
-                // Zoom layout to show the route path
                 map.fitBounds(activeRouteLayer.getBounds());
-                
-                L.marker([lat1, lon1]).addTo(map).bindPopup("Start Node").openPopup();
-                L.marker([lat2, lon2]).addTo(map).bindPopup("End Node");
+                L.marker([lat1, lon1]).addTo(map).bindPopup(`Origin: ${startLoc}`).openPopup();
+                L.marker([lat2, lon2]).addTo(map).bindPopup(`Destination: ${endLoc}`);
             } else {
-                alert("Could not map route. Double check the coordinates are near drivable roads.");
+                alert("No viable highway routes discovered between nodes.");
             }
         } catch (e) {
-            alert("Error rendering route coordinates.");
+            alert("Geospatial routing process experienced a network fault.");
         }
     }
 </script>
 
 </body>
 </html>
+

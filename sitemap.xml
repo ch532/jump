@@ -4,17 +4,13 @@
   <!-- Main Homepage / Dashboard -->
   <url>
     <loc>https://chyke.online/index.html</loc>
-    <lastmod>2026-07-14</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-07-15</lastmod>
   </url>
 
   <!-- AI Terminal Workspace -->
   <url>
     <loc>https://chyke.online/ai-terminal.html</loc>
-    <lastmod>2026-07-14</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-07-15</lastmod>
   </url>
 
 </urlset>

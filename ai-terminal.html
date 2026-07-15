@@ -82,6 +82,7 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location Intelligence</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language Node</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar Intensity Radar</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. On-Device Summarizer</button>
     </div>
 
     <div id="environmental" class="tab-content active">
@@ -196,9 +197,21 @@
         </section>
     </div>
 
+    <div id="summarizer" class="tab-content">
+        <section class="section-card">
+            <h2>6. On-Device Summarizer</h2>
+            <p>Uses local browser AI to summarize text securely without sending it to a server.</p>
+            <div id="status" style="margin-bottom: 10px; font-weight: bold; color: #64748b;">Checking model availability...</div>
+            <textarea id="input" rows="8" placeholder="Paste long text to summarize..."></textarea>
+            <button id="summarize" disabled>Summarize</button>
+            <button id="cancel" hidden>Cancel</button>
+            <div id="output" class="result-box" style="margin-top: 15px;">Output will appear here...</div>
+        </section>
+    </div>
+
 </main>
 
-    <div style="position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden;"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=World&output=embed&z=1"></iframe><a href="https://google-map-embed.vercel.app/" rel="noopener" target="_blank" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;">google map embed</a></div>
+<div style="position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden;"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=World&output=embed&z=1"></iframe><a href="https://google-map-embed.vercel.app/" rel="noopener" target="_blank" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;">google map embed</a></div>
 
 <footer style="margin-top: 40px; padding: 25px 0; text-align: center; font-size: 12px; color: #94a3b8; background-color: #1e293b;">
     SkyIPworld Hub © 2026
@@ -323,7 +336,56 @@
             infoBox.innerHTML = "Failed to establish a link to the open weather monitoring grid.";
         }
     }
+
+    const summarizeBtn = document.getElementById('summarize');
+    const cancelBtn = document.getElementById('cancel');
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    let session = null;
+
+    async function initSummarizer() {
+        if (!window.ai || !window.ai.summarizer) {
+            status.textContent = "Summarizer API not available in this browser.";
+            return;
+        }
+        
+        const canSummarize = await window.ai.summarizer.canSummarize();
+        if (canSummarize === 'no') {
+            status.textContent = "Model not available.";
+            return;
+        }
+
+        status.textContent = "Model ready.";
+        summarizeBtn.disabled = false;
+
+        if (canSummarize === 'after-download') {
+            session = await window.ai.summarizer.create({ monitor: m => m.addEventListener('downloadprogress', e => status.textContent = `Downloading: ${Math.round(100*e.loaded/e.total)}%`) });
+            await session.ready;
+        } else {
+            session = await window.ai.summarizer.create();
+        }
+        status.textContent = "Model fully loaded.";
+    }
+
+    summarizeBtn.addEventListener('click', async () => {
+        output.textContent = "Summarizing...";
+        summarizeBtn.hidden = true;
+        cancelBtn.hidden = false;
+        try {
+            const stream = await session.summarizeStreaming(input.value);
+            output.textContent = "";
+            for await (const chunk of stream) { output.textContent = chunk; }
+        } catch (e) { output.textContent = "Error: " + e.message; }
+        summarizeBtn.hidden = false;
+        cancelBtn.hidden = true;
+    });
+
+    cancelBtn.addEventListener('click', () => { session.destroy(); initSummarizer(); });
+
+    initSummarizer();
 </script>
 
 </body>
 </html>
+

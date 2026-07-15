@@ -215,7 +215,7 @@
         </section>
     </div>
 
-    <!-- TAB 6: Fully Automated Native-Tool AI Agent -->
+    <!-- TAB 6: Automated Conversational AI Agent (Refactored to perplexity-fast) -->
     <div id="ai-conversation" class="tab-content">
         <section class="section-card">
             <h2>6. Multi-Modal Conversational AI Terminal</h2>
@@ -276,14 +276,14 @@
     // Dynamic RAG storage
     let ragContextString = "";
 
-    // BACKGROUND KEYLESS AI HANDLER - Submits via structured POST JSON payload for maximum factual accuracy
+    // BACKGROUND KEYLESS AI HANDLER - Submits via structured POST JSON payload with perplexity-fast
     async function queryBackgroundAI(systemPrompt, historicalMessagesArray) {
         const payloadMessages = [
             { role: "system", content: systemPrompt },
             ...historicalMessagesArray
         ];
 
-        // Utilizing the native 'gemini-search' architecture which features always-on Google grounding built directly into the model tier
+        // Switched from gemini-search to perplexity-fast. Native search + flawless chat format compliance.
         const response = await fetch("https://text.pollinations.ai/", {
             method: "POST",
             headers: {
@@ -291,7 +291,7 @@
             },
             body: JSON.stringify({
                 messages: payloadMessages,
-                model: "gemini-search" // Natively invokes web retrieval grounding loops automatically
+                model: "perplexity-fast" // Features highly capable Perplexity Search engine natively
             })
         });
 
@@ -368,7 +368,7 @@
         } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
     }
 
-    // ACCURATE LANGUAGE DETECTION (Uses clean POST structures)
+    // ACCURATE LANGUAGE DETECTION (Uses clean POST structures with perplexity-fast)
     async function detectWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const resultsBox = document.getElementById('language-results');
@@ -391,7 +391,7 @@
         }
     }
 
-    // ACCURATE TRANSLATION ENGINE (Uses clean POST structures)
+    // ACCURATE TRANSLATION ENGINE (Uses clean POST structures with perplexity-fast)
     async function translateWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const targetLang = document.getElementById('translation-target').value.trim();
@@ -438,7 +438,7 @@
         }
     }
 
-    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (Leveraging native model-side search tools)
+    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (Leveraging perplexity-fast)
     async function sendAgentQuery() {
         const inputField = document.getElementById('agent-user-input');
         const historyContainer = document.getElementById('agent-chat-history');
@@ -575,6 +575,7 @@
 
 </body>
 </html>
+
 
 
 

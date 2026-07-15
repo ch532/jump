@@ -8,10 +8,8 @@
     <meta name="description" content="Real-time environmental radar, AI solar intensity metrics, global language classification, and stable visual AI tools.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chyke.online/ai-terminal.html" />
-    
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
 
-    <!-- External UI and Map Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -48,13 +46,8 @@
         button:hover { background-color: #38bdf8; color: #1e293b; }
         
         .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; font-family: system-ui, -apple-system, sans-serif; white-space: pre-wrap; font-size: 14px; line-height: 1.6; max-height: 450px; overflow-y: auto; color: #334155; }
-        
         .gen-display-box { width: 100%; height: 350px; border: 2px dashed #cbd5e1; border-radius: 8px; margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; padding: 10px; text-align: center; box-sizing: border-box; }
         .gen-display-box img { width: 100%; height: 100%; object-fit: contain; }
-
-        .wave-container { display: flex; gap: 4px; height: 40px; align-items: center; display: none; margin-bottom: 15px; }
-        .wave-bar { width: 4px; height: 100%; background: #7c3aed; animation: waveMotion 1.2s ease-in-out infinite alternate; border-radius: 2px; }
-        @keyframes waveMotion { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } }
     </style>
 </head>
 <body>
@@ -78,7 +71,6 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language Node</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar Intensity</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. Summarizer</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'chat-node')">7. AI Chat Node</button>
     </div>
 
     <div id="environmental" class="tab-content active">
@@ -123,7 +115,7 @@
             <div id="leaflet-map" style="width:100%; height: 500px; border:1px solid #cbd5e1;"></div>
         </section>
     </div>
-
+    
     <div id="summarizer" class="tab-content">
         <section class="section-card">
             <h2>6. On-Device Summarizer</h2>
@@ -134,14 +126,16 @@
         </section>
     </div>
 
-    <div id="chat-node" class="tab-content">
-        <section class="section-card">
-            <h2>7. AI Chat Node (Gemini Nano)</h2>
-            <div id="chat-status" style="font-weight: bold; color: #64748b;">Checking...</div>
-            <div id="chat-output" class="result-box" style="height: 300px;">Chat history...</div>
-            <input type="text" id="chat-input" placeholder="Type message...">
-            <button id="send-chat" disabled>Send</button>
-        </section>
+    <section class="section-card" style="margin-top: 20px; border: 2px solid #38bdf8;">
+        <h2>7. AI Chat Node (Gemini Nano)</h2>
+        <div id="chat-status" style="font-weight: bold; color: #64748b;">Checking model...</div>
+        <div id="chat-output" class="result-box" style="height: 300px;">Chat history...</div>
+        <input type="text" id="chat-input" placeholder="Type message to Gemini Nano...">
+        <button id="send-chat" disabled>Send</button>
+    </section>
+
+    <div style="position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden; margin-top: 20px;">
+        <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=World&output=embed&z=1"></iframe>
     </div>
 
 </main>
@@ -161,7 +155,7 @@
         }
     }
 
-    // --- Summarizer Logic ---
+    // Summarizer Logic
     const sumBtn = document.getElementById('summarize');
     let sumSession = null;
     async function initSummarizer() {
@@ -177,25 +171,27 @@
     });
     initSummarizer();
 
-    // --- Chat Node Logic ---
+    // Chat Node Logic
     const chatBtn = document.getElementById('send-chat');
     let chatSession = null;
     async function initChat() {
         if (!window.ai?.languageModel) return;
         chatSession = await window.ai.languageModel.create();
-        document.getElementById('chat-status').textContent = "Chat Ready";
+        document.getElementById('chat-status').textContent = "Gemini Nano Ready";
         chatBtn.disabled = false;
     }
     chatBtn.addEventListener('click', async () => {
         const input = document.getElementById('chat-input');
-        document.getElementById('chat-output').textContent += `\nUser: ${input.value}\n`;
+        const output = document.getElementById('chat-output');
+        output.textContent += `\nUser: ${input.value}\n`;
         const response = await chatSession.prompt(input.value);
-        document.getElementById('chat-output').textContent += `AI: ${response}\n`;
+        output.textContent += `AI: ${response}\n`;
         input.value = "";
     });
     initChat();
 </script>
 </body>
 </html>
+
 
 

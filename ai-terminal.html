@@ -14,6 +14,9 @@
     <!-- External UI and Map Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+    <!-- Official Puter.js v2 CDN Implementation -->
+    <script src="https://js.puter.com/v2/"></script>
+
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; }
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -215,17 +218,17 @@
         </section>
     </div>
 
-    <!-- TAB 6: Automated Conversational AI Agent -->
+    <!-- TAB 6: Puter.js v2 High-Performance Streaming Conversation Node with Live Web Search Tool -->
     <div id="ai-conversation" class="tab-content">
         <section class="section-card">
             <h2>6. Multi-Modal Conversational AI Terminal</h2>
-            <p>Chat with our high-speed, keyless AI agent. Real-time internet indexes, dynamic timing, and geographic visitor nodes are processed automatically.</p>
+            <p>Chat with our high-speed, keyless AI agent powered by Puter.js v2. Features a custom local <b>web search tool</b> to look up live facts instantly.</p>
             
             <div class="grid-2">
                 <!-- Automated Index Panel -->
                 <div class="tool-control-panel">
                     <h3 style="margin: 0; font-size: 16px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">📁 Document Retrieval (RAG)</h3>
-                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload any reference file. The background AI agent automatically reads and indexes its context during conversation.</p>
+                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload any text reference data. The Puter core appends its content directly within your streaming dialog track.</p>
                     
                     <!-- RAG / Document Upload -->
                     <div class="input-group">
@@ -239,19 +242,19 @@
                     <div class="agent-header">
                         <div class="agent-title">
                             <span class="status-dot"></span>
-                            SkyIPworld Conversational AI Node (Dynamic Context Active)
+                            SkyIPworld Conversational AI Node (Puter.js + Real-Time Search Tool)
                         </div>
                         <button onclick="clearAgentChat()" style="background: transparent; color: #94a3b8; font-size: 12px; padding: 4px 8px; border: 1px solid #475569; margin: 0; border-radius: 4px;">Clear History</button>
                     </div>
                     
                     <div class="agent-body" id="agent-chat-history">
                         <div class="chat-bubble assistant">
-                            Hello! I am SkyIPworld, your automated general knowledge assistant. I can help you write code, draft articles, analyze historical facts, translate, solve math, or answer general questions. Ask me anything!
+                            Hello! I am SkyIPworld, your general knowledge assistant. I have a custom Puter-integrated <b>web search tool</b>. Ask me about current events, coding, or historical facts, and I will search the web dynamically to answer!
                         </div>
                     </div>
                     
                     <div class="agent-footer">
-                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Type your query..." onkeydown="handleAgentKeyPress(event)">
+                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Ask about recent events or coding..." onkeydown="handleAgentKeyPress(event)">
                         <button onclick="sendAgentQuery()" class="agent-send-btn">Send</button>
                     </div>
                 </div>
@@ -275,42 +278,44 @@
     let chatMemory = [];
     // Dynamic RAG storage
     let ragContextString = "";
-    // Dynamically detected background location
-    let visitorDetectedLocation = "Global Web Portal";
 
-    // BACKGROUND KEYLESS AI HANDLER - Uses unblockable GET parameter streams targeting the stable OpenAI model
-    async function queryBackgroundAI(systemPrompt, historicalMessagesArray) {
-        // Flatten conversation array sequentially so the text model tracks dialogue turns perfectly
-        let conversationHistoryText = "";
-        historicalMessagesArray.forEach(msg => {
-            conversationHistoryText += `${msg.role.toUpperCase()}: ${msg.content}\n`;
-        });
-
-        const finalCombinedPrompt = `${systemPrompt}\n\n${conversationHistoryText}\nASSISTANT:`;
-        
-        // Appended the default ultra-stable 'openai' string to completely resolve mobile carrier URL limits
-        const url = `https://text.pollinations.ai/${encodeURIComponent(finalCombinedPrompt)}?model=openai&private=true&cache=false`;
-        
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("API call failed");
-        }
-        return await response.text();
-    }
-
-    // SILENT BACKGROUND GEOLOCATION DETECTION
-    async function silentlyDetectVisitorLocation() {
-        try {
-            const res = await fetch("https://ipapi.co/json/");
-            const data = await res.json();
-            if (data && data.city && data.country_name) {
-                visitorDetectedLocation = `${data.city}, ${data.country_name}`;
+    // Define the custom web search tool structure for Puter.js
+    const searchTools = [{
+        type: "function",
+        function: {
+            name: "web_search",
+            description: "Search the web to find real-time, up-to-date facts, news, and general knowledge details.",
+            parameters: {
+                type: "object",
+                properties: {
+                    query: { type: "string", description: "The keyword phrase to search on the live web" }
+                },
+                required: ["query"]
             }
-        } catch (err) {
-            console.log("Using generic backup location node.");
+        }
+    }];
+
+    // Live backend execution scraper proxy function to fetch real search results
+    async function executeWebSearch(searchQuery) {
+        try {
+            const cleanQuery = encodeURIComponent(searchQuery);
+            // Uses a highly-stable, open search API to fetch real, live text results on the fly
+            const res = await fetch(`https://html.duckduckgo.com/html/?q=${cleanQuery}`);
+            const htmlText = await res.text();
+            
+            // Extract raw snippet structures from HTML page to return back to the LLM context
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const snippets = Array.from(doc.querySelectorAll('.result__snippet'))
+                                  .slice(0, 4)
+                                  .map(el => el.textContent.trim())
+                                  .join("\n\n");
+            
+            return snippets || "No direct web search snippet results found for your query.";
+        } catch (e) {
+            return "Unable to resolve web indexing nodes at this time.";
         }
     }
-    silentlyDetectVisitorLocation();
 
     function switchTerminalTab(evt, tabId) {
         const contents = document.getElementsByClassName("tab-content");
@@ -379,46 +384,43 @@
         } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
     }
 
-    // ACCURATE LANGUAGE DETECTION (Uses stable GET stream parameters)
     async function detectWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const resultsBox = document.getElementById('language-results');
         if (!text) { resultsBox.innerHTML = "Please insert text structures first."; return; }
         
-        resultsBox.innerHTML = "Processing text with world language classification matrix... ";
-        
-        const systemPrompt = "You are an expert world linguistic module. Identify the language. " +
-                             "Provide your output ONLY in this precise plain text structure:\n" +
-                             "Language: [Name]\n" +
-                             "ISO-2 Code: [Code]\n" +
-                             "Confidence: [Score]%\n" +
-                             "Quick Analysis: [Short classification sentence]. Do not write any conversational intro.";
+        resultsBox.innerHTML = "Processing text via Puter linguistic matrix...";
         
         try {
-            const response = await queryBackgroundAI(systemPrompt, [{ role: "user", content: `Identify language for this text:\n"${text}"` }]);
+            const response = await puter.ai.chat(
+                `Analyze the following text. Identify the exact language it is written in. Return ONLY a structured format with: \n` +
+                `Language: [Name of language]\n` +
+                `ISO Code: [ISO-2 Code]\n` +
+                `Confidence: [Percentage]%\n` +
+                `Short Analysis: [1 sentence on how it was classified].\n` +
+                `No other conversational filler. Text:\n"${text}"`
+            );
             resultsBox.innerHTML = `📝 LANGUAGE IDENTIFICATION REPORT\n----------------------------------\n${response}`;
         } catch (e) {
-            resultsBox.innerHTML = "Language matrix analyzer timed out. Please try again.";
+            resultsBox.innerHTML = "Linguistic matrix timeout or network exception. Retry context execution.";
         }
     }
 
-    // ACCURATE TRANSLATION ENGINE (Uses stable GET stream parameters)
     async function translateWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const targetLang = document.getElementById('translation-target').value.trim();
         const resultsBox = document.getElementById('language-results');
-        if (!text) { resultsBox.innerHTML = "Please insert some input text to translate first."; return; }
-        if (!targetLang) { resultsBox.innerHTML = "Please type a target language first."; return; }
+        if (!text || !targetLang) { resultsBox.innerHTML = "Please provide text matrices and target language parameters."; return; }
         
-        resultsBox.innerHTML = `Translating text to ${targetLang} via neural AI nodes...`;
-        
-        const systemPrompt = `You are a professional universal translator. Translate the user prompt directly to ${targetLang}. Return ONLY the direct translation text. Do not include introductory notes or wrap your answer in quotes.`;
+        resultsBox.innerHTML = `Translating text to ${targetLang} via Puter neural nodes...`;
         
         try {
-            const response = await queryBackgroundAI(systemPrompt, [{ role: "user", content: text }]);
+            const response = await puter.ai.chat(
+                `Translate the following text into ${targetLang}. Return ONLY the direct translation. Do not wrap in quotes or add introduction text.\n\n"${text}"`
+            );
             resultsBox.innerHTML = `🌍 AI TRANSLATION NODE OUTLINE (${targetLang.toUpperCase()})\n----------------------------------\n${response}`;
         } catch (e) {
-            resultsBox.innerHTML = "Neural translation pipeline is temporarily busy. Please try again.";
+            resultsBox.innerHTML = "Translation pipeline execution exception. Check variables.";
         }
     }
 
@@ -449,7 +451,7 @@
         }
     }
 
-    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (With clean text optimization mappings)
+    // HIGH-ACCURACY PUTER.AI V2 CHAT STREAMING INTERACTION WITH NATIVE WEB-SEARCH TOOL EXECUTIONS
     async function sendAgentQuery() {
         const inputField = document.getElementById('agent-user-input');
         const historyContainer = document.getElementById('agent-chat-history');
@@ -466,49 +468,99 @@
         
         inputField.value = '';
 
-        // Display thinking loader
-        const loadingBubble = document.createElement('div');
-        loadingBubble.className = 'chat-bubble assistant';
-        loadingBubble.innerHTML = `<i>Thinking and processing real-time context...</i>`;
-        historyContainer.appendChild(loadingBubble);
+        // Generate assistant placeholder frame
+        const assistantBubble = document.createElement('div');
+        assistantBubble.className = 'chat-bubble assistant';
+        assistantBubble.innerHTML = `<i>Processing signal node stream...</i>`;
+        historyContainer.appendChild(assistantBubble);
         historyContainer.scrollTop = historyContainer.scrollHeight;
 
-        // Clean, general knowledge system persona instructions
-        let systemContextPrompt = "You are SkyIPworld, an advanced general knowledge AI assistant. Address the user directly in a concise, helpful, and highly intelligent style. You possess full capability to write clean software code, analyze historical concepts, solve mathematical operations, or hold general text-based conversation.\n" +
-                                  "You have permission to search the web and check online indexes to verify real-time facts when requested.\n";
+        // Establish core system rules
+        let systemContextPrompt = "You are SkyIPworld, an advanced general knowledge AI companion powered by Puter.js. Address the user directly in a concise, friendly, and smart style.\n" +
+                                  "You are integrated with a custom web search tool. If the user asks for current events, up-to-date coding libraries, or real-time lookup variables, invoke the 'web_search' tool automatically.\n";
         
-        const currentYear = new Date().getFullYear(); 
-        const currentTime = new Date().toLocaleTimeString(); 
-        
-        // Pass dynamic environment parameters quietly in system prompts
-        systemContextPrompt += `[Dynamic Meta-Context] Current Year: ${currentYear}. Detected Visitor Location: ${visitorDetectedLocation}. Local Device Time: ${currentTime}. Only utilize this timing/location context if relevant.\n`;
+        const currentYear = new Date().getFullYear(); // Dynamic calculation
+        systemContextPrompt += `[Meta parameters] Active system timeline year reference is ${currentYear}.\n`;
 
         if (ragContextString) {
-            systemContextPrompt += `[Indexed RAG Context Memory Loaded]. Use the following document database text to verify facts and respond accurately if it is explicitly relevant to the user query:\n----\n${ragContextString}\n----\n`;
+            systemContextPrompt += `[Indexed RAG Document Memory Loaded]. Use the following text document data to verify facts and respond accurately if explicitly relevant to the dialogue:\n----\n${ragContextString}\n----\n`;
         }
 
-        // Maintain continuous chat memory state
+        // Push current prompt into memory array stack
         chatMemory.push({ role: "user", content: query });
 
+        // Compile multi-turn structural schemas
+        const queryPayloadMessages = [
+            { role: "system", content: systemContextPrompt },
+            ...chatMemory
+        ];
+
         try {
-            const aiResponse = await queryBackgroundAI(systemContextPrompt, chatMemory);
-            
-            historyContainer.removeChild(loadingBubble);
-            
-            const assistantBubble = document.createElement('div');
-            assistantBubble.className = 'chat-bubble assistant';
-            assistantBubble.innerText = aiResponse;
-            historyContainer.appendChild(assistantBubble);
-            
-            chatMemory.push({ role: "assistant", content: aiResponse });
-            historyContainer.scrollTop = historyContainer.scrollHeight;
+            // Trigger Puter.js v2 native chat with streaming and tool definitions
+            const textStream = await puter.ai.chat(queryPayloadMessages, { 
+                model: "claude-sonnet-4-6", 
+                tools: searchTools,
+                stream: true 
+            });
+
+            let fullStreamingResponseText = "";
+            let toolUsedThisTurn = false;
+
+            for await (const part of textStream) {
+                // Standard Text Stream Chunks
+                if (part.text) {
+                    if (!toolUsedThisTurn) assistantBubble.innerText = ""; // Wipe loading text
+                    fullStreamingResponseText += part.text;
+                    assistantBubble.innerText = fullStreamingResponseText;
+                    historyContainer.scrollTop = historyContainer.scrollHeight;
+                }
+                
+                // Tool Use Interceptor Detected
+                else if (part.type === 'tool_use') {
+                    toolUsedThisTurn = true;
+                    const toolCall = part;
+                    const funcName = toolCall.name;
+                    const args = toolCall.input; // Already parsed query
+
+                    assistantBubble.innerHTML = `<i>🔍 System: Invoking Live Web Search for: <b>"${args.query}"</b>...</i>`;
+                    historyContainer.scrollTop = historyContainer.scrollHeight;
+
+                    // Execute the local scrapping query scraper
+                    let searchResultString = await executeWebSearch(args.query);
+
+                    assistantBubble.innerHTML = `<i>⚙️ System: Grounding facts with search results. Formulating final answer...</i>`;
+                    historyContainer.scrollTop = historyContainer.scrollHeight;
+
+                    // Step 4: Resubmit payload messages back to Puter to finish the user conversation stream
+                    const finalResponse = await puter.ai.chat([
+                        { role: "system", content: systemContextPrompt },
+                        ...chatMemory,
+                        { role: "assistant", tool_calls: [{
+                            id: toolCall.id,
+                            type: "function",
+                            function: { name: funcName, arguments: JSON.stringify(args) }
+                        }]},
+                        { role: "tool", tool_call_id: toolCall.id, content: searchResultString }
+                    ], { model: "claude-sonnet-4-6", stream: true });
+
+                    fullStreamingResponseText = "";
+                    assistantBubble.innerText = "";
+
+                    for await (const finalPart of finalResponse) {
+                        if (finalPart.text) {
+                            fullStreamingResponseText += finalPart.text;
+                            assistantBubble.innerText = fullStreamingResponseText;
+                            historyContainer.scrollTop = historyContainer.scrollHeight;
+                        }
+                    }
+                }
+            }
+
+            // Record fully grounded final turn answer back to memory
+            chatMemory.push({ role: "assistant", content: fullStreamingResponseText });
 
         } catch (err) {
-            historyContainer.removeChild(loadingBubble);
-            const errorBubble = document.createElement('div');
-            errorBubble.className = 'chat-bubble assistant';
-            errorBubble.innerHTML = `<span style="color: #ef4444;">❌ Neural pipeline bottleneck. Please verify connection and retry.</span>`;
-            historyContainer.appendChild(errorBubble);
+            assistantBubble.innerHTML = `<span style="color: #ef4444;">❌ Puter cloud engine connection line bottleneck. Retry request query statement.</span>`;
             historyContainer.scrollTop = historyContainer.scrollHeight;
         }
     }
@@ -523,7 +575,7 @@
         `;
     }
 
-    // 5. LIVE KEYLESS SOLAR RADIATION & APP LITERACY ENGINE
+    // 5. LIVE KEYLESS SOLAR RADIATION ENGINE
     async function calculateLiveSolarMetrics() {
         const solarLoc = document.getElementById('solar-target-loc').value.trim();
         const infoBox = document.getElementById('solar-instructions');
@@ -558,28 +610,26 @@
             
             if (shortwaveRadiation >= 150 && shortwaveRadiation < 450) {
                 rayStrength = "MODERATE / FAIR";
-                usageAdvice = "🟡 MODERATE GENERATION. Excellent for charging batteries, running laptops, fans, TVs, and light appliances. Avoid starting up multiple heavy thermal appliances simultaneously since solar input is limited by local cloud covers.";
+                usageAdvice = "🟡 MODERATE GENERATION. Excellent for charging batteries, running laptops, fans, and light appliances. Avoid starting up multiple heavy thermal appliances simultaneously.";
             } else if (shortwaveRadiation >= 450) {
                 rayStrength = "STRONG / MAXIMUM PEAK EFFICIENCY";
-                usageAdvice = "🟢 PEAK PRODUCTION ZONE. Solar intensity is highly powerful right now. This is the absolute best time to pump water, turn on water heaters, run refrigerators, or charge heavy battery cells to max capacity completely on free solar power.";
+                usageAdvice = "🟢 PEAK PRODUCTION ZONE. Solar intensity is highly powerful right now. This is the absolute best time to pump water or charge heavy battery cells to max capacity completely on free solar power.";
             }
 
             let dashboard = `☀️ REAL-TIME SOLAR RADIATION ANALYSIS REPORT
 --------------------------------------------------
 • Targeted Node Location: [ ${solarLoc} ]
 • Solar Ray Intensity Status: ${rayStrength}
-• Live Irradiance Energy Value: ${shortwaveRadiation} W/m² (Watts per square meter)
+• Live Irradiance Energy Value: ${shortwaveRadiation} W/m²
 • Sky Cloud Obstruction Density: ${cloudCover}% Sky coverage
 
 📋 LAYMAN APPLIANCE USAGE DIRECTIONS
 --------------------------------------------------
 • Current Generation State: 
-  The sun rays are currently producing ${shortwaveRadiation} Watts of power per square meter. Higher numbers mean your solar array recharges significantly faster.
+  The sun rays are currently producing ${shortwaveRadiation} Watts of power per square meter.
 
 • Solar Inverter Advice:
-  ${usageAdvice}
-
-💡 Pro Tip: Keeping your solar photovoltaic glass faces wiped clean of dust particles improves conversion rates by up to 15% under these conditions.`;
+  ${usageAdvice}`;
 
             infoBox.innerHTML = dashboard;
 
@@ -591,6 +641,7 @@
 
 </body>
 </html>
+
 
 
 

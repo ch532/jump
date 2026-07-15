@@ -11,10 +11,8 @@
     
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
 
-    <!-- External UI and Map Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <!-- Official Puter.js v2 CDN Implementation -->
     <script src="https://js.puter.com/v2/"></script>
 
     <style>
@@ -218,26 +216,22 @@
         </section>
     </div>
 
-    <!-- TAB 6: Puter.js v2 High-Performance Streaming Conversation Node with Live Web Search Tool -->
     <div id="ai-conversation" class="tab-content">
         <section class="section-card">
             <h2>6. Multi-Modal Conversational AI Terminal</h2>
             <p>Chat with our high-speed, keyless AI agent powered by Puter.js v2. Features a custom local <b>web search tool</b> to look up live facts instantly.</p>
             
             <div class="grid-2">
-                <!-- Automated Index Panel -->
                 <div class="tool-control-panel">
                     <h3 style="margin: 0; font-size: 16px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">📁 Document Retrieval (RAG)</h3>
                     <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload any text reference data. The Puter core appends its content directly within your streaming dialog track.</p>
                     
-                    <!-- RAG / Document Upload -->
                     <div class="input-group">
                         <input type="file" id="rag-file-input" accept=".txt,.json,.csv,.js,.html,.css" onchange="indexDocumentForRAG()" style="padding: 8px; font-size: 12px; background: #fff;">
                         <div id="rag-status" style="font-size: 11px; color: #059669; margin-top: 5px; font-weight: 500;">No document indexed yet.</div>
                     </div>
                 </div>
 
-                <!-- Active Chat Console -->
                 <div class="agent-container">
                     <div class="agent-header">
                         <div class="agent-title">
@@ -254,7 +248,7 @@
                     </div>
                     
                     <div class="agent-footer">
-                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Ask about recent events or coding..." onkeydown="handleAgentKeyPress(event)">
+                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Type your query..." onkeydown="handleAgentKeyPress(event)">
                         <button onclick="sendAgentQuery()" class="agent-send-btn">Send</button>
                     </div>
                 </div>
@@ -279,7 +273,7 @@
     // Dynamic RAG storage
     let ragContextString = "";
 
-    // Define the custom web search tool structure for Puter.js
+    // Define the custom web search tool structure based on the official Puter.js documentation
     const searchTools = [{
         type: "function",
         function: {
@@ -295,15 +289,15 @@
         }
     }];
 
-    // Live backend execution scraper proxy function to fetch real search results
+    // Live background execution scraper proxy function to fetch real search results
     async function executeWebSearch(searchQuery) {
         try {
             const cleanQuery = encodeURIComponent(searchQuery);
-            // Uses a highly-stable, open search API to fetch real, live text results on the fly
+            // Uses an unblocked open search node to fetch live text results from current internet index tables
             const res = await fetch(`https://html.duckduckgo.com/html/?q=${cleanQuery}`);
             const htmlText = await res.text();
             
-            // Extract raw snippet structures from HTML page to return back to the LLM context
+            // Extract snippets from HTML structure to return to the model context
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             const snippets = Array.from(doc.querySelectorAll('.result__snippet'))
@@ -451,7 +445,7 @@
         }
     }
 
-    // HIGH-ACCURACY PUTER.AI V2 CHAT STREAMING INTERACTION WITH NATIVE WEB-SEARCH TOOL EXECUTIONS
+    // OFFICIAL PUTER.JS V2 STREAMING FUNCTION WITH DYNAMIC TOOL-CALL LOOPS
     async function sendAgentQuery() {
         const inputField = document.getElementById('agent-user-input');
         const historyContainer = document.getElementById('agent-chat-history');
@@ -475,30 +469,28 @@
         historyContainer.appendChild(assistantBubble);
         historyContainer.scrollTop = historyContainer.scrollHeight;
 
-        // Establish core system rules
+        // Base context constraints mapping directly into system profile space
         let systemContextPrompt = "You are SkyIPworld, an advanced general knowledge AI companion powered by Puter.js. Address the user directly in a concise, friendly, and smart style.\n" +
-                                  "You are integrated with a custom web search tool. If the user asks for current events, up-to-date coding libraries, or real-time lookup variables, invoke the 'web_search' tool automatically.\n";
-        
-        const currentYear = new Date().getFullYear(); // Dynamic calculation
-        systemContextPrompt += `[Meta parameters] Active system timeline year reference is ${currentYear}.\n`;
+                                  "You are integrated with a custom web search tool. If the user asks for current 2026 events, coding syntax updates, or lookup values, invoke the 'web_search' tool automatically.\n" +
+                                  "Current Year Reference: 2026. Location context: Abuja, Nigeria.\n";
 
         if (ragContextString) {
             systemContextPrompt += `[Indexed RAG Document Memory Loaded]. Use the following text document data to verify facts and respond accurately if explicitly relevant to the dialogue:\n----\n${ragContextString}\n----\n`;
         }
 
-        // Push current prompt into memory array stack
+        // Add user interaction layer to tracking log structure
         chatMemory.push({ role: "user", content: query });
 
-        // Compile multi-turn structural schemas
+        // Compile standard Puter payload matrix array matching official developer guidelines
         const queryPayloadMessages = [
             { role: "system", content: systemContextPrompt },
             ...chatMemory
         ];
 
         try {
-            // Trigger Puter.js v2 native chat with streaming and tool definitions
+            // Trigger native SDK method call tracking tools and streams simultaneously
             const textStream = await puter.ai.chat(queryPayloadMessages, { 
-                model: "claude-sonnet-4-6", 
+                model: "gpt-5.4-nano", 
                 tools: searchTools,
                 stream: true 
             });
@@ -507,48 +499,51 @@
             let toolUsedThisTurn = false;
 
             for await (const part of textStream) {
-                // Standard Text Stream Chunks
-                if (part.text) {
-                    if (!toolUsedThisTurn) assistantBubble.innerText = ""; // Wipe loading text
-                    fullStreamingResponseText += part.text;
+                // Case A: Reading typical text token packet arrays
+                if (part.type === 'text' || part.text) {
+                    if (!toolUsedThisTurn) assistantBubble.innerText = ""; // Clear loader if standard text arrives first
+                    const contentText = part.text || part.content || "";
+                    fullStreamingResponseText += contentText;
                     assistantBubble.innerText = fullStreamingResponseText;
                     historyContainer.scrollTop = historyContainer.scrollHeight;
                 }
                 
-                // Tool Use Interceptor Detected
-                else if (part.type === 'tool_use') {
+                // Case B: SDK captures a tool function invocation signature request from backend cluster
+                else if (part.type === 'tool_use' || part.name === 'web_search') {
                     toolUsedThisTurn = true;
                     const toolCall = part;
-                    const funcName = toolCall.name;
-                    const args = toolCall.input; // Already parsed query
+                    const funcName = toolCall.name || 'web_search';
+                    const args = toolCall.input || JSON.parse(toolCall.arguments || '{}');
 
                     assistantBubble.innerHTML = `<i>🔍 System: Invoking Live Web Search for: <b>"${args.query}"</b>...</i>`;
                     historyContainer.scrollTop = historyContainer.scrollHeight;
 
-                    // Execute the local scrapping query scraper
+                    // Execute the local scraping search engine proxy logic
                     let searchResultString = await executeWebSearch(args.query);
 
                     assistantBubble.innerHTML = `<i>⚙️ System: Grounding facts with search results. Formulating final answer...</i>`;
                     historyContainer.scrollTop = historyContainer.scrollHeight;
 
-                    // Step 4: Resubmit payload messages back to Puter to finish the user conversation stream
+                    // Resubmit full conversation stack back to Puter with tool execution payloads to get the final grounded stream
                     const finalResponse = await puter.ai.chat([
                         { role: "system", content: systemContextPrompt },
                         ...chatMemory,
                         { role: "assistant", tool_calls: [{
-                            id: toolCall.id,
+                            id: toolCall.id || 'search_call',
                             type: "function",
                             function: { name: funcName, arguments: JSON.stringify(args) }
                         }]},
-                        { role: "tool", tool_call_id: toolCall.id, content: searchResultString }
-                    ], { model: "claude-sonnet-4-6", stream: true });
+                        { role: "tool", tool_call_id: toolCall.id || 'search_call', content: searchResultString }
+                    ], { model: "gpt-5.4-nano", stream: true });
 
                     fullStreamingResponseText = "";
                     assistantBubble.innerText = "";
 
+                    // Print final response from second loop pass stream
                     for await (const finalPart of finalResponse) {
-                        if (finalPart.text) {
-                            fullStreamingResponseText += finalPart.text;
+                        const finalChunkText = finalPart.text || finalPart.content || "";
+                        if (finalChunkText) {
+                            fullStreamingResponseText += finalChunkText;
                             assistantBubble.innerText = fullStreamingResponseText;
                             historyContainer.scrollTop = historyContainer.scrollHeight;
                         }
@@ -556,7 +551,7 @@
                 }
             }
 
-            // Record fully grounded final turn answer back to memory
+            // Save finalized grounded text string block back into persistent multitenant stack array
             chatMemory.push({ role: "assistant", content: fullStreamingResponseText });
 
         } catch (err) {
@@ -641,6 +636,7 @@
 
 </body>
 </html>
+
 
 
 

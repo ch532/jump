@@ -48,8 +48,6 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location')">3. Location</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'solar')">5. Solar</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. Summarizer</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'chat-node')">7. Chat</button>
     </div>
 
     <div id="radar" class="tab-content active"><section class="section-card"><div class="section-header">1. Environmental Radar</div><div class="section-body"><iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5"></iframe></div></section></div>
@@ -57,8 +55,6 @@
     <div id="location" class="tab-content"><section class="section-card"><div class="section-header">3. Comprehensive Location Intelligence</div><div class="section-body"><input type="text" id="name-input" placeholder="Enter City Name..."><button onclick="fetchLocationProfileByName()">Retrieve Comprehensive Report</button><div id="poi-results" class="result-box">Awaiting search...</div></div></section></div>
     <div id="language" class="tab-content"><section class="section-card"><div class="section-header">4. Universal Translation Node</div><div class="section-body"><textarea id="detect-text-input" rows="5" placeholder="Enter text to translate..."></textarea><input type="text" id="target-lang" placeholder="Enter target language (e.g., French, Yoruba, Japanese)..."><button onclick="translateTextOnly()" style="background-color: #38bdf8; color: #1e293b;">Translate Text</button><div id="lang-results" class="result-box">Waiting for input...</div></div></section></div>
     <div id="solar" class="tab-content"><section class="section-card"><div class="section-header">5. Solar Intensity & Feasibility</div><div class="section-body"><input type="text" id="solar-target-loc" placeholder="Enter Location..."><button onclick="calculateLiveSolarMetrics()">Generate Comprehensive Assessment</button><div id="solar-instructions" class="result-box">Awaiting telemetry...</div></div></section></div>
-    <div id="summarizer" class="tab-content"><section class="section-card"><div class="section-header">6. On-Device Summarizer</div><div class="section-body"><textarea id="sum-input" rows="8"></textarea><button onclick="processSummarization()">Summarize</button><div id="sum-output" class="result-box">Waiting...</div></div></section></div>
-    <div id="chat-node" class="tab-content"><section class="section-card"><div class="section-header">7. AI Chat Node</div><div class="section-body"><div id="chat-output" class="result-box" style="height: 200px;">History...</div><input type="text" id="chat-input"><button onclick="sendChatMessage()">Send Message</button></div></section></div>
 </main>
 
 <script>
@@ -143,14 +139,7 @@
         const translation = res[0][0][0];
         document.getElementById('lang-results').textContent = `--- TRANSLATION REPORT ---\nSource: "${text}"\nTarget: ${target}\nTranslation: "${translation}"`;
     };
-
-    window.processSummarization = () => {
-        document.getElementById('sum-output').textContent = `[COMPREHENSIVE SUMMARY]: The provided content has been analyzed for key metrics, core intent, and critical data points to ensure you have a complete overview without missing technical depth.`;
-    };
-
-    window.sendChatMessage = () => {
-        document.getElementById('chat-output').textContent += `\nUser: ${document.getElementById('chat-input').value}\nAI: Terminal relay connected.`;
-    };
 </script>
 </body>
 </html>
+

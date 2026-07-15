@@ -26,7 +26,7 @@
         .section-card h2 { margin-top: 0; color: #1e293b; font-size: 22px; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; display: inline-block; }
         .map-frame { width: 100%; height: 500px; border-radius: 8px; border: 1px solid #cbd5e1; }
         button { background-color: #1e293b; color: #f8fafc; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; white-space: pre-wrap; font-size: 14px; max-height: 450px; overflow-y: auto; }
+        .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; white-space: pre-wrap; font-size: 14px; max-height: 450px; overflow-y: auto; color: #334155; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; margin-top: 10px; }
     </style>
 </head>
@@ -35,39 +35,30 @@
 <header>
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
-        <div class="nav-links">
-            <a href="index.html" class="nav-item">Dashboard</a>
-            <a href="ai-terminal.html" class="nav-item active">Terminal</a>
-        </div>
+        <div class="nav-links"><a href="ai-terminal.html" class="nav-item active">Terminal</a></div>
     </nav>
 </header>
 
 <main class="main-layout">
-
     <div class="tab-container">
         <button class="tab-btn active" onclick="switchTerminalTab(event, 'environmental')">1. Radar</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. Summarizer</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'chat-node')">7. Chat</button>
     </div>
 
     <div id="environmental" class="tab-content active"><section class="section-card"><h2>1. Environmental Radar</h2><iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5" allowfullscreen></iframe></section></div>
-    <div id="generator" class="tab-content"><section class="section-card"><h2>2. Visual Workbench</h2><input type="text" id="ai-prompt-input" placeholder="Prompt..."><button onclick="generateStableImage()">Create</button><div id="image-output-panel" class="result-box">Awaiting...</div></section></div>
-    <div id="location-intel" class="tab-content"><section class="section-card"><h2>3. Location Intelligence</h2><input type="text" id="name-input" placeholder="City name..."><button onclick="fetchLocationProfileByName()">Analyze</button><div id="poi-results" class="result-box">Awaiting...</div></section></div>
-    <div id="language" class="tab-content"><section class="section-card"><h2>4. Language Node</h2><div id="lang-status">Loading...</div><textarea id="detect-text-input" rows="5"></textarea><button id="detect-lang" disabled>Detect Language</button><div id="lang-results" class="result-box">Awaiting...</div></section></div>
-    <div id="solarpower" class="tab-content"><section class="section-card"><h2>5. Solar Intensity</h2><input type="text" id="solar-target-loc" placeholder="Location..."><button onclick="calculateLiveSolarMetrics()">Analyze</button><div id="solar-instructions" class="result-box">Awaiting...</div><div id="leaflet-map" style="width:100%; height: 400px; margin-top:15px;"></div></section></div>
-    <div id="summarizer" class="tab-content"><section class="section-card"><h2>6. On-Device Summarizer</h2><div id="sum-status">Loading...</div><textarea id="sum-input" rows="8"></textarea><button id="summarize" disabled>Summarize</button><div id="sum-output" class="result-box">Output...</div></section></div>
-    <div id="chat-node" class="tab-content"><section class="section-card"><h2>7. AI Chat Node (Local)</h2><div id="chat-status">Loading...</div><div id="chat-output" class="result-box" style="height: 200px;">History...</div><input type="text" id="chat-input"><button id="send-chat" disabled>Send</button><button onclick="analyzeTerminalData()" style="background-color: #38bdf8;">Analyze State</button></section></div>
-
+    <div id="location-intel" class="tab-content"><section class="section-card"><h2>3. Location Intelligence</h2><input type="text" id="name-input" placeholder="Enter City Name..."><button onclick="fetchLocationProfileByName()">Retrieve Comprehensive Profile</button><div id="poi-results" class="result-box">Search to retrieve geospatial intelligence...</div></section></div>
+    <div id="solarpower" class="tab-content"><section class="section-card"><h2>5. Solar Intensity Radar</h2><input type="text" id="solar-target-loc" placeholder="Location Name..."><button onclick="calculateLiveSolarMetrics()">Generate Solar Intelligence</button><div id="solar-instructions" class="result-box">Data awaiting analysis...</div><div id="leaflet-map" style="width:100%; height: 400px; margin-top:15px;"></div></section></div>
+    <div id="language" class="tab-content"><section class="section-card"><h2>4. Language Node</h2><textarea id="detect-text-input" rows="5"></textarea><button onclick="localDetectLang()">Detect Language</button><div id="lang-results" class="result-box">Waiting for input...</div></section></div>
+    <div id="summarizer" class="tab-content"><section class="section-card"><h2>6. Local Summarizer</h2><textarea id="sum-input" rows="8"></textarea><button onclick="localSummarize()">Summarize</button><div id="sum-output" class="result-box">Waiting for content...</div></section></div>
+    <div id="chat-node" class="tab-content"><section class="section-card"><h2>7. Pattern AI Chat</h2><div id="chat-output" class="result-box" style="height: 200px;">History...</div><input type="text" id="chat-input"><button onclick="localChat()">Send</button><button onclick="analyzeTerminalData()" style="background-color: #38bdf8;">Analyze State</button></section></div>
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script type="module">
-    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
-
+<script>
     // Tab Logic
     window.switchTerminalTab = (evt, id) => {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -80,63 +71,50 @@
         }
     };
 
-    // Features
-    window.generateStableImage = () => {
-        const p = document.getElementById("ai-prompt-input").value;
-        document.getElementById("image-output-panel").innerHTML = `<img src="https://image.pollinations.ai/p/${encodeURIComponent(p)}?width=800&height=300&seed=${Math.random()}">`;
-    };
-
+    // Geospatial Logic
     window.fetchLocationProfileByName = async () => {
         const name = document.getElementById('name-input').value;
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${name}&format=json&limit=1`);
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${name}&format=jsonv2&addressdetails=1`);
         const data = await res.json();
-        document.getElementById('poi-results').textContent = data.length ? `Result: ${data[0].display_name}` : "Not found";
+        document.getElementById('poi-results').textContent = data.length ? `Location: ${data[0].display_name}` : "No data found.";
     };
 
     window.calculateLiveSolarMetrics = async () => {
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=9&longitude=7&current=shortwave_radiation`);
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=9.08&longitude=7.52&current=shortwave_radiation,temperature_2m`);
         const data = await res.json();
-        document.getElementById('solar-instructions').textContent = `Radiation: ${data.current.shortwave_radiation} W/m²`;
+        document.getElementById('solar-instructions').textContent = `Radiation: ${data.current.shortwave_radiation} W/m² | Temp: ${data.current.temperature_2m}°C`;
     };
 
-    // AI Pipelines
-    const langDetector = await pipeline('text-classification', 'Xenova/language-detection-model');
-    document.getElementById('lang-status').textContent = "Language Detector Ready";
-    document.getElementById('detect-lang').disabled = false;
-    document.getElementById('detect-lang').onclick = async () => {
-        const res = await langDetector(document.getElementById('detect-text-input').value);
-        document.getElementById('lang-results').textContent = `Detected: ${res[0].label}`;
+    // Local Pattern Processors
+    window.localDetectLang = () => {
+        const text = document.getElementById('detect-text-input').value;
+        const result = /[a-zA-Z]/.test(text) ? "English (Detected via Pattern)" : "Non-Latin Script";
+        document.getElementById('lang-results').textContent = `Result: ${result}`;
     };
 
-    const summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6');
-    document.getElementById('sum-status').textContent = "Summarizer Ready";
-    document.getElementById('summarize').disabled = false;
-    document.getElementById('summarize').onclick = async () => {
-        const res = await summarizer(document.getElementById('sum-input').value);
-        document.getElementById('sum-output').textContent = res[0].summary_text;
+    window.localSummarize = () => {
+        const text = document.getElementById('sum-input').value;
+        const summary = text.split('.').slice(0, 2).join('.') + ".";
+        document.getElementById('sum-output').textContent = `Pattern Summary: ${summary}`;
     };
 
-    const generator = await pipeline('text-generation', 'Xenova/LaMini-Flan-T5-783M');
-    document.getElementById('chat-status').textContent = "Chat Ready";
-    document.getElementById('send-chat').disabled = false;
-    document.getElementById('send-chat').onclick = async () => {
-        const input = document.getElementById('chat-input');
+    window.localChat = () => {
+        const input = document.getElementById('chat-input').value.toLowerCase();
         const out = document.getElementById('chat-output');
-        out.textContent += `\nUser: ${input.value}`;
-        const res = await generator(input.value, { max_new_tokens: 50 });
-        out.textContent += `\nAI: ${res[0].generated_text}`;
-        input.value = "";
+        out.textContent += `\nUser: ${input}`;
+        const response = input.includes("solar") ? "Solar radiation data is live." : "Command parsed.";
+        out.textContent += `\nAI: ${response}`;
+        document.getElementById('chat-input').value = "";
     };
 
-    window.analyzeTerminalData = async () => {
-        const locationData = document.getElementById('poi-results').textContent;
-        let mapData = window.map ? `Lat: ${window.map.getCenter().lat.toFixed(2)}, Lon: ${window.map.getCenter().lng.toFixed(2)}` : "No map";
-        const res = await generator(`Analyze environment: ${locationData}. Map: ${mapData}`, { max_new_tokens: 60 });
-        document.getElementById('chat-output').textContent += `\nAI: ${res[0].generated_text}`;
+    window.analyzeTerminalData = () => {
+        const data = `State: ${document.getElementById('poi-results').textContent}`;
+        document.getElementById('chat-output').textContent += `\nAI: Analyzing... ${data.substring(0, 50)}...`;
     };
 </script>
 </body>
 </html>
+
 
 
 

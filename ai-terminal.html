@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyIPworld - Geospatial Node Terminal</title>
-
-    <meta name="description" content="Real-time environmental radar, AI solar intensity metrics, global language classification, and stable visual AI tools.">
-    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chyke.online/ai-terminal.html" />
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -20,27 +16,17 @@
         .nav-links { display: flex; gap: 20px; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
-        
         .main-layout { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
-        
         .tab-container { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
-        .tab-btn { background: #e2e8f0; border: none; padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; white-space: nowrap; color: #475569; transition: all 0.2s ease; }
+        .tab-btn { background: #e2e8f0; border: none; padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; white-space: nowrap; color: #475569; }
         .tab-btn.active { background: #1e293b; color: #38bdf8; }
-        
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
         .section-card { background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .section-card h2 { margin-top: 0; color: #1e293b; font-size: 22px; border-bottom: 2px solid #38bdf8; padding-bottom: 8px; display: inline-block; }
-        
         .map-frame { width: 100%; height: 500px; border-radius: 8px; border: 1px solid #cbd5e1; }
-        
         button { background-color: #1e293b; color: #f8fafc; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button:hover { background-color: #38bdf8; color: #1e293b; }
-        
-        .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; font-family: system-ui, -apple-system, sans-serif; white-space: pre-wrap; font-size: 14px; line-height: 1.6; max-height: 450px; overflow-y: auto; color: #334155; }
-        .gen-display-box { width: 100%; height: 350px; border: 2px dashed #cbd5e1; border-radius: 8px; margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; padding: 10px; text-align: center; box-sizing: border-box; }
-        .gen-display-box img { width: 100%; height: 100%; object-fit: contain; }
+        .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; white-space: pre-wrap; font-size: 14px; max-height: 450px; overflow-y: auto; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; margin-top: 10px; }
     </style>
 </head>
@@ -62,19 +48,19 @@
         <button class="tab-btn active" onclick="switchTerminalTab(event, 'environmental')">1. Radar</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. Summarizer</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'chat-node')">7. Chat</button>
     </div>
 
     <div id="environmental" class="tab-content active"><section class="section-card"><h2>1. Environmental Radar</h2><iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5" allowfullscreen></iframe></section></div>
-    <div id="generator" class="tab-content"><section class="section-card"><h2>2. Visual Workbench</h2><input type="text" id="ai-prompt-input" placeholder="Enter prompt..."><button onclick="generateStableImage()">Create</button><div id="image-output-panel" class="gen-display-box">Awaiting...</div></section></div>
+    <div id="generator" class="tab-content"><section class="section-card"><h2>2. Visual Workbench</h2><input type="text" id="ai-prompt-input" placeholder="Prompt..."><button onclick="generateStableImage()">Create</button><div id="image-output-panel" class="result-box">Awaiting...</div></section></div>
     <div id="location-intel" class="tab-content"><section class="section-card"><h2>3. Location Intelligence</h2><input type="text" id="name-input" placeholder="City name..."><button onclick="fetchLocationProfileByName()">Analyze</button><div id="poi-results" class="result-box">Awaiting...</div></section></div>
+    <div id="language" class="tab-content"><section class="section-card"><h2>4. Language Node</h2><div id="lang-status">Loading...</div><textarea id="detect-text-input" rows="5"></textarea><button id="detect-lang" disabled>Detect Language</button><div id="lang-results" class="result-box">Awaiting...</div></section></div>
     <div id="solarpower" class="tab-content"><section class="section-card"><h2>5. Solar Intensity</h2><input type="text" id="solar-target-loc" placeholder="Location..."><button onclick="calculateLiveSolarMetrics()">Analyze</button><div id="solar-instructions" class="result-box">Awaiting...</div><div id="leaflet-map" style="width:100%; height: 400px; margin-top:15px;"></div></section></div>
     <div id="summarizer" class="tab-content"><section class="section-card"><h2>6. On-Device Summarizer</h2><div id="sum-status">Loading...</div><textarea id="sum-input" rows="8"></textarea><button id="summarize" disabled>Summarize</button><div id="sum-output" class="result-box">Output...</div></section></div>
-    <div id="chat-node" class="tab-content"><section class="section-card"><h2>7. AI Chat</h2><div id="chat-status">Loading...</div><div id="chat-output" class="result-box" style="height: 200px;">History...</div><input type="text" id="chat-input"><button id="send-chat" disabled>Send</button></section></div>
-
-    <div style="position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden; margin-top: 20px;"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=World&output=embed&z=1"></iframe></div>
+    <div id="chat-node" class="tab-content"><section class="section-card"><h2>7. AI Chat Node (Local)</h2><div id="chat-status">Loading...</div><div id="chat-output" class="result-box" style="height: 200px;">History...</div><input type="text" id="chat-input"><button id="send-chat" disabled>Send</button><button onclick="analyzeTerminalData()" style="background-color: #38bdf8;">Analyze State</button></section></div>
 
 </main>
 
@@ -82,18 +68,19 @@
 <script type="module">
     import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
 
-    let map = null;
+    // Tab Logic
     window.switchTerminalTab = (evt, id) => {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         evt.currentTarget.classList.add('active');
-        if (id === 'solarpower' && !map) { 
-            map = L.map('leaflet-map').setView([9.076, 7.398], 6);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        if (id === 'solarpower' && !window.map) { 
+            window.map = L.map('leaflet-map').setView([9.076, 7.398], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window.map);
         }
     };
 
+    // Features
     window.generateStableImage = () => {
         const p = document.getElementById("ai-prompt-input").value;
         document.getElementById("image-output-panel").innerHTML = `<img src="https://image.pollinations.ai/p/${encodeURIComponent(p)}?width=800&height=300&seed=${Math.random()}">`;
@@ -103,7 +90,7 @@
         const name = document.getElementById('name-input').value;
         const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${name}&format=json&limit=1`);
         const data = await res.json();
-        document.getElementById('poi-results').textContent = data.length ? `Location: ${data[0].display_name}` : "Not found";
+        document.getElementById('poi-results').textContent = data.length ? `Result: ${data[0].display_name}` : "Not found";
     };
 
     window.calculateLiveSolarMetrics = async () => {
@@ -112,7 +99,15 @@
         document.getElementById('solar-instructions').textContent = `Radiation: ${data.current.shortwave_radiation} W/m²`;
     };
 
-    // AI Features
+    // AI Pipelines
+    const langDetector = await pipeline('text-classification', 'Xenova/language-detection-model');
+    document.getElementById('lang-status').textContent = "Language Detector Ready";
+    document.getElementById('detect-lang').disabled = false;
+    document.getElementById('detect-lang').onclick = async () => {
+        const res = await langDetector(document.getElementById('detect-text-input').value);
+        document.getElementById('lang-results').textContent = `Detected: ${res[0].label}`;
+    };
+
     const summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6');
     document.getElementById('sum-status').textContent = "Summarizer Ready";
     document.getElementById('summarize').disabled = false;
@@ -132,9 +127,17 @@
         out.textContent += `\nAI: ${res[0].generated_text}`;
         input.value = "";
     };
+
+    window.analyzeTerminalData = async () => {
+        const locationData = document.getElementById('poi-results').textContent;
+        let mapData = window.map ? `Lat: ${window.map.getCenter().lat.toFixed(2)}, Lon: ${window.map.getCenter().lng.toFixed(2)}` : "No map";
+        const res = await generator(`Analyze environment: ${locationData}. Map: ${mapData}`, { max_new_tokens: 60 });
+        document.getElementById('chat-output').textContent += `\nAI: ${res[0].generated_text}`;
+    };
 </script>
 </body>
 </html>
+
 
 
 

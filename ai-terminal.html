@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyIPworld - AI & Geospatial Node Terminal</title>
+    <title>SkyIPworld - Geospatial Node Terminal</title>
 
     <meta name="description" content="Real-time environmental radar, AI solar intensity metrics, global language classification, and stable visual AI tools.">
     <meta name="robots" content="index, follow">
@@ -14,22 +14,15 @@
     <!-- External UI and Map Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <!-- Official Puter.js v2 SDK -->
-    <script src="https://js.puter.com/v2/"></script>
-
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; }
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; }
         .nav-brand span { color: #38bdf8; }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links { display: flex; gap: 20px; }
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         
-        /* Auth UI Header Style */
-        .auth-badge { background-color: #334155; color: #f8fafc; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; transition: all 0.2s; }
-        .auth-badge:hover { background-color: #38bdf8; color: #1e293b; }
-
         .main-layout { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
         
         /* Performance Tab Controller */
@@ -60,23 +53,13 @@
         .gen-display-box { width: 100%; height: 350px; border: 2px dashed #cbd5e1; border-radius: 8px; margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; padding: 10px; text-align: center; box-sizing: border-box; }
         .gen-display-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Conversational Terminal Window Styles */
-        .agent-container { border: 1px solid #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; height: 550px; background: #0f172a; overflow: hidden; }
-        .agent-header { background: #1e293b; padding: 15px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-        .agent-title { color: #f8fafc; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
-        .agent-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #0f172a; }
-        .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
-        .chat-bubble.user { background: #38bdf8; color: #0f172a; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .chat-bubble.assistant { background: #1e293b; color: #f8fafc; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .agent-footer { padding: 15px; background: #1e293b; border-top: 1px solid #334155; display: flex; gap: 10px; align-items: center; }
-        .agent-input { flex: 1; background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 12px; border-radius: 6px; font-size: 14px; outline: none; }
-        .agent-input:focus { border-color: #38bdf8; }
-        .agent-send-btn { background: #38bdf8; color: #0f172a; border: none; padding: 12px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; margin: 0; }
-        .agent-send-btn:hover { background: #0ea5e9; }
-        
-        .tool-control-panel { background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 12px; }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .wave-container { display: flex; gap: 4px; height: 40px; align-items: center; display: none; margin-bottom: 15px; }
+        .wave-bar { width: 4px; height: 100%; background: #7c3aed; animation: waveMotion 1.2s ease-in-out infinite alternate; border-radius: 2px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 70%; }
+        .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 40%; }
+        .wave-bar:nth-child(4) { animation-delay: 0.6s; height: 80%; }
+        .wave-bar:nth-child(5) { animation-delay: 0.1s; height: 50%; }
+        @keyframes waveMotion { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } }
     </style>
 </head>
 <body>
@@ -86,9 +69,7 @@
         <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
         <div class="nav-links">
             <a href="index.html" class="nav-item">Dashboard</a>
-            <a href="ai-terminal.html" class="nav-item active">AI Terminal</a>
-            <!-- Native Authentication Node -->
-            <button id="puter-auth-btn" class="auth-badge" onclick="handleAuthClick()">Sign In</button>
+            <a href="ai-terminal.html" class="nav-item active">Terminal</a>
         </div>
     </nav>
 </header>
@@ -97,44 +78,54 @@
 
     <div class="tab-container">
         <button class="tab-btn active" onclick="switchTerminalTab(event, 'environmental')">1. Environmental Radar</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual AI Lab</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual Workbench</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location Intelligence</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. World Language AI</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. AI Solar Intensity Radar</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'ai-conversation')">6. Conversational AI Agent</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'app-registry')">7. Puter App Registry</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language Node</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar Intensity Radar</button>
     </div>
 
-    <!-- 1. ENVIRONMENTAL RADAR -->
     <div id="environmental" class="tab-content active">
         <section class="section-card">
-            <h2>1. Environmental AI Radar</h2>
+            <h2>1. Environmental Radar</h2>
             <p>Real-time system tracks global traffic layout, weather patterns, air quality indices, and rural/urban terrain profiles.</p>
             <iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5&level=surface&overlay=radar&product=radar&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=true" allowfullscreen></iframe>
         </section>
     </div>
 
-    <!-- 2. VISUAL AI LAB -->
     <div id="generator" class="tab-content">
         <section class="section-card">
-            <h2>2. Puter Image Workbench</h2>
-            <p>Render assets natively utilizing the Puter visual engine preview.</p>
+            <h2>2. Image & Audio Generation Workbench</h2>
+            <p>Generate clean image matrices and render custom vocal audio outputs.</p>
             
             <div class="input-group">
-                <label>Enter AI Generation Prompt:</label>
-                <input type="text" id="ai-prompt-input" placeholder="A busy marketplace trading layout with solar panels on roofs...">
+                <label>Enter Generation Prompt:</label>
+                <input type="text" id="ai-prompt-input" placeholder="e.g. A busy marketplace trading layout with solar panels on roofs...">
             </div>
 
-            <div style="max-width: 500px;">
-                <button onclick="generatePuterImage()" style="width: 100%; background-color: #0284c7;">Create AI Image Asset</button>
-                <div id="image-output-panel" class="gen-display-box">
-                    <span style="color: #94a3b8;">Awaiting generation request...</span>
+            <div class="grid-2">
+                <div>
+                    <button onclick="generateStableImage()" style="width: 100%; background-color: #0284c7;">Create Image Asset</button>
+                    <div id="image-output-panel" class="gen-display-box">
+                        <span style="color: #94a3b8;">Awaiting generation request...</span>
+                    </div>
+                </div>
+                <div>
+                    <button onclick="generateStableAudioSpeech()" style="width: 100%; background-color: #7c3aed;">Generate Voice Output</button>
+                    <div id="audio-output-panel" class="gen-display-box">
+                        <div class="wave-container" id="audio-wave">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                        <span id="audio-status-text" style="color: #94a3b8;">Awaiting voice synthesis generation command...</span>
+                    </div>
                 </div>
             </div>
         </section>
     </div>
 
-    <!-- 3. LOCATION INTELLIGENCE -->
     <div id="location-intel" class="tab-content">
         <section class="section-card">
             <h2>3. Location Intelligence Engine</h2>
@@ -155,21 +146,20 @@
         </section>
     </div>
 
-    <!-- 4. WORLD LANGUAGE AI -->
     <div id="language" class="tab-content">
         <section class="section-card">
-            <h2>4. Global Language AI Node (Detection & Translation)</h2>
-            <p>Paste text in any world language to instantly analyze its linguistic origin, or translate it natively via Puter.ai streams.</p>
+            <h2>4. Global Language Node (Detection & Translation)</h2>
+            <p>Paste text in any world language to instantly analyze its linguistic origin, or translate it into any other world language.</p>
             <div class="grid-2">
                 <div>
                     <div class="input-group">
-                        <label>Input Text Structure (Any Language):</label>
-                        <textarea id="detect-text-input" rows="5" placeholder="Enter text here..."></textarea>
+                        <label>Input Text Structure:</label>
+                        <textarea id="detect-text-input" rows="5" placeholder="Enter text here... (e.g. Kedu ka i mere? / Ndiyavuya ukudibana nawe / Salut tout le monde)"></textarea>
                     </div>
                     
                     <div class="input-group">
                         <label>Target Translation Language:</label>
-                        <input type="text" id="translation-target" placeholder="e.g. English, Yoruba, Swahili, Spanish">
+                        <input type="text" id="translation-target" placeholder="e.g. English, Yoruba, Swahili, Japanese, French, Latin">
                     </div>
                     
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -185,10 +175,9 @@
         </section>
     </div>
 
-    <!-- 5. AI SOLAR INTENSITY RADAR -->
     <div id="solarpower" class="tab-content">
         <section class="section-card">
-            <h2>5. AI Solar Intensity & Electricity Generation Radar</h2>
+            <h2>5. Solar Intensity & Electricity Generation Radar</h2>
             <p>Provide any target location name to track live solar rays radiation, capture direct horizontal metrics, and read clear layman advice on whether to use solar panel grids right now.</p>
             <div class="grid-2" style="margin-bottom: 20px;">
                 <div>
@@ -207,70 +196,10 @@
         </section>
     </div>
 
-    <!-- 6. CONVERSATIONAL AI AGENT (Native Streaming RAG & Web Search Tools) -->
-    <div id="ai-conversation" class="tab-content">
-        <section class="section-card">
-            <h2>6. Native Puter.js Conversational Terminal</h2>
-            <p>Features active client-side <b>RAG file system writes</b> and explicit <b>web search tools</b> driven by Puter streaming parsing.</p>
-            
-            <div class="grid-2">
-                <!-- Native Puter.fs RAG Upload Panel -->
-                <div class="tool-control-panel">
-                    <h3 style="margin: 0; font-size: 16px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">📁 Puter.fs Cloud Storage (RAG)</h3>
-                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload a file. The script writes it directly to your sandboxed folder path before injecting it as a multi-modal item object.</p>
-                    
-                    <div class="input-group">
-                        <input type="file" id="rag-file-input" onchange="uploadToPuterStorage()" style="padding: 8px; font-size: 12px; background: #fff;">
-                        <div id="rag-status" style="font-size: 11px; color: #059669; margin-top: 5px; font-weight: 500;">No cloud asset stored yet.</div>
-                    </div>
-                </div>
-
-                <!-- Chat Console -->
-                <div class="agent-container">
-                    <div class="agent-header">
-                        <div class="agent-title">
-                            <span class="status-dot"></span>
-                            SkyIPworld Conversational AI Node (Puter Core SDK)
-                        </div>
-                        <button onclick="clearAgentChat()" style="background: transparent; color: #94a3b8; font-size: 12px; padding: 4px 8px; border: 1px solid #475569; margin: 0; border-radius: 4px;">Clear History</button>
-                    </div>
-                    
-                    <div class="agent-body" id="agent-chat-history">
-                        <div class="chat-bubble assistant">
-                            Hello! I am SkyIPworld. Ask me anything. If your query requires live details, I will invoke my local web lookup tool to fetch fresh text packets.
-                        </div>
-                    </div>
-                    
-                    <div class="agent-footer">
-                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Type your query..." onkeydown="handleAgentKeyPress(event)">
-                        <button onclick="sendAgentQuery()" class="agent-send-btn">Send</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 7. PUTER APP REGISTRY -->
-    <div id="app-registry" class="tab-content">
-        <section class="section-card">
-            <h2>7. Puter Object Application Manager (`puter.apps`)</h2>
-            <p>Demonstrates your ability to register, manage, update, and audit tracking applications programmatically inside Puter's backend framework index sheets.</p>
-            <div class="grid-2">
-                <div>
-                    <button onclick="testPuterAppLifecycle()" style="background-color: #7c3aed;">Run App Registration Test</button>
-                </div>
-                <div>
-                    <label>Registry Lifecycle Outputs:</label>
-                    <div id="registry-logs" class="result-box" style="background:#0f172a; color:#38bdf8;">Standing by to launch registration commands...</div>
-                </div>
-            </div>
-        </section>
-    </div>
-
 </main>
 
 <footer style="margin-top: 40px; padding: 25px 0; text-align: center; font-size: 12px; color: #94a3b8; background-color: #1e293b;">
-    SkyIPworld AI Hub © 2026
+    SkyIPworld Hub © 2026
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -279,359 +208,6 @@
     let map = null;
     let solarMarker = null;
 
-    // Chat Memory Stack
-    let chatMemory = [];
-    // Native Puter Path Reference for active RAG allocations
-    let activePuterCloudPath = null;
-
-    // --- 1. AUTHENTICATION ENGINE SYSTEM (`puter.auth`) ---
-    async function auditUserSessionState() {
-        const authBtn = document.getElementById("puter-auth-btn");
-        if (puter.auth.isSignedIn()) {
-            try {
-                const user = await puter.auth.getUser();
-                authBtn.innerText = `Sign Out (${user.username})`;
-                // Initialize user state: Pull memory histories down out of Puter KV
-                loadConversationFromKVStore();
-            } catch (e) {
-                authBtn.innerText = "Sign In";
-            }
-        } else {
-            authBtn.innerText = "Sign In";
-        }
-    }
-
-    async function handleAuthClick() {
-        if (puter.auth.isSignedIn()) {
-            puter.auth.signOut();
-            chatMemory = [];
-            document.getElementById("agent-chat-history").innerHTML = `<div class="chat-bubble assistant">Signed out. Node reset.</div>`;
-            auditUserSessionState();
-        } else {
-            // signIn popup execution sequence bound exactly to click action parameters
-            try {
-                await puter.auth.signIn({ attempt_temp_user_creation: true });
-                auditUserSessionState();
-            } catch (err) {
-                console.log("Authentication popup context dismissed.");
-            }
-        }
-    }
-
-    // Run basic auditing verification on boot loop cycles
-    auditUserSessionState();
-
-
-    // --- 2. KEY VALUE STORE CONTEXT ENGINES (`puter.kv`) ---
-    async function loadConversationFromKVStore() {
-        try {
-            const savedMemory = await puter.kv.get('skyip_chat_history');
-            if (savedMemory && Array.isArray(savedMemory)) {
-                chatMemory = savedMemory;
-                renderChatHistoryUI();
-            }
-        } catch (e) {
-            console.log("KV initialization clean state.");
-        }
-    }
-
-    async function persistConversationToKVStore() {
-        try {
-            if (puter.auth.isSignedIn()) {
-                await puter.kv.set('skyip_chat_history', chatMemory);
-            }
-        } catch (e) {
-            console.log("Failed storage serialization step.");
-        }
-    }
-
-
-    // --- 3. NATIVE PUTER.FS REFRESH (RAG CLOUD WRITES) ---
-    async function uploadToPuterStorage() {
-        const fileInput = document.getElementById('rag-file-input');
-        const statusBox = document.getElementById('rag-status');
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        statusBox.innerHTML = "<i>Writing file node array to Puter cloud filesystem (~/AppData)...</i>";
-
-        try {
-            // Cleanup any older session writes to prevent resource exhaustion anomalies
-            if (activePuterCloudPath) {
-                await puter.fs.delete(activePuterCloudPath);
-            }
-
-            // Write standard object item array directly onto native Puter path schemas
-            const filename = `rag_ref_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-            const puterFileObject = await puter.fs.write(filename, file);
-            
-            activePuterCloudPath = puterFileObject.path;
-            statusBox.innerHTML = `✅ Puter.fs Verified: <code style="color:#0ea5e9;">${activePuterCloudPath}</code>`;
-        } catch (err) {
-            statusBox.innerHTML = `<span style="color:#ef4444;">❌ Cloud Storage Error: ${err.message}</span>`;
-        }
-    }
-
-
-    // --- 4. STREAMING CONVERSATIONAL ENGINE WITH DYNAMIC TOOLS AND EXPLICIT FILE SCHEMA OBJECTS ---
-    const puterSearchToolsSchema = [{
-        type: "function",
-        function: {
-            name: "web_search",
-            description: "Queries the internet to find real-time, accurate 2026 facts, news summaries, and information records.",
-            parameters: {
-                type: "object",
-                properties: { query: { type: "string", description: "The live keyword lookup string" } },
-                required: ["query"]
-            }
-        }
-    }];
-
-    async function executeLiveScraperQuery(searchQuery) {
-        try {
-            const res = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(searchQuery)}`);
-            const htmlText = await res.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlText, 'text/html');
-            return Array.from(doc.querySelectorAll('.result__snippet'))
-                        .slice(0, 3)
-                        .map(el => el.textContent.trim())
-                        .join("\n\n") || "No live snippet parameters discovered.";
-        } catch (e) {
-            return "Web index nodes timeout error.";
-        }
-    }
-
-    async function sendAgentQuery() {
-        const inputField = document.getElementById('agent-user-input');
-        const historyContainer = document.getElementById('agent-chat-history');
-        const queryText = inputField.value.trim();
-        if (!queryText) return;
-
-        // Draw User Bubble
-        const userBubble = document.createElement('div');
-        userBubble.className = 'chat-bubble user';
-        userBubble.innerText = queryText;
-        historyContainer.appendChild(userBubble);
-        inputField.value = '';
-
-        // Draw Assistant Placeholder Frame
-        const assistantBubble = document.createElement('div');
-        assistantBubble.className = 'chat-bubble assistant';
-        assistantBubble.innerHTML = `<i>Processing structural streaming turns...</i>`;
-        historyContainer.appendChild(assistantBubble);
-        historyContainer.scrollTop = historyContainer.scrollHeight;
-
-        let systemPrompt = "You are SkyIPworld Tech Core, an advanced general knowledge computational model setup on top of Puter.js frameworks.\n" +
-                           "Always output responses in clear plain text structures. Timestamps reference active year 2026. Location node focus: Abuja, Nigeria.\n";
-
-        // Structured user turn creation matching documentation rules
-        let activeUserTurnContent = [];
-
-        // If an explicit file has been written to Puter.fs, attach its cloud reference path object
-        if (activePuterCloudPath) {
-            activeUserTurnContent.push({ type: "file", puter_path: activePuterCloudPath });
-            systemPrompt += "[System Attention] A multi-modal target document is attached directly. Reference its contents to verify user responses correctly.\n";
-        }
-
-        activeUserTurnContent.push({ type: "text", text: queryText });
-        chatMemory.push({ role: "user", content: activeUserTurnContent });
-
-        const requestPayloadMessages = [
-            { role: "system", content: systemPrompt },
-            ...chatMemory.map(turn => ({
-                role: turn.role,
-                content: typeof turn.content === 'string' ? turn.content : turn.content
-            }))
-        ];
-
-        try {
-            // Execute stream loop targeting claude-sonnet-4-6 matching provided capabilities rules
-            const stream = await puter.ai.chat(requestPayloadMessages, {
-                model: "claude-sonnet-4-6",
-                tools: puterSearchToolsSchema,
-                stream: true
-            });
-
-            let fullSynthesizedResponse = "";
-            let toolTriggered = false;
-
-            for await (const part of stream) {
-                // Handling text parsing updates
-                if (part.type === 'text' || part.text) {
-                    if (!toolTriggered) assistantBubble.innerText = "";
-                    const fragment = part.text || part.content || "";
-                    fullSynthesizedResponse += fragment;
-                    assistantBubble.innerText = fullSynthesizedResponse;
-                    historyContainer.scrollTop = historyContainer.scrollHeight;
-                }
-                // Handling function calling tool structures
-                else if (part.type === 'tool_use' || part.name === 'web_search') {
-                    toolTriggered = true;
-                    const toolCall = part;
-                    const args = toolCall.input || JSON.parse(toolCall.arguments || '{}');
-
-                    assistantBubble.innerHTML = `<i>🔍 Puter Tool Execution: Running web search for "${args.query}"...</i>`;
-                    
-                    let lookupContextResults = await executeLiveScraperQuery(args.query);
-
-                    assistantBubble.innerHTML = `<i>⚙️ Finalizing stream utilizing grounded text strings...</i>`;
-
-                    // Submit feedback loop turns back to puter stream execution structures
-                    const recursiveStream = await puter.ai.chat([
-                        { role: "system", content: systemPrompt },
-                        ...chatMemory.map(turn => ({ role: turn.role, content: typeof turn.content === 'string' ? turn.content : turn.content })),
-                        { role: "assistant", tool_calls: [{
-                            id: toolCall.id || 'search_id',
-                            type: "function",
-                            function: { name: "web_search", arguments: JSON.stringify(args) }
-                        }]},
-                        { role: "tool", tool_call_id: toolCall.id || 'search_id', content: lookupContextResults }
-                    ], { model: "claude-sonnet-4-6", stream: true });
-
-                    fullSynthesizedResponse = "";
-                    assistantBubble.innerText = "";
-
-                    for await (const secondaryPart of recursiveStream) {
-                        const subFragment = secondaryPart.text || secondaryPart.content || "";
-                        if (subFragment) {
-                            fullSynthesizedResponse += subFragment;
-                            assistantBubble.innerText = fullSynthesizedResponse;
-                            historyContainer.scrollTop = historyContainer.scrollHeight;
-                        }
-                    }
-                }
-            }
-
-            // Commit transaction to local state array history tracking maps
-            chatMemory.push({ role: "assistant", content: fullSynthesizedResponse });
-            persistConversationToKVStore();
-
-        } catch (err) {
-            assistantBubble.innerHTML = `<span style="color:#ef4444;">❌ Puter SDK Interface Truncation Error: ${err.message}</span>`;
-        }
-    }
-
-    function renderChatHistoryUI() {
-        const historyContainer = document.getElementById('agent-chat-history');
-        historyContainer.innerHTML = "";
-        chatMemory.forEach(turn => {
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble ${turn.role}`;
-            if (turn.role === 'user') {
-                // Parse text nodes out of complex file arrays if matching multi-modal layouts
-                bubble.innerText = Array.isArray(turn.content) 
-                    ? turn.content.find(c => c.type === 'text')?.text || "Attached Cloud Document Asset" 
-                    : turn.content;
-            } else {
-                bubble.innerText = turn.content;
-            }
-            historyContainer.appendChild(bubble);
-        });
-        historyContainer.scrollTop = historyContainer.scrollHeight;
-    }
-
-    async function clearAgentChat() {
-        chatMemory = [];
-        if (puter.auth.isSignedIn()) {
-            await puter.kv.set('skyip_chat_history', []);
-        }
-        if (activePuterCloudPath) {
-            await puter.fs.delete(activePuterCloudPath);
-            activePuterCloudPath = null;
-            document.getElementById('rag-file-input').value = "";
-            document.getElementById('rag-status').innerText = "No cloud asset stored yet.";
-        }
-        renderChatHistoryUI();
-    }
-
-
-    // --- 5. NATIVE PUTER WORKBENCH ACTIONS (AI IMAGE SECTIONS & RECONSTRUCTS) ---
-    async function generatePuterImage() {
-        const promptInput = document.getElementById("ai-prompt-input").value.trim();
-        const outputPanel = document.getElementById("image-output-panel");
-        if (!promptInput) { alert("Please input your prompt parameters first."); return; }
-
-        outputPanel.innerHTML = `<span style="color:#0284c7; font-weight:bold;">Requesting Puter Image Preview Workspace Matrix...</span>`;
-
-        try {
-            const outputAssetResult = await puter.ai.chat(promptInput, {
-                model: "gemini-3.1-flash-image-preview",
-                image_config: { image_size: "1K" }
-            });
-
-            const renderingCloudUrl = outputAssetResult.message.images?.[0]?.image_url?.url;
-            if (renderingCloudUrl) {
-                outputPanel.innerHTML = `<img src="${renderingCloudUrl}" style="max-width:100%; height:100%; object-fit:contain;">`;
-            } else {
-                outputPanel.innerText = "No image bytes returned from cluster matrix layers.";
-            }
-        } catch (err) {
-            outputPanel.innerHTML = `<span style="color:#ef4444;">Visual Node Error: ${err.message}</span>`;
-        }
-    }
-
-
-    // --- 6. NATIVE PUTER SINGLE TURN AI HANDLERS (LANGUAGE NODES) ---
-    async function detectWorldLanguage() {
-        const text = document.getElementById('detect-text-input').value.trim();
-        const resultsBox = document.getElementById('language-results');
-        if (!text) { resultsBox.innerHTML = "Please insert text structures first."; return; }
-        resultsBox.innerHTML = "Processing language metrics via single-turn Puter execution paths...";
-        try {
-            const report = await puter.ai.chat(
-                `Identify the language profile of the target text text block. Return ONLY standard values:\n` +
-                `Language: [Name]\nConfidence: [Score]%\nText Content:\n"${text}"`
-            );
-            resultsBox.innerText = report;
-        } catch (e) {
-            resultsBox.innerText = `Exception triggered: ${e.message}`;
-        }
-    }
-
-    async function translateWorldLanguage() {
-        const text = document.getElementById('detect-text-input').value.trim();
-        const targetLang = document.getElementById('translation-target').value.trim();
-        const resultsBox = document.getElementById('language-results');
-        if (!text || !targetLang) { resultsBox.innerHTML = "Provide parameters first."; return; }
-        resultsBox.innerHTML = "Invoking translation pipeline structures...";
-        try {
-            const structuralOutputText = await puter.ai.chat(`Translate this text block directly into ${targetLang}. Return ONLY the explicit translation response text:\n\n"${text}"`);
-            resultsBox.innerText = structuralOutputText;
-        } catch (e) {
-            resultsBox.innerText = `Exception triggered: ${e.message}`;
-        }
-    }
-
-
-    // --- 7. APPLICATION LIFE CYCLES OBJECTS ENGINE MANAGEMENT (`puter.apps`) ---
-    async function testPuterAppLifecycle() {
-        const logBox = document.getElementById("registry-logs");
-        logBox.innerHTML = "Executing application registry initialization commands...\n";
-        try {
-            // (1) Generate a random non-conflicting tracking name token
-            let transientTestingAppName = puter.randName();
-            logBox.innerText += `1. Generated distinct application tracking key signature: "${transientTestingAppName}"\n`;
-
-            // (2) Create App instance item record mappings on top of Puter clusters
-            let activeAppInstanceRegistrationObject = await puter.apps.create(transientTestingAppName, "https://chyke.online");
-            logBox.innerText += `2. Registration allocated. Unique Object UID Token: ${activeAppInstanceRegistrationObject.uid}\n`;
-
-            // (3) Patch structural parameters modifications onto registered record layers
-            let patchedInstanceObjectResult = await puter.apps.update(transientTestingAppName, { title: "SkyIPworld Custom Test Engine Terminal Node" });
-            logBox.innerText += `3. App structure metadata successfully modified. Title changed to: "${patchedInstanceObjectResult.title}"\n`;
-
-            // (4) Delete instance profile to complete test cycle
-            await puter.apps.delete(transientTestingAppName);
-            logBox.innerText += `4. App cleanups handled cleanly. Instance dropped out of indexing scopes successfully.\n\n✓ Puter App SDK Management Layer Operational.`;
-
-        } catch (error) {
-            logBox.innerText += `\n❌ Application Layer Lifecycle Interruption Exception: ${error.message}`;
-        }
-    }
-
-
-    // --- AUXILIARY GENERAL SITE WEB UTILITIES PANEL LAYOUT CONTROLLERS ---
     function switchTerminalTab(evt, tabId) {
         const contents = document.getElementsByClassName("tab-content");
         for (let i = 0; i < contents.length; i++) { contents[i].classList.remove("active"); }
@@ -650,8 +226,32 @@
         }
     }
 
-    function handleAgentKeyPress(event) {
-        if (event.key === 'Enter') { sendAgentQuery(); }
+    function generateStableImage() {
+        const prompt = document.getElementById("ai-prompt-input").value.trim();
+        const panel = document.getElementById("image-output-panel");
+        if(!prompt) { alert("Please type an asset description first."); return; }
+        panel.innerHTML = `<span style="color: #0284c7; font-weight: bold;">Generating Image Matrix...</span>`;
+        const encodedPrompt = encodeURIComponent(prompt);
+        const seed = Math.floor(Math.random() * 100000);
+        const imageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=500&seed=${seed}&nologo=true`;
+        const img = new Image();
+        img.src = imageUrl;
+        img.onload = function() { panel.innerHTML = `<img src="${imageUrl}">`; };
+    }
+
+    function generateStableAudioSpeech() {
+        const prompt = document.getElementById("ai-prompt-input").value.trim();
+        const statusText = document.getElementById("audio-status-text");
+        const wave = document.getElementById("audio-wave");
+        if(!prompt) { alert("Please type your text into the prompt box first."); return; }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(prompt);
+            utterance.rate = 0.95;
+            utterance.onstart = function() { wave.style.display = "flex"; statusText.innerHTML = `<b>Streaming Audio Signal...</b>`; };
+            utterance.onend = function() { wave.style.display = "none"; statusText.innerHTML = `<b style="color: #22c55e;">✓ Voice Complete.</b>`; };
+            window.speechSynthesis.speak(utterance);
+        }
     }
 
     async function fetchLocationProfileByName() {
@@ -687,46 +287,41 @@
             const geoData = await geoRes.json();
 
             if(geoData.length === 0) { infoBox.innerHTML = "Failed to locate matching town map tags."; return; }
-            const lat = parseFloat(geoData[0].lat); const lon = parseFloat(geoData[0].lon);
+            
+            const lat = parseFloat(geoData[0].lat);
+            const lon = parseFloat(geoData[0].lon);
 
             if(solarMarker) map.removeLayer(solarMarker);
             map.setView([lat, lon], 11);
             solarMarker = L.marker([lat, lon]).addTo(map).bindPopup(`Solar Node: ${solarLoc}`).openPopup();
 
             const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,cloud_cover&forecast_days=1`;
-            const solarRes = await fetch(openMeteoUrl); const solarData = await solarRes.json();
+            const solarRes = await fetch(openMeteoUrl);
+            const solarData = await solarRes.json();
 
             if(!solarData || !solarData.current) { infoBox.innerHTML = "Solar radiation sensors timed out."; return; }
-            const shortwaveRadiation = solarData.current.shortwave_radiation; const cloudCover = solarData.current.cloud_cover; 
+
+            const shortwaveRadiation = solarData.current.shortwave_radiation; 
+            const cloudCover = solarData.current.cloud_cover; 
 
             let rayStrength = "WEAK / INSUFFICIENT";
             let usageAdvice = "🔴 DO NOT rely on direct panel generation right now. Turn off heavy appliances like air conditioners, pumping machines, or electric cookers to protect battery lifespans. Run entirely on grid or pre-charged backup batteries.";
+            
             if (shortwaveRadiation >= 150 && shortwaveRadiation < 450) {
                 rayStrength = "MODERATE / FAIR";
-                usageAdvice = "🟡 MODERATE GENERATION. Excellent for charging batteries, running laptops, fans, and light appliances. Avoid starting up multiple heavy thermal appliances simultaneously.";
+                usageAdvice = "🟡 MODERATE GENERATION. Excellent for charging batteries, running laptops, fans, TVs, and light appliances. Avoid starting up multiple heavy thermal appliances simultaneously since solar input is limited by local cloud covers.";
             } else if (shortwaveRadiation >= 450) {
                 rayStrength = "STRONG / MAXIMUM PEAK EFFICIENCY";
-                usageAdvice = "🟢 PEAK PRODUCTION ZONE. Solar intensity is highly powerful right now. This is the absolute best time to pump water or charge heavy battery cells to max capacity completely on free solar power.";
+                usageAdvice = "🟢 PEAK PRODUCTION ZONE. Solar intensity is highly powerful right now. This is the absolute best time to pump water, turn on water heaters, run refrigerators, or charge heavy battery cells to max capacity completely on free solar power.";
             }
 
-            infoBox.innerHTML = `☀️ REAL-TIME SOLAR RADIATION ANALYSIS REPORT\n--------------------------------------------------\n• Targeted Node Location: [ ${solarLoc} ]\n• Solar Ray Intensity Status: ${rayStrength}\n• Live Irradiance Energy Value: ${shortwaveRadiation} W/m²\n• Sky Cloud Obstruction Density: ${cloudCover}% Sky coverage\n\n📋 LAYMAN APPLIANCE USAGE DIRECTIONS\n--------------------------------------------------\n• Current Generation State: The sun rays are currently producing ${shortwaveRadiation} Watts of power per square meter.\n\n• Solar Inverter Advice:\n  ${usageAdvice}`;
-        } catch (e) { infoBox.innerHTML = "Failed to establish a link to the open weather monitoring grid."; }
+            infoBox.innerHTML = `☀️ REAL-TIME SOLAR RADIATION ANALYSIS REPORT\n--------------------------------------------------\n• Targeted Node Location: [ ${solarLoc} ]\n• Solar Ray Intensity Status: ${rayStrength}\n• Live Irradiance Energy Value: ${shortwaveRadiation} W/m²\n• Sky Cloud Obstruction Density: ${cloudCover}%\n\n📋 LAYMAN APPLIANCE USAGE DIRECTIONS\n--------------------------------------------------\n• Solar Inverter Advice:\n  ${usageAdvice}`;
+
+        } catch (e) {
+            infoBox.innerHTML = "Failed to establish a link to the open weather monitoring grid.";
+        }
     }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

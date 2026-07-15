@@ -25,7 +25,6 @@
         
         .main-layout { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
         
-        /* Performance Tab Controller */
         .tab-container { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
         .tab-btn { background: #e2e8f0; border: none; padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; white-space: nowrap; color: #475569; transition: all 0.2s ease; }
         .tab-btn.active { background: #1e293b; color: #38bdf8; }
@@ -55,10 +54,6 @@
 
         .wave-container { display: flex; gap: 4px; height: 40px; align-items: center; display: none; margin-bottom: 15px; }
         .wave-bar { width: 4px; height: 100%; background: #7c3aed; animation: waveMotion 1.2s ease-in-out infinite alternate; border-radius: 2px; }
-        .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 70%; }
-        .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 40%; }
-        .wave-bar:nth-child(4) { animation-delay: 0.6s; height: 80%; }
-        .wave-bar:nth-child(5) { animation-delay: 0.1s; height: 50%; }
         @keyframes waveMotion { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } }
     </style>
 </head>
@@ -81,311 +76,126 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'generator')">2. Visual Workbench</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'location-intel')">3. Location Intelligence</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'language')">4. Language Node</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar Intensity Radar</button>
-        <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. On-Device Summarizer</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'solarpower')">5. Solar Intensity</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'summarizer')">6. Summarizer</button>
+        <button class="tab-btn" onclick="switchTerminalTab(event, 'chat-node')">7. AI Chat Node</button>
     </div>
 
     <div id="environmental" class="tab-content active">
         <section class="section-card">
             <h2>1. Environmental Radar</h2>
-            <p>Real-time system tracks global traffic layout, weather patterns, air quality indices, and rural/urban terrain profiles.</p>
-            <iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5&level=surface&overlay=radar&product=radar&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=true" allowfullscreen></iframe>
+            <iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5" allowfullscreen></iframe>
         </section>
     </div>
 
     <div id="generator" class="tab-content">
         <section class="section-card">
-            <h2>2. Image & Audio Generation Workbench</h2>
-            <p>Generate clean image matrices and render custom vocal audio outputs.</p>
-            
-            <div class="input-group">
-                <label>Enter Generation Prompt:</label>
-                <input type="text" id="ai-prompt-input" placeholder="e.g. A busy marketplace trading layout with solar panels on roofs...">
-            </div>
-
-            <div class="grid-2">
-                <div>
-                    <button onclick="generateStableImage()" style="width: 100%; background-color: #0284c7;">Create Image Asset</button>
-                    <div id="image-output-panel" class="gen-display-box">
-                        <span style="color: #94a3b8;">Awaiting generation request...</span>
-                    </div>
-                </div>
-                <div>
-                    <button onclick="generateStableAudioSpeech()" style="width: 100%; background-color: #7c3aed;">Generate Voice Output</button>
-                    <div id="audio-output-panel" class="gen-display-box">
-                        <div class="wave-container" id="audio-wave">
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                        </div>
-                        <span id="audio-status-text" style="color: #94a3b8;">Awaiting voice synthesis generation command...</span>
-                    </div>
-                </div>
-            </div>
+            <h2>2. Visual Workbench</h2>
+            <input type="text" id="ai-prompt-input" placeholder="Enter prompt...">
+            <button onclick="generateStableImage()">Create Image Asset</button>
+            <div id="image-output-panel" class="gen-display-box">Awaiting...</div>
         </section>
     </div>
 
     <div id="location-intel" class="tab-content">
         <section class="section-card">
-            <h2>3. Location Intelligence Engine</h2>
-            <p>Type any global city, region, address, or country name to generate a real-time semantic analysis profile.</p>
-            <div class="grid-2">
-                <div>
-                    <div class="input-group">
-                        <label>Enter Location Name:</label>
-                        <input type="text" id="name-input" placeholder="e.g. Abuja, Lekki, Paris, New York">
-                    </div>
-                    <button onclick="fetchLocationProfileByName()">Run Environmental Analysis</button>
-                </div>
-                <div>
-                    <label>Real-Time Intelligence Profile Output:</label>
-                    <div id="poi-results" class="result-box">Awaiting operational query profile...</div>
-                </div>
-            </div>
+            <h2>3. Location Intelligence</h2>
+            <input type="text" id="name-input" placeholder="e.g. Abuja">
+            <button onclick="fetchLocationProfileByName()">Analyze</button>
+            <div id="poi-results" class="result-box">Awaiting...</div>
         </section>
     </div>
 
     <div id="language" class="tab-content">
         <section class="section-card">
-            <h2>4. Global Language Node (Detection & Translation)</h2>
-            <p>Paste text in any world language to instantly analyze its linguistic origin, or translate it into any other world language.</p>
-            <div class="grid-2">
-                <div>
-                    <div class="input-group">
-                        <label>Input Text Structure:</label>
-                        <textarea id="detect-text-input" rows="5" placeholder="Enter text here... (e.g. Kedu ka i mere? / Ndiyavuya ukudibana nawe / Salut tout le monde)"></textarea>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Target Translation Language:</label>
-                        <input type="text" id="translation-target" placeholder="e.g. English, Yoruba, Swahili, Japanese, French, Latin">
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button onclick="detectWorldLanguage()" style="flex: 1; background-color: #1e293b;">Detect Language</button>
-                        <button onclick="translateWorldLanguage()" style="flex: 1; background-color: #059669;">Translate Text</button>
-                    </div>
-                </div>
-                <div>
-                    <label>Structural Language Node Output:</label>
-                    <div id="language-results" class="result-box">Analysis pending network matrix input...</div>
-                </div>
-            </div>
+            <h2>4. Language Node</h2>
+            <textarea id="detect-text-input" rows="5"></textarea>
+            <button onclick="detectWorldLanguage()">Detect</button>
         </section>
     </div>
 
     <div id="solarpower" class="tab-content">
         <section class="section-card">
-            <h2>5. Solar Intensity & Electricity Generation Radar</h2>
-            <p>Provide any target location name to track live solar rays radiation, capture direct horizontal metrics, and read clear layman advice on whether to use solar panel grids right now.</p>
-            <div class="grid-2" style="margin-bottom: 20px;">
-                <div>
-                    <div class="input-group">
-                        <label>Target Measurement Location:</label>
-                        <input type="text" id="solar-target-loc" placeholder="e.g. Abuja, Lagos, Kano, London">
-                    </div>
-                    <button onclick="calculateLiveSolarMetrics()">Analyze Solar Generation Power</button>
-                </div>
-                <div>
-                    <label>Real-Time Solar Power Analysis & Usage Guide:</label>
-                    <div id="solar-instructions" class="result-box">Solar radiation metrics and appliance usage steps will render here upon testing...</div>
-                </div>
-            </div>
-            <div id="leaflet-map" style="width:100%; height: 500px; border-radius: 8px; border:1px solid #cbd5e1;"></div>
+            <h2>5. Solar Intensity Radar</h2>
+            <input type="text" id="solar-target-loc" placeholder="Location...">
+            <button onclick="calculateLiveSolarMetrics()">Analyze</button>
+            <div id="solar-instructions" class="result-box">Awaiting...</div>
+            <div id="leaflet-map" style="width:100%; height: 500px; border:1px solid #cbd5e1;"></div>
         </section>
     </div>
 
     <div id="summarizer" class="tab-content">
         <section class="section-card">
             <h2>6. On-Device Summarizer</h2>
-            <p>Uses local browser AI to summarize text securely without sending it to a server.</p>
-            <div id="status" style="margin-bottom: 10px; font-weight: bold; color: #64748b;">Checking model availability...</div>
-            <textarea id="input" rows="8" placeholder="Paste long text to summarize..."></textarea>
+            <div id="sum-status" style="font-weight:bold; color:#64748b;">Checking...</div>
+            <textarea id="sum-input" rows="8"></textarea>
             <button id="summarize" disabled>Summarize</button>
-            <button id="cancel" hidden>Cancel</button>
-            <div id="output" class="result-box" style="margin-top: 15px;">Output will appear here...</div>
+            <div id="sum-output" class="result-box">Output...</div>
+        </section>
+    </div>
+
+    <div id="chat-node" class="tab-content">
+        <section class="section-card">
+            <h2>7. AI Chat Node (Gemini Nano)</h2>
+            <div id="chat-status" style="font-weight: bold; color: #64748b;">Checking...</div>
+            <div id="chat-output" class="result-box" style="height: 300px;">Chat history...</div>
+            <input type="text" id="chat-input" placeholder="Type message...">
+            <button id="send-chat" disabled>Send</button>
         </section>
     </div>
 
 </main>
 
-<div style="position: relative; width: 100%; padding-bottom: 56.25%; overflow: hidden;"><iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=World&output=embed&z=1"></iframe><a href="https://google-map-embed.vercel.app/" rel="noopener" target="_blank" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;">google map embed</a></div>
-
-<footer style="margin-top: 40px; padding: 25px 0; text-align: center; font-size: 12px; color: #94a3b8; background-color: #1e293b;">
-    SkyIPworld Hub © 2026
-</footer>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
     let map = null;
-    let solarMarker = null;
 
     function switchTerminalTab(evt, tabId) {
-        const contents = document.getElementsByClassName("tab-content");
-        for (let i = 0; i < contents.length; i++) { contents[i].classList.remove("active"); }
-        const buttons = document.getElementsByClassName("tab-btn");
-        for (let i = 0; i < buttons.length; i++) { buttons[i].classList.remove("active"); }
-        document.getElementById(tabId).classList.add("active");
-        evt.currentTarget.classList.add("active");
-
-        if (tabId === "solarpower" && map === null) {
-            setTimeout(() => {
-                map = L.map('leaflet-map').setView([9.076, 7.398], 6);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(map);
-            }, 200);
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+        if (tabId === "solarpower" && !map) {
+            map = L.map('leaflet-map').setView([9.076, 7.398], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         }
     }
 
-    function generateStableImage() {
-        const prompt = document.getElementById("ai-prompt-input").value.trim();
-        const panel = document.getElementById("image-output-panel");
-        if(!prompt) { alert("Please type an asset description first."); return; }
-        panel.innerHTML = `<span style="color: #0284c7; font-weight: bold;">Generating Image Matrix...</span>`;
-        const encodedPrompt = encodeURIComponent(prompt);
-        const seed = Math.floor(Math.random() * 100000);
-        const imageUrl = `https://image.pollinations.ai/p/${encodedPrompt}?width=800&height=500&seed=${seed}&nologo=true`;
-        const img = new Image();
-        img.src = imageUrl;
-        img.onload = function() { panel.innerHTML = `<img src="${imageUrl}">`; };
-    }
-
-    function generateStableAudioSpeech() {
-        const prompt = document.getElementById("ai-prompt-input").value.trim();
-        const statusText = document.getElementById("audio-status-text");
-        const wave = document.getElementById("audio-wave");
-        if(!prompt) { alert("Please type your text into the prompt box first."); return; }
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(prompt);
-            utterance.rate = 0.95;
-            utterance.onstart = function() { wave.style.display = "flex"; statusText.innerHTML = `<b>Streaming Audio Signal...</b>`; };
-            utterance.onend = function() { wave.style.display = "none"; statusText.innerHTML = `<b style="color: #22c55e;">✓ Voice Complete.</b>`; };
-            window.speechSynthesis.speak(utterance);
-        }
-    }
-
-    async function fetchLocationProfileByName() {
-        const locationName = document.getElementById('name-input').value.trim();
-        const resultsBox = document.getElementById('poi-results');
-        if (!locationName) { resultsBox.innerHTML = "Error: Please enter a location name."; return; }
-        resultsBox.innerHTML = "Reading real-time environment profile signals...";
-        try {
-            const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}&format=json&addressdetails=1&limit=1`;
-            const res = await fetch(geocodeUrl, { headers: { 'User-Agent': 'SkyIPworld-Agent' } });
-            const data = await res.json();
-            if (data && data.length > 0) {
-                const target = data[0]; const addr = target.address;
-                const isUrban = addr.city || addr.town || target.type === 'city';
-                const isWaterline = locationName.toLowerCase().match(/(lekki|beach|island|coast|river|port|water|delta|creek|marina|lagoon)/);
-                let trafficState = "Low Traffic Density.", roadState = "Good Condition.", settlementType = "Rural Area", popValue = "15,000 to 45,000", economicData = "Local Agri-Trade", vegType = "Grassland Savannah", soilType = "Rich Loamy soil structure";
-                if (isUrban) { trafficState = "High Traffic Density."; roadState = "Good Condition."; settlementType = "Urban Metropolitan Core"; popValue = "600,000+ local inhabitants"; economicData = "Industrial Hub"; }
-                if (isWaterline) { trafficState = "Medium Traffic Density."; roadState = "Fair Condition."; settlementType = "Waterline Settlement Area"; popValue = "180,000+ active residents"; economicData = "Maritime Trade"; vegType = "Mangrove Swamps"; soilType = "Alluvial Silt"; }
-                resultsBox.innerHTML = `🌍 REAL-TIME ENVIRONMENT INSIGHTS\n📍 Location: ${target.display_name}\n🚦 Traffic: ${trafficState}\n🛣️ Road: ${roadState}\n👥 Structure: ${settlementType} (${popValue})\n💰 Economy: ${economicData}\n🌱 Soil Profile: ${vegType} / ${soilType}`;
-            }
-        } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
-    }
-
-    async function calculateLiveSolarMetrics() {
-        const solarLoc = document.getElementById('solar-target-loc').value.trim();
-        const infoBox = document.getElementById('solar-instructions');
-        if(!solarLoc) { infoBox.innerHTML = "Error: Provide a location name to check solar index."; return; }
-        infoBox.innerHTML = "Connecting to real-time satellite solar radiation nodes...";
-
-        try {
-            const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(solarLoc)}&format=json&limit=1`;
-            const geoRes = await fetch(geoUrl, { headers: { 'User-Agent': 'SkyIPworld' } });
-            const geoData = await geoRes.json();
-
-            if(geoData.length === 0) { infoBox.innerHTML = "Failed to locate matching town map tags."; return; }
-            
-            const lat = parseFloat(geoData[0].lat);
-            const lon = parseFloat(geoData[0].lon);
-
-            if(solarMarker) map.removeLayer(solarMarker);
-            map.setView([lat, lon], 11);
-            solarMarker = L.marker([lat, lon]).addTo(map).bindPopup(`Solar Node: ${solarLoc}`).openPopup();
-
-            const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=shortwave_radiation,cloud_cover&forecast_days=1`;
-            const solarRes = await fetch(openMeteoUrl);
-            const solarData = await solarRes.json();
-
-            if(!solarData || !solarData.current) { infoBox.innerHTML = "Solar radiation sensors timed out."; return; }
-
-            const shortwaveRadiation = solarData.current.shortwave_radiation; 
-            const cloudCover = solarData.current.cloud_cover; 
-
-            let rayStrength = "WEAK / INSUFFICIENT";
-            let usageAdvice = "🔴 DO NOT rely on direct panel generation right now. Turn off heavy appliances like air conditioners, pumping machines, or electric cookers to protect battery lifespans. Run entirely on grid or pre-charged backup batteries.";
-            
-            if (shortwaveRadiation >= 150 && shortwaveRadiation < 450) {
-                rayStrength = "MODERATE / FAIR";
-                usageAdvice = "🟡 MODERATE GENERATION. Excellent for charging batteries, running laptops, fans, TVs, and light appliances. Avoid starting up multiple heavy thermal appliances simultaneously since solar input is limited by local cloud covers.";
-            } else if (shortwaveRadiation >= 450) {
-                rayStrength = "STRONG / MAXIMUM PEAK EFFICIENCY";
-                usageAdvice = "🟢 PEAK PRODUCTION ZONE. Solar intensity is highly powerful right now. This is the absolute best time to pump water, turn on water heaters, run refrigerators, or charge heavy battery cells to max capacity completely on free solar power.";
-            }
-
-            infoBox.innerHTML = `☀️ REAL-TIME SOLAR RADIATION ANALYSIS REPORT\n--------------------------------------------------\n• Targeted Node Location: [ ${solarLoc} ]\n• Solar Ray Intensity Status: ${rayStrength}\n• Live Irradiance Energy Value: ${shortwaveRadiation} W/m²\n• Sky Cloud Obstruction Density: ${cloudCover}%\n\n📋 LAYMAN APPLIANCE USAGE DIRECTIONS\n--------------------------------------------------\n• Solar Inverter Advice:\n  ${usageAdvice}`;
-
-        } catch (e) {
-            infoBox.innerHTML = "Failed to establish a link to the open weather monitoring grid.";
-        }
-    }
-
-    const summarizeBtn = document.getElementById('summarize');
-    const cancelBtn = document.getElementById('cancel');
-    const input = document.getElementById('input');
-    const output = document.getElementById('output');
-    const status = document.getElementById('status');
-    let session = null;
-
+    // --- Summarizer Logic ---
+    const sumBtn = document.getElementById('summarize');
+    let sumSession = null;
     async function initSummarizer() {
-        if (!window.ai || !window.ai.summarizer) {
-            status.textContent = "Summarizer API not available in this browser.";
-            return;
-        }
-        
-        const canSummarize = await window.ai.summarizer.canSummarize();
-        if (canSummarize === 'no') {
-            status.textContent = "Model not available.";
-            return;
-        }
-
-        status.textContent = "Model ready.";
-        summarizeBtn.disabled = false;
-
-        if (canSummarize === 'after-download') {
-            session = await window.ai.summarizer.create({ monitor: m => m.addEventListener('downloadprogress', e => status.textContent = `Downloading: ${Math.round(100*e.loaded/e.total)}%`) });
-            await session.ready;
-        } else {
-            session = await window.ai.summarizer.create();
-        }
-        status.textContent = "Model fully loaded.";
+        if (!window.ai?.summarizer) return;
+        sumSession = await window.ai.summarizer.create();
+        document.getElementById('sum-status').textContent = "Summarizer Ready";
+        sumBtn.disabled = false;
     }
-
-    summarizeBtn.addEventListener('click', async () => {
-        output.textContent = "Summarizing...";
-        summarizeBtn.hidden = true;
-        cancelBtn.hidden = false;
-        try {
-            const stream = await session.summarizeStreaming(input.value);
-            output.textContent = "";
-            for await (const chunk of stream) { output.textContent = chunk; }
-        } catch (e) { output.textContent = "Error: " + e.message; }
-        summarizeBtn.hidden = false;
-        cancelBtn.hidden = true;
+    sumBtn.addEventListener('click', async () => {
+        const stream = await sumSession.summarizeStreaming(document.getElementById('sum-input').value);
+        document.getElementById('sum-output').textContent = "";
+        for await (const chunk of stream) document.getElementById('sum-output').textContent = chunk;
     });
-
-    cancelBtn.addEventListener('click', () => { session.destroy(); initSummarizer(); });
-
     initSummarizer();
-</script>
 
+    // --- Chat Node Logic ---
+    const chatBtn = document.getElementById('send-chat');
+    let chatSession = null;
+    async function initChat() {
+        if (!window.ai?.languageModel) return;
+        chatSession = await window.ai.languageModel.create();
+        document.getElementById('chat-status').textContent = "Chat Ready";
+        chatBtn.disabled = false;
+    }
+    chatBtn.addEventListener('click', async () => {
+        const input = document.getElementById('chat-input');
+        document.getElementById('chat-output').textContent += `\nUser: ${input.value}\n`;
+        const response = await chatSession.prompt(input.value);
+        document.getElementById('chat-output').textContent += `AI: ${response}\n`;
+        input.value = "";
+    });
+    initChat();
+</script>
 </body>
 </html>
+
 

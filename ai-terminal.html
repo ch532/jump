@@ -219,18 +219,18 @@
     <div id="ai-conversation" class="tab-content">
         <section class="section-card">
             <h2>6. Multi-Modal Conversational AI Terminal</h2>
-            <p>Chat with our high-speed, keyless AI agent. Real-time internet indexes and location services are processed fully automatically.</p>
+            <p>Chat with our high-speed, keyless AI agent. Real-time internet indexes, dynamic timing, and geographic visitor nodes are processed automatically.</p>
             
             <div class="grid-2">
                 <!-- Automated Index Panel -->
                 <div class="tool-control-panel">
                     <h3 style="margin: 0; font-size: 16px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">📁 Document Retrieval (RAG)</h3>
-                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload a database file. The AI agent will automatically index its text context into its neural reasoning frame.</p>
+                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload any reference file. The background AI agent automatically reads and indexes its context during conversation.</p>
                     
                     <!-- RAG / Document Upload -->
                     <div class="input-group">
                         <input type="file" id="rag-file-input" accept=".txt,.json,.csv,.js,.html,.css" onchange="indexDocumentForRAG()" style="padding: 8px; font-size: 12px; background: #fff;">
-                        <div id="rag-status" style="font-size: 11px; color: #059669; margin-top: 5px; font-weight: 500;">No manual document indexed yet.</div>
+                        <div id="rag-status" style="font-size: 11px; color: #059669; margin-top: 5px; font-weight: 500;">No document indexed yet.</div>
                     </div>
                 </div>
 
@@ -239,14 +239,14 @@
                     <div class="agent-header">
                         <div class="agent-title">
                             <span class="status-dot"></span>
-                            SkyIPworld Conversational AI Node (Real-Time Search Enabled)
+                            SkyIPworld Conversational AI Node (Dynamic Context Active)
                         </div>
                         <button onclick="clearAgentChat()" style="background: transparent; color: #94a3b8; font-size: 12px; padding: 4px 8px; border: 1px solid #475569; margin: 0; border-radius: 4px;">Clear History</button>
                     </div>
                     
                     <div class="agent-body" id="agent-chat-history">
                         <div class="chat-bubble assistant">
-                            Hello! I am your automated terminal assistant. I have real-time access to current data, web indexes, and geographic parameters. How can I help you today?
+                            Hello! I am SkyIPworld, your automated general knowledge assistant. I can help you write code, draft articles, analyze historical facts, translate, solve math, or answer general questions. Ask me anything!
                         </div>
                     </div>
                     
@@ -275,13 +275,12 @@
     let chatMemory = [];
     // Dynamic RAG storage
     let ragContextString = "";
+    // Dynamically detected background location
+    let visitorDetectedLocation = "Global Web Portal";
 
     // BACKGROUND KEYLESS AI HANDLER - Uses immune CORS-free GET requests
     async function queryBackgroundAI(systemPrompt, userQuery) {
-        // We pack the system prompt and history into a clean, single-prompt string URL
         const finalCombinedPrompt = `${systemPrompt}\n\nUser Question/Input Task:\n${userQuery}`;
-        
-        // Use Pollinations' simple GET-request completion to totally bypass CORS options
         const url = `https://text.pollinations.ai/${encodeURIComponent(finalCombinedPrompt)}?model=openai&private=true`;
         
         const response = await fetch(url);
@@ -290,6 +289,23 @@
         }
         return await response.text();
     }
+
+    // SILENT BACKGROUND GEOLOCATION DETECTION - Resolves visitor location globally
+    async function silentlyDetectVisitorLocation() {
+        try {
+            const res = await fetch("https://ipapi.co/json/");
+            const data = await res.json();
+            if (data && data.city && data.country_name) {
+                visitorDetectedLocation = `${data.city}, ${data.country_name}`;
+                console.log(`Detected Location: ${visitorDetectedLocation}`);
+            }
+        } catch (err) {
+            console.log("Using generic backup location node.");
+        }
+    }
+    
+    // Trigger dynamic location lookup instantly on script boot
+    silentlyDetectVisitorLocation();
 
     function switchTerminalTab(evt, tabId) {
         const contents = document.getElementsByClassName("tab-content");
@@ -358,7 +374,7 @@
         } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
     }
 
-    // AUTOMATED BACKGROUND LANGUAGE DETECTION (GET method, completely safe)
+    // UNRESTRICTED WORLD LANGUAGE DETECTION (GET method, completely safe)
     async function detectWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const resultsBox = document.getElementById('language-results');
@@ -381,7 +397,7 @@
         }
     }
 
-    // AUTOMATED BACKGROUND TRANSLATION (GET method, completely safe)
+    // UNRESTRICTED WORLD LANGUAGE TRANSLATION (GET method, completely safe)
     async function translateWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const targetLang = document.getElementById('translation-target').value.trim();
@@ -391,7 +407,7 @@
         
         resultsBox.innerHTML = `Translating text to ${targetLang} via neural AI nodes...`;
         
-        const systemPrompt = `You are a translation agent. Translate the user prompt directly to ${targetLang}. Return ONLY the translation. Do not wrap in quotes or add comments.`;
+        const systemPrompt = `You are a translation agent. Translate the user prompt directly to ${targetLang}. Return ONLY the direct translation. Do not wrap in quotes or add comments.`;
         
         try {
             const response = await queryBackgroundAI(systemPrompt, text);
@@ -452,11 +468,14 @@
         historyContainer.appendChild(loadingBubble);
         historyContainer.scrollTop = historyContainer.scrollHeight;
 
-        // Automated System Prompt Injection
-        let systemContextPrompt = "You are SkyIPworld, an intelligent geospatial node assistant. Address the user directly in a concise, friendly, and smart style.\n";
+        // Automated System Prompt Injection (Highly General and Context-Aware)
+        let systemContextPrompt = "You are SkyIPworld, a highly capable general knowledge AI assistant. Address the user directly in a concise, friendly, and smart style. You can answer questions about science, history, programming, math, pop culture, writing, or anything else the user asks.\n";
         
-        const currentYear = new Date().getFullYear(); // Dynamic 2026 calculation
-        systemContextPrompt += `[System Context: Active]. Current Year is ${currentYear}. Location is Abuja, Nigeria. Answer with access to current factual timelines.\n`;
+        const currentYear = new Date().getFullYear(); // Calculates year dynamically (e.g. 2026)
+        const currentTime = new Date().toLocaleTimeString(); // Dynamic device time
+        
+        // Inject Dynamic Location & Time context silently in the background
+        systemContextPrompt += `[System Context: Active Background Tools]. Current Year: ${currentYear}. Detected User Location: ${visitorDetectedLocation}. Device local time: ${currentTime}. Automatically use this timing and location metadata only when answering queries where time, current events, or geographical aspects are relevant.\n`;
 
         if (ragContextString) {
             systemContextPrompt += `[RAG / Document Memory Loaded]. Use this indexed document context to answer questions accurately if relevant:\n----\n${ragContextString}\n----\n`;
@@ -497,7 +516,7 @@
         const historyContainer = document.getElementById('agent-chat-history');
         historyContainer.innerHTML = `
             <div class="chat-bubble assistant">
-                Node cleared. Hello! I am your automated context-aware terminal assistant. Ask me anything!
+                Node cleared. Hello! I am SkyIPworld, your automated general knowledge assistant. Ask me anything!
             </div>
         `;
     }
@@ -570,6 +589,7 @@
 
 </body>
 </html>
+
 
 
 

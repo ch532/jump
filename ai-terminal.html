@@ -215,7 +215,7 @@
         </section>
     </div>
 
-    <!-- TAB 6: Automated Conversational AI Agent (Refactored to perplexity-fast) -->
+    <!-- TAB 6: Fully Automated Native Perplexity-Fast AI Agent -->
     <div id="ai-conversation" class="tab-content">
         <section class="section-card">
             <h2>6. Multi-Modal Conversational AI Terminal</h2>
@@ -239,7 +239,7 @@
                     <div class="agent-header">
                         <div class="agent-title">
                             <span class="status-dot"></span>
-                            SkyIPworld Conversational AI Node (Native Tool Grounding Enabled)
+                            SkyIPworld Conversational AI Node (Native Grounding Enabled)
                         </div>
                         <button onclick="clearAgentChat()" style="background: transparent; color: #94a3b8; font-size: 12px; padding: 4px 8px; border: 1px solid #475569; margin: 0; border-radius: 4px;">Clear History</button>
                     </div>
@@ -275,31 +275,42 @@
     let chatMemory = [];
     // Dynamic RAG storage
     let ragContextString = "";
+    // Dynamically detected background location
+    let visitorDetectedLocation = "Global Web Portal";
 
-    // BACKGROUND KEYLESS AI HANDLER - Submits via structured POST JSON payload with perplexity-fast
+    // BACKGROUND KEYLESS AI HANDLER - Uses unblockable GET parameter streams targeting perplexity-fast
     async function queryBackgroundAI(systemPrompt, historicalMessagesArray) {
-        const payloadMessages = [
-            { role: "system", content: systemPrompt },
-            ...historicalMessagesArray
-        ];
-
-        // Switched from gemini-search to perplexity-fast. Native search + flawless chat format compliance.
-        const response = await fetch("https://text.pollinations.ai/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                messages: payloadMessages,
-                model: "perplexity-fast" // Features highly capable Perplexity Search engine natively
-            })
+        // Flatten conversation array sequentially so Perplexity tracks dialogue turns perfectly
+        let conversationHistoryText = "";
+        historicalMessagesArray.forEach(msg => {
+            conversationHistoryText += `${msg.role.toUpperCase()}: ${msg.content}\n`;
         });
 
+        const finalCombinedPrompt = `${systemPrompt}\n\n${conversationHistoryText}\nASSISTANT:`;
+        
+        // Appended Perplexity-fast in the URL string parameter to completely bypass CORS issues
+        const url = `https://text.pollinations.ai/${encodeURIComponent(finalCombinedPrompt)}?model=perplexity-fast&private=true&cache=false`;
+        
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error("API call failed");
         }
         return await response.text();
     }
+
+    // SILENT BACKGROUND GEOLOCATION DETECTION
+    async function silentlyDetectVisitorLocation() {
+        try {
+            const res = await fetch("https://ipapi.co/json/");
+            const data = await res.json();
+            if (data && data.city && data.country_name) {
+                visitorDetectedLocation = `${data.city}, ${data.country_name}`;
+            }
+        } catch (err) {
+            console.log("Using generic backup location node.");
+        }
+    }
+    silentlyDetectVisitorLocation();
 
     function switchTerminalTab(evt, tabId) {
         const contents = document.getElementsByClassName("tab-content");
@@ -368,7 +379,7 @@
         } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
     }
 
-    // ACCURATE LANGUAGE DETECTION (Uses clean POST structures with perplexity-fast)
+    // ACCURATE LANGUAGE DETECTION (Uses Perplexity-grounded GET stream)
     async function detectWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const resultsBox = document.getElementById('language-results');
@@ -381,7 +392,7 @@
                              "Language: [Name]\n" +
                              "ISO-2 Code: [Code]\n" +
                              "Confidence: [Score]%\n" +
-                             "Quick Analysis: [Short classification sentence]. Do not write any conversational intro or wrap in formatting templates.";
+                             "Quick Analysis: [Short classification sentence]. Do not write any conversational intro.";
         
         try {
             const response = await queryBackgroundAI(systemPrompt, [{ role: "user", content: `Identify language for this text:\n"${text}"` }]);
@@ -391,7 +402,7 @@
         }
     }
 
-    // ACCURATE TRANSLATION ENGINE (Uses clean POST structures with perplexity-fast)
+    // ACCURATE TRANSLATION ENGINE (Uses Perplexity-grounded GET stream)
     async function translateWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const targetLang = document.getElementById('translation-target').value.trim();
@@ -438,7 +449,7 @@
         }
     }
 
-    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (Leveraging perplexity-fast)
+    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (With perplexity-fast mapping)
     async function sendAgentQuery() {
         const inputField = document.getElementById('agent-user-input');
         const historyContainer = document.getElementById('agent-chat-history');
@@ -462,19 +473,24 @@
         historyContainer.appendChild(loadingBubble);
         historyContainer.scrollTop = historyContainer.scrollHeight;
 
-        // Clean, general knowledge system persona instructions
+        // Core system identity instructions
         let systemContextPrompt = "You are SkyIPworld, an advanced general knowledge AI assistant. Address the user directly in a concise, helpful, and highly intelligent style. You possess full capability to write clean software code, analyze historical concepts, solve mathematical operations, or hold general text-based conversation.\n" +
-                                  "Your architecture features native, always-on web search grounding to retrieve accurate real-time data dynamically when needed. Use it seamlessly to answer current queries.\n";
+                                  "Your architecture features native, always-on web search grounding via Perplexity to retrieve accurate real-time data dynamically when needed. Use it seamlessly to answer current queries.\n";
+        
+        const currentYear = new Date().getFullYear(); 
+        const currentTime = new Date().toLocaleTimeString(); 
+        
+        // Pass dynamic environment parameters quietly in system prompts
+        systemContextPrompt += `[Dynamic Meta-Context] Current Year: ${currentYear}. Detected Visitor Location: ${visitorDetectedLocation}. Local Device Time: ${currentTime}. Only utilize this timing/location context if relevant.\n`;
 
         if (ragContextString) {
             systemContextPrompt += `[Indexed RAG Context Memory Loaded]. Use the following document database text to verify facts and respond accurately if it is explicitly relevant to the user query:\n----\n${ragContextString}\n----\n`;
         }
 
-        // Push chat log stack directly to message array
+        // Maintain continuous chat memory state
         chatMemory.push({ role: "user", content: query });
 
         try {
-            // Processing payload over official multi-modal pipeline array
             const aiResponse = await queryBackgroundAI(systemContextPrompt, chatMemory);
             
             historyContainer.removeChild(loadingBubble);
@@ -575,6 +591,7 @@
 
 </body>
 </html>
+
 
 
 

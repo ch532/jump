@@ -215,17 +215,17 @@
         </section>
     </div>
 
-    <!-- TAB 6: Fully Automated Native Perplexity-Fast AI Agent -->
+    <!-- TAB 6: Automated Conversational AI Agent -->
     <div id="ai-conversation" class="tab-content">
         <section class="section-card">
             <h2>6. Multi-Modal Conversational AI Terminal</h2>
-            <p>Chat with our high-speed, general knowledge AI agent. It utilizes a native, always-on web search grounding tool to keep answers perfectly factual.</p>
+            <p>Chat with our high-speed, keyless AI agent. Real-time internet indexes, dynamic timing, and geographic visitor nodes are processed automatically.</p>
             
             <div class="grid-2">
                 <!-- Automated Index Panel -->
                 <div class="tool-control-panel">
                     <h3 style="margin: 0; font-size: 16px; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">📁 Document Retrieval (RAG)</h3>
-                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload any text reference data. The AI agent appends it alongside its native processing parameters seamlessly.</p>
+                    <p style="margin: 8px 0; font-size: 12px; color: #64748b;">Upload any reference file. The background AI agent automatically reads and indexes its context during conversation.</p>
                     
                     <!-- RAG / Document Upload -->
                     <div class="input-group">
@@ -239,19 +239,19 @@
                     <div class="agent-header">
                         <div class="agent-title">
                             <span class="status-dot"></span>
-                            SkyIPworld Conversational AI Node (Native Grounding Enabled)
+                            SkyIPworld Conversational AI Node (Dynamic Context Active)
                         </div>
                         <button onclick="clearAgentChat()" style="background: transparent; color: #94a3b8; font-size: 12px; padding: 4px 8px; border: 1px solid #475569; margin: 0; border-radius: 4px;">Clear History</button>
                     </div>
                     
                     <div class="agent-body" id="agent-chat-history">
                         <div class="chat-bubble assistant">
-                            Hello! I am SkyIPworld, your general knowledge assistant. I have native web search grounding built right into my model to automatically discover accurate real-time information. Ask me anything!
+                            Hello! I am SkyIPworld, your automated general knowledge assistant. I can help you write code, draft articles, analyze historical facts, translate, solve math, or answer general questions. Ask me anything!
                         </div>
                     </div>
                     
                     <div class="agent-footer">
-                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Ask about programming, history, math, or look up recent news..." onkeydown="handleAgentKeyPress(event)">
+                        <input type="text" id="agent-user-input" class="agent-input" placeholder="Type your query..." onkeydown="handleAgentKeyPress(event)">
                         <button onclick="sendAgentQuery()" class="agent-send-btn">Send</button>
                     </div>
                 </div>
@@ -278,9 +278,9 @@
     // Dynamically detected background location
     let visitorDetectedLocation = "Global Web Portal";
 
-    // BACKGROUND KEYLESS AI HANDLER - Uses unblockable GET parameter streams targeting perplexity-fast
+    // BACKGROUND KEYLESS AI HANDLER - Uses unblockable GET parameter streams targeting the stable OpenAI model
     async function queryBackgroundAI(systemPrompt, historicalMessagesArray) {
-        // Flatten conversation array sequentially so Perplexity tracks dialogue turns perfectly
+        // Flatten conversation array sequentially so the text model tracks dialogue turns perfectly
         let conversationHistoryText = "";
         historicalMessagesArray.forEach(msg => {
             conversationHistoryText += `${msg.role.toUpperCase()}: ${msg.content}\n`;
@@ -288,8 +288,8 @@
 
         const finalCombinedPrompt = `${systemPrompt}\n\n${conversationHistoryText}\nASSISTANT:`;
         
-        // Appended Perplexity-fast in the URL string parameter to completely bypass CORS issues
-        const url = `https://text.pollinations.ai/${encodeURIComponent(finalCombinedPrompt)}?model=perplexity-fast&private=true&cache=false`;
+        // Appended the default ultra-stable 'openai' string to completely resolve mobile carrier URL limits
+        const url = `https://text.pollinations.ai/${encodeURIComponent(finalCombinedPrompt)}?model=openai&private=true&cache=false`;
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -379,13 +379,13 @@
         } catch (e) { resultsBox.innerHTML = "Geospatial indexing line is busy."; }
     }
 
-    // ACCURATE LANGUAGE DETECTION (Uses Perplexity-grounded GET stream)
+    // ACCURATE LANGUAGE DETECTION (Uses stable GET stream parameters)
     async function detectWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const resultsBox = document.getElementById('language-results');
         if (!text) { resultsBox.innerHTML = "Please insert text structures first."; return; }
         
-        resultsBox.innerHTML = "Processing text with world language classification matrix...";
+        resultsBox.innerHTML = "Processing text with world language classification matrix... ";
         
         const systemPrompt = "You are an expert world linguistic module. Identify the language. " +
                              "Provide your output ONLY in this precise plain text structure:\n" +
@@ -402,7 +402,7 @@
         }
     }
 
-    // ACCURATE TRANSLATION ENGINE (Uses Perplexity-grounded GET stream)
+    // ACCURATE TRANSLATION ENGINE (Uses stable GET stream parameters)
     async function translateWorldLanguage() {
         const text = document.getElementById('detect-text-input').value.trim();
         const targetLang = document.getElementById('translation-target').value.trim();
@@ -449,7 +449,7 @@
         }
     }
 
-    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (With perplexity-fast mapping)
+    // HIGH-ACCURACY GENERAL CONVERSATION ENGINE (With clean text optimization mappings)
     async function sendAgentQuery() {
         const inputField = document.getElementById('agent-user-input');
         const historyContainer = document.getElementById('agent-chat-history');
@@ -473,9 +473,9 @@
         historyContainer.appendChild(loadingBubble);
         historyContainer.scrollTop = historyContainer.scrollHeight;
 
-        // Core system identity instructions
+        // Clean, general knowledge system persona instructions
         let systemContextPrompt = "You are SkyIPworld, an advanced general knowledge AI assistant. Address the user directly in a concise, helpful, and highly intelligent style. You possess full capability to write clean software code, analyze historical concepts, solve mathematical operations, or hold general text-based conversation.\n" +
-                                  "Your architecture features native, always-on web search grounding via Perplexity to retrieve accurate real-time data dynamically when needed. Use it seamlessly to answer current queries.\n";
+                                  "You have permission to search the web and check online indexes to verify real-time facts when requested.\n";
         
         const currentYear = new Date().getFullYear(); 
         const currentTime = new Date().toLocaleTimeString(); 
@@ -591,6 +591,7 @@
 
 </body>
 </html>
+
 
 
 

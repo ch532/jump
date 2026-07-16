@@ -20,7 +20,7 @@
         })(window, document, "clarity", "script", "xn3kzenf61");
     </script>
 
-    <!-- External Ad and Integration Services -->
+    <!-- AdSense Header Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <!-- Utility Libraries -->
@@ -40,16 +40,18 @@
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
         
-        .main-layout { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .sidebar-ad-space { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; gap: 20px; height: fit-content; text-align: center; }
-        .adsense-infeed-space { margin: 25px 0; padding: 20px; background: #fff; border: 1px dashed #cbd5e1; text-align: center; border-radius: 8px; }
+        /* Editorial Hub for AdSense Recognition */
+        .editorial-hub { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
+        .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
+        .sidebar-ad-space { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; height: fit-content; text-align: center; }
         #my-native-feed { margin: 15px 0; }
         .news-item { background: #fff; padding: 25px; border: 1px solid #e2e8f0; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .news-item-tag { display: inline-block; background: #e0f2fe; color: #0369a1; font-weight: bold; font-size: 11px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
         .news-item h3 { margin: 0 0 10px 0; font-size: 20px; color: #1e293b; font-weight: bold; }
         .news-item-meta { font-size: 13px; color: #64748b; margin-bottom: 15px; }
         .news-item-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
+        .context-note { font-style: italic; color: #475569; font-size: 0.85rem; margin: 15px 0; border-left: 3px solid #38bdf8; padding-left: 10px; }
         .news-item a { display: inline-block; background-color: #1e293b; color: #f8fafc; font-weight: bold; text-decoration: none; padding: 10px 20px; border-radius: 6px; }
     </style>
 </head>
@@ -70,13 +72,18 @@
 
 <main class="container">
     <div class="grid">
-        <section class="main-layout">
-            <h3>📚 Curated Content Hub</h3>
+        <section>
+            <!-- Editorial Context -->
+            <div class="editorial-hub">
+                <h1>Global Reporting Terminal</h1>
+                <div class="editor-summary">
+                    <strong>Editor's Note:</strong> This terminal aggregates live international news reports. We curate these feeds to provide a consolidated view of current global developments.
+                </div>
+            </div>
             <div id="my-native-feed">Loading Live News Feed...</div>
         </section>
 
         <aside class="sidebar-ad-space">
-            <span class="ad-placeholder-text">Sponsored</span>
             <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8877351541430254" data-ad-slot="5656610761" data-ad-format="auto"></ins>
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </aside>
@@ -91,11 +98,10 @@ async function loadFeed() {
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-        
         const feedContainer = document.getElementById('my-native-feed');
         feedContainer.innerHTML = ''; 
 
-        data.items.slice(0, 12).forEach((article, index) => {
+        data.items.slice(0, 12).forEach((article) => {
             const div = document.createElement('div');
             div.className = 'news-item';
             div.innerHTML = `
@@ -104,17 +110,10 @@ async function loadFeed() {
                 <div class="news-item-meta">Published: ${new Date(article.pubDate).toLocaleDateString()}</div>
                 ${article.thumbnail ? `<img src="${article.thumbnail}" class="news-item-img">` : ''}
                 <p>${article.description || "Read more at source."}</p>
+                <div class="context-note">SkyIPworld Insight: Aggregated report for real-time awareness and event documentation.</div>
                 <a href="${article.link}" target="_blank" rel="noopener">Read Full Report</a>
             `;
             feedContainer.appendChild(div);
-
-            if ((index + 1) % 3 === 0) {
-                const adDiv = document.createElement('div');
-                adDiv.className = 'adsense-infeed-space';
-                adDiv.innerHTML = `<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-6r+di+5g-2m-8y" data-ad-client="ca-pub-8877351541430254" data-ad-slot="5656610761"></ins>`;
-                feedContainer.appendChild(adDiv);
-                try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-            }
         });
     } catch (e) {
         document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
@@ -126,7 +125,6 @@ loadFeed();
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
     authDomain: "air-skye.firebaseapp.com",
@@ -136,13 +134,13 @@ loadFeed();
     appId: "1:46181700573:web:1b5d21e443067bba26dc34",
     measurementId: "G-K4Z4GJ2JLN"
   };
-
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
 
 </body>
 </html>
+
 
 
 

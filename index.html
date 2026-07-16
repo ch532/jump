@@ -38,7 +38,6 @@
         
         .main-layout { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
         
-        /* Editorial Hub for AdSense recognition */
         .editorial-hub { background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .editorial-hub h1 { color: #1e293b; margin-top: 0; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
@@ -101,11 +100,26 @@ async function loadFeed() {
         const feedContainer = document.getElementById('my-native-feed');
         feedContainer.innerHTML = ''; 
 
-        data.items.forEach((item) => {
+        data.items.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'news-item';
             div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p><a href="${item.link}" target="_blank" rel="noopener">Read More</a>`;
             feedContainer.appendChild(div);
+
+            if ((index + 1) % 3 === 0) {
+                const adContainer = document.createElement('div');
+                adContainer.style.margin = "25px 0";
+                adContainer.innerHTML = `
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-layout="in-article"
+                         data-ad-format="fluid"
+                         data-ad-client="ca-pub-8877351541430254"
+                         data-ad-slot="6686741548"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+                `;
+                feedContainer.appendChild(adContainer);
+            }
         });
     } catch (e) {
         document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
@@ -142,6 +156,7 @@ loadFeed();
 
 </body>
 </html>
+
 
 
 

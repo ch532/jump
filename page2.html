@@ -29,16 +29,16 @@
         
         .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
         
-        /* Editorial Hub - Crucial for AdSense Quality */
         .editorial-hub { background: #fff; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; font-size: 1.05rem; }
         
-        .auto-ad-placeholder { width: 100%; min-height: 100px; margin: 25px 0; background: transparent; }
         .article-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .article-topic-tag { display: inline-block; background: #e0f2fe; color: #0369a1; font-weight: bold; font-size: 11px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
         .article-title { font-size: 22px; font-weight: bold; color: #1e293b; margin: 0 0 12px 0; }
         .article-body { font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 20px; }
         .btn-read-more { background-color: #1e293b; color: #f8fafc; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; }
+        
+        .adsense-in-article-wrapper { margin: 25px 0; padding: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -72,7 +72,9 @@ async function loadLiveDevArticles() {
         const response = await fetch("https://dev.to/api/articles?per_page=12");
         const articles = await response.json();
         feedContainer.innerHTML = ''; 
-        articles.forEach((article) => {
+        
+        articles.forEach((article, index) => {
+            // Render Article Card
             const articleCardHTML = `
                 <div class="article-card">
                     <span class="article-topic-tag">#${article.tag_list ? article.tag_list[0] : 'Tech'}</span>
@@ -82,6 +84,22 @@ async function loadLiveDevArticles() {
                 </div>
             `;
             feedContainer.insertAdjacentHTML('beforeend', articleCardHTML);
+
+            // Inject AdSense every 3 posts (index 2, 5, 8...)
+            if ((index + 1) % 3 === 0) {
+                const adContainer = document.createElement('div');
+                adContainer.className = 'adsense-in-article-wrapper';
+                adContainer.innerHTML = `
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-layout="in-article"
+                         data-ad-format="fluid"
+                         data-ad-client="ca-pub-8877351541430254"
+                         data-ad-slot="6686741548"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+                `;
+                feedContainer.insertAdjacentHTML('beforeend', adContainer.innerHTML);
+            }
         });
     } catch (e) {
         feedContainer.innerHTML = "<p>Intelligence feed currently refreshing.</p>";
@@ -90,7 +108,6 @@ async function loadLiveDevArticles() {
 loadLiveDevArticles();
 </script>
 
-<!-- Firebase and Cookie Banner remain exactly as you configured -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
@@ -100,6 +117,3 @@ loadLiveDevArticles();
 </script>
 </body>
 </html>
-
-
-

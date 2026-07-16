@@ -16,25 +16,16 @@
     <meta name="google-site-verification" content="AxO_bs7tBOMhjX5DGp_VT_DYxNCvRf3inf0HQ7NqvvE" />
     <meta name="clckd" content="2d1b4a854cfa03a2a89feb40da2ec757" />
 
-    <!-- Clarity tracking code for https://chyke.online/ -->
-<script>
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "xn3kzenf61");
-</script>
-
-    <!-- Google AdSense Header Script (For Auto Ads to scan the page) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
-
-    <script type="text/javascript">
+    <!-- Clarity tracking code -->
+    <script>
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "x0mezp3yoh");
+        })(window, document, "clarity", "script", "xn3kzenf61");
     </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8877351541430254" crossorigin="anonymous"></script>
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
@@ -46,29 +37,15 @@
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         
         .main-layout { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
-        .content-section { background: transparent; padding: 0; margin-bottom: 20px; }
         
-        /* Styled placeholders for Auto Ads to discover and populate naturally */
-        .auto-ad-placeholder {
-            width: 100%;
-            min-height: 100px;
-            margin: 25px 0;
-            background: transparent;
-            display: block;
-        }
+        /* Editorial Hub for AdSense recognition */
+        .editorial-hub { background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .editorial-hub h1 { color: #1e293b; margin-top: 0; }
+        .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
+        .auto-ad-placeholder { width: 100%; min-height: 100px; margin: 25px 0; background: transparent; display: block; }
         #my-native-feed { margin: 15px 0; }
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        
-        /* Styled frame for your manual In-Feed ads */
-        .adsense-infeed-space { 
-            margin: 25px 0; 
-            padding: 20px; 
-            background: #fff; 
-            border: 1px dashed #cbd5e1; 
-            border-radius: 8px; 
-        }
-        
         .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #fff; }
     </style>
 </head>
@@ -90,35 +67,27 @@
 </header>
 
 <main class="main-layout">
-
-    <!-- AUTO AD SPACE 1: Under Navigation -->
     <div class="auto-ad-placeholder"></div>
 
-    <!-- Google Custom Search -->
-    <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
-    <div class="gcse-search"></div>
-    
-    <!-- AUTO AD SPACE 2: Under Search -->
-    <div class="auto-ad-placeholder"></div>
-
-    <!-- Content Feed Section -->
-    <section class="content-section">
-        <div id="my-native-feed">Loading feed...</div>
-    </section>
-
-    <!-- AUTO AD SPACE 6: Under News Feed -->
-    <div class="auto-ad-placeholder"></div>
-
-    <!-- Yandex Map Section -->
-    <section class="content-section">
-        <div class="yandex-map-container">
-            <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
+    <section class="editorial-hub">
+        <h1>Event Intelligence & Regional Updates</h1>
+        <div class="editor-summary">
+            <strong>Editor's Note:</strong> This terminal aggregates live regional event data and intelligence. We curate these feeds to provide a consolidated view of ongoing developments, serving as a primary resource for event tracking and information analysis.
         </div>
     </section>
 
-    <!-- AUTO AD SPACE 7: Bottom of Page -->
-    <div class="auto-ad-placeholder"></div>
+    <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
+    <div class="gcse-search"></div>
     
+    <div class="auto-ad-placeholder"></div>
+
+    <section id="my-native-feed">Loading feed...</section>
+
+    <div class="yandex-map-container">
+        <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
+    </div>
+
+    <div class="auto-ad-placeholder"></div>
 </main>
 
 <script>
@@ -132,85 +101,32 @@ async function loadFeed() {
         const feedContainer = document.getElementById('my-native-feed');
         feedContainer.innerHTML = ''; 
 
-        data.items.forEach((item, index) => {
+        data.items.forEach((item) => {
             const div = document.createElement('div');
             div.className = 'news-item';
             div.innerHTML = `<h3>${item.title}</h3><p>${item.description}</p><a href="${item.link}" target="_blank" rel="noopener">Read More</a>`;
             feedContainer.appendChild(div);
-
-            // AUTO AD SPACE 3: Middle of feed (after article 2)
-            if (index === 1) {
-                injectEmptyAutoAdSpace();
-            }
-
-            // AUTO AD SPACE 4: Middle of feed (after article 6)
-            if (index === 5) {
-                injectEmptyAutoAdSpace();
-            }
-
-            // AUTO AD SPACE 5: Middle of feed (after article 10)
-            if (index === 9) {
-                injectEmptyAutoAdSpace();
-            }
-
-            // MANUAL IN-FEED AD: Injected after every 4 articles using your exact ad code
-            if ((index + 1) % 4 === 0) {
-                const adDiv = document.createElement('div');
-                adDiv.className = 'adsense-infeed-space';
-                adDiv.innerHTML = `
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-format="fluid"
-                         data-ad-layout-key="-6r+di+5g-2m-8y"
-                         data-ad-client="ca-pub-8877351541430254"
-                         data-ad-slot="5656610761"></ins>
-                `;
-                feedContainer.appendChild(adDiv);
-                
-                // Initialize the in-feed ad
-                try {
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                } catch (e) {
-                    console.log("In-feed ad slot initialized.");
-                }
-            }
         });
     } catch (e) {
         document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
     }
 }
-
-// Helper to inject empty containers for Google's Auto Ads to naturally target
-function injectEmptyAutoAdSpace() {
-    const feedContainer = document.getElementById('my-native-feed');
-    const adDiv = document.createElement('div');
-    adDiv.className = 'auto-ad-placeholder';
-    feedContainer.appendChild(adDiv);
-}
-
 loadFeed();
 </script>
 
-<div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; text-align: left; max-width: 500px;">
+<div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 8px; z-index: 9999;">
     <p>SkyIPworld uses cookies to optimize your terminal layouts.</p>
     <button onclick="acceptSiteCookies()">Accept Cookies</button>
 </div>
 
 <script>
-    function acceptSiteCookies() {
-        document.getElementById('cookie-consent-banner').style.display = 'none';
-    }
+    document.getElementById('cookie-consent-banner').style.display = 'block';
+    function acceptSiteCookies() { document.getElementById('cookie-consent-banner').style.display = 'none'; }
 </script>
 
-    <script type="module">
-  // Import the functions you need from the SDKs you need
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
     authDomain: "air-skye.firebaseapp.com",
@@ -220,13 +136,12 @@ loadFeed();
     appId: "1:46181700573:web:1b5d21e443067bba26dc34",
     measurementId: "G-K4Z4GJ2JLN"
   };
-
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
 
 </body>
 </html>
+
 
 

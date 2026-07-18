@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore-compat.js"></script>
     
-    <!-- Your Paystack SDK -->
+    <!-- Your SDK -->
     <script src="your-sdk.js"></script>
 </head>
 <body>
@@ -38,7 +38,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. Logic to Load Data and Trigger Payment
+        // 2. Logic to Load Data, Auto-fill Email, and Trigger Payment
         async function loadContentItem(docId) {
             try {
                 const docRef = db.collection('content_items').doc(docId);
@@ -47,23 +47,33 @@
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // Update UI
+                    // UI Setup
                     document.getElementById('item-title').innerText = data.title;
                     document.getElementById('item-price').innerText = `Price: ₦${data.price / 100}`;
                     const payBtn = document.getElementById('pay-button');
+                    const emailInput = document.getElementById('user-email');
                     payBtn.style.display = 'block';
+                    
+                    // Auto-fill email from localStorage if it exists
+                    const savedEmail = localStorage.getItem('user_email');
+                    if (savedEmail) {
+                        emailInput.value = savedEmail;
+                    }
                     
                     // Setup Payment Trigger
                     payBtn.onclick = () => {
-                        const emailInput = document.getElementById('user-email').value;
-                        if (!emailInput) {
-                            alert("Please enter your email to proceed.");
+                        const email = emailInput.value;
+                        if (!email) {
+                            alert("Please enter your email.");
                             return;
                         }
 
+                        // Save email to localStorage for next time
+                        localStorage.setItem('user_email', email);
+
                         initializePayment({
                             public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
-                            email: emailInput,
+                            email: email,
                             amount: data.price / 100, 
                             onSuccess: (transaction) => {
                                 alert("Payment successful!");

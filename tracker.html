@@ -9,14 +9,91 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #0f0; font-family: monospace; }
         #status { padding: 10px; border-bottom: 1px solid #333; background: #111; font-size: 14px; }
-        /* Ensuring the map has a defined height is critical for mobile rendering */
-        #map { height: 70vh; width: 100%; } 
+        
+        /* Dashboard grid layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            height: calc(100vh - 41px); /* Accounts for status bar height */
+            width: 100%;
+        }
+        
+        #map { height: 100%; width: 100%; } 
+        
+        .side-panels {
+            border-left: 1px solid #333;
+            background: #050505;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .map-frame-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+
+        .map-frame-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .panel-title {
+            color: #0f0;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
         .alert { color: #ff0000; font-weight: bold; }
+        .leaflet-control-layers { background: #111 !important; color: #0f0 !important; border: 1px solid #333 !important; font-family: monospace; }
+        
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+            #map { height: 50vh; }
+        }
     </style>
 </head>
 <body>
     <div id="status">Initializing Terminal...</div>
-    <div id="map"></div>
+    
+    <div class="dashboard-container">
+        <!-- Main Tracking Map -->
+        <div id="map"></div>
+
+        <!-- Embedded Supplementary Maps -->
+        <div class="side-panels">
+            <div>
+                <div class="panel-title">Route Intel: SF to LA</div>
+                <div class="map-frame-container">
+                    <iframe src="https://maps.google.com/maps?saddr=San%20Francisco%2C%20CA&daddr=Los%20Angeles%2C%20CA&dirflg=d&t=h&ie=UTF8&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel-title">Target Objective: Eiffel Tower</div>
+                <div class="map-frame-container">
+                    <iframe src="https://maps.google.com/maps?q=Eiffel%20Tower%2C%20Paris&t=h&z=20&ie=UTF8&iwloc=B&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -24,14 +101,40 @@
     <script>
         try {
             const map = L.map('map').setView([9.0765, 7.4913], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
 
-            // Fixed: Changed .addTo(marker) to .addTo(map)
+            const openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            });
+
+            const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '© Google Maps'
+            });
+
+            const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '© Google Maps'
+            });
+
+            const yandexMap = L.tileLayer('https://vec0{s}.maps.yandex.net/tiles?l=map&x={x}&y={y}&z={z}', {
+                subdomains: ['1', '2', '3', '4'],
+                attribution: '© Yandex'
+            });
+
+            openStreetMap.addTo(map);
+
+            const baseMaps = {
+                "OpenStreetMap": openStreetMap,
+                "Google Roads": googleStreets,
+                "Google Satellite": googleSat,
+                "Yandex Maps": yandexMap
+            };
+            L.control.layers(baseMaps).addTo(map);
+
             let marker = L.marker([9.0765, 7.4913]).addTo(map);
             
-            // Force resize after load
             setTimeout(() => { map.invalidateSize(); }, 500);
 
             if ("geolocation" in navigator) {

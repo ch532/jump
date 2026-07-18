@@ -8,6 +8,9 @@
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     
+    <!-- Official Paystack SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    
     <style>
         body { font-family: 'Inter', sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
@@ -21,9 +24,6 @@
         }
         #pay-button:hover { transform: scale(1.02); }
     </style>
-
-    <!-- Paystack SDK -->
-    <script src="your-sdk.js"></script>
 </head>
 <body>
 
@@ -35,37 +35,36 @@
     </div>
 
     <script>
-        // 1. Get the dynamic file link from the URL (e.g., billing.html?file=URL)
+        // 1. Get the dynamic file link from the URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const productUrl = urlParams.get('file');
 
-        const payBtn = document.getElementById('pay-button');
-        const emailInput = document.getElementById('user-email');
-
         // 2. Auto-remember email
+        const emailInput = document.getElementById('user-email');
         emailInput.value = localStorage.getItem('user_email') || '';
 
-        // 3. Payment Logic
-        payBtn.onclick = () => {
+        // 3. Integrated Payment Logic
+        document.getElementById('pay-button').onclick = () => {
             const email = emailInput.value;
             if (!email) return alert("Please enter your email.");
+            if (!productUrl) return alert("Error: No product link found.");
+            
             localStorage.setItem('user_email', email);
 
-            if (!productUrl) {
-                alert("Error: No product link found.");
-                return;
-            }
-
-            initializePayment({
-                public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
+            const handler = PaystackPop.setup({
+                key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
                 email: email,
-                amount: 4000, // Fixed price as requested
-                split_code: 'SPL_UJEAdNAQtQ',
-                onSuccess: (transaction) => {
-                    alert("Payment successful!");
+                amount: 400000, // 4000 NGN in kobo
+                split_code: 'SPL_UJEAdNAQtQ', // REPLACE WITH YOUR ACTUAL CODE
+                callback: function(response) {
+                    alert("Payment successful! Reference: " + response.reference);
                     window.location.href = productUrl; // Redirect to verified product
+                },
+                onClose: function() {
+                    alert('Payment window closed.');
                 }
             });
+            handler.openIframe();
         };
     </script>
 </body>

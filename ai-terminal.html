@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyIPworld - Geospatial Node Terminal</title>
+    <script>
+    window.onload = () => {
+        // Only check payment status now
+        if (localStorage.getItem('has_paid') !== 'true') {
+            window.location.href = 'billing.html';
+        } else {
+            // Show terminal content directly
+            document.getElementById('terminal-content').style.display = 'block';
+        }
+    };
+</script>   
+ <title>SkylPworld</title>
     <meta name="description" content="Access SkyIPworld's Geospatial Node Terminal. Generate real-time environmental radar, solar feasibility analysis, and location intelligence reports. Use our integrated AI image generator and high-fidelity universal language translator.">
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -40,36 +51,6 @@
     </style>
 </head>
 <body>
-
-    <body>
-
-    <!-- 1. SIGN-IN SECTION (Visible only if not logged in) -->
-    <div id="auth-section" style="display: none; text-align: center; padding: 50px;">
-        <h2>Access Required</h2>
-        <div id="g_id_onload"
-             data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-        <div class="g_id_signin" data-type="standard" data-theme="filled_blue"></div>
-    </div>
-
-    <!-- 2. TERMINAL SECTION (Hidden by default, shown via CSS/JS) -->
-    <div id="terminal-content">
-        <!-- All your existing Terminal tools go here -->
-    </div>
-
-    <script>
-        // Update the display logic
-        const user = localStorage.getItem('user_google_id');
-        if (!user) {
-            document.getElementById('auth-section').style.display = 'block';
-        } else {
-            document.getElementById('terminal-content').style.display = 'block';
-        }
-    </script>
-</body>
-
 
 <header>
     <nav class="top-nav">
@@ -236,29 +217,7 @@
         }
     };
 </script>
-
-    <script>
-    const user = localStorage.getItem('user_google_id');
-    const paid = localStorage.getItem('has_paid');
-
-    const authSection = document.getElementById('auth-section');
-    const terminalContent = document.getElementById('terminal-content');
-
-    if (!user) {
-        // Show login, hide terminal
-        authSection.style.display = 'block';
-        terminalContent.style.display = 'none';
-    } else if (paid !== 'true') {
-        // Logged in but not paid: Redirect to billing
-        window.location.href = 'billing.html';
-    } else {
-        // Logged in AND paid: Show terminal, hide login
-        authSection.style.display = 'none';
-        terminalContent.style.display = 'block';
-    }
-</script>
-
-    
+   
 </body>
 </html>
 

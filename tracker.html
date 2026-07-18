@@ -3,50 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live AI Tracking Map</title>
+    <title>Live Intelligence Terminal</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body { background: #000; color: #0f0; font-family: monospace; padding: 10px; margin: 0; }
-        #status { font-size: 14px; border: 1px solid #333; padding: 10px; margin-bottom: 10px; }
+        #status { font-size: 14px; border: 1px solid #333; padding: 15px; margin-bottom: 10px; background: #111; }
         #map { height: 400px; width: 100%; border-radius: 8px; border: 2px solid #333; }
-        .map-container { max-width: 600px; margin: 20px auto; border-radius: 8px; overflow: hidden; border: 2px solid #333; }
+        .alert { color: #ff0000; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="status">Initializing Map & AI...</div>
+    <div id="status">System Initializing...</div>
     <div id="map"></div>
 
     <script>
-        // 1. Initialize Map at World View (Zoom 2)
-        const map = L.map('map').setView([9.0765, 7.4913], 2); 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        // Kalman State
+        let state = { lat: 9.0765, lng: 7.4913, latVar: 1, lngVar: 1, q: 0.00001, r: 0.001 };
+        let baselinePath = [];
+        let hasZoomed = false;
 
+        const map = L.map('map').setView([9.0765, 7.4913], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
         let marker = L.marker([9.0765, 7.4913]).addTo(map);
-        let hasZoomed = false; // Flag to zoom only once
 
-        // 2. Track Location
+        function applyKalman(rawLat, rawLng) {
+            state.latVar += state.q; state.lngVar += state.q;
+            let latGain = state.latVar / (state.latVar + state.r);
+            let lngGain = state.lngVar / (state.lngVar + state.r);
+            state.lat += latGain * (rawLat - state.lat);
+            state.lng += lngGain * (rawLng - state.lng);
+            state.latVar *= (1 - latGain); state.lngVar *= (1 - lngGain);
+            return [state.lat, state.lng];
+        }
+
+        function checkIntegrity(lat, lng) {
+            if (baselinePath.length < 50) { baselinePath.push([lat, lng]); return false; }
+            let min = Math.min(...baselinePath.map(p => Math.sqrt((lat-p[0])**2 + (lng-p[1])**2)));
+            return min > 0.005; // ~500m threshold
+        }
+
         if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition((position) => {
-                const { latitude, longitude, speed } = position.coords;
-                const latLng = [latitude, longitude];
-
-                marker.setLatLng(latLng);
+            navigator.geolocation.watchPosition((pos) => {
+                const [lat, lng] = applyKalman(pos.coords.latitude, pos.coords.longitude);
+                const compromised = checkIntegrity(lat, lng);
                 
-                // Zoom in to user location once on start
-                if (!hasZoomed) {
-                    map.setView(latLng, 13);
-                    hasZoomed = true;
-                } else {
-                    map.panTo(latLng);
-                }
+                marker.setLatLng([lat, lng]);
+                if (!hasZoomed) { map.setView([lat, lng], 13); hasZoomed = true; } 
+                else { map.panTo([lat, lng]); }
 
-                let activity = speed > 2.5 ? "Driving" : (speed > 0.5 ? "Walking" : "Stationary");
-                document.getElementById('status').innerHTML = `Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}<br>AI Activity: <strong>${activity}</strong>`;
-                
-            }, (err) => console.error(err), { enableHighAccuracy: true });
+                document.getElementById('status').innerHTML = 
+                    `Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>` +
+                    `Activity: <strong>${pos.coords.speed > 0.5 ? "Active" : "Stationary"}</strong>` +
+                    (compromised ? `<br><span class="alert">ALERT: Path Integrity Compromised</span>` : "");
+            }, null, { enableHighAccuracy: true });
         }
     </script>
 </body>

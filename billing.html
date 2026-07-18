@@ -3,29 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pay-to-Access Portal</title>
+    <title>AIR-SKYE PREMIUM</title>
     
-    <!-- Firebase SDK (Compatibility versions) -->
+    <!-- Google Fonts for Premium Feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h1 { font-family: 'Playfair Display', serif; color: #1a1a1a; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        #pay-button { 
+            width: 100%; padding: 18px; border: none; border-radius: 12px; 
+            background: linear-gradient(135deg, #c5a059, #e6c885); color: white; 
+            font-weight: 600; font-size: 16px; cursor: pointer; transition: transform 0.2s;
+        }
+        #pay-button:hover { transform: scale(1.02); }
+    </style>
+
+    <!-- SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore-compat.js"></script>
-    
-    <!-- Your SDK -->
     <script src="your-sdk.js"></script>
 </head>
 <body>
 
-    <!-- UI Elements -->
-    <h1 id="item-title">Loading content...</h1>
-    <p id="item-price"></p>
-    
-    <!-- Input for user email -->
-    <input type="email" id="user-email" placeholder="Enter your email" required>
-    <br><br>
-    
-    <button id="pay-button" style="display:none;">Pay Now</button>
+    <div class="card">
+        <h1 id="item-title">Loading...</h1>
+        <p id="item-price"></p>
+        <input type="email" id="user-email" placeholder="Enter your email" required>
+        <button id="pay-button" style="display:none;">Continue Payment Directly</button>
+    </div>
 
     <script>
-        // 1. Initialize Firebase with your config
         const firebaseConfig = {
           apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
           authDomain: "air-skye.firebaseapp.com",
@@ -38,59 +49,38 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. Logic to Load Data, Auto-fill Email, and Trigger Payment
         async function loadContentItem(docId) {
             try {
-                const docRef = db.collection('content_items').doc(docId);
-                const doc = await docRef.get();
-
+                const doc = await db.collection('content_items').doc(docId).get();
                 if (doc.exists) {
                     const data = doc.data();
-                    
-                    // UI Setup
                     document.getElementById('item-title').innerText = data.title;
-                    document.getElementById('item-price').innerText = `Price: ₦${data.price / 100}`;
+                    document.getElementById('item-price').innerText = `Price: ₦${(data.price / 100).toLocaleString()}`;
+                    
                     const payBtn = document.getElementById('pay-button');
                     const emailInput = document.getElementById('user-email');
                     payBtn.style.display = 'block';
                     
-                    // Auto-fill email from localStorage if it exists
-                    const savedEmail = localStorage.getItem('user_email');
-                    if (savedEmail) {
-                        emailInput.value = savedEmail;
-                    }
+                    emailInput.value = localStorage.getItem('user_email') || '';
                     
-                    // Setup Payment Trigger
                     payBtn.onclick = () => {
                         const email = emailInput.value;
-                        if (!email) {
-                            alert("Please enter your email.");
-                            return;
-                        }
-
-                        // Save email to localStorage for next time
+                        if (!email) return alert("Please enter your email.");
                         localStorage.setItem('user_email', email);
 
                         initializePayment({
                             public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
                             email: email,
                             amount: data.price / 100, 
-                            onSuccess: (transaction) => {
-                                alert("Payment successful!");
-                                // Redirect to the content URL stored in Firestore
-                                window.location.href = data.file_url;
-                            }
+                            split_code: 'SPL_YOUR_SPLIT_CODE_HERE',
+                            onSuccess: (t) => { alert("Success!"); window.location.href = data.file_url; }
                         });
                     };
                 }
-            } catch (error) {
-                console.error("Error loading content:", error);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Initialize with your document ID
         loadContentItem('ZsQdfmiprWopkv29EoYo'); 
     </script>
-
 </body>
 </html>

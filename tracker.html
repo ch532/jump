@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Intelligence Terminal</title>
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" />
     <style>
         body { background: #000; color: #0f0; font-family: monospace; padding: 10px; margin: 0; }
         #status { font-size: 14px; border: 1px solid #333; padding: 10px; margin-bottom: 10px; background: #111; }
-        /* Explicit height is REQUIRED for tiles to load */
         #map { height: 400px; width: 100%; border-radius: 8px; border: 2px solid #333; background: #000; }
         .alert { color: #ff0000; font-weight: bold; }
     </style>
@@ -34,7 +31,7 @@
         
         let marker = L.marker([9.0765, 7.4913]).addTo(map);
 
-        // Force resize to ensure tiles load on mobile
+        // Force resize to ensure tiles load
         setTimeout(() => { map.invalidateSize(); }, 500);
 
         function applyKalman(rawLat, rawLng) {
@@ -58,9 +55,14 @@
                 const [lat, lng] = applyKalman(pos.coords.latitude, pos.coords.longitude);
                 const compromised = checkIntegrity(lat, lng);
                 
+                // Update marker position without moving the camera
                 marker.setLatLng([lat, lng]);
-                if (!hasZoomed) { map.setView([lat, lng], 15); hasZoomed = true; } 
-                else { map.panTo([lat, lng]); }
+                
+                // Center only once on first load
+                if (!hasZoomed) { 
+                    map.setView([lat, lng], 15); 
+                    hasZoomed = true; 
+                }
 
                 document.getElementById('status').innerHTML = 
                     `Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>` +

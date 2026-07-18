@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-        // STRICT GATEKEEPER: Redirects to billing if not paid
-        if (localStorage.getItem('has_paid') !== 'true') {
-            window.location.href = 'billing.html';
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    // 1. Check if user is logged in and paid
+    window.onload = () => {
+        const user = localStorage.getItem('user_google_id');
+        const paid = localStorage.getItem('has_paid');
+        
+        if (!user) {
+            window.location.href = 'sign.html'; // Redirect to login
+        } else if (paid !== 'true') {
+            window.location.href = 'billing.html'; // Redirect to payment
         }
-    </script>
+    };
+</script>  
     <title>SkyIPworld - Geospatial Node Terminal</title>
     <meta name="description" content="Access SkyIPworld's Geospatial Node Terminal. Generate real-time environmental radar, solar feasibility analysis, and location intelligence reports. Use our integrated AI image generator and high-fidelity universal language translator.">
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">

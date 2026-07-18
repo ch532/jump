@@ -2,70 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Location Intelligence</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        #status { font-size: 18px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    </style>
+    <!-- Include TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- Include Eruda for mobile debugging -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
 </head>
 <body>
     <div id="status">Initializing AI Location Intelligence...</div>
-    <div id="log"></div>
 
     <script>
-        const locationHistory = [];
-        const MAX_HISTORY = 50;
+        let locationHistory = [];
+        const statusEl = document.getElementById('status');
 
-        // 1. Start Geolocation Watcher
+        // 1. Initialize Geolocation
         if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(async (position) => {
-                const data = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                    speed: position.coords.speed || 0,
-                    timestamp: Date.now()
-                };
+            navigator.geolocation.watchPosition((position) => {
+                const { latitude, longitude, speed } = position.coords;
+                
+                // Update Status UI
+                statusEl.innerText = `Location Active: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
 
-                locationHistory.push(data);
-                if (locationHistory.length > MAX_HISTORY) locationHistory.shift();
+                // Store point
+                const currentPoint = [latitude, longitude, speed || 0];
+                locationHistory.push(currentPoint);
+                if (locationHistory.length > 10) locationHistory.shift();
 
-                // 2. Trigger AI Analysis
-                if (locationHistory.length >= 10) {
-                    await runAIAnalysis(locationHistory);
+                // 2. Trigger AI Analysis once we have enough data
+                if (locationHistory.length >= 5) {
+                    runAIAnalysis(currentPoint);
                 }
-            }, (err) => console.error(err), { enableHighAccuracy: true });
+            }, (err) => {
+                console.error("Geolocation Error: " + err.message);
+                statusEl.innerText = "Error: " + err.message;
+            }, { enableHighAccuracy: true });
         }
 
-        // 3. AI Logic Engine (TensorFlow.js)
-        async function runAIAnalysis(history) {
-            // Convert history to a Tensor for local AI processing
-            const inputData = history.map(p => [p.lat, p.lng, p.speed]);
-            const inputTensor = tf.tensor2d(inputData);
+        // 3. Simple Anomaly Detection Logic
+        async function runAIAnalysis(current) {
+            // Calculate historical average (our "Normal" baseline)
+            const avgLat = locationHistory.reduce((a, b) => a + b[0], 0) / locationHistory.length;
+            const avgLng = locationHistory.reduce((a, b) => a + b[1], 0) / locationHistory.length;
 
-            // Here, you would load your custom model: 
-            // const model = await tf.loadLayersModel('path/to/your/model.json');
-            // const prediction = model.predict(inputTensor.reshape([1, 50, 3]));
+            // Simple distance threshold calculation
+            const distance = Math.sqrt(Math.pow(current[0] - avgLat, 2) + Math.pow(current[1] - avgLng, 2));
             
-            document.getElementById('status').innerText = "AI Tracking Active: Pattern Analysis Running...";
-            inputTensor.dispose(); // Clean up memory
+            if (distance > 0.001) {
+                console.log("AI Detected: Significant pattern shift at", new Date().toLocaleTimeString());
+                statusEl.style.color = "red"; // Visual alert
+                statusEl.innerText += " | ALERT: Anomaly Detected!";
+            } else {
+                statusEl.style.color = "#0f0";
+            }
         }
     </script>
-
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>
-    eruda.init();
-    
-    console.log("Tracker starting...");
-
-    if ("geolocation" in navigator) {
-        navigator.geolocation.watchPosition((position) => {
-            console.log("Location received:", position.coords.latitude, position.coords.longitude);
-            document.getElementById('status').innerText = "Location Active: " + position.coords.latitude.toFixed(4);
-        }, (err) => {
-            console.error("Geolocation Error: " + err.message);
-        }, { enableHighAccuracy: true });
-    } else {
-        console.error("Geolocation is not supported by this browser.");
-    }
-</script>
-
-    
 </body>
 </html>

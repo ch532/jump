@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 1. AUTH & PAYMENT GATEKEEPER (Highest priority) -->
+    <script>
+        window.onload = () => {
+            const user = localStorage.getItem('user_google_id');
+            const paid = localStorage.getItem('has_paid');
+            
+            // If NOT logged in, redirect to sign-in page
+            if (!user) {
+                window.location.href = 'sign.html'; 
+            } 
+            // If logged in but NOT paid, redirect to billing
+            else if (paid !== 'true') {
+                window.location.href = 'billing.html';
+            }
+        };
+    </script>
+
+    <!-- 2. GOOGLE IDENTITY SERVICES SDK -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-    // 1. Check if user is logged in and paid
-    window.onload = () => {
-        const user = localStorage.getItem('user_google_id');
-        const paid = localStorage.getItem('has_paid');
-        
-        if (!user) {
-            window.location.href = 'sign.html'; // Redirect to login
-        } else if (paid !== 'true') {
-            window.location.href = 'billing.html'; // Redirect to payment
-        }
-    };
-</script>  
+    
     <title>SkyIPworld - Geospatial Node Terminal</title>
     <meta name="description" content="Access SkyIPworld's Geospatial Node Terminal. Generate real-time environmental radar, solar feasibility analysis, and location intelligence reports. Use our integrated AI image generator and high-fidelity universal language translator.">
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
@@ -47,6 +53,36 @@
     </style>
 </head>
 <body>
+
+    <body>
+
+    <!-- 1. SIGN-IN SECTION (Visible only if not logged in) -->
+    <div id="auth-section" style="display: none; text-align: center; padding: 50px;">
+        <h2>Access Required</h2>
+        <div id="g_id_onload"
+             data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin" data-type="standard" data-theme="filled_blue"></div>
+    </div>
+
+    <!-- 2. TERMINAL SECTION (Hidden by default, shown via CSS/JS) -->
+    <div id="terminal-content">
+        <!-- All your existing Terminal tools go here -->
+    </div>
+
+    <script>
+        // Update the display logic
+        const user = localStorage.getItem('user_google_id');
+        if (!user) {
+            document.getElementById('auth-section').style.display = 'block';
+        } else {
+            document.getElementById('terminal-content').style.display = 'block';
+        }
+    </script>
+</body>
+
 
 <header>
     <nav class="top-nav">

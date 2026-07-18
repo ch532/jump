@@ -2,75 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Live Intelligence Terminal</title>
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" />
     <style>
-        body { background: #000; color: #0f0; font-family: monospace; padding: 10px; margin: 0; }
-        #status { font-size: 14px; border: 1px solid #333; padding: 10px; margin-bottom: 10px; background: #111; }
-        #map { height: 400px; width: 100%; border-radius: 8px; border: 2px solid #333; background: #000; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: #0f0; font-family: monospace; }
+        #status { padding: 10px; border-bottom: 1px solid #333; background: #111; font-size: 14px; }
+        /* Ensuring the map has a defined height is critical for mobile rendering */
+        #map { height: 70vh; width: 100%; } 
         .alert { color: #ff0000; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="status">System Initializing...</div>
+    <div id="status">Initializing Terminal...</div>
     <div id="map"></div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <script>
-        // Kalman Filter state
-        let state = { lat: 9.0765, lng: 7.4913, latVar: 1, lngVar: 1, q: 0.00001, r: 0.001 };
-        let baselinePath = [];
-        let hasZoomed = false;
+        try {
+            const map = L.map('map').setView([9.0765, 7.4913], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
 
-        // Initialize Map
-        const map = L.map('map').setView([9.0765, 7.4913], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-        
-        let marker = L.marker([9.0765, 7.4913]).addTo(map);
+            let marker = L.marker([9.0765, 7.4913]).addTo(marker);
+            
+            // Force resize after load
+            setTimeout(() => { map.invalidateSize(); }, 500);
 
-        // Force resize to ensure tiles load
-        setTimeout(() => { map.invalidateSize(); }, 500);
-
-        function applyKalman(rawLat, rawLng) {
-            state.latVar += state.q; state.lngVar += state.q;
-            let latGain = state.latVar / (state.latVar + state.r);
-            let lngGain = state.lngVar / (state.lngVar + state.r);
-            state.lat += latGain * (rawLat - state.lat);
-            state.lng += lngGain * (rawLng - state.lng);
-            state.latVar *= (1 - latGain); state.lngVar *= (1 - lngGain);
-            return [state.lat, state.lng];
-        }
-
-        function checkIntegrity(lat, lng) {
-            if (baselinePath.length < 50) { baselinePath.push([lat, lng]); return false; }
-            let min = Math.min(...baselinePath.map(p => Math.sqrt((lat-p[0])**2 + (lng-p[1])**2)));
-            return min > 0.005; // ~500m threshold
-        }
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition((pos) => {
-                const [lat, lng] = applyKalman(pos.coords.latitude, pos.coords.longitude);
-                const compromised = checkIntegrity(lat, lng);
-                
-                // Update marker position without moving the camera
-                marker.setLatLng([lat, lng]);
-                
-                // Center only once on first load
-                if (!hasZoomed) { 
-                    map.setView([lat, lng], 15); 
-                    hasZoomed = true; 
-                }
-
-                document.getElementById('status').innerHTML = 
-                    `Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>` +
-                    `Activity: <strong>${pos.coords.speed > 0.5 ? "Active" : "Stationary"}</strong>` +
-                    (compromised ? `<br><span class="alert">ALERT: Path Integrity Compromised</span>` : "");
-            }, (err) => { document.getElementById('status').innerText = "GPS Error: " + err.message; }, { enableHighAccuracy: true });
-        } else {
-            document.getElementById('status').innerText = "Geolocation not supported.";
+            if ("geolocation" in navigator) {
+                navigator.geolocation.watchPosition((pos) => {
+                    const latLng = [pos.coords.latitude, pos.coords.longitude];
+                    marker.setLatLng(latLng);
+                    document.getElementById('status').innerHTML = `Lat: ${latLng[0].toFixed(4)} | Lng: ${latLng[1].toFixed(4)}`;
+                }, (err) => {
+                    document.getElementById('status').innerText = "GPS Error: " + err.message;
+                }, { enableHighAccuracy: true });
+            }
+        } catch (e) {
+            document.getElementById('status').innerText = "Script Error: " + e.message;
         }
     </script>
 </body>

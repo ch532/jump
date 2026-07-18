@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // STRICT GATEKEEPER: Redirects to billing if not paid
+        if (localStorage.getItem('has_paid') !== 'true') {
+            window.location.href = 'billing.html';
+        }
+    </script>
     <title>SkyIPworld - Geospatial Node Terminal</title>
     <meta name="description" content="Access SkyIPworld's Geospatial Node Terminal. Generate real-time environmental radar, solar feasibility analysis, and location intelligence reports. Use our integrated AI image generator and high-fidelity universal language translator.">
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
@@ -199,17 +205,6 @@
         }
     };
 </script>
-
-<script>
-    // Payment Gatekeeper: Redirects to billing.html if not paid
-    window.onload = () => {
-        const hasPaid = localStorage.getItem('has_paid');
-        if (hasPaid !== 'true') {
-            window.location.href = 'billing.html';
-        }
-    };
-</script>
-
     
 </body>
 </html>

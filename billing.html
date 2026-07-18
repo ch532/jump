@@ -35,19 +35,14 @@
     </div>
 
     <script>
-        // 1. Get the dynamic file link from the URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const productUrl = urlParams.get('file');
-
-        // 2. Auto-remember email
+        // 1. Auto-remember email
         const emailInput = document.getElementById('user-email');
         emailInput.value = localStorage.getItem('user_email') || '';
 
-        // 3. Integrated Payment Logic
+        // 2. Integrated Payment Logic
         document.getElementById('pay-button').onclick = () => {
             const email = emailInput.value;
             if (!email) return alert("Please enter your email.");
-            if (!productUrl) return alert("Error: No product link found.");
             
             localStorage.setItem('user_email', email);
 
@@ -55,10 +50,14 @@
                 key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
                 email: email,
                 amount: 400000, // 4000 NGN in kobo
-                split_code: 'SPL_UJEAdNAQtQ', // REPLACE WITH YOUR ACTUAL CODE
+                split_code: 'SPL_UJEAdNAQtQ',
                 callback: function(response) {
-                    alert("Payment successful! Reference: " + response.reference);
-                    window.location.href = productUrl; // Redirect to verified product
+                    // PAYMENT SUCCESSFUL
+                    // Set access flag to unlock ai-terminal.html
+                    localStorage.setItem('has_paid', 'true');
+                    
+                    // Redirect to the Terminal
+                    window.location.href = 'ai-terminal.html';
                 },
                 onClose: function() {
                     alert('Payment window closed.');

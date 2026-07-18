@@ -28,7 +28,8 @@
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
-            let marker = L.marker([9.0765, 7.4913]).addTo(marker);
+            // Fixed: Changed .addTo(marker) to .addTo(map)
+            let marker = L.marker([9.0765, 7.4913]).addTo(map);
             
             // Force resize after load
             setTimeout(() => { map.invalidateSize(); }, 500);

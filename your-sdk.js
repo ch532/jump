@@ -40,7 +40,7 @@ async function initializePayment(config) {
             amount: config.amount * 100, 
             channels: ['card'],
             // Use the split_code from your Dashboard instead of a subaccount ID
-            split_code: 'SPL_your_split_code_here', 
+            split_code: 'SPL_UJEAdNAQtQ', 
             onSuccess: (transaction) => {
                 console.log("Payment successful", transaction);
                 if (config.onSuccess) config.onSuccess(transaction);

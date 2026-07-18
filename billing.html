@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Test Page</title>
+</head>
+<body>
+
+    <h1>Test Billing Integration</h1>
+    <p>Click the button below to test the Paystack Visa/Verve checkout.</p>
+
+    <!-- The button to trigger payment -->
+    <button id="pay-button">Pay 1000 Naira</button>
+
+    <!-- 1. Load your SDK -->
+    <script src="your-sdk.js"></script>
+
+    <!-- 2. Your trigger logic -->
+    <script>
+        document.getElementById('pay-button').addEventListener('click', function() {
+            initializePayment({
+                public_key: 'YOUR_TEST_PUBLIC_KEY', // Replace with your actual Test Public Key
+                email: 'test@example.com',
+                amount: 1000, 
+                onSuccess: (transaction) => {
+                    alert("Payment complete! Reference: " + transaction.reference);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

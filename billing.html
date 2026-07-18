@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay-to-Access Portal</title>
     
-    <!-- Firebase SDK (Ensure you have your specific config here) -->
+    <!-- Firebase SDK (Compatibility versions) -->
     <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore-compat.js"></script>
     
-    <!-- Your SDK -->
+    <!-- Your Paystack SDK -->
     <script src="your-sdk.js"></script>
 </head>
 <body>
@@ -17,17 +17,23 @@
     <!-- UI Elements -->
     <h1 id="item-title">Loading content...</h1>
     <p id="item-price"></p>
+    
+    <!-- Input for user email -->
+    <input type="email" id="user-email" placeholder="Enter your email" required>
+    <br><br>
+    
     <button id="pay-button" style="display:none;">Pay Now</button>
 
     <script>
-        // 1. Initialize Firebase (Replace with your actual config)
+        // 1. Initialize Firebase with your config
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+          apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
+          authDomain: "air-skye.firebaseapp.com",
+          projectId: "air-skye",
+          storageBucket: "air-skye.appspot.com",
+          messagingSenderId: "46181700573",
+          appId: "1:46181700573:web:8eb847c0e595ca2226dc34",
+          measurementId: "G-MDCZE04PB0"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -49,13 +55,20 @@
                     
                     // Setup Payment Trigger
                     payBtn.onclick = () => {
+                        const emailInput = document.getElementById('user-email').value;
+                        if (!emailInput) {
+                            alert("Please enter your email to proceed.");
+                            return;
+                        }
+
                         initializePayment({
                             public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
-                            email: 'customer@example.com', // Replace with your user's email input
+                            email: emailInput,
                             amount: data.price / 100, 
                             onSuccess: (transaction) => {
                                 alert("Payment successful!");
-                                window.location.href = data.file_url; // Unlock access
+                                // Redirect to the content URL stored in Firestore
+                                window.location.href = data.file_url;
                             }
                         });
                     };

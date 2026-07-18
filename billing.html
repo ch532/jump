@@ -2,52 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pay-to-Access Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIR-SKYE PREMIUM</title>
+    
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h1 { font-family: 'Playfair Display', serif; color: #1a1a1a; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        #pay-button { 
+            width: 100%; padding: 18px; border: none; border-radius: 12px; 
+            background: linear-gradient(135deg, #c5a059, #e6c885); color: white; 
+            font-weight: 600; font-size: 16px; cursor: pointer; transition: transform 0.2s;
+        }
+        #pay-button:hover { transform: scale(1.02); }
+    </style>
+
     <!-- Paystack SDK -->
     <script src="your-sdk.js"></script>
-    <style>
-        /* Your premium CSS here */
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .card { padding: 40px; max-width: 400px; margin: auto; border: 1px solid #ddd; border-radius: 20px; }
-        input { width: 80%; padding: 15px; margin-bottom: 20px; }
-        button { width: 80%; padding: 15px; background: gold; cursor: pointer; border: none; border-radius: 10px; }
-    </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>Photography Course</h1>
-        <p>Price: ₦4,000</p>
-        <input type="email" id="user-email" placeholder="Enter your email">
+        <h1>AIR-SKYE PREMIUM</h1>
+        <p>Complete your secure purchase</p>
+        <input type="email" id="user-email" placeholder="Enter your email" required>
         <button id="pay-button">Continue Payment Directly</button>
     </div>
 
     <script>
-        // Hard-coded values - No database needed!
-        const product = {
-            price: 4000, 
-            file_url: "https://your-download-link.com"
-        };
+        // 1. Get the dynamic file link from the URL (e.g., billing.html?file=URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        const productUrl = urlParams.get('file');
 
         const payBtn = document.getElementById('pay-button');
         const emailInput = document.getElementById('user-email');
 
-        // Auto-fill email
+        // 2. Auto-remember email
         emailInput.value = localStorage.getItem('user_email') || '';
 
+        // 3. Payment Logic
         payBtn.onclick = () => {
             const email = emailInput.value;
-            if (!email) return alert("Please enter email");
+            if (!email) return alert("Please enter your email.");
             localStorage.setItem('user_email', email);
+
+            if (!productUrl) {
+                alert("Error: No product link found.");
+                return;
+            }
 
             initializePayment({
                 public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
                 email: email,
-                amount: product.price,
+                amount: 4000, // Fixed price as requested
                 split_code: 'SPL_YOUR_SPLIT_CODE_HERE',
-                onSuccess: () => {
+                onSuccess: (transaction) => {
                     alert("Payment successful!");
-                    window.location.href = product.file_url;
+                    window.location.href = productUrl; // Redirect to verified product
                 }
             });
         };

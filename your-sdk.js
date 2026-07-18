@@ -22,28 +22,27 @@ function loadPaymentGatewayScript(url) {
 }
 
 
+
 /**
- * 2. THE INITIALIZER
- * This function uses the loader to fetch Paystack, then triggers the payment.
+ * 2. THE INITIALIZER (Updated for 20% Split via Split Code)
  */
 async function initializePayment(config) {
     const PAYSTACK_URL = 'https://js.paystack.co/v2/inline.js';
 
     try {
-        // Wait for the script to load
         await loadPaymentGatewayScript(PAYSTACK_URL);
 
-        // Initialize Paystack with the developer's public key
         const paystack = new PaystackPop();
         
         paystack.newTransaction({
-            key: config.public_key, 
+            key: config.public_key,
             email: config.email,
-            amount: config.amount * 100, // Paystack requires amount in kobo
-            channels: ['card'], // Restrict to card only
+            amount: config.amount * 100, 
+            channels: ['card'],
+            // Use the split_code from your Dashboard instead of a subaccount ID
+            split_code: 'SPL_your_split_code_here', 
             onSuccess: (transaction) => {
                 console.log("Payment successful", transaction);
-                // Trigger the developer's custom success logic
                 if (config.onSuccess) config.onSuccess(transaction);
             },
             onCancel: () => {

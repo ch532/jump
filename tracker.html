@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Intelligence Terminal</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <style>
         body { background: #000; color: #0f0; font-family: monospace; padding: 10px; margin: 0; }
-        #status { font-size: 14px; border: 1px solid #333; padding: 15px; margin-bottom: 10px; background: #111; }
-        #map { height: 400px; width: 100%; border-radius: 8px; border: 2px solid #333; }
+        #status { font-size: 14px; border: 1px solid #333; padding: 10px; margin-bottom: 10px; background: #111; }
+        /* Explicit height is REQUIRED for tiles to load */
+        #map { height: 400px; width: 100%; border-radius: 8px; border: 2px solid #333; background: #000; }
         .alert { color: #ff0000; font-weight: bold; }
     </style>
 </head>
@@ -18,14 +21,21 @@
     <div id="map"></div>
 
     <script>
-        // Kalman State
+        // Kalman Filter state
         let state = { lat: 9.0765, lng: 7.4913, latVar: 1, lngVar: 1, q: 0.00001, r: 0.001 };
         let baselinePath = [];
         let hasZoomed = false;
 
+        // Initialize Map
         const map = L.map('map').setView([9.0765, 7.4913], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
         let marker = L.marker([9.0765, 7.4913]).addTo(map);
+
+        // Force resize to ensure tiles load on mobile
+        setTimeout(() => { map.invalidateSize(); }, 500);
 
         function applyKalman(rawLat, rawLng) {
             state.latVar += state.q; state.lngVar += state.q;
@@ -49,14 +59,16 @@
                 const compromised = checkIntegrity(lat, lng);
                 
                 marker.setLatLng([lat, lng]);
-                if (!hasZoomed) { map.setView([lat, lng], 13); hasZoomed = true; } 
+                if (!hasZoomed) { map.setView([lat, lng], 15); hasZoomed = true; } 
                 else { map.panTo([lat, lng]); }
 
                 document.getElementById('status').innerHTML = 
                     `Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)}<br>` +
                     `Activity: <strong>${pos.coords.speed > 0.5 ? "Active" : "Stationary"}</strong>` +
                     (compromised ? `<br><span class="alert">ALERT: Path Integrity Compromised</span>` : "");
-            }, null, { enableHighAccuracy: true });
+            }, (err) => { document.getElementById('status').innerText = "GPS Error: " + err.message; }, { enableHighAccuracy: true });
+        } else {
+            document.getElementById('status').innerText = "Geolocation not supported.";
         }
     </script>
 </body>

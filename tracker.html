@@ -49,7 +49,23 @@
     </script>
 
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
+<script>
+    eruda.init();
+    
+    console.log("Tracker starting...");
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.watchPosition((position) => {
+            console.log("Location received:", position.coords.latitude, position.coords.longitude);
+            document.getElementById('status').innerText = "Location Active: " + position.coords.latitude.toFixed(4);
+        }, (err) => {
+            console.error("Geolocation Error: " + err.message);
+        }, { enableHighAccuracy: true });
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+    }
+</script>
+
     
 </body>
 </html>

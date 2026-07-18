@@ -50,35 +50,24 @@
         const db = firebase.firestore();
 
         async function loadContentItem(docId) {
-            try {
-                const doc = await db.collection('content_items').doc(docId).get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('item-title').innerText = data.title;
-                    document.getElementById('item-price').innerText = `Price: ₦${(data.price / 100).toLocaleString()}`;
-                    
-                    const payBtn = document.getElementById('pay-button');
-                    const emailInput = document.getElementById('user-email');
-                    payBtn.style.display = 'block';
-                    
-                    emailInput.value = localStorage.getItem('user_email') || '';
-                    
-                    payBtn.onclick = () => {
-                        const email = emailInput.value;
-                        if (!email) return alert("Please enter your email.");
-                        localStorage.setItem('user_email', email);
+    console.log("Attempting to load document:", docId); // Debugging
+    try {
+        const docRef = db.collection('content_items').doc(docId);
+        const doc = await docRef.get();
 
-                        initializePayment({
-                            public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
-                            email: email,
-                            amount: data.price / 100, 
-                            split_code: 'SPL_YOUR_SPLIT_CODE_HERE',
-                            onSuccess: (t) => { alert("Success!"); window.location.href = data.file_url; }
-                        });
-                    };
-                }
-            } catch (e) { console.error(e); }
+        if (doc.exists) {
+            console.log("Document found!"); // Debugging
+            const data = doc.data();
+            // ... (rest of your UI logic)
+        } else {
+            console.warn("Document does not exist in Firestore."); // Debugging
+            document.getElementById('item-title').innerText = "Item not found in database.";
         }
+    } catch (error) {
+        console.error("Critical error:", error); // Debugging
+    }
+}
+
 
         loadContentItem('ZsQdfmiprWopkv29EoYo'); 
     </script>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIR-SKYE | Testing Suite</title>
+    
+    <!-- Libraries -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://js.puter.com/v2/"></script>
+    
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .output-box { border: 1px solid #ccc; padding: 10px; margin-top: 10px; min-height: 100px; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
+        button { padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="ai-dashboard">
+        <h1>AI Tool Suite (Testing Mode)</h1>
+
+        <!-- 1. Content Generator (Embed Placeholder) -->
+        <h3>Text Content Generator</h3>
+        <div id="ai-widget-container">
+            <p><em>(Paste your AI generator embed code here)</em></p>
+        </div>
+
+        <hr>
+
+        <!-- 2. Graphics Generator (Puter.js) -->
+        <h3>Graphic Design Generator</h3>
+        <input type="text" id="img-prompt" placeholder="Describe the graphic...">
+        <button onclick="generateImage()">Generate Graphic</button>
+        <div id="img-output" class="output-box"></div>
+
+        <hr>
+
+        <!-- 3. Video Generator (Puter.js) -->
+        <h3>Video Generator</h3>
+        <input type="text" id="vid-prompt" placeholder="Describe the video...">
+        <button onclick="generateVideo()">Generate Video</button>
+        <div id="vid-output" class="output-box"></div>
+
+        <hr>
+
+        <!-- 4. Scanner -->
+        <h3>Barcode & QR Scanner</h3>
+        <div id="qr-reader" style="width: 300px; margin: auto;"></div>
+        <p id="scan-result"></p>
+
+        <hr>
+
+        <!-- 5. PDF Creator -->
+        <h3>PDF Creator</h3>
+        <textarea id="pdf-text" rows="5" placeholder="Enter text here to convert to PDF..."></textarea>
+        <button onclick="createPDF()">Download PDF</button>
+    </div>
+
+    <script>
+        // TESTING MODE: Dashboard is forced open
+        window.onload = () => {
+            console.log("Testing mode: Dashboard active.");
+        };
+
+        // IMAGE GENERATION
+        async function generateImage() {
+            const prompt = document.getElementById('img-prompt').value;
+            const container = document.getElementById('img-output');
+            container.innerHTML = "Generating graphic...";
+            try {
+                const img = await puter.ai.txt2img(prompt);
+                container.innerHTML = "";
+                container.appendChild(img);
+            } catch (err) { container.innerHTML = "Error: " + err.message; }
+        }
+
+        // VIDEO GENERATION
+        async function generateVideo() {
+            const prompt = document.getElementById('vid-prompt').value;
+            const container = document.getElementById('vid-output');
+            container.innerHTML = "Generating video (this may take a moment)...";
+            try {
+                const video = await puter.ai.txt2vid(prompt);
+                container.innerHTML = "";
+                container.appendChild(video);
+            } catch (err) { container.innerHTML = "Error: " + err.message; }
+        }
+
+        // SCANNER LOGIC
+        function onScanSuccess(decodedText) { 
+            document.getElementById('scan-result').innerText = "Result: " + decodedText; 
+        }
+        new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }).render(onScanSuccess);
+
+        // PDF LOGIC
+        function createPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(document.getElementById('pdf-text').value, 10, 10);
+            doc.save("document.pdf");
+        }
+    </script>
+</body>
+</html>

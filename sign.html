@@ -1,15 +1,30 @@
-<!-- Added data-theme="filled_blue" and data-size="large" for a premium look -->
-<div id="g_id_onload"
-     data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
-     data-callback="handleCredentialResponse"
-     data-auto_prompt="false">
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- This MUST be in the head -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
 
-<div class="g_id_signin" 
-     data-type="standard" 
-     data-size="large" 
-     data-theme="filled_blue" 
-     data-text="signin_with" 
-     data-shape="rectangular" 
-     data-logo_alignment="left">
-</div>
+    <!-- Sign-in Button Container -->
+    <div id="g_id_onload"
+         data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin" 
+         data-type="standard" 
+         data-size="large" 
+         data-theme="filled_blue">
+    </div>
+
+    <script>
+        function handleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            localStorage.setItem('user_google_id', payload.sub);
+            window.location.href = 'ai-terminal.html';
+        }
+    </script>
+</body>
+</html>

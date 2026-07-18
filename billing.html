@@ -51,7 +51,7 @@
 
         async function loadContentItem(docId) {
             try {
-                const doc = await db.collection('content_items').doc(docId).get();
+                const doc = await db.collection('collection_items').doc(docId).get();
                 if (doc.exists) {
                     const data = doc.data();
                     document.getElementById('item-title').innerText = data.title;

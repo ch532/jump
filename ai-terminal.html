@@ -199,6 +199,18 @@
         }
     };
 </script>
+
+<script>
+    // Payment Gatekeeper: Redirects to billing.html if not paid
+    window.onload = () => {
+        const hasPaid = localStorage.getItem('has_paid');
+        if (hasPaid !== 'true') {
+            window.location.href = 'billing.html';
+        }
+    };
+</script>
+
+    
 </body>
 </html>
 

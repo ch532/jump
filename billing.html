@@ -3,56 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Billing Test Page</title>
+    <title>Pay-to-Access Portal</title>
+    
+    <!-- Firebase SDK (Ensure you have your specific config here) -->
+    <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore-compat.js"></script>
+    
+    <!-- Your SDK -->
+    <script src="your-sdk.js"></script>
 </head>
 <body>
 
-    <h1>Test Billing Integration</h1>
-    <p>Click the button below to test the Paystack Visa/Verve checkout.</p>
+    <!-- UI Elements -->
+    <h1 id="item-title">Loading content...</h1>
+    <p id="item-price"></p>
+    <button id="pay-button" style="display:none;">Pay Now</button>
 
-    <!-- The button to trigger payment -->
-    <button id="pay-button">Pay 1000 Naira</button>
-
-    <!-- 1. Load your SDK -->
-    <script src="your-sdk.js"></script>
-
-    <!-- 2. Your trigger logic -->
     <script>
-        // Ensure you have initialized Firebase in your project already
-const db = firebase.firestore();
+        // 1. Initialize Firebase (Replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-async function loadContentItem(docId) {
-    try {
-        const docRef = db.collection('content_items').doc(docId);
-        const doc = await docRef.get();
+        // 2. Logic to Load Data and Trigger Payment
+        async function loadContentItem(docId) {
+            try {
+                const docRef = db.collection('content_items').doc(docId);
+                const doc = await docRef.get();
 
-        if (doc.exists) {
-            const data = doc.data();
-            // Update your UI with the data
-            document.getElementById('item-title').innerText = data.title;
-            document.getElementById('item-price').innerText = `Price: ₦${data.price / 100}`;
-            
-            // Set up the button with the data
-            document.getElementById('pay-button').onclick = () => {
-                initializePayment({
-                    public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
-                    email: 'customer@example.com', // Get this from your user input
-                    amount: data.price / 100, // Pass the actual price
-                    onSuccess: (transaction) => {
-                        console.log("Success! Unlock access to:", data.file_url);
-                        // Redirect to or show the file_url here
-                    }
-                });
-            };
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Update UI
+                    document.getElementById('item-title').innerText = data.title;
+                    document.getElementById('item-price').innerText = `Price: ₦${data.price / 100}`;
+                    const payBtn = document.getElementById('pay-button');
+                    payBtn.style.display = 'block';
+                    
+                    // Setup Payment Trigger
+                    payBtn.onclick = () => {
+                        initializePayment({
+                            public_key: 'pk_live_d6916ad02026b04cac854617d2d798f915366364',
+                            email: 'customer@example.com', // Replace with your user's email input
+                            amount: data.price / 100, 
+                            onSuccess: (transaction) => {
+                                alert("Payment successful!");
+                                window.location.href = data.file_url; // Unlock access
+                            }
+                        });
+                    };
+                }
+            } catch (error) {
+                console.error("Error loading content:", error);
+            }
         }
-    } catch (error) {
-        console.error("Error loading content:", error);
-    }
-}
 
-// Call this with the document ID you created in Firestore
-loadContentItem('ZsQdfmiprWopkv29EoYo'); 
-
+        // Initialize with your document ID
+        loadContentItem('ZsQdfmiprWopkv29EoYo'); 
     </script>
 
 </body>

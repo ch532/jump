@@ -1,16 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
-  <!-- Main Homepage / Dashboard -->
-  <url>
-    <loc>https://chyke.online/index.html</loc>
-    <lastmod>2026-07-15</lastmod>
-  </url>
+    
+    <!-- Root domain (Homepage) -->
+    <url>
+        <loc>https://chyke.online/</loc>
+        <lastmod>2026-07-18</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>1.0</priority>
+    </url>
 
-  <!-- AI Terminal Workspace -->
-  <url>
-    <loc>https://chyke.online/ai-terminal.html</loc>
-    <lastmod>2026-07-15</lastmod>
-  </url>
+    <!-- AI Terminal Page -->
+    <url>
+        <loc>https://chyke.online/ai-terminal.html</loc>
+        <lastmod>2026-07-18</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>1.0</priority>
+    </url>
 
+    <!-- Billing Page -->
+    <url>
+        <loc>https://chyke.online/billing.html</loc>
+        <lastmod>2026-07-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Legal Pages -->
+    <url>
+        <loc>https://chyke.online/privacy10.html</loc>
+        <lastmod>2026-07-18</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://chyke.online/support.html</loc>
+        <lastmod>2026-07-18</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
 </urlset>

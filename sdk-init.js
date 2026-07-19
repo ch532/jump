@@ -38,12 +38,12 @@ setInterval(() => {
 
 // --- UPDATED: Unified Worker Message Handler ---
 worker.onmessage = (e) => {
-    // Handle menu trigger
-    if (e.data.layout?.action === 'OPEN_MENU') {
+    // 1. Correctly handle the menu trigger
+    if (e.data.type === 'APPLY_LAYOUT' && e.data.layout?.action === 'OPEN_MENU') {
         document.getElementById('action-menu').style.display = 'block';
     } 
     
-    // Handle feature recommendations
+    // 2. Handle feature recommendations
     if (e.data.type === 'INTELLIGENCE_REPORT') {
         const menu = document.getElementById('action-menu');
         if (e.data.recommendations.length > 0 && !document.getElementById('rec-section')) {
@@ -55,7 +55,6 @@ worker.onmessage = (e) => {
                 const btn = document.createElement("button");
                 btn.className = "sdk-btn";
                 btn.innerText = rec;
-                // CALL THE EXECUTION FUNCTION HERE
                 btn.onclick = () => executeFeature(rec);
                 recDiv.querySelector('#rec-grid').appendChild(btn);
             });
@@ -63,6 +62,7 @@ worker.onmessage = (e) => {
         }
     }
 };
+
 
 // --- NEW: Feature Execution Logic ---
 function executeFeature(featureName) {

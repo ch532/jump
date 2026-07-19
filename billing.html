@@ -25,13 +25,13 @@
         #pay-button:hover { transform: scale(1.02); }
     </style>
 </head>
-<body>
+<body data-sdk-feature="Billing Page">
 
-    <div class="card">
+    <div class="card" data-sdk-feature="Payment Card">
         <h1>AIR-SKYE PREMIUM</h1>
         <p>Complete your secure purchase</p>
         <input type="email" id="user-email" placeholder="Enter your email" required>
-        <button id="pay-button">Continue Payment Directly</button>
+        <button id="pay-button" data-sdk-feature="Checkout Button">Continue Payment Directly</button>
     </div>
 
     <script>
@@ -53,10 +53,7 @@
                 split_code: 'SPL_UJEAdNAQtQ',
                 callback: function(response) {
                     // PAYMENT SUCCESSFUL
-                    // Set access flag to unlock ai-terminal.html
                     localStorage.setItem('has_paid', 'true');
-                    
-                    // Redirect to the Terminal
                     window.location.href = 'ai-terminal.html';
                 },
                 onClose: function() {

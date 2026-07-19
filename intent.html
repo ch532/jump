@@ -3,18 +3,10 @@
 <head>
     <style>
         #target-zone {
-            /* CSS to block native browser interference */
-            -webkit-user-select: none; 
-            user-select: none;
-            -webkit-touch-callout: none;
-            touch-action: none; 
-            
-            /* Visual feedback */
-            height: 300px; 
-            border: 2px dashed #000; 
-            padding: 20px;
+            -webkit-user-select: none; user-select: none;
+            -webkit-touch-callout: none; touch-action: none; 
+            height: 300px; border: 2px dashed #000; padding: 20px;
         }
-
         .DEFAULT { background: #fff; }
         .DEEP_FOCUS { background: #e0e0e0; transform: scale(1.02); }
     </style>
@@ -22,9 +14,7 @@
 <body>
     <div id="ui-container">
         <h1>Autonomous Mobile Runtime</h1>
-        <div id="target-zone">
-            Long-press here to trigger Deep Focus.
-        </div>
+        <div id="target-zone">Long-press here to trigger Deep Focus.</div>
     </div>
 
     <script>
@@ -35,37 +25,34 @@
 
         const targetZone = document.getElementById('target-zone');
 
-        // Prevent native context menu (Download/Share/Print)
-        targetZone.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
+        targetZone.addEventListener('contextmenu', (e) => e.preventDefault());
 
+        // Added { passive: false } to allow preventDefault
         targetZone.addEventListener('touchstart', (e) => {
+            console.log("Touch detected!"); 
             touchTarget = e.target.id;
             touchStartTime = Date.now();
             isHolding = true;
-        });
+        }, { passive: false });
 
         targetZone.addEventListener('touchend', () => {
+            console.log("Touch ended.");
             isHolding = false;
-        });
+        }, { passive: false });
 
-        // Intent Orchestrator
         setInterval(() => {
             if (isHolding) {
+                console.log("Holding... Duration:", Date.now() - touchStartTime);
                 worker.postMessage({ 
                     type: 'CAPTURE_INTENT', 
-                    data: { 
-                        dwellDuration: Date.now() - touchStartTime, 
-                        target: touchTarget 
-                    } 
+                    data: { dwellDuration: Date.now() - touchStartTime, target: touchTarget } 
                 });
             }
         }, 500);
 
-        // UI Rendering Agent
         worker.onmessage = (e) => {
             if (e.data.type === 'APPLY_LAYOUT') {
+                console.log("Layout received:", e.data.layout.mode);
                 document.body.className = e.data.layout.mode;
             }
         };

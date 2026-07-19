@@ -10,6 +10,7 @@ erudaScript.src = "https://cdn.jsdelivr.net/npm/eruda";
 document.head.appendChild(erudaScript);
 erudaScript.onload = () => eruda.init();
 
+
 // 3. Logic
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const worker = new Worker('worker.js');

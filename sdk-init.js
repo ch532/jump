@@ -79,7 +79,11 @@ window.performAction = function(type) {
 };
 
 window.addEventListener('load', () => {
-    const featureElements = document.querySelectorAll('[data-sdk-feature]');
-    const featureNames = Array.from(featureElements).map(el => el.getAttribute('data-sdk-feature'));
-    worker.postMessage({ type: 'ANALYZE_PAGE', features: featureNames });
+    // Add a slight delay to ensure dynamic content is rendered
+    setTimeout(() => {
+        const featureElements = document.querySelectorAll('[data-sdk-feature]');
+        console.log("Features detected:", featureElements.length); // Debug line
+        const featureNames = Array.from(featureElements).map(el => el.getAttribute('data-sdk-feature'));
+        worker.postMessage({ type: 'ANALYZE_PAGE', features: featureNames });
+    }, 500); // Wait 500ms for page content
 });

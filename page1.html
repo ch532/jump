@@ -80,17 +80,9 @@
     </div>
 </nav>
 
-    <script type="text/javascript">
-    aclib.runInterstitial({
-        zoneId: '11736654',
-    });
-</script>
-
-    <script async src="https://www.getchatads.com/widget.js?key=cwk_24625beca8802d7fcaad17a8762dead0a04afd51"></script>
-
-<main class="container">
+<main class="container" data-sdk-feature="Global Reporting Terminal">
     <div class="grid">
-        <section>
+        <section data-sdk-feature="Global News Feed">
             <div class="editorial-hub">
                 <h1>Global Reporting Terminal</h1>
                 <div class="editor-summary">
@@ -100,7 +92,7 @@
             <div id="my-native-feed">Loading Live News Feed...</div>
         </section>
 
-        <aside class="sidebar-ad-space">
+        <aside class="sidebar-ad-space" data-sdk-feature="Advertisements">
             <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8877351541430254" data-ad-slot="5656610761" data-ad-format="auto"></ins>
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </aside>
@@ -131,15 +123,6 @@ async function loadFeed() {
                 <a href="${article.link}" target="_blank" rel="noopener">Read Full Report</a>
             `;
             feedContainer.appendChild(div);
-
-            // In-article ad injection after every 3 posts
-            if ((index + 1) % 3 === 0) {
-                const adContainer = document.createElement('div');
-                adContainer.style.margin = "25px 0";
-                adContainer.innerHTML = `
-                `;
-                feedContainer.appendChild(adContainer);
-            }
         });
     } catch (e) {
         document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
@@ -148,26 +131,11 @@ async function loadFeed() {
 loadFeed();
 </script>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
-    authDomain: "air-skye.firebaseapp.com",
-    projectId: "air-skye",
-    storageBucket: "air-skye.appspot.com",
-    messagingSenderId: "46181700573",
-    appId: "1:46181700573:web:1b5d21e443067bba26dc34",
-    measurementId: "G-K4Z4GJ2JLN"
-  };
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
-    <script src="sdk-init.js"></script>
+<script src="sdk-init.js"></script>
 
 </body>
 </html>
+
 
 
 

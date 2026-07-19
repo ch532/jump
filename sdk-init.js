@@ -70,7 +70,16 @@ window.performAction = function(type) {
         case 'PASTE': navigator.clipboard.readText().then(text => document.execCommand('insertText', false, text)); break;
         case 'SELECT_ALL': document.execCommand('selectAll', false, null); break;
         case 'REFRESH': location.reload(); break;
-        case 'SHARE': if (navigator.share) navigator.share({title: document.title, url: window.location.href}); break;
+        case 'SHARE': if (navigator.share) {
+            navigator.share({
+                title: document.title,
+                text: 'Check out this terminal event update:',
+                url: window.location.href
+            }).catch((error) => console.log('Sharing failed', error));
+        } else {
+            alert('Sharing is not supported on this browser.');
+        }
+        break;
         case 'BOLD': document.execCommand('bold', false, null); break;
         case 'ITALIC': document.execCommand('italic', false, null); break;
         case 'COLOR': const c = prompt("Color:", "red"); if(c) document.execCommand('foreColor', false, c); break;

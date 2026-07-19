@@ -1,4 +1,4 @@
-// sdk-init.js - Full Integrated SDK
+// sdk-init.js
 const sdkStyles = `
     #action-menu { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; width: 85%; max-width: 320px; }
     .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
@@ -78,18 +78,10 @@ window.performAction = function(type) {
     document.getElementById('action-menu').style.display = 'none';
 };
 
-// Replace your old window.addEventListener('load', ...) block with this:
-const observer = new MutationObserver((mutations) => {
-    // Look for elements with our attribute
+// Automatic Scanner
+const observer = new MutationObserver(() => {
     const featureElements = document.querySelectorAll('[data-sdk-feature]');
-    if (featureElements.length > 0) {
-        const featureNames = Array.from(featureElements).map(el => el.getAttribute('data-sdk-feature'));
-        // Only send if we found something
-        worker.postMessage({ type: 'ANALYZE_PAGE', features: featureNames });
-        // Optional: disconnect() if you only want to scan once
-    }
+    const featureNames = Array.from(featureElements).map(el => el.getAttribute('data-sdk-feature'));
+    worker.postMessage({ type: 'ANALYZE_PAGE', features: featureNames });
 });
-
-// Start observing the document body for changes
 observer.observe(document.body, { childList: true, subtree: true });
-

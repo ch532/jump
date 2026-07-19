@@ -78,12 +78,18 @@ window.performAction = function(type) {
     document.getElementById('action-menu').style.display = 'none';
 };
 
-window.addEventListener('load', () => {
-    // Add a slight delay to ensure dynamic content is rendered
-    setTimeout(() => {
-        const featureElements = document.querySelectorAll('[data-sdk-feature]');
-        console.log("Features detected:", featureElements.length); // Debug line
+// Replace your old window.addEventListener('load', ...) block with this:
+const observer = new MutationObserver((mutations) => {
+    // Look for elements with our attribute
+    const featureElements = document.querySelectorAll('[data-sdk-feature]');
+    if (featureElements.length > 0) {
         const featureNames = Array.from(featureElements).map(el => el.getAttribute('data-sdk-feature'));
+        // Only send if we found something
         worker.postMessage({ type: 'ANALYZE_PAGE', features: featureNames });
-    }, 500); // Wait 500ms for page content
+        // Optional: disconnect() if you only want to scan once
+    }
 });
+
+// Start observing the document body for changes
+observer.observe(document.body, { childList: true, subtree: true });
+

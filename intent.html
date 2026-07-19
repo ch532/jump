@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <div id="ui-container">
+        <h1 id="content-header">Autonomous Interface</h1>
+        <div id="interaction-zone" style="height: 200px; border: 1px solid black;">
+            Hover over me to trigger Deep Focus.
+        </div>
+    </div>
+
+    <script>
+        const worker = new Worker('worker.js');
+        let dwellTarget = null;
+        let dwellStartTime = Date.now();
+
+        document.addEventListener('mousemove', (e) => {
+            const target = e.target.id || "body";
+            if (target !== dwellTarget) {
+                dwellTarget = target;
+                dwellStartTime = Date.now();
+            }
+        });
+
+        // Intent Orchestrator: Sends intent packets every 500ms
+        setInterval(() => {
+            worker.postMessage({ 
+                type: 'CAPTURE_INTENT', 
+                data: { 
+                    dwellDuration: Date.now() - dwellStartTime, 
+                    target: dwellTarget 
+                } 
+            });
+        }, 500);
+
+        // UI Rendering Agent
+        worker.onmessage = (e) => {
+            if (e.data.type === 'APPLY_LAYOUT') {
+                const layout = e.data.layout;
+                document.body.className = layout.mode;
+                console.log("Interface shaped to:", layout.mode);
+            }
+        };
+    </script>
+</body>
+</html>

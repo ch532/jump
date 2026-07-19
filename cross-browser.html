@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Browser Web SDK Documentation | by Okoye Chibuike</title>
+    <meta name="description" content="Comprehensive technical documentation for the Cross-Browser Web SDK by Okoye Chibuike. Learn how to implement a high-performance, intent-aware runtime in your web projects.">
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 20px; color: #333; }
+        h1, h2, h3 { color: #000; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid #ddd; font-size: 13px; }
+        code { font-family: monospace; }
+        section { margin-bottom: 40px; }
+        footer { margin-top: 50px; font-size: 0.9em; border-top: 1px solid #ccc; padding-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <article>
+        <h1>Cross-Browser Web SDK Documentation</h1>
+        <p><strong>Owner:</strong> Okoye Chibuike</p>
+
+        <section id="introduction">
+            <h2>1. Introduction</h2>
+            <p><strong>Cross-Browser</strong> is a lightweight, intent-aware Web SDK designed to modernize browser interaction. By decoupling UI input from native browser constraints, it provides developers with a high-performance, programmable runtime environment. It empowers developers to reclaim control over browser-level interactions, such as touch gestures and menu systems, across any device.</p>
+        </section>
+
+        <section id="architecture">
+            <h2>2. Core Architecture</h2>
+            <p>The SDK operates through a dual-layer architecture:</p>
+            <ul>
+                <li><strong>Main Thread (Interaction Layer):</strong> Handles global event delegation, feature detection for device-specific inputs (touch vs. click), and DOM manipulation.</li>
+                <li><strong>Worker Thread (Synthesis Engine):</strong> Processes intent synthesis (dwell duration, gesture recognition) in the background to ensure a fluid, jank-free user experience.</li>
+            </ul>
+        </section>
+
+        <section id="integration">
+            <h2>3. Quickstart Integration</h2>
+            <p>Ensure you have the following two files in your project root: <code>intent.html</code> and <code>worker.js</code>.</p>
+            
+            <h3>Full Implementation Code</h3>
+            
+            <h4>intent.html</h4>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        body { margin: 0; width: 100vw; height: 100vh; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overflow-x: hidden; font-family: sans-serif; }
+        #content-text { font-size: 16px; padding: 20px; min-height: 100px; -webkit-user-select: text; user-select: text; border: none; margin: 0; }
+        #action-menu { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; width: 85%; max-width: 320px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        button { padding: 10px; border: none; background: #e0e0e0; border-radius: 5px; font-size: 14px; }
+        .close-btn { width: 100%; margin-top: 10px; background: #ff5e5e; color: white; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="content-text" contenteditable="true"&gt;&lt;/div&gt;
+
+    &lt;div id="action-menu"&gt;
+        &lt;h3&gt;Browser Actions&lt;/h3&gt;
+        &lt;div class="menu-grid"&gt;
+            &lt;button onclick="performAction('COPY')"&gt;Copy&lt;/button&gt;
+            &lt;button onclick="performAction('PASTE')"&gt;Paste&lt;/button&gt;
+            &lt;button onclick="performAction('SHARE')"&gt;Share&lt;/button&gt;
+            &lt;button onclick="performAction('REFRESH')"&gt;Refresh&lt;/button&gt;
+            &lt;button onclick="performAction('SELECT_ALL')"&gt;Select All&lt;/button&gt;
+            &lt;button onclick="performAction('EXPORT_STATE')"&gt;Export State&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;h3&gt;Formatting&lt;/h3&gt;
+        &lt;div class="menu-grid"&gt;
+            &lt;button onclick="performAction('BOLD')"&gt;Bold&lt;/button&gt;
+            &lt;button onclick="performAction('ITALIC')"&gt;Italic&lt;/button&gt;
+            &lt;button onclick="performAction('COLOR')"&gt;Text Color&lt;/button&gt;
+            &lt;button onclick="performAction('SIZE')"&gt;Font Size&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;button class="close-btn" onclick="closeMenu()"&gt;Close&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints &gt; 0;
+        const worker = new Worker('worker.js');
+        let isHolding = false;
+        let touchStartTime = 0;
+
+        document.addEventListener('selectstart', (e) =&gt; { if (e.target.id !== 'content-text') e.preventDefault(); }, false);
+        document.addEventListener('contextmenu', (e) =&gt; e.preventDefault(), false);
+
+        if (isTouchDevice) {
+            document.addEventListener('touchstart', (e) =&gt; { if (e.target.id !== 'content-text') { isHolding = true; touchStartTime = Date.now(); } }, { passive: false });
+            document.addEventListener('touchend', () =&gt; { isHolding = false; }, { passive: false });
+        } else {
+            document.addEventListener('mousedown', (e) =&gt; { if (e.target.id !== 'content-text') { isHolding = true; touchStartTime = Date.now(); } });
+            document.addEventListener('mouseup', () =&gt; { isHolding = false; });
+        }
+
+        setInterval(() =&gt; {
+            if (isHolding) { worker.postMessage({ type: 'CAPTURE_INTENT', data: { dwellDuration: Date.now() - touchStartTime, target: 'global-body' } }); }
+        }, 500);
+
+        worker.onmessage = (e) =&gt; { if (e.data.type === 'APPLY_LAYOUT' && e.data.layout.action === 'OPEN_MENU') { document.getElementById('action-menu').style.display = 'block'; } };
+        function closeMenu() { document.getElementById('action-menu').style.display = 'none'; }
+
+        async function performAction(type) {
+            const content = document.getElementById('content-text'); content.focus();
+            switch(type) {
+                case 'COPY': document.execCommand('copy'); break;
+                case 'PASTE': try { const text = await navigator.clipboard.readText(); document.execCommand('insertText', false, text); } catch (err) { alert("Paste permission denied."); } break;
+                case 'SELECT_ALL': document.execCommand('selectAll', false, null); break;
+                case 'REFRESH': location.reload(); break;
+                case 'SHARE': if (navigator.share) navigator.share({title: document.title, url: window.location.href}); break;
+                case 'BOLD': document.execCommand('bold', false, null); break;
+                case 'ITALIC': document.execCommand('italic', false, null); break;
+                case 'COLOR': const color = prompt("Color:", "red"); if (color) document.execCommand('foreColor', false, color); break;
+                case 'SIZE': const size = prompt("Size (1-7):", "5"); if (size) document.execCommand('fontSize', false, size); break;
+                case 'EXPORT_STATE': const blob = new Blob([content.innerText], { type: 'text/plain' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'runtime-state.txt'; a.click(); URL.revokeObjectURL(url); break;
+            }
+            closeMenu();
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <h4>worker.js</h4>
+            <pre><code>// worker.js - Synthesis Engine for Cross-Browser SDK
+// Owner: Okoye Chibuike
+
+self.onmessage = function(e) {
+    if (e.data.type === 'CAPTURE_INTENT') {
+        const { dwellDuration } = e.data.data;
+        // Define dwell threshold (800ms = 0.8 seconds)
+        const DWELL_THRESHOLD = 800; 
+        if (dwellDuration &gt;= DWELL_THRESHOLD) {
+            self.postMessage({ type: 'APPLY_LAYOUT', layout: { action: 'OPEN_MENU' } });
+        }
+    }
+};</code></pre>
+        </section>
+
+        <section id="api">
+            <h2>4. API Reference</h2>
+            <p>The SDK automatically detects if the user is on a touch device or desktop via <code>isTouchDevice</code> and binds the appropriate listeners (Touch vs. Mouse). Developers can extend the <code>performAction(type)</code> function to include custom business logic or unique application commands.</p>
+        </section>
+
+        <section id="customization">
+            <h2>5. Developer Customization</h2>
+            <p>The SDK acts as a non-destructive overlay. It captures events globally but ignores interactions with specified editable containers, allowing developers to maintain existing input functionality while the rest of the application remains under the control of the Cross-Browser runtime.</p>
+        </section>
+
+    </article>
+
+    <footer>
+        <p>&copy; 2026 Okoye Chibuike. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

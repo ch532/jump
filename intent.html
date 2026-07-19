@@ -4,18 +4,23 @@
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
     <style>
-        body { transition: background 0.4s; font-family: sans-serif; margin: 0; }
-        #nav-bar { height: 50px; background: #333; color: white; transition: all 0.4s; overflow: hidden; }
-        .SYSTEM_CONFIG #nav-bar { height: 0; opacity: 0; }
-        #content-text { font-size: 16px; transition: all 0.4s; padding: 20px; min-height: 100px; }
-        .DEEP_FOCUS #content-text { font-size: 32px; font-weight: bold; color: #007bff; }
+        /* Global protection: Disable selection everywhere by default */
+        body { transition: background 0.4s; font-family: sans-serif; margin: 0; -webkit-user-select: none; user-select: none; }
+        
+        #nav-bar { height: 50px; background: #333; color: white; }
+        
+        /* Re-enable selection ONLY for the editable text area */
+        #content-text { 
+            font-size: 16px; padding: 20px; min-height: 100px; 
+            -webkit-user-select: text; user-select: text; 
+        }
         
         #target-zone { 
-            /* ESSENTIAL: Prevents system selection menu */
-            -webkit-user-select: none; user-select: none; 
-            -webkit-touch-callout: none; touch-action: none; 
             height: 200px; border: 2px dashed #000; margin: 20px;
             display: flex; align-items: center; justify-content: center;
+            /* Force disable selection and callouts to stop Android system menu */
+            -webkit-user-select: none; user-select: none;
+            -webkit-touch-callout: none; touch-action: none;
         }
 
         #action-menu { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; width: 85%; max-width: 320px; }
@@ -55,7 +60,7 @@
         let touchStartTime = 0;
         const targetZone = document.getElementById('target-zone');
 
-        // Prevent native browser menu on long-press
+        // Prevent context menu (long-press system menu)
         targetZone.addEventListener('contextmenu', (e) => e.preventDefault(), false);
 
         targetZone.addEventListener('touchstart', () => { isHolding = true; touchStartTime = Date.now(); }, { passive: false });
@@ -68,15 +73,17 @@
         }, 500);
 
         worker.onmessage = (e) => {
-            if (e.data.type === 'APPLY_LAYOUT') {
-                document.body.className = e.data.layout.mode;
-                if (e.data.layout.action === 'OPEN_MENU') document.getElementById('action-menu').style.display = 'block';
+            if (e.data.type === 'APPLY_LAYOUT' && e.data.layout.action === 'OPEN_MENU') {
+                document.getElementById('action-menu').style.display = 'block';
             }
         };
 
         function closeMenu() { document.getElementById('action-menu').style.display = 'none'; }
 
         async function performAction(type) {
+            const content = document.getElementById('content-text');
+            content.focus(); // Ensure actions apply to the text area
+
             switch(type) {
                 case 'COPY': document.execCommand('copy'); break;
                 case 'PASTE':
@@ -99,7 +106,7 @@
                     if (size) document.execCommand('fontSize', false, size); 
                     break;
                 case 'EXPORT_STATE':
-                    const blob = new Blob([document.getElementById('content-text').innerText], { type: 'text/plain' });
+                    const blob = new Blob([content.innerText], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url; a.download = 'runtime-state.txt';
@@ -111,3 +118,4 @@
     </script>
 </body>
 </html>
+

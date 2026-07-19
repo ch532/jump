@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
     window.onload = () => {
-        // Only check payment status now
         if (localStorage.getItem('has_paid') !== 'true') {
             window.location.href = 'billing.html';
         } else {
-            // Show terminal content directly
             document.getElementById('terminal-content').style.display = 'block';
         }
     };
-</script>   
- <title>SkylPworld</title>
+    </script>   
+    <title>SkylPworld</title>
     <meta name="description" content="Access SkyIPworld's Geospatial Node Terminal. Generate real-time environmental radar, solar feasibility analysis, and location intelligence reports. Use our integrated AI image generator and high-fidelity universal language translator.">
     <link type="image/png" rel="icon" href="https://chyke.online/connectgold_2.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -41,13 +39,7 @@
         .result-box { background: #f1f5f9; padding: 25px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-top: 15px; white-space: pre-wrap; font-size: 15px; line-height: 1.7; color: #334155; }
         input, textarea, select { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; margin-top: 10px; }
         .gen-display-box { width: 100%; height: 350px; border: 2px dashed #cbd5e1; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
-    /* Force the terminal to stay hidden until JS removes this */
-    #terminal-content {
-        display: none !important;
-    }
-    #auth-section {
-        display: none; /* Initially hidden */
-    
+        #terminal-content { display: none; }
     </style>
 </head>
 <body>
@@ -59,7 +51,7 @@
     </nav>
 </header>
 
-<main class="main-layout">
+<main id="terminal-content" class="main-layout" data-sdk-feature="AI Terminal Core">
     <div class="tab-container">
         <button class="tab-btn active" onclick="switchTerminalTab(event, 'radar')">1. Radar</button>
         <button class="tab-btn" onclick="switchTerminalTab(event, 'visual')">2. Image Generator</button>
@@ -68,11 +60,21 @@
         <button class="tab-btn" onclick="switchTerminalTab(event, 'solar')">5. Solar</button>
     </div>
 
-    <div id="radar" class="tab-content active"><section class="section-card"><div class="section-header">1. Environmental Radar</div><div class="section-body"><iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5"></iframe></div></section></div>
-    <div id="visual" class="tab-content"><section class="section-card"><div class="section-header">2. Image Generator</div><div class="section-body"><input type="text" id="ai-prompt-input"><button id="btn-visual" onclick="generateStableImage()">Create Asset</button><div id="image-output-panel" class="gen-display-box">Awaiting...</div></div></section></div>
-    <div id="location" class="tab-content"><section class="section-card"><div class="section-header">3. Comprehensive Location Intelligence</div><div class="section-body"><input type="text" id="name-input" placeholder="Enter City Name..."><button id="btn-location" onclick="fetchLocationProfileByName()">Retrieve Comprehensive Report</button><div id="poi-results" class="result-box">Awaiting search...</div></div></section></div>
-    <div id="language" class="tab-content"><section class="section-card"><div class="section-header">4. Universal Translation Node</div><div class="section-body"><textarea id="detect-text-input" rows="5" placeholder="Enter text to translate..."></textarea><input type="text" id="target-lang" placeholder="Enter target language (e.g., French, Yoruba, Japanese)..."><button id="btn-translate" onclick="translateTextOnly()" style="background-color: #38bdf8; color: #1e293b;">Translate Text</button><div id="lang-results" class="result-box">Waiting for input...</div></div></section></div>
-    <div id="solar" class="tab-content"><section class="section-card"><div class="section-header">5. Solar Intensity & Feasibility</div><div class="section-body"><input type="text" id="solar-target-loc" placeholder="Enter Location..."><button id="btn-solar" onclick="calculateLiveSolarMetrics()">Generate Comprehensive Assessment</button><div id="solar-instructions" class="result-box">Awaiting telemetry...</div></div></section></div>
+    <div id="radar" class="tab-content active" data-sdk-feature="Environmental Radar">
+        <section class="section-card"><div class="section-header">1. Environmental Radar</div><div class="section-body"><iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=9.082&lon=7.525&zoom=5"></iframe></div></section>
+    </div>
+    <div id="visual" class="tab-content" data-sdk-feature="AI Image Generator">
+        <section class="section-card"><div class="section-header">2. Image Generator</div><div class="section-body"><input type="text" id="ai-prompt-input"><button id="btn-visual" onclick="generateStableImage()">Create Asset</button><div id="image-output-panel" class="gen-display-box">Awaiting...</div></div></section>
+    </div>
+    <div id="location" class="tab-content" data-sdk-feature="Location Intelligence">
+        <section class="section-card"><div class="section-header">3. Comprehensive Location Intelligence</div><div class="section-body"><input type="text" id="name-input" placeholder="Enter City Name..."><button id="btn-location" onclick="fetchLocationProfileByName()">Retrieve Comprehensive Report</button><div id="poi-results" class="result-box">Awaiting search...</div></div></section>
+    </div>
+    <div id="language" class="tab-content" data-sdk-feature="Universal Translation">
+        <section class="section-card"><div class="section-header">4. Universal Translation Node</div><div class="section-body"><textarea id="detect-text-input" rows="5" placeholder="Enter text to translate..."></textarea><input type="text" id="target-lang" placeholder="Enter target language (e.g., French, Yoruba, Japanese)..."><button id="btn-translate" onclick="translateTextOnly()" style="background-color: #38bdf8; color: #1e293b;">Translate Text</button><div id="lang-results" class="result-box">Waiting for input...</div></div></section>
+    </div>
+    <div id="solar" class="tab-content" data-sdk-feature="Solar Metrics">
+        <section class="section-card"><div class="section-header">5. Solar Intensity & Feasibility</div><div class="section-body"><input type="text" id="solar-target-loc" placeholder="Enter Location..."><button id="btn-solar" onclick="calculateLiveSolarMetrics()">Generate Comprehensive Assessment</button><div id="solar-instructions" class="result-box">Awaiting telemetry...</div></div></section>
+    </div>
 </main>
 
 <script>
@@ -86,112 +88,41 @@
     window.fetchLocationProfileByName = async () => {
         const name = document.getElementById('name-input').value.trim();
         if (!name) return;
-        
         const btn = document.getElementById('btn-location');
-        btn.disabled = true;
-        btn.textContent = "Retrieving Geospatial Metadata...";
-
+        btn.disabled = true; btn.textContent = "Retrieving Geospatial Metadata...";
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${name}&format=jsonv2&addressdetails=1`);
             const data = await res.json();
             if (data.length) {
                 const d = data[0];
-                const isUrban = d.type === "city" || d.type === "town" || d.type === "administrative";
-                const locationName = d.address.city || d.address.town || d.address.state || name;
-                
-                const landUseProfile = isUrban ? 
-                    `This location is officially designated as an Urban environment based on raw database records. The terrain space is strictly utilized for high-density physical infrastructure, extensive commercial spaces, mixed-use corporate/residential high-rises, and heavily engineered transport grids. The natural canopy is completely modified to cater to municipal development and urban zoning constraints.` :
-                    `This location is officially mapped as a Rural environment according to real-time geospatial metadata. Land usage is highly distributed, focusing on vast open spaces, active resource cultivation, pasture land, and isolated low-density structures. The layout retains its natural topographic contours with minimum artificial infrastructure or municipal zoning barriers.`;
-
-                const economicProfile = isUrban ?
-                    `The active economic activities of this specific location (${locationName}) revolve primarily around advanced tech ecosystems, international financial services, fast-moving retail operations, and administrative commerce. Famous economic centers situated inside this specific locale include its prime central business districts, tech clusters, and institutional enterprise buildings, establishing it as a highly responsive commercial hub.` :
-                    `The active economic activities observed inside this specific area (${locationName}) are fundamentally anchored on raw materials sourcing, small-scale artisan markets, agro-allied commerce, and domestic logistics. Famous economic centers here consist of decentralized community trading zones, local regional cooperative markets, and distribution outposts handling localized commodity trade Simon.`;
-
-                const trafficProfile = isUrban ?
-                    `Traffic volume for this sector is dynamically classified as High. Real-time logistical streams show widespread arterial congestion across principal avenues and transit corridors, indicating dense multi-modal mobility needs, extensive peak-hour blockages, and an overarching demand for continuous traffic management intervention.` :
-                    `Traffic volume for this sector is dynamically classified as Low. Telemetry scans demonstrate completely fluid transport lanes, minimum wait times across intersections, and an open infrastructure path, showcasing typical local utility transit with no structural bottlenecks or system delays.`;
-
-                const agroEnvironment = isUrban ?
-                    `The ecological type is classified as a heavily modified Grassland/Urban-woodland zone. Due to massive infrastructure density, the local deforestation rate has historically plateaued because the native forest has already been cleared, leaving space for managed public conservation parks and strategic botanical tree lines designed exclusively to counter the urban heat island effect.` :
-                    `The ecological type is classified as a rich, active Forest and Grassland biome ecosystem. Satellite imagery indicate an active deforestation risk parameter driven by logging expansions or agricultural clearing counterbalanced by localized community conservation reserves, wild flora preservation programs, and strictly controlled natural woodland perimeters.`;
-
-                document.getElementById('poi-results').textContent = 
-                    `[GEOSPATIAL INTELLIGENCE REPORT: ${d.display_name.toUpperCase()}]\n\n` +
-                    `1. DATA CLASSIFICATION & LAND USE:\n` +
-                    `${landUseProfile}\n\n` +
-                    `2. SPECIFIC ECONOMIC ACTIVITIES & LOCAL CENTERS:\n` +
-                    `${economicProfile}\n\n` +
-                    `3. TRAFFIC CONDITIONS:\n` +
-                    `${trafficProfile}\n\n` +
-                    `4. AGRICULTURAL & ENVIRONMENTAL SYSTEMS:\n` +
-                    `${agroEnvironment}\n\n` +
-                    `5. TELEMETRY STATUS:\n` +
-                    `Verified objective report compiled directly via live database APIs. Zero external parameters applied.`;
-            } else {
-                document.getElementById('poi-results').textContent = "No data found for the specified location.";
-            }
-        } catch (err) {
-            document.getElementById('poi-results').textContent = "Geospatial telemetry link interrupted. Please try again.";
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "Retrieve Comprehensive Report";
-        }
+                const isUrban = d.type === "city" || d.type === "town";
+                document.getElementById('poi-results').textContent = `[GEOSPATIAL INTELLIGENCE REPORT: ${d.display_name.toUpperCase()}]\n\n1. LAND USE: ${isUrban ? "Urban high-density infrastructure." : "Rural distributed land usage."}\n\n2. ECONOMIC PROFILE: Focuses on ${isUrban ? "tech/financial/retail services." : "resource sourcing/agro-allied commerce."}\n\n3. TRAFFIC: Dynamically classified as ${isUrban ? "High" : "Low"}.`;
+            } else { document.getElementById('poi-results').textContent = "No data found."; }
+        } catch (err) { document.getElementById('poi-results').textContent = "Link interrupted."; }
+        finally { btn.disabled = false; btn.textContent = "Retrieve Comprehensive Report"; }
     };
 
     window.calculateLiveSolarMetrics = async () => {
         const query = document.getElementById('solar-target-loc').value.trim();
         if (!query) return;
-
         const btn = document.getElementById('btn-solar');
-        btn.disabled = true;
-        btn.textContent = "Querying Satellite Nodes...";
-
+        btn.disabled = true; btn.textContent = "Querying Satellite Nodes...";
         try {
             const geo = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=jsonv2`).then(r => r.json());
-            if (!geo.length) {
-                document.getElementById('solar-instructions').textContent = "Target location not registered in database.";
-                return;
-            }
             const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo[0].lat}&longitude=${geo[0].lon}&current=shortwave_radiation,temperature_2m`).then(r => r.json());
             const rad = res.current.shortwave_radiation;
-            const temp = res.current.temperature_2m;
-            
-            document.getElementById('solar-instructions').textContent = 
-                `[SOLAR POWER DOSSIER: ${geo[0].display_name.toUpperCase()}]\n\n` +
-                `Current Telemetry Data:\n` +
-                `- Solar Radiation: ${rad} W/m²\n` +
-                `- Ambient Temperature: ${temp}°C\n\n` +
-                `1. FEASIBILITY ANALYSIS:\n` +
-                `${rad > 350 ? "This location currently exhibits high solar irradiance, making it exceptionally viable for primary energy harvesting. The atmospheric conditions are optimized for high-efficiency photovoltaic absorption, suggesting that a well-designed array could provide significant energy output." : "Current irradiance levels are moderate. While the location remains functional for solar energy, the output will fluctuate based on cloud cover and atmospheric clarity, likely necessitating a grid-tie or battery-backed hybrid system for consistent power delivery."}\n\n` +
-                `2. INFRASTRUCTURE REQUIREMENTS:\n` +
-                `To maximize the potential of the current solar resources, installation planning should focus on optimal tilt angles based on the local latitude and the integration of smart charge controllers to mitigate the impact of environmental variability. This location requires a robust monitoring system to balance current energy harvest against local demand cycles, ensuring that the solar asset contributes effectively to total power independence.`;
-        } catch (err) {
-            document.getElementById('solar-instructions').textContent = "Meteorological telemetry link offline. Please try again.";
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "Generate Comprehensive Assessment";
-        }
+            document.getElementById('solar-instructions').textContent = `[SOLAR POWER DOSSIER]\nRadiation: ${rad} W/m²\nTemperature: ${res.current.temperature_2m}°C\nFeasibility: ${rad > 350 ? "High viability for harvesting." : "Moderate, requires hybrid backup."}`;
+        } catch (err) { document.getElementById('solar-instructions').textContent = "Meteorological link offline."; }
+        finally { btn.disabled = false; btn.textContent = "Generate Comprehensive Assessment"; }
     };
 
     window.generateStableImage = () => {
         const p = document.getElementById("ai-prompt-input").value.trim();
         if (!p) return;
-        
         const btn = document.getElementById('btn-visual');
         btn.disabled = true;
-        btn.textContent = "Generating Asset...";
-        
         const img = new Image();
-        img.onload = () => {
-            document.getElementById("image-output-panel").innerHTML = `<img src="${img.src}" style="width:100%">`;
-            btn.disabled = false;
-            btn.textContent = "Create Asset";
-        };
-        img.onerror = () => {
-            document.getElementById("image-output-panel").innerHTML = "Failed to render visual asset.";
-            btn.disabled = false;
-            btn.textContent = "Create Asset";
-        };
+        img.onload = () => { document.getElementById("image-output-panel").innerHTML = `<img src="${img.src}" style="width:100%">`; btn.disabled = false; };
         img.src = `https://image.pollinations.ai/p/${encodeURIComponent(p)}?width=600&height=300`;
     };
 
@@ -199,37 +130,10 @@
         const text = document.getElementById('detect-text-input').value.trim();
         const target = document.getElementById('target-lang').value.trim();
         if (!text || !target) return;
-
-        const btn = document.getElementById('btn-translate');
-        btn.disabled = true;
-        btn.textContent = "Accessing Translation Matrix...";
-
-        try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURI(text)}`;
-            const res = await fetch(url).then(r => r.json());
-            const translation = res[0][0][0];
-            document.getElementById('lang-results').textContent = `--- TRANSLATION REPORT ---\nSource: "${text}"\nTarget: ${target}\nTranslation: "${translation}"`;
-        } catch (err) {
-            document.getElementById('lang-results').textContent = "Translation matrix timed out. Please check language spelling and retry.";
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "Translate Text";
-        }
+        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURI(text)}`).then(r => r.json());
+        document.getElementById('lang-results').textContent = res[0][0][0];
     };
 </script>
-
-<footer class="site-footer">
-    <div class="footer-links">
-        <a href="privacy10.html">Privacy Policy</a>
-        <span class="divider">|</span>
-        <a href="support.html">Support</a>
-    </div>
-    <p>&copy; 2026 SkyIPworld. All rights reserved.</p>
-</footer>
-
-    <script src="sdk-init.js"></script>
-   
+<script src="sdk-init.js"></script>
 </body>
 </html>
-
-

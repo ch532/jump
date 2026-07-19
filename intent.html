@@ -10,7 +10,7 @@
         #nav-bar { height: 50px; background: #333; color: white; transition: all 0.4s; overflow: hidden; }
         .SYSTEM_CONFIG #nav-bar { height: 0; opacity: 0; }
 
-        #content-text { font-size: 16px; transition: all 0.4s; padding: 20px; }
+        #content-text { font-size: 16px; transition: all 0.4s; padding: 20px; min-height: 100px; }
         .DEEP_FOCUS #content-text { font-size: 32px; font-weight: bold; color: #007bff; }
 
         #target-zone {
@@ -26,10 +26,10 @@
             transform: translate(-50%, -50%); background: #f9f9f9;
             border: 1px solid #ddd; padding: 15px; border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000;
-            width: 80%; max-width: 300px;
+            width: 85%; max-width: 320px;
         }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        button { padding: 10px; border: none; background: #e0e0e0; border-radius: 5px; }
+        button { padding: 10px; border: none; background: #e0e0e0; border-radius: 5px; font-size: 14px; }
         .close-btn { width: 100%; margin-top: 10px; background: #ff5e5e; color: white; }
     </style>
 </head>
@@ -42,16 +42,18 @@
         <h3>Browser Actions</h3>
         <div class="menu-grid">
             <button onclick="performAction('COPY')">Copy</button>
+            <button onclick="performAction('PASTE')">Paste</button>
             <button onclick="performAction('SHARE')">Share</button>
             <button onclick="performAction('REFRESH')">Refresh</button>
             <button onclick="performAction('SELECT_ALL')">Select All</button>
+            <button onclick="performAction('EXPORT_STATE')">Export State</button>
         </div>
         <h3>Formatting</h3>
         <div class="menu-grid">
             <button onclick="performAction('BOLD')">Bold</button>
             <button onclick="performAction('ITALIC')">Italic</button>
-            <button onclick="performAction('COLOR')">Color</button>
-            <button onclick="performAction('SIZE')">Size</button>
+            <button onclick="performAction('COLOR')">Text Color</button>
+            <button onclick="performAction('SIZE')">Font Size</button>
         </div>
         <button class="close-btn" onclick="closeMenu()">Close</button>
     </div>
@@ -80,16 +82,36 @@
         };
 
         function closeMenu() { document.getElementById('action-menu').style.display = 'none'; }
-        function performAction(type) {
+
+        async function performAction(type) {
             switch(type) {
                 case 'COPY': document.execCommand('copy'); break;
+                case 'PASTE':
+                    try {
+                        const text = await navigator.clipboard.readText();
+                        document.execCommand('insertText', false, text);
+                    } catch (err) { alert("Paste permission denied."); }
+                    break;
                 case 'SELECT_ALL': document.execCommand('selectAll', false, null); break;
                 case 'REFRESH': location.reload(); break;
                 case 'SHARE': if (navigator.share) navigator.share({title: document.title, url: window.location.href}); break;
                 case 'BOLD': document.execCommand('bold', false, null); break;
                 case 'ITALIC': document.execCommand('italic', false, null); break;
-                case 'COLOR': document.execCommand('foreColor', false, 'red'); break;
-                case 'SIZE': document.execCommand('fontSize', false, '5'); break;
+                case 'COLOR': 
+                    const color = prompt("Enter color name:", "red");
+                    if (color) document.execCommand('foreColor', false, color); 
+                    break;
+                case 'SIZE': 
+                    const size = prompt("Enter font size (1-7):", "5");
+                    if (size) document.execCommand('fontSize', false, size); 
+                    break;
+                case 'EXPORT_STATE':
+                    const blob = new Blob([document.getElementById('content-text').innerText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = 'runtime-state.txt';
+                    a.click(); URL.revokeObjectURL(url);
+                    break;
             }
             closeMenu();
         }

@@ -148,6 +148,30 @@ self.onmessage = function(e) {
 
     </article>
 
+            <section id="ux-behavior">
+            <h2>6. Interaction Model & User Expectations</h2>
+            <p>The Cross-Browser Web SDK provides a consistent, intent-driven interface. Users interact with the runtime through the following workflow:</p>
+            
+            <h3>6.1 The Dwell Interaction (Intent Trigger)</h3>
+            <p>Users trigger the system menu by performing a <strong>sustained long-press</strong> (or hold) anywhere on the non-interactive areas of the page. This is calibrated to a <strong>dwell threshold of 800ms</strong> to distinguish between accidental taps and deliberate intent, ensuring the menu doesn't appear during normal navigation.</p>
+            
+            <h3>6.2 Overlay Behavior</h3>
+            <p>Upon exceeding the dwell threshold, the SDK synthesis engine renders the <code>action-menu</code> as a centered, fixed-position modal overlay. This UI design ensures:</p>
+            <ul>
+                <li><strong>Modal Focus:</strong> The overlay visually captures user attention, separating the functional menu from the background document content.</li>
+                <li><strong>Non-Intrusive Workflow:</strong> The menu remains completely hidden until the interaction intent is confirmed, keeping the viewport clean for reading.</li>
+            </ul>
+            
+            <h3>6.3 Execution & Dismissal</h3>
+            <p>Once a user selects an action from the menu (e.g., Copy, Refresh, or Text Formatting), the following cycle occurs:</p>
+            <ol>
+                <li><strong>Command Dispatch:</strong> The SDK immediately dispatches the requested command to the browser's execution engine (e.g., <code>document.execCommand</code> or <code>navigator.share</code>).</li>
+                <li><strong>Auto-Dismissal:</strong> The menu automatically hides itself immediately upon selection, returning full control to the main document.</li>
+                <li><strong>Continuity:</strong> The user can resume browsing or content interaction instantly, without the need for manual cleanup.</li>
+            </ol>
+        </section>
+
+
     <footer>
         <p>&copy; 2026 Okoye Chibuike. All Rights Reserved.</p>
     </footer>

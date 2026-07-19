@@ -63,6 +63,47 @@ setInterval(() => {
 
 worker.onmessage = (e) => { if (e.data.layout?.action === 'OPEN_MENU') document.getElementById('action-menu').style.display = 'block'; };
 
+// --- NEW: Scan and Integrate Features ---
+// Perform scan once the page is fully loaded
+window.addEventListener('load', () => {
+    const domStructure = {
+        hasArticle: !!document.querySelector('article, section, p'),
+        hasSearch: !!document.querySelector('input[type="search"], #search, .search'),
+        hasForms: !!document.querySelector('form'),
+        hasLinks: document.querySelectorAll('a').length > 5
+    };
+    
+    // Send structural data to worker for analysis
+    worker.postMessage({ type: 'ANALYZE_PAGE', data: { domStructure } });
+});
+
+// Update the worker message handler to include 'INTELLIGENCE_REPORT'
+worker.onmessage = (e) => {
+    if (e.data.layout?.action === 'OPEN_MENU') {
+        document.getElementById('action-menu').style.display = 'block';
+    } 
+    
+    // Handle feature recommendations
+    if (e.data.type === 'INTELLIGENCE_REPORT') {
+        const menu = document.getElementById('action-menu');
+        if (e.data.recommendations.length > 0 && !document.getElementById('rec-section')) {
+            const recDiv = document.createElement("div");
+            recDiv.id = "rec-section";
+            recDiv.innerHTML = `<h3>Promoted Features</h3><div class="menu-grid" id="rec-grid"></div>`;
+            
+            e.data.recommendations.forEach(rec => {
+                const btn = document.createElement("button");
+                btn.className = "sdk-btn";
+                btn.innerText = rec;
+                btn.onclick = () => alert("Feature active: " + rec);
+                recDiv.querySelector('#rec-grid').appendChild(btn);
+            });
+            // Insert before the Close button
+            menu.insertBefore(recDiv, menu.querySelector('.close-btn'));
+        }
+    }
+};
+
 window.performAction = function(type) {
     const content = document.activeElement; 
     switch(type) {
@@ -91,3 +132,5 @@ window.performAction = function(type) {
     }
     document.getElementById('action-menu').style.display = 'none';
 };
+
+

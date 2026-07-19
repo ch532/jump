@@ -2,26 +2,27 @@
 <html>
 <head>
     <style>
+        #target-zone {
+            /* CSS to block native browser interference */
+            -webkit-user-select: none; 
+            user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: none; 
+            
+            /* Visual feedback */
+            height: 300px; 
+            border: 2px dashed #000; 
+            padding: 20px;
+        }
+
         .DEFAULT { background: #fff; }
         .DEEP_FOCUS { background: #e0e0e0; transform: scale(1.02); }
-
-        #target-zone {
-    /* Prevents the text selection menu from appearing */
-    -webkit-user-select: none; 
-    user-select: none;
-    
-    /* Prevents the browser from showing the context menu */
-    -webkit-touch-callout: none;
-    
-    /* Ensures the element handles touch events directly */
-    touch-action: none; 
-}
     </style>
 </head>
 <body>
     <div id="ui-container">
         <h1>Autonomous Mobile Runtime</h1>
-        <div id="target-zone" style="height: 300px; border: 2px dashed #000; padding: 20px;">
+        <div id="target-zone">
             Long-press here to trigger Deep Focus.
         </div>
     </div>
@@ -32,13 +33,20 @@
         let touchStartTime = 0;
         let isHolding = false;
 
-        document.addEventListener('touchstart', (e) => {
-            touchTarget = e.target.id || "body";
+        const targetZone = document.getElementById('target-zone');
+
+        // Prevent native context menu (Download/Share/Print)
+        targetZone.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        targetZone.addEventListener('touchstart', (e) => {
+            touchTarget = e.target.id;
             touchStartTime = Date.now();
             isHolding = true;
         });
 
-        document.addEventListener('touchend', () => {
+        targetZone.addEventListener('touchend', () => {
             isHolding = false;
         });
 

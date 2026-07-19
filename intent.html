@@ -21,6 +21,18 @@
         .EXPLORATION_FLOW { background: #fff3cd; border: 2px solid #ffc107; }
         .DEEP_FOCUS { background: #d1ecf1; transform: scale(1.02); }
         .SYSTEM_CONFIG { background: #343a40; color: #fff; padding: 40px; }
+
+        /* Navigation bar style */
+#nav-bar { height: 50px; background: #333; color: white; transition: all 0.3s; }
+.SYSTEM_CONFIG #nav-bar { height: 0; opacity: 0; } /* Hide nav in Config mode */
+
+/* Expanding text style */
+#content-text { font-size: 16px; transition: all 0.3s; }
+.DEEP_FOCUS #content-text { font-size: 24px; font-weight: bold; } /* Expand text in Focus mode */
+
+/* General cleanup */
+.EXPLORATION_FLOW #nav-bar { background: #ffc107; } /* Highlight nav in Exploration */
+
     </style>
 </head>
 <body>

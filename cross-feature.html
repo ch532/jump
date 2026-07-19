@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Feature Web SDK Documentation | by Okoye Chibuike</title>
+    <meta name="description" content="Technical documentation for the Cross-Browser Web SDK including automated feature discovery.">
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 20px; color: #333; }
+        h1, h2, h3 { color: #000; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid #ddd; font-size: 13px; }
+        code { font-family: monospace; background: #eee; padding: 2px 4px; border-radius: 3px; }
+        section { margin-bottom: 40px; }
+        footer { margin-top: 50px; font-size: 0.9em; border-top: 1px solid #ccc; padding-top: 20px; text-align: center; }
+    </style>
+</head>
+
+/**
+ * AUTOMATED FEATURE DISCOVERY: IMPLEMENTATION GUIDE
+ * 
+ * 1. INTEGRATION STRATEGY:
+ *    The system uses a non-destructive overlay. It does not require 
+ *    changes to existing CSS/HTML structure; it simply "tags" your 
+ *    layout elements to make them discoverable by the Navigation Menu.
+ * 
+ * 2. APPLICATION STEPS:
+ *    A. File Placement: 
+ *       Ensure 'sdk-init.js' and 'worker.js' are in your root directory.
+ * 
+ *    B. Tagging (The Data Hook):
+ *       Add the data-sdk-feature attribute to any content section 
+ *       you want to appear in the Promoted Features menu.
+ *       Example: <section data-sdk-feature="Solar Metrics">...</section>
+ * 
+ *    C. SDK Initialization:
+ *       Include the script tag at the bottom of your body tag:
+ *       <script src="sdk-init.js"></script>
+ * 
+ * 3. TECHNICAL WORKFLOW:
+ *    A. Discovery: The MutationObserver monitors DOM changes in real-time.
+ *    B. Synthesis: When a tag is detected, the worker analyzes the 
+ *       feature name and sends a report to the main thread.
+ *    C. Injection: The SDK dynamically generates a navigation button
+ *       and appends it to the 'rec-grid' UI element.
+ *    D. Navigation: Clicking the button triggers:
+ *       document.querySelector(...).scrollIntoView({ behavior: 'smooth' });
+ */
+
+  <section id="sdk-init-code">
+    <h3>sdk-init.js (The Discovery Engine)</h3>
+    <pre><code>/**
+ * SDK Discovery Engine
+ * Monitors DOM structure and synchronizes discovered features 
+ * with the Navigation Overlay.
+ */
+
+const sdkStyles = `
+    #action-menu { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 10000; width: 85%; max-width: 320px; }
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .sdk-btn { padding: 10px; border: none; background: #e0e0e0; border-radius: 5px; font-size: 13px; cursor: pointer; }
+`;
+document.head.appendChild(document.createElement("style")).innerText = sdkStyles;
+
+// UI Initialization
+const menuDiv = document.createElement("div");
+menuDiv.id = "action-menu";
+menuDiv.innerHTML = `&lt;h3&gt;Browser Actions&lt;/h3&gt;&lt;div class="menu-grid" id="action-grid"&gt;&lt;/div&gt;&lt;h3&gt;Promoted Features&lt;/h3&gt;&lt;div class="menu-grid" id="rec-grid"&gt;&lt;/div&gt;`;
+document.body.appendChild(menuDiv);
+
+const worker = new Worker('worker.js');
+
+// Discovery Logic
+const scan = () =&gt; {
+    const features = Array.from(document.querySelectorAll('[data-sdk-feature]'))
+                          .map(el =&gt; el.getAttribute('data-sdk-feature'));
+    worker.postMessage({ type: 'ANALYZE_PAGE', features });
+};
+
+// Handle Intelligence Report
+worker.onmessage = (e) =&gt; {
+    if (e.data.type === 'INTELLIGENCE_REPORT') {
+        const recGrid = document.getElementById('rec-grid');
+        e.data.recommendations.forEach(name =&gt; {
+            if(recGrid.querySelector(`[data-feat="${name}"]`)) return;
+            
+            const btn = document.createElement("button");
+            btn.className = "sdk-btn"; 
+            btn.setAttribute('data-feat', name);
+            btn.innerText = name;
+            
+            // Navigate to feature
+            btn.onclick = () =&gt; {
+                document.querySelector(`[data-sdk-feature="${name}"]`).scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('action-menu').style.display = 'none';
+            };
+            recGrid.appendChild(btn);
+        });
+    }
+};
+
+// Observe DOM mutations for dynamic content
+const observer = new MutationObserver(scan);
+observer.observe(document.body, { childList: true, subtree: true });
+window.addEventListener('load', scan);</code></pre>
+</code></pre>
+        </section>
+    </article>
+
+
+        <section id="worker-js">
+            <h2>4. worker.js (The Synthesis Engine)</h2>
+            <pre><code>/**
+ * Synthesis Engine
+ * Offloads compute-heavy tasks from the main thread.
+ */
+
+self.onmessage = function(e) {
+    // 1. Feature Discovery Analysis
+    if (e.data.type === 'ANALYZE_PAGE') {
+        self.postMessage({ type: 'INTELLIGENCE_REPORT', recommendations: e.data.features });
+    }
+    
+    // 2. Intent Synthesis (Dwell Trigger)
+    if (e.data.type === 'CAPTURE_INTENT') {
+        const DWELL_THRESHOLD = 800; // 0.8s threshold
+        if (e.data.data.dwellDuration >= DWELL_THRESHOLD) {
+            self.postMessage({ type: 'APPLY_LAYOUT', layout: { action: 'OPEN_MENU' } });
+        }
+    }
+};</code></pre>
+        </section>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 Okoye Chibuike. All Rights Reserved.</p>
+    </footer>

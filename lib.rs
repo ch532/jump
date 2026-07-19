@@ -1,17 +1,15 @@
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub fn wasm_calculate_layout(dwell: u64, target: &str) -> JsValue {
-    // Decision logic
-    let mode = if dwell > 3000 && target == "interaction-zone" {
+pub fn wasm_calculate_layout(hold_duration: u64, target: &str) -> JsValue {
+    // Mobile Intent Logic: Deep focus after 1.5 seconds of holding
+    let mode = if hold_duration > 1500 && target == "target-zone" {
         "DEEP_FOCUS"
     } else {
         "DEFAULT"
     };
 
-    // Return object to JS
     serde_wasm_bindgen::to_value(&serde_json::json!({
-        "mode": mode,
-        "target": target
+        "mode": mode
     })).unwrap()
 }

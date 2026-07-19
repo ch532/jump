@@ -1,7 +1,7 @@
 // worker.js
 // Logic defined directly inside the worker to bypass file path issues
 function wasm_calculate_layout(hold_duration, target) {
-    let mode = (hold_duration > 1500 && target === "target-zone") 
+    let mode = (hold_duration > 500 && target === "target-zone") 
         ? "DEEP_FOCUS" 
         : "DEFAULT";
 

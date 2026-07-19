@@ -1,43 +1,52 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <style>
+        .DEFAULT { background: #fff; }
+        .DEEP_FOCUS { background: #e0e0e0; transform: scale(1.02); }
+    </style>
+</head>
 <body>
     <div id="ui-container">
-        <h1 id="content-header">Autonomous Interface</h1>
-        <div id="interaction-zone" style="height: 200px; border: 1px solid black;">
-            Hover over me to trigger Deep Focus.
+        <h1>Autonomous Mobile Runtime</h1>
+        <div id="target-zone" style="height: 300px; border: 2px dashed #000; padding: 20px;">
+            Long-press here to trigger Deep Focus.
         </div>
     </div>
 
     <script>
         const worker = new Worker('worker.js');
-        let dwellTarget = null;
-        let dwellStartTime = Date.now();
+        let touchTarget = null;
+        let touchStartTime = 0;
+        let isHolding = false;
 
-        document.addEventListener('mousemove', (e) => {
-            const target = e.target.id || "body";
-            if (target !== dwellTarget) {
-                dwellTarget = target;
-                dwellStartTime = Date.now();
-            }
+        document.addEventListener('touchstart', (e) => {
+            touchTarget = e.target.id || "body";
+            touchStartTime = Date.now();
+            isHolding = true;
         });
 
-        // Intent Orchestrator: Sends intent packets every 500ms
+        document.addEventListener('touchend', () => {
+            isHolding = false;
+        });
+
+        // Intent Orchestrator
         setInterval(() => {
-            worker.postMessage({ 
-                type: 'CAPTURE_INTENT', 
-                data: { 
-                    dwellDuration: Date.now() - dwellStartTime, 
-                    target: dwellTarget 
-                } 
-            });
+            if (isHolding) {
+                worker.postMessage({ 
+                    type: 'CAPTURE_INTENT', 
+                    data: { 
+                        dwellDuration: Date.now() - touchStartTime, 
+                        target: touchTarget 
+                    } 
+                });
+            }
         }, 500);
 
         // UI Rendering Agent
         worker.onmessage = (e) => {
             if (e.data.type === 'APPLY_LAYOUT') {
-                const layout = e.data.layout;
-                document.body.className = layout.mode;
-                console.log("Interface shaped to:", layout.mode);
+                document.body.className = e.data.layout.mode;
             }
         };
     </script>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ad Network Portal</title>
+  <!-- Load Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .tab { display: none; padding: 20px; border: 1px solid #ccc; }
+    .active { display: block; }
+    nav button { padding: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <button onclick="showTab('register')">Register</button>
+  <button onclick="showTab('dashboard')">Dashboard</button>
+  <button onclick="showTab('placement')">Placement</button>
+  <button onclick="showTab('settings')">Settings</button>
+  <button onclick="showTab('payment')">Payment</button>
+</nav>
+
+<!-- 1. Register -->
+<div id="register" class="tab">
+  <h2>Register as Publisher</h2>
+  <input type="email" id="devEmail" placeholder="Email">
+  <button onclick="handleRegister()">Get Publisher ID</button>
+  <div id="regResult"></div>
+</div>
+
+<!-- 2. Dashboard -->
+<div id="dashboard" class="tab">
+  <h2>Dashboard</h2>
+  <input type="text" id="viewPubId" placeholder="Enter Publisher ID">
+  <button onclick="fetchReport()">Load Report</button>
+  <table border="1" style="width:100%">
+    <thead><tr><th>Ad Unit</th><th>Impressions</th><th>Clicks</th><th>Revenue</th></tr></thead>
+    <tbody id="reportBody"></tbody>
+  </table>
+</div>
+
+<!-- 3. Placement -->
+<div id="placement" class="tab">
+  <h2>Ad Placement Generator</h2>
+  <select id="adFormat" onchange="updateOptions()">
+    <option value="banner">Banner</option>
+    <option value="interstitial">Interstitial</option>
+    <option value="native">Native</option>
+  </select>
+  <div id="dynamicOptions"></div>
+  <input type="text" id="placementName" placeholder="Placement Name">
+  <button onclick="generateCode()">Generate Ad Code</button>
+  <textarea id="generatedCode" readonly style="width:100%; height:100px;"></textarea>
+</div>
+
+<!-- 4. Settings -->
+<div id="settings" class="tab">
+  <h2>Ads.txt Setup</h2>
+  <p>Copy these lines to your ads.txt:</p>
+  <pre id="adstxt">google.com, pub-XXXXX, DIRECT, f08c47fec0942fa0</pre>
+</div>
+
+<!-- 5. Payment -->
+<div id="payment" class="tab">
+  <h2>Earnings & Payments</h2>
+  <p>Your earnings are processed via Paystack.</p>
+  <button onclick="window.location.href='https://paystack.com/login'">Manage Payments</button>
+</div>
+
+<script>
+  // Initialize Supabase
+  const supabase = supabase.createClient('https://emdxuffpbkdrcoyapnxs.supabase.co/rest/v1/', 'sb_publishable_wWIFjMPtkZNlUHH37j704g_xUxc6iR0');
+
+  function showTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+  }
+
+  // 1. Register Logic
+  async function handleRegister() {
+    const email = document.getElementById('devEmail').value;
+    const pubId = 'PUB-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    await supabase.from('publishers').insert([{ publisher_email: email, publisher_id: pubId }]);
+    document.getElementById('regResult').innerHTML = `Your ID: ${pubId}`;
+  }
+
+  // 2. Dashboard Logic
+  async function fetchReport() {
+    const pubId = document.getElementById('viewPubId').value;
+    const { data } = await supabase.from('ad_data').select('*').eq('publisher_id', pubId);
+    document.getElementById('reportBody').innerHTML = data.map(r => `<tr><td>${r.ad_unit_id}</td><td>${r.impressions}</td><td>${r.clicks}</td><td>$${r.revenue}</td></tr>`).join('');
+  }
+
+  // 3. Placement Logic
+  function updateOptions() {
+    const format = document.getElementById('adFormat').value;
+    let html = '';
+    if(format === 'banner') html = '<select id="size"><option>320x50</option><option>300x250</option></select><select id="pos"><option>Top</option><option>Bottom</option></select>';
+    document.getElementById('dynamicOptions').innerHTML = html;
+  }
+
+  function generateCode() {
+    const format = document.getElementById('adFormat').value;
+    const name = document.getElementById('placementName').value;
+    const unitId = 'UNIT-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+    document.getElementById('generatedCode').value = `<script>loadAd("${unitId}", "${format}", "${name}");<\/script>`;
+  }
+</script>
+</body>
+</html>

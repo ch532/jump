@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Connectgold</title>
+  <link rel="icon" href="https://chyke.online/connectgold-2.png" type="image/png">
+  <style>
+    :root {
+      --primary: #d4af37;        /* Connectgold Accent */
+      --dark-bg: #0d1117;       /* Dark Background */
+      --card-bg: #161b22;       /* Card Container */
+      --border-color: #30363d;  /* Border Slate */
+      --text-main: #f0f6fc;     /* Primary Text */
+      --text-muted: #8b949e;    /* Muted Text */
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .header-bar {
+      background: #090d11;
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-bar img { height: 36px; width: auto; }
+    .header-bar span { font-size: 20px; font-weight: 700; color: #fff; }
+    .header-bar span .gold { color: var(--primary); }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px 60px 20px;
+    }
+
+    .policy-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 35px 40px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    h1 { font-size: 28px; margin-top: 0; color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+    h2 { font-size: 18px; color: #fff; margin-top: 28px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; }
+    p, li { font-size: 14px; color: #c9d1d9; }
+    ul { padding-left: 20px; }
+    
+    .last-updated { font-size: 12px; color: var(--text-muted); margin-bottom: 25px; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-bar">
+    <img src="https://chyke.online/connectgold-2.png" alt="Connectgold Logo">
+    <span>Connect<span class="gold">gold</span></span>
+  </div>
+
+  <div class="container">
+    <div class="policy-card">
+      <h1>Privacy Policy</h1>
+      <div class="last-updated">Effective Date: July 21, 2026 | Last Updated: July 2026</div>
+
+      <p>Welcome to <strong>Connectgold Ad Network</strong> ("Connectgold", "we", "our", or "us"). We are committed to protecting the privacy and security of publishers, advertisers, and end-users who interact with our real-time ad serving infrastructure and web platform.</p>
+
+      <h2>1. Information We Collect</h2>
+      <p>We collect information across two distinct categories: platform account management and ad delivery services.</p>
+      
+      <h3>A. Platform Account Data (Publishers & Advertisers)</h3>
+      <ul>
+        <li><strong>Account Identifiers:</strong> Name, email address, and profile picture collected via Google Sign-In.</li>
+        <li><strong>Financial & Payment Information:</strong> Payment reference tokens (via Paystack), bank details, and payout withdrawal configurations.</li>
+        <li><strong>Tax & Legal Declarations:</strong> Country of tax residency, Tax Identification Numbers (TIN/SSN/NIN), entity type, and W-8BEN/W-9 equivalent certifications required for global payouts.</li>
+      </ul>
+
+      <h3>B. Ad Serving & Impression Data (End-Users)</h3>
+      <p>When an ad delivered by Connectgold is rendered on a publisher's website, our edge infrastructure automatically processes telemetry data to evaluate bids, prevent fraud, and track impressions/clicks:</p>
+      <ul>
+        <li><strong>Network & Device Telemetry:</strong> Anonymized IP addresses (used for frequency capping and geo-targeting), user-agent strings, and browser types.</li>
+        <li><strong>Coarse Location:</strong> Country-level or region-level geolocation inferred via Cloudflare Edge headers.</li>
+        <li><strong>Interaction Metrics:</strong> Ad impressions, ad clicks, placement IDs, and format timestamps.</li>
+      </ul>
+
+      <h2>2. How We Use Information</h2>
+      <p>We use the collected data strictly for operational, security, and compliance purposes:</p>
+      <ul>
+        <li>To execute real-time ad auctions, match high-bidding advertisers with publisher placements, and deliver dynamic ad code snippets.</li>
+        <li>To process advertiser campaign funding and distribute 80% revenue payouts to publishers.</li>
+        <li>To enforce frequency capping (preventing over-exposure of ads to the same visitor) and detect invalid click activity or bot fraud.</li>
+        <li>To ensure compliance with local and international tax reporting laws.</li>
+      </ul>
+
+      <h2>3. Privacy Compliance (GDPR, CCPA & NDPR)</h2>
+      <p>Connectgold strictly adheres to global privacy standards, including the European Union General Data Protection Regulation (GDPR), California Consumer Privacy Act (CCPA), and the Nigerian Data Protection Regulation (NDPR):</p>
+      <ul>
+        <li><strong>EEA / UK Regional Consent:</strong> In European Economic Area (EEA) and UK jurisdictions, Connectgold enforces strict opt-in consent mechanisms (`consent=1` or `consent=0`). If user consent is explicitly denied, ad delivery is blocked.</li>
+        <li><strong>No Personal Profiling:</strong> We do not track or build persistent behavioural profiles across un-affiliated websites. Frequency capping parameters are stored temporarily at the edge with 1-hour expiration limits (TTL).</li>
+      </ul>
+
+      <h2>4. Data Sharing & Third-Party Service Providers</h2>
+      <p>We do not sell, rent, or trade personal information to third parties. Data is shared exclusively with verified service infrastructure providers required to operate our service:</p>
+      <ul>
+        <li><strong>Payment Processors:</strong> Paystack API for handling payment deposits and automated publisher payouts.</li>
+        <li><strong>Edge Infrastructure:</strong> Cloudflare Workers and Workers KV for hosting our global auction engine and secure KV database.</li>
+        <li><strong>Client-Side Measurement (Optional):</strong> Publisher-configured integrations (Google Analytics 4, Plausible, Mixpanel) receive non-sensitive impression events directly dispatched from the browser.</li>
+      </ul>
+
+      <h2>5. Security & Data Retention</h2>
+      <p>Account credentials and financial tokens are processed using industry-standard TLS encryption. Sensitive secret keys and verification logic live isolated inside worker runtime environments. Account data is retained as long as your account remains active.</p>
+
+      <h2>6. Your Rights</h2>
+      <p>Depending on your region, you have the right to request access to, correction of, or deletion of your personal account data stored on our platform. Publishers and advertisers may update or delete their profiles by contacting us.</p>
+
+      <h2>7. Contact Us</h2>
+      <p>If you have questions or concerns regarding this Privacy Policy or our data handling practices, please contact our compliance team via our <a href="contact2.html">Contact Us</a> page or email us at: <code>support@chyke.online</code>.</p>
+    </div>
+
+    <div class="footer">
+      © <script>document.write(new Date().getFullYear())</script> <strong>Connectgold Ad Network</strong>. All Rights Reserved.
+    </div>
+  </div>
+
+</body>
+</html>

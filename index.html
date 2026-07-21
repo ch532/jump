@@ -21,6 +21,21 @@
     <meta name='admaven-placement' content=BqdYHqHwH>
     <meta name="mnd-ver" content="0krjlo1bzhvvsglu470ong" />
 
+    <!-- Connectgold Ad Network: Tree (INTERSTITIAL) -->
+<script>
+  function showInterstitialAd() {
+    const consentVal = "1";
+    fetch("https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=plc_demo&format=interstitial&consent=" + consentVal)
+      .then(res => res.json())
+      .then(ad => {
+        if (ad.consent_required) return;
+        window.open(ad.click_url, '_blank');
+        fetch(ad.impression_url);
+        
+      });
+  }
+</script>
+
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ES9LVEGT6"></script>
 <script>
@@ -93,21 +108,6 @@
         </div>
     </nav>
 </header>
-
-    <!-- Connectgold Ad Network: Tree (INTERSTITIAL) -->
-<script>
-  function showInterstitialAd() {
-    const consentVal = "1";
-    fetch("https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=plc_demo&format=interstitial&consent=" + consentVal)
-      .then(res => res.json())
-      .then(ad => {
-        if (ad.consent_required) return;
-        window.open(ad.click_url, '_blank');
-        fetch(ad.impression_url);
-        
-      });
-  }
-</script>
 
 <!-- Connectgold Ad Network: Great (300x250) -->
 <div id="plc_demo" style="width:300px; height:250px; margin:auto;"></div>

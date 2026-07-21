@@ -599,13 +599,14 @@
             <h2>🏦 Publisher Revenue & Payout Requests</h2>
             <p style="font-size:13px; color:var(--text-muted);">Connectgold publishers earn 80% revenue share on every served ad impression.</p>
 
+            <!-- VISUAL PUBLISHER EARNED BALANCE CARD -->
             <div style="background: #0d1117; border: 1px solid var(--primary); padding: 18px; border-radius: 8px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block;">Total Earned Balance</span>
-      <h3 id="publisher-earned-balance" style="font-size: 26px; color: var(--primary); margin: 4px 0 0 0;">$0.0000 USD</h3>
-    </div>
-    <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="loadPublisherBalance()">🔄 Refresh Balance</button>
-  </div>
+              <div>
+                <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block;">Total Earned Balance</span>
+                <h3 id="publisher-earned-balance" style="font-size: 26px; color: var(--primary); margin: 4px 0 0 0;">$0.0000 USD</h3>
+              </div>
+              <button class="btn" style="padding: 6px 14px; font-size: 12px;" onclick="loadPublisherBalance()">🔄 Refresh Balance</button>
+            </div>
 
             <div class="form-group">
               <label>Bank Code / Name</label>
@@ -838,6 +839,29 @@
       document.getElementById("tp-ga4-id").value = localStorage.getItem("cg_ga4_id") || "";
       document.getElementById("tp-plausible-domain").value = localStorage.getItem("cg_plausible_domain") || "";
       document.getElementById("tp-mixpanel-token").value = localStorage.getItem("cg_mixpanel_token") || "";
+    }
+
+    // FETCHES PUBLISHER LIVE 80% EARNED REVENUE VISUALLY
+    async function loadPublisherBalance() {
+      const pubId = document.getElementById("pub-id").value;
+      const balanceDisplay = document.getElementById("publisher-earned-balance");
+      
+      if (!pubId) {
+        balanceDisplay.innerText = "$0.0000 USD";
+        return;
+      }
+
+      balanceDisplay.innerText = "Loading...";
+
+      try {
+        const res = await fetch(`${AD_ENGINE_WORKER_URL}/v1/publisher/balance?pub_id=${pubId}`);
+        const data = await res.json();
+        
+        const earnings = parseFloat(data.total_revenue_usd || 0).toFixed(4);
+        balanceDisplay.innerText = `$${earnings} USD`;
+      } catch (err) {
+        balanceDisplay.innerText = "$0.0000 USD";
+      }
     }
 
     function toggleFormatFields() {
@@ -1151,6 +1175,8 @@
 
       if (tabId === 'analytics-tab') {
         fetchAnalytics();
+      } else if (tabId === 'payment-tab') {
+        loadPublisherBalance(); // AUTO-FETCHES LIVE BALANCE VISUALLY
       }
     }
 
@@ -1188,6 +1214,7 @@
   </script>
 </body>
 </html>
+
 
 
 

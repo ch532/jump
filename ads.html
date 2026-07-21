@@ -3,40 +3,670 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ad Network Web Test</title>
+  <title>Connectgold</title>
+  <!-- PAYSTACK INLINE POPUP SDK -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f4f6f8; margin: 0; display: flex; height: 100vh; color: #333; }
+    
+    /* SIDEBAR NAVIGATION MENU */
+    .sidebar { width: 250px; background: #1a1f2c; color: #fff; display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-header { padding: 20px; font-size: 18px; font-weight: bold; border-bottom: 1px solid #2d3446; color: #0070f3; }
+    .sidebar-menu { list-style: none; padding: 0; margin: 20px 0 0; }
+    .sidebar-menu li { padding: 14px 20px; cursor: pointer; color: #a0aec0; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+    .sidebar-menu li:hover, .sidebar-menu li.active { background: #252d3d; color: #fff; border-left: 4px solid #0070f3; }
+
+    /* MAIN CONTENT AREA */
+    .main-content { flex: 1; overflow-y: auto; padding: 30px; }
+    .tab-content { display: none; max-width: 720px; }
+    .tab-content.active { display: block; }
+    .card { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+    h2 { margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 20px; color: #111; }
+
+    /* FORM STYLING */
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: #444; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; font-family: inherit; }
+    input[readonly] { background-color: #e9ecef; color: #495057; cursor: not-allowed; }
+    .btn { padding: 12px 24px; background: #0070f3; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn:hover { background: #0051a8; }
+    .btn-green { background: #28a745; }
+    .btn-green:hover { background: #218838; }
+    .btn-copy { background: #28a745; margin-top: 10px; padding: 8px 16px; font-size: 12px; }
+    
+    /* CODE DISPLAY BOX */
+    .code-box { background: #1a1f2c; color: #00e676; padding: 15px; border-radius: 6px; font-family: monospace; word-break: break-all; margin-top: 15px; font-size: 13px; white-space: pre-wrap; }
+    
+    /* ANALYTICS GRID */
+    .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
+    .stat-box { background: #f8f9fa; padding: 20px; border-radius: 6px; border-left: 4px solid #0070f3; text-align: center; }
+    .stat-box h3 { margin: 0; font-size: 26px; color: #111; }
+    .stat-box p { margin: 6px 0 0; color: #666; font-size: 13px; }
+  </style>
 </head>
-<body style="font-family: sans-serif; padding: 20px;">
+<body>
 
-  <h2>My Web App</h2>
-  <p>Testing my ad network integration live:</p>
+  <!-- SIDEBAR NAVIGATION MENU -->
+  <div class="sidebar">
+    <div class="sidebar-header">⚡ Ad Engine</div>
+    <ul class="sidebar-menu">
+      <li class="active" onclick="switchTab('placement-tab', this)">
+        <span>📌</span> Placements
+      </li>
+      <li onclick="switchTab('advertiser-tab', this)">
+        <span>📢</span> Advertisers
+      </li>
+      <li onclick="switchTab('payment-tab', this)">
+        <span>💳</span> Payments & Wallet
+      </li>
+      <li onclick="switchTab('preview-tab', this)">
+        <span>🎯</span> Active Ad Preview
+      </li>
+      <li onclick="switchTab('analytics-tab', this)">
+        <span>📊</span> Analytics
+      </li>
+      <li onclick="switchTab('settings-tab', this)">
+        <span>⚙️</span> Settings
+      </li>
+    </ul>
+  </div>
 
-  <hr />
+  <!-- MAIN CONTENT AREA -->
+  <div class="main-content">
 
-  <!-- 1. Banner Ad Container -->
-  <h3>1. Banner Ad</h3>
-  <div data-ad-slot="slot_banner_101" data-ad-format="banner"></div>
+    <!-- MENU 1: PUBLISHER PLACEMENT CREATION -->
+    <div id="placement-tab" class="tab-content active">
+      <div class="card">
+        <h2>Create Placement & Generate Ad Code</h2>
+        
+        <div class="form-group">
+          <label>Publisher ID (Auto-Generated)</label>
+          <input type="text" id="pub-id" readonly placeholder="Connecting to hidden-river-56c3...">
+        </div>
 
-  <hr />
+        <div class="form-group">
+          <label>Placement Name</label>
+          <input type="text" id="plc-name" placeholder="e.g. Homepage Header Banner">
+        </div>
 
-  <!-- 2. Native Ad Container -->
-  <h3>2. Native Ad</h3>
-  <div data-ad-slot="slot_native_102" data-ad-format="native"></div>
+        <div class="form-group">
+          <label>Select Ad Unit Format</label>
+          <select id="plc-format" onchange="toggleFormatFields()">
+            <option value="banner">Banner Ad</option>
+            <option value="interstitial">Interstitial Ad</option>
+            <option value="rewarded">Rewarded Video</option>
+            <option value="native">Native Ad</option>
+          </select>
+        </div>
 
-  <hr />
+        <div class="form-group">
+          <label>Ad Rotation Duration</label>
+          <select id="plc-rotation">
+            <option value="15">Rotate every 15 Seconds (High Volume)</option>
+            <option value="30" selected>Rotate every 30 Seconds (Standard)</option>
+            <option value="60">Rotate every 60 Seconds (Long View)</option>
+            <option value="0">No Rotation (Single Load Only)</option>
+          </select>
+          <small style="color:#666;">Automatically re-runs the auction to fetch and render fresh winning ads.</small>
+        </div>
 
-  <!-- 3. Rewarded Video Container -->
-  <h3>3. Rewarded Video Ad</h3>
-  <div data-ad-slot="slot_rewarded_103" data-ad-format="rewarded"></div>
+        <div class="form-group">
+          <label>EEA / GDPR Regional Consent Handling</label>
+          <select id="plc-consent">
+            <option value="1" selected>Consent Granted (Pass consent=1)</option>
+            <option value="0">Consent Denied (Pass consent=0 / Strict Block in EEA)</option>
+            <option value="auto">Auto-Check Local Storage (user_ad_consent)</option>
+          </select>
+          <small style="color:#666;">Enforces privacy compliance when serving ads in EEA/UK regions.</small>
+        </div>
 
-  <hr />
+        <div id="banner-options">
+          <div class="form-group">
+            <label>Banner Size</label>
+            <select id="banner-size">
+              <option value="320x50">Mobile Leaderboard (320x50)</option>
+              <option value="300x250">Medium Rectangle (300x250)</option>
+              <option value="728x90">Leaderboard (728x90)</option>
+            </select>
+          </div>
 
-  <!-- 4. Interstitial Overlay Container -->
-  <h3>4. Interstitial Ad</h3>
-  <!-- Auto-loads overlay when page loads -->
-  <div data-ad-slot="slot_interstitial_104" data-ad-format="interstitial"></div>
+          <div class="form-group">
+            <label>Banner Location</label>
+            <select id="banner-location">
+              <option value="top">Top Header</option>
+              <option value="bottom">Bottom Footer</option>
+            </select>
+          </div>
+        </div>
 
-  <!-- Include Your Lightweight Ad Network SDK -->
-  <script src="https://chyke.online/sdk.js"></script>
+        <div id="callback-options" style="display: none;">
+          <div class="form-group">
+            <label>Callback URL (Server Notification)</label>
+            <input type="url" id="callback-url" placeholder="https://chyke.online/api/reward-callback">
+          </div>
+        </div>
 
+        <button class="btn" onclick="submitPlacement()">Generate Placement & Embed Code</button>
+
+        <div id="code-output-container" style="display: none; margin-top: 25px;">
+          <h3 style="margin-bottom:5px; color:#111;">📋 Integration JavaScript Code</h3>
+          <p style="font-size:13px; color:#666; margin-top:0;">Copy and paste this snippet into your website HTML where you want the auto-rotating ad to display:</p>
+          <div id="result-code" class="code-box"></div>
+          <button class="btn btn-copy" onclick="copyCode('result-code')">Copy Code Snippet</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MENU 2: ADVERTISER CAMPAIGN SUBMISSION -->
+    <div id="advertiser-tab" class="tab-content">
+      <div class="card">
+        <h2>Submit New Advertiser Campaign</h2>
+        
+        <div class="form-group">
+          <label>Ad ID (Unique Identifier)</label>
+          <input type="text" id="adv-ad-id" placeholder="e.g. ad_banner_promo_99">
+        </div>
+
+        <div class="form-group">
+          <label>Campaign ID</label>
+          <input type="text" id="adv-camp-id" placeholder="e.g. camp_summer_sale">
+        </div>
+
+        <div class="form-group">
+          <label>Ad Format</label>
+          <select id="adv-format" onchange="toggleAdvertiserFields()">
+            <option value="banner">Banner Ad</option>
+            <option value="interstitial">Interstitial Ad</option>
+            <option value="rewarded">Rewarded Video</option>
+            <option value="native">Native Ad</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Ad Title</label>
+          <input type="text" id="adv-title" placeholder="e.g. Super Developer Tool 50% Off">
+        </div>
+
+        <div class="form-group">
+          <label>Ad Description / Body</label>
+          <textarea id="adv-body" rows="2" placeholder="e.g. Build edge applications faster with our developer suite."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Destination Landing Page URL</label>
+          <input type="url" id="adv-dest-url" placeholder="https://chyke.online">
+        </div>
+
+        <div class="form-group" id="adv-image-group">
+          <label>Image URL</label>
+          <input type="url" id="adv-image-url" placeholder="https://dummyimage.com/320x50/007bff/ffffff.png">
+        </div>
+
+        <div class="form-group" id="adv-video-group" style="display: none;">
+          <label>Video Stream URL</label>
+          <input type="url" id="adv-video-url" placeholder="https://example.com/video.mp4">
+        </div>
+
+        <div class="form-group">
+          <label>Call To Action (CTA Text)</label>
+          <input type="text" id="adv-cta" placeholder="e.g. Shop Now / Download">
+        </div>
+
+        <div class="form-group">
+          <label>Bid Rate ($ CPM / eCPM)</label>
+          <input type="number" id="adv-bid-rate" step="0.10" value="2.50" placeholder="e.g. 5.00">
+        </div>
+
+        <div class="form-group">
+          <label>Total Campaign Budget ($ USD)</label>
+          <input type="number" id="adv-budget" step="1.00" value="50.00" placeholder="e.g. 100.00">
+        </div>
+
+        <button class="btn btn-green" onclick="submitAdvertiserAd()">Publish Campaign to Auction</button>
+
+        <div id="adv-result-box" style="display: none;" class="code-box"></div>
+      </div>
+    </div>
+
+    <!-- MENU 3: PAYMENTS & WALLET DEPOSIT (PAYSTACK) -->
+    <div id="payment-tab" class="tab-content">
+      <div class="card">
+        <h2>💳 Fund Advertiser Account (Paystack)</h2>
+        <p style="font-size:13px; color:#666;">Deposit funds to run active campaigns. Payments are processed securely via Paystack.</p>
+
+        <div class="form-group">
+          <label>Advertiser ID</label>
+          <input type="text" id="pay-adv-id" placeholder="e.g. adv_001">
+        </div>
+
+        <div class="form-group">
+          <label>Advertiser Email Address</label>
+          <input type="email" id="pay-email" placeholder="advertiser@example.com">
+        </div>
+
+        <div class="form-group">
+          <label>Deposit Amount (₦ NGN)</label>
+          <input type="number" id="pay-amount" value="5000" placeholder="e.g. 10000">
+        </div>
+
+        <button class="btn btn-green" onclick="payWithPaystack()">Fund Account via Paystack</button>
+      </div>
+
+      <div class="card">
+        <h2>🏦 Publisher Revenue & Payout Requests</h2>
+        <p style="font-size:13px; color:#666;">Publishers earn 80% revenue share on every ad impression.</p>
+
+        <div class="form-group">
+          <label>Bank Code / Name</label>
+          <input type="text" id="payout-bank" placeholder="e.g. 058 (GTBank) or 011 (First Bank)">
+        </div>
+
+        <div class="form-group">
+          <label>Account Number</label>
+          <input type="text" id="payout-account" placeholder="e.g. 0123456789">
+        </div>
+
+        <div class="form-group">
+          <label>Withdrawal Amount (₦ NGN)</label>
+          <input type="number" id="payout-amount" placeholder="e.g. 5000">
+        </div>
+
+        <button class="btn" onclick="requestPayout()">Request Publisher Payout</button>
+      </div>
+    </div>
+
+    <!-- MENU 4: ACTIVE AD PREVIEW -->
+    <div id="preview-tab" class="tab-content">
+      <div class="card">
+        <h2>Active Ad Unit Preview</h2>
+        <button class="btn" style="margin-bottom:15px;" onclick="previewWinningAd()">Fetch Highest-Bidder Ad</button>
+        <div id="ad-wrapper" style="border:1px dashed #ccc; padding:20px; text-align:center; background:#fafafa; border-radius:6px;">
+          <p>Click the button above to load active highest-bidder ad...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU 5: ANALYTICS -->
+    <div id="analytics-tab" class="tab-content">
+      <div class="card">
+        <h2>Real-Time Performance Analytics</h2>
+        <div class="analytics-grid">
+          <div class="stat-box">
+            <h3 id="stat-impressions">0</h3>
+            <p>Total Impressions</p>
+          </div>
+          <div class="stat-box">
+            <h3 id="stat-clicks">0</h3>
+            <p>Total Clicks</p>
+          </div>
+          <div class="stat-box">
+            <h3 id="stat-ctr">0.00%</h3>
+            <p>Click-Through Rate (CTR)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU 6: SETTINGS & ADS.TXT -->
+    <div id="settings-tab" class="tab-content">
+      <div class="card">
+        <h2>⚙️ Network Settings & Ads.txt</h2>
+        <p style="font-size: 14px; color: #555;">
+          Copy and add this line to your website's <code>ads.txt</code> file located at the root of your domain.
+        </p>
+
+        <div class="form-group">
+          <label>Authorized Network ads.txt Entry</label>
+          <div id="ads-txt-output" class="code-box" style="color: #61dafb;">Loading Publisher credentials...</div>
+        </div>
+
+        <button class="btn btn-copy" onclick="copyCode('ads-txt-output')">Copy ads.txt Line</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
+    
+    // UPDATED ENGINE URL TO TARGET LINGERING-SOUND-9859
+    const AD_ENGINE_WORKER_URL = "https://lingering-sound-9859.trustconnect713.workers.dev";
+    const PAYSTACK_PUBLIC_KEY = "pk_live_d6916ad02026b04cac854617d2d798f915366364";
+
+    async function initPublisherId() {
+      try {
+        const res = await fetch(`${CREDENTIALS_WORKER_URL}/v1/publisher/create-id`, { method: "POST" });
+        const data = await res.json();
+        const pubId = data.publisher_id || "pub_demo1234";
+
+        document.getElementById("pub-id").value = pubId;
+        updateAdsTxt(pubId);
+
+      } catch (err) {
+        const fallbackPubId = "pub_demo1234";
+        document.getElementById("pub-id").value = fallbackPubId;
+        updateAdsTxt(fallbackPubId);
+      }
+    }
+
+    function updateAdsTxt(pubId) {
+      const adsTxtContent = `lingering-sound-9859.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
+      document.getElementById("ads-txt-output").innerText = adsTxtContent;
+    }
+
+    function toggleFormatFields() {
+      const format = document.getElementById("plc-format").value;
+      const bannerOpts = document.getElementById("banner-options");
+      const callbackOpts = document.getElementById("callback-options");
+
+      if (format === "banner") {
+        bannerOpts.style.display = "block";
+        callbackOpts.style.display = "none";
+      } else if (format === "rewarded" || format === "interstitial") {
+        bannerOpts.style.display = "none";
+        callbackOpts.style.display = "block";
+      } else {
+        bannerOpts.style.display = "none";
+        callbackOpts.style.display = "none";
+      }
+    }
+
+    function toggleAdvertiserFields() {
+      const format = document.getElementById("adv-format").value;
+      const imgGroup = document.getElementById("adv-image-group");
+      const videoGroup = document.getElementById("adv-video-group");
+
+      if (format === "rewarded") {
+        videoGroup.style.display = "block";
+        imgGroup.style.display = "block";
+      } else {
+        videoGroup.style.display = "none";
+        imgGroup.style.display = "block";
+      }
+    }
+
+    async function submitAdvertiserAd() {
+      const payload = {
+        id: document.getElementById("adv-ad-id").value || "ad_" + Math.random().toString(36).substring(2, 8),
+        campaign_id: document.getElementById("adv-camp-id").value || "camp_default",
+        format: document.getElementById("adv-format").value,
+        title: document.getElementById("adv-title").value,
+        body: document.getElementById("adv-body").value,
+        destination_url: document.getElementById("adv-dest-url").value,
+        image_url: document.getElementById("adv-image-url").value || null,
+        video_url: document.getElementById("adv-video-url").value || null,
+        cta_text: document.getElementById("adv-cta").value || "Learn More",
+        bid_rate: parseFloat(document.getElementById("adv-bid-rate").value) || 1.00,
+        budget: parseFloat(document.getElementById("adv-budget").value) || 50.00
+      };
+
+      try {
+        const res = await fetch(`${AD_ENGINE_WORKER_URL}/v1/advertiser/add-ad`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        const box = document.getElementById("adv-result-box");
+        box.style.display = "block";
+        box.innerText = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        alert("Failed to submit campaign. Ensure worker is live.");
+      }
+    }
+
+    // PAYSTACK INLINE CHECKOUT TRIGGER
+    function payWithPaystack() {
+      const email = document.getElementById("pay-email").value;
+      const amount = parseFloat(document.getElementById("pay-amount").value);
+      const advId = document.getElementById("pay-adv-id").value || "adv_default";
+
+      if (!email || !amount || amount <= 0) {
+        alert("Please enter a valid email and deposit amount.");
+        return;
+      }
+
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: email,
+        amount: Math.round(amount * 100), // Paystack requires kobo
+        currency: "NGN",
+        callback: function(response) {
+          // Verify with lingering-sound-9859 backend using secret key
+          fetch(`${AD_ENGINE_WORKER_URL}/v1/payment/paystack-verify`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              reference: response.reference,
+              advertiser_id: advId
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            alert(data.message || "Account funded successfully!");
+          })
+          .catch(err => {
+            alert("Verification error on server.");
+          });
+        },
+        onClose: function() {
+          alert("Transaction window closed.");
+        }
+      });
+
+      handler.openIframe();
+    }
+
+    function requestPayout() {
+      alert("Payout request submitted! Processing via Paystack Transfers API.");
+    }
+
+    async function submitPlacement() {
+      const pubId = document.getElementById("pub-id").value;
+      const plcName = document.getElementById("plc-name").value || "Default Placement";
+      const format = document.getElementById("plc-format").value;
+      const bannerSize = document.getElementById("banner-size").value;
+      const bannerLocation = document.getElementById("banner-location").value;
+      const callbackUrl = document.getElementById("callback-url").value;
+      const rotationSec = parseInt(document.getElementById("plc-rotation").value, 10);
+      const consentSetting = document.getElementById("plc-consent").value;
+
+      const payload = {
+        publisher_id: pubId,
+        placement_name: plcName,
+        format: format,
+        banner_size: format === "banner" ? bannerSize : null,
+        location: format === "banner" ? bannerLocation : null,
+        callback_url: (format === "rewarded" || format === "interstitial") ? callbackUrl : null,
+        rotation_seconds: rotationSec
+      };
+
+      try {
+        const res = await fetch(`${CREDENTIALS_WORKER_URL}/v1/publisher/create-placement`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        const plcId = data.placement ? data.placement.placement_id : "plc_demo";
+
+        let generatedSnippet = "";
+
+        if (format === "banner") {
+          const dims = bannerSize.split("x");
+          const rotationCode = rotationSec > 0 
+            ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
+            : ``;
+
+          generatedSnippet = 
+`<!-- ${plcName} (${bannerSize} BANNER - ${rotationSec > 0 ? rotationSec + 's Rotation' : 'Static'}) -->
+<div id="${plcId}" style="width:${dims[0]}px; height:${dims[1]}px; margin:auto;"></div>
+<script>
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
+      fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=banner&rotation=${rotationSec}&consent=" + consentVal)
+        .then(res => res.json())
+        .then(ad => {
+          if (ad.consent_required) return;
+          const box = document.getElementById("${plcId}");
+          box.innerHTML = ad.html_snippet || \`<a href="\${ad.click_url}" target="_blank"><img src="\${ad.payload.image_url}" width="${dims[0]}" height="${dims[1]}" /></a>\`;
+          fetch(ad.impression_url);
+        });
+    }
+    fetchAndRenderAd();
+    ${rotationCode}
+  })();
+<\/script>`;
+        } else if (format === "native") {
+          const rotationCode = rotationSec > 0 
+            ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
+            : ``;
+
+          generatedSnippet = 
+`<!-- ${plcName} (NATIVE AD - ${rotationSec > 0 ? rotationSec + 's Rotation' : 'Static'}) -->
+<div id="${plcId}"></div>
+<script>
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
+      fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=native&rotation=${rotationSec}&consent=" + consentVal)
+        .then(res => res.json())
+        .then(ad => {
+          if (ad.consent_required) return;
+          document.getElementById("${plcId}").innerHTML = ad.html_snippet || \`
+            <div style="border:1px solid #ccc; padding:10px;">
+              <h4>\${ad.payload.title}</h4>
+              <p>\${ad.payload.body}</p>
+              <a href="\${ad.click_url}" target="_blank">\${ad.payload.cta_text}</a>
+            </div>\`;
+          fetch(ad.impression_url);
+        });
+    }
+    fetchAndRenderAd();
+    ${rotationCode}
+  })();
+<\/script>`;
+        } else if (format === "rewarded") {
+          generatedSnippet = 
+`<!-- ${plcName} (REWARDED VIDEO AD) -->
+<script>
+  function showRewardedAd() {
+    const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
+    fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=rewarded&consent=" + consentVal)
+      .then(res => res.json())
+      .then(ad => {
+        if (ad.consent_required) return;
+        alert("Playing Video Ad: " + ad.payload.title);
+        fetch(ad.impression_url);
+        if ("${callbackUrl}") {
+          fetch("${callbackUrl}?pub_id=${pubId}&status=completed");
+        }
+      });
+  }
+<\/script>`;
+        } else if (format === "interstitial") {
+          generatedSnippet = 
+`<!-- ${plcName} (INTERSTITIAL AD) -->
+<script>
+  function showInterstitialAd() {
+    const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
+    fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=interstitial&consent=" + consentVal)
+      .then(res => res.json())
+      .then(ad => {
+        if (ad.consent_required) return;
+        window.open(ad.click_url, '_blank');
+        fetch(ad.impression_url);
+      });
+  }
+<\/script>`;
+        }
+
+        document.getElementById("code-output-container").style.display = "block";
+        document.getElementById("result-code").innerText = generatedSnippet;
+
+      } catch (err) {
+        alert("Error generating placement credentials.");
+      }
+    }
+
+    async function previewWinningAd() {
+      const wrapper = document.getElementById("ad-wrapper");
+      wrapper.innerHTML = "<p>Running auction on lingering-sound-9859...</p>";
+
+      try {
+        const res = await fetch(`${AD_ENGINE_WORKER_URL}/v1/ad?format=banner&consent=1`);
+        if (!res.ok) {
+          wrapper.innerHTML = "<p style='color:red;'>No active funded ad found. Run /v1/setup or publish a campaign with budget!</p>";
+          return;
+        }
+
+        const ad = await res.json();
+        const remBudget = typeof ad.remaining_budget === "number" ? `$${ad.remaining_budget.toFixed(4)}` : "Uncapped";
+
+        wrapper.innerHTML = `
+          <div style="margin-bottom: 10px;">
+            <span style="background:#0070f3; color:white; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">
+              WINNING BID: $${ad.winning_bid} CPM
+            </span>
+            <span style="background:#28a745; color:white; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold; margin-left:5px;">
+              REMAINING BUDGET: ${remBudget}
+            </span>
+          </div>
+          <div>${ad.html_snippet}</div>
+        `;
+
+        fetch(ad.impression_url);
+
+      } catch (err) {
+        wrapper.innerHTML = "<p style='color:red;'>Error connecting to auction engine.</p>";
+      }
+    }
+
+    function copyCode(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text);
+      alert("Copied to clipboard!");
+    }
+
+    function switchTab(tabId, elem) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.sidebar-menu li').forEach(m => m.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      elem.classList.add('active');
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initPublisherId();
+
+      // Check for incoming Paystack Dashboard payment redirect reference
+      const urlParams = new URLSearchParams(window.location.search);
+      const paystackRef = urlParams.get("reference") || urlParams.get("trxref");
+
+      if (paystackRef) {
+        const advId = localStorage.getItem("active_advertiser_id") || "adv_default";
+
+        fetch(`${AD_ENGINE_WORKER_URL}/v1/payment/paystack-verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reference: paystackRef,
+            advertiser_id: advId
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message || "Payment confirmed! Balance credited.");
+          window.history.replaceState({}, document.title, window.location.pathname);
+        });
+      }
+    });
+  </script>
 </body>
 </html>

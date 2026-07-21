@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connectgold - Publisher Integration & Technical Manual</title>
+  <style>
+    :root {
+      --primary: #d4af37;
+      --primary-hover: #b89628;
+      --dark-bg: #0d1117;
+      --card-bg: #161b22;
+      --sidebar-bg: #090d11;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --border-color: #30363d;
+      --code-bg: #0d1117;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .header-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 32px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 28px;
+      margin-top: 0;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 10px;
+    }
+
+    .gold { color: var(--primary); }
+
+    .meta-info {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .meta-info span {
+      margin-right: 15px;
+      display: inline-block;
+    }
+
+    h2 {
+      color: #fff;
+      font-size: 22px;
+      margin-top: 35px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      color: var(--primary);
+      font-size: 18px;
+      margin-top: 25px;
+    }
+
+    p, li {
+      color: #c9d1d9;
+      font-size: 15px;
+    }
+
+    ul, ol {
+      padding-left: 20px;
+    }
+
+    /* CODE BOXES */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      color: #7ee787;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      background: rgba(110, 118, 129, 0.2);
+      color: #f0f6fc;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    th {
+      background: #090d11;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .toc {
+      background: #090d11;
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+
+    .toc ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .toc li {
+      margin-bottom: 8px;
+    }
+
+    .toc a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <div class="header-card">
+      <h1>Connect<span class="gold">gold</span> Ad Network — Publisher Integration & Technical Manual</h1>
+      <div class="meta-info">
+        <span><strong>Version:</strong> 1.0.0</span>
+        <span><strong>Protocol Support:</strong> OpenRTB v2.5 / Custom HTTP JSON</span>
+        <span><strong>Last Updated:</strong> July 2026</span>
+      </div>
+
+      <!-- TABLE OF CONTENTS -->
+      <div class="toc">
+        <h3 style="margin-top:0;">Table of Contents</h3>
+        <ul>
+          <li><a href="#section-1">1. Overview & Architecture</a></li>
+          <li><a href="#section-2">2. Publisher Integration</a>
+            <ul>
+              <li><a href="#sub-banner">Standard Banner Units</a></li>
+              <li><a href="#sub-native">Native In-Feed Units</a></li>
+              <li><a href="#sub-rewarded">Rewarded Video Units</a></li>
+              <li><a href="#sub-interstitial">Interstitial Units</a></li>
+            </ul>
+          </li>
+          <li><a href="#section-3">3. Privacy, Compliance & GDPR/EEA Consent</a></li>
+          <li><a href="#section-4">4. Ads.txt Authorization Protocol</a></li>
+          <li><a href="#section-5">5. Auction Engine & Bid Selection API</a></li>
+          <li><a href="#section-6">6. Impression & Click Measurement Specification</a></li>
+          <li><a href="#section-7">7. Third-Party Analytics Hooks (GA4, Plausible, Mixpanel)</a></li>
+        </ul>
+      </div>
+
+      <!-- SECTION 1 -->
+      <h2 id="section-1">1. Overview & Architecture</h2>
+      <p>Connectgold is an edge-computed real-time ad network engineered on Cloudflare Workers and Key-Value (KV) storage. The network uses distributed edge nodes to execute real-time bidding (RTB) auctions, verify publisher placements, enforce frequency capping per client IP, and log hourly and daily impression metrics with near-zero latency.</p>
+
+      <h3>Network Flow Architecture</h3>
+      <pre>
+[ Publisher Website / App ]
+           │
+           │ 1. HTTP GET /v1/ad (placement_id, format, consent)
+           ▼
+[ Cloudflare Edge Worker ] ───► [ Cloudflare KV Store ]
+           │                     * Validates Publisher & Consent
+           │                     * Queries Active Funded Bids
+           │                     * Evaluates Highest eCPM
+           │
+           │ 2. Returns JSON Payload + Html Snippet
+           ▼
+[ Publisher Browser / WebView ]
+           │
+           ├─────────────────────► 3. Renders Ad Unit
+           ├─────────────────────► 4. Asynchronous GET /v1/track/impression
+           └─────────────────────► 5. On Click: GET /v1/track/click
+      </pre>
+
+      <!-- SECTION 2 -->
+      <h2 id="section-2">2. Publisher Integration</h2>
+      <p>Publishers integrate Connectgold by injecting lightweight JavaScript snippets into HTML, or by making server-to-server HTTP API calls.</p>
+
+      <h3 id="sub-banner">Standard Banner Units</h3>
+      <p>Banner placements support standard web dimensions (<code>320x50</code>, <code>300x250</code>, <code>728x90</code>). The embed snippet handles asynchronous rendering, consent evaluation, and configurable ad rotation.</p>
+
+      <pre>&lt;!-- Connectgold Ad Network Placement: Leaderboard / Mobile Unit --&gt;
+&lt;div id="plc_banner_header" style="width:320px; height:50px; margin:auto;"&gt;&lt;/div&gt;
+&lt;script&gt;
+  (function() {
+    var placementId = "plc_banner_header";
+    var rotationSeconds = 30;
+
+    function fetchAndRenderAd() {
+      // Evaluate GDPR consent status from client storage or hardcoded policy
+      var consentVal = localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0";
+      
+      var requestUrl = "https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad" +
+        "?placement_id=" + placementId +
+        "&format=banner" +
+        "&rotation=" + rotationSeconds +
+        "&consent=" + consentVal;
+
+      fetch(requestUrl)
+        .then(function(res) { return res.json(); })
+        .then(function(ad) {
+          if (ad.consent_required) return;
+          
+          var container = document.getElementById(placementId);
+          if (container && ad.html_snippet) {
+            container.innerHTML = ad.html_snippet;
+          } else if (container && ad.payload) {
+            container.innerHTML = '&lt;a href="' + ad.click_url + '" target="_blank" rel="noopener"&gt;' +
+              '&lt;img src="' + ad.payload.image_url + '" width="320" height="50" alt="' + ad.payload.title + '" /&gt;' +
+              '&lt;/a&gt;';
+          }
+
+          // Fire impression pixel asynchronously
+          if (ad.impression_url) {
+            fetch(ad.impression_url);
+          }
+        })
+        .catch(function(err) {
+          console.error("[Connectgold] Failed to load banner unit:", err);
+        });
+    }
+
+    // Initial load
+    fetchAndRenderAd();
+
+    // Configure automated client-side rotation
+    if (rotationSeconds &gt; 0) {
+      setInterval(fetchAndRenderAd, rotationSeconds * 1000);
+    }
+  })();
+&lt;/script&gt;</pre>
+
+      <h3 id="sub-native">Native In-Feed Units</h3>
+      <p>Native ad units adapt dynamically to publisher container styles. The JSON response exposes raw creative components (<code>title</code>, <code>body</code>, <code>cta_text</code>, <code>image_url</code>) alongside pre-rendered HTML snippets.</p>
+
+      <pre>&lt;!-- Connectgold Ad Network Placement: Native In-Feed --&gt;
+&lt;div id="plc_native_feed"&gt;&lt;/div&gt;
+&lt;script&gt;
+  (function() {
+    var placementId = "plc_native_feed";
+    var requestUrl = "https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=" + placementId + "&amp;format=native&amp;consent=1";
+
+    fetch(requestUrl)
+      .then(function(res) { return res.json(); })
+      .then(function(ad) {
+        var container = document.getElementById(placementId);
+        if (!container) return;
+
+        if (ad.html_snippet) {
+          container.innerHTML = ad.html_snippet;
+        } else {
+          container.innerHTML = 
+            '&lt;div style="border:1px solid #30363d; padding:16px; background:#161b22; color:#fff; border-radius:8px;"&gt;' +
+              '&lt;h4 style="margin:0 0 8px 0; color:#fff;"&gt;' + ad.payload.title + '&lt;/h4&gt;' +
+              '&lt;p style="margin:0 0 12px 0; color:#8b949e; font-size:14px;"&gt;' + ad.payload.body + '&lt;/p&gt;' +
+              '&lt;a href="' + ad.click_url + '" target="_blank" style="color:#d4af37; font-weight:bold; text-decoration:none;"&gt;' + ad.payload.cta_text + ' &amp;rarr;&lt;/a&gt;' +
+            '&lt;/div&gt;';
+        }
+
+        if (ad.impression_url) {
+          fetch(ad.impression_url);
+        }
+      });
+  })();
+&lt;/script&gt;</pre>
+
+      <h3 id="sub-rewarded">Rewarded Video Units</h3>
+      <p>Rewarded Video units trigger full-screen or modal overlays and execute server-to-server callback notifications upon completed user views.</p>
+
+      <pre>function showConnectgoldRewardedAd(userAccountId, onRewardCallback) {
+  var placementId = "plc_rewarded_main";
+  var callbackUrl = "https://chyke.online/api/reward-callback";
+  
+  var requestUrl = "https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad" +
+    "?placement_id=" + placementId +
+    "&amp;format=rewarded" +
+    "&amp;consent=1";
+
+  fetch(requestUrl)
+    .then(function(res) { return res.json(); })
+    .then(function(ad) {
+      if (!ad || !ad.payload) {
+        alert("No rewarded video campaigns currently available.");
+        return;
+      }
+
+      console.log("[Connectgold] Streaming video resource:", ad.payload.video_url);
+
+      if (ad.impression_url) fetch(ad.impression_url);
+
+      if (callbackUrl) {
+        fetch(callbackUrl + "?user_id=" + encodeURIComponent(userAccountId) + "&amp;status=completed")
+          .then(function() {
+            if (typeof onRewardCallback === "function") onRewardCallback(true);
+          });
+      }
+    });
+}</pre>
+
+      <h3 id="sub-interstitial">Interstitial Units</h3>
+      <p>Interstitials launch full-screen ad views during natural application transitions.</p>
+
+      <pre>function triggerInterstitialAd() {
+  var placementId = "plc_interstitial_transition";
+  var requestUrl = "https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=" + placementId + "&amp;format=interstitial&amp;consent=1";
+
+  fetch(requestUrl)
+    .then(function(res) { return res.json(); })
+    .then(function(ad) {
+      if (ad &amp;&amp; ad.click_url) {
+        if (ad.impression_url) fetch(ad.impression_url);
+        window.open(ad.click_url, "_blank");
+      }
+    });
+}</pre>
+
+      <!-- SECTION 3 -->
+      <h2 id="section-3">3. Privacy, Compliance & GDPR/EEA Consent</h2>
+      <p>Connectgold enforces strict data privacy compliance for traffic originating within European Economic Area (EEA) and UK regions.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>consent=1</code></td>
+            <td>User has granted consent. Ad auction runs normally and impression is recorded.</td>
+          </tr>
+          <tr>
+            <td><code>consent=0</code></td>
+            <td>User has denied consent or opted out. System blocks non-essential telemetry and serving in EEA regions.</td>
+          </tr>
+          <tr>
+            <td><code>consent=auto</code></td>
+            <td>Embed script checks local browser storage key <code>user_ad_consent</code> and maps dynamically.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- SECTION 4 -->
+      <h2 id="section-4">4. Ads.txt Authorization Protocol</h2>
+      <p>To ensure publisher inventory legitimacy and prevent domain spoofing, publishers must host an <code>ads.txt</code> file at their domain root (<code>https://yourdomain.com/ads.txt</code>).</p>
+
+      <pre># Connectgold Ad Network Authorized Supply List
+lingering-sound-9859.trustconnect713.workers.dev, PUBLISHER_ID, DIRECT, f08c47fec0942fa0</pre>
+
+      <ul>
+        <li><strong>Field 1:</strong> Network Worker Domain Identifier (<code>lingering-sound-9859.trustconnect713.workers.dev</code>)</li>
+        <li><strong>Field 2:</strong> Unique Publisher ID assigned upon registration (e.g., <code>pub_connectgold1234</code>)</li>
+        <li><strong>Field 3:</strong> Relationship Type (<code>DIRECT</code> for domain owners, <code>RESELLER</code> for sub-networks)</li>
+        <li><strong>Field 4:</strong> Certification Authority ID (<code>f08c47fec0942fa0</code>)</li>
+      </ul>
+
+      <!-- SECTION 5 -->
+      <h2 id="section-5">5. Auction Engine & Bid Selection API</h2>
+      <p>The Connectgold auction worker receives HTTP calls, fetches matching ad objects stored under the key prefix <code>ad:FORMAT:*</code>, and ranks them according to maximum eCPM bid rates and remaining wallet budgets.</p>
+
+      <p><strong>Endpoint:</strong> <code>GET https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad</code></p>
+
+      <h3>Request Query Parameters</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>placement_id</code></td>
+            <td>String</td>
+            <td>Yes</td>
+            <td>Registered publisher placement identifier.</td>
+          </tr>
+          <tr>
+            <td><code>format</code></td>
+            <td>String</td>
+            <td>Yes</td>
+            <td>Ad unit type (<code>banner</code>, <code>native</code>, <code>interstitial</code>, <code>rewarded</code>).</td>
+          </tr>
+          <tr>
+            <td><code>rotation</code></td>
+            <td>Integer</td>
+            <td>No</td>
+            <td>Rotation interval in seconds (Default: <code>0</code>).</td>
+          </tr>
+          <tr>
+            <td><code>consent</code></td>
+            <td>String</td>
+            <td>Yes</td>
+            <td>Regional consent flag (<code>1</code> or <code>0</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Sample JSON Response</h3>
+      <pre>{
+  "ad_id": "ad_banner_promo_99",
+  "campaign_id": "camp_summer_sale",
+  "winning_bid": 4.50,
+  "remaining_budget": 48.25,
+  "format": "banner",
+  "payload": {
+    "title": "Premium Software Solutions",
+    "body": "Build fast scalable web and mobile software.",
+    "image_url": "https://chyke.online/connectgold_2.png",
+    "cta_text": "Learn More"
+  },
+  "html_snippet": "&lt;div class=\"cg-ad-frame\"&gt;...&lt;/div&gt;",
+  "click_url": "https://lingering-sound-9859.trustconnect713.workers.dev/v1/track/click?format=banner&amp;ad_id=ad_banner_promo_99",
+  "impression_url": "https://floral-pine-5c44.trustconnect713.workers.dev/v1/track/impression?format=banner&amp;ad_id=ad_banner_promo_99"
+}</pre>
+
+      <!-- SECTION 6 -->
+      <h2 id="section-6">6. Impression & Click Measurement Specification</h2>
+      <p>Connectgold uses separate tracking routes to record telemetry asynchronously without blocking main browser rendering threads.</p>
+
+      <ul>
+        <li><strong>Impression Counter Route:</strong><br><code>GET https://floral-pine-5c44.trustconnect713.workers.dev/v1/track/impression?format=banner</code></li>
+        <li><strong>Click Counter Route:</strong><br><code>GET https://floral-pine-5c44.trustconnect713.workers.dev/v1/track/click?format=banner</code></li>
+      </ul>
+
+      <h3>Telemetry Storage Mapping in Cloudflare KV</h3>
+      <ul>
+        <li><strong>Impressions Key:</strong> <code>stats:YYYY-MM-DD:FORMAT:impressions</code></li>
+        <li><strong>Clicks Key:</strong> <code>stats:YYYY-MM-DD:FORMAT:clicks</code></li>
+        <li><strong>Frequency Cap Key:</strong> <code>freq:CLIENT_IP:AD_ID</code></li>
+      </ul>
+
+      <!-- SECTION 7 -->
+      <h2 id="section-7">7. Third-Party Analytics Hooks</h2>
+      <p>Publishers can automatically forward Connectgold ad engagement events to Google Analytics 4, Plausible, or Mixpanel by configuring client keys in the network dashboard.</p>
+
+      <h3>Google Analytics 4 (GA4)</h3>
+      <pre>if (typeof gtag === 'function') {
+  gtag('event', 'connectgold_ad_impression', {
+    'ad_id': ad.ad_id,
+    'placement_id': placementId,
+    'format': 'banner'
+  });
+}</pre>
+
+      <h3>Plausible Analytics</h3>
+      <pre>if (typeof plausible === 'function') {
+  plausible('Connectgold Impression', {
+    props: { ad_id: ad.ad_id, placement_id: placementId }
+  });
+}</pre>
+
+      <h3>Mixpanel</h3>
+      <pre>if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
+  mixpanel.track('Connectgold Impression', {
+    'ad_id': ad.ad_id,
+    'placement_id': placementId
+  });
+}</pre>
+
+    </div>
+  </div>
+
+</body>
+</html>

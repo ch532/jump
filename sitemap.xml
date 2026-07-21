@@ -9,12 +9,28 @@
         <priority>1.0</priority>
     </url>
 
+    <!-- Connectgold Ad Network Platform -->
+    <url>
+        <loc>https://chyke.online/ads.html</loc>
+        <lastmod>2026-07-21</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
     <!-- AI Terminal Page -->
     <url>
         <loc>https://chyke.online/ai-terminal.html</loc>
         <lastmod>2026-07-18</lastmod>
         <changefreq>hourly</changefreq>
         <priority>1.0</priority>
+    </url>
+
+    <!-- Platform Documentation -->
+    <url>
+        <loc>https://chyke.online/documentation.html</loc>
+        <lastmod>2026-07-21</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
     </url>
 
     <!-- Cross-Browser SDK Documentation Page -->

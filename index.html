@@ -94,6 +94,28 @@
     </nav>
 </header>
 
+<!-- Connectgold Ad Network: Great (300x250) -->
+<div id="plc_demo" style="width:300px; height:250px; margin:auto;"></div>
+<script>
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = (localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0");
+      fetch("https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=plc_demo&format=banner&rotation=30&consent=" + consentVal)
+        .then(res => res.json())
+        .then(ad => {
+          if (ad.consent_required) return;
+          const box = document.getElementById("plc_demo");
+          box.innerHTML = ad.html_snippet || `<a href="${ad.click_url}" target="_blank"><img src="${ad.payload.image_url}" width="300" height="250" /></a>`;
+          
+          fetch(ad.impression_url);
+          
+        });
+    }
+    fetchAndRenderAd();
+    setInterval(fetchAndRenderAd, 30000);
+  })();
+</script>
+    
 <script type="text/javascript">
     aclib.runInterstitial({ zoneId: '11736654' });
 </script>

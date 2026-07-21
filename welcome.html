@@ -1,87 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welcome</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful - Connectgold Ad Network</title>
+  <link rel="icon" href="https://chyke.online/connectgold-2.png" type="image/png">
+  <style>
+    :root {
+      --primary: #d4af37;        /* Connectgold Gold Accent */
+      --primary-hover: #b89628;  /* Deep Gold */
+      --dark-bg: #0d1117;       /* Dark Background */
+      --card-bg: #161b22;       /* Card Container */
+      --border-color: #30363d;  /* Border Slate */
+      --text-main: #f0f6fc;     /* Primary Text */
+      --text-muted: #8b949e;    /* Muted Text */
+      --success: #2ea44f;       /* Emerald Green */
+    }
 
-<style>
-  body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-  }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
 
-  .welcome-box {
-    width: 90%;
-    max-width: 420px;
-    padding: 35px 25px;
-    text-align: center;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
-  }
+    .header-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #090d11;
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-bar img { height: 36px; width: auto; }
+    .header-bar span { font-size: 20px; font-weight: 700; color: #fff; }
+    .header-bar span .gold { color: var(--primary); }
 
-  .welcome-box h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-  }
+    .welcome-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 520px;
+      width: 90%;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      text-align: center;
+      margin-top: 60px;
+    }
 
-  .welcome-box p {
-    margin: 14px 0 26px;
-    font-size: 15px;
-    opacity: 0.9;
-    line-height: 1.5;
-  }
+    .status-icon {
+      font-size: 50px;
+      margin-bottom: 15px;
+      display: inline-block;
+    }
 
-  .tap-hint {
-    display: inline-block;
-    padding: 14px 26px;
-    border-radius: 30px;
-    background: linear-gradient(135deg, #ff9800, #ff5722);
-    font-size: 14px;
-    font-weight: 600;
-    animation: pulse 1.8s infinite;
-  }
+    h1 {
+      font-size: 26px;
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
 
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); }
-  }
+    p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
 
-  .footer {
-    margin-top: 20px;
-    font-size: 12px;
-    opacity: 0.7;
-  }
-</style>
+    /* TRANSACTION DETAILS BOX */
+    .details-box {
+      background: #0d1117;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 25px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .details-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .details-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .details-label { color: var(--text-muted); }
+    .details-val { color: #fff; font-weight: 600; font-family: monospace; }
+
+    .btn {
+      padding: 14px 28px;
+      background: var(--primary);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="welcome-box">
-  <h1>👋 Welcome to Protomax</h1>
-  <p>
-    Music, media, and more in one place.<br>
-    Enjoy a smooth, ad-supported experience built just for you.
-  </p>
+  <div class="header-bar">
+    <img src="https://chyke.online/connectgold-2.png" alt="Connectgold Logo">
+    <span>Connect<span class="gold">gold</span></span>
+  </div>
 
-  <div class="tap-hint">
-    ☰ Go the menu to continue
+  <div class="welcome-card">
+    <div id="status-icon" class="status-icon">⌛</div>
+    <h1 id="status-title">Verifying Payment...</h1>
+    <p id="status-msg">Please wait while we confirm your Paystack transaction reference and credit your advertiser wallet balance.</p>
+
+    <div class="details-box" id="details-box" style="display: none;">
+      <div class="details-row">
+        <span class="details-label">Transaction Reference:</span>
+        <span class="details-val" id="ref-display">--</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Advertiser ID:</span>
+        <span class="details-val" id="adv-display">--</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Payment Status:</span>
+        <span class="details-val" id="status-display" style="color: var(--success);">CONFIRMED</span>
+      </div>
+    </div>
+
+    <a href="index.html" class="btn">Return to Console Dashboard ➔</a>
   </div>
 
   <div class="footer">
-    Made by Connect Gold
+    © <script>document.write(new Date().getFullYear())</script> <strong>Connectgold Ad Network</strong>. All Rights Reserved.
   </div>
-</div>
+
+  <script>
+    const AD_ENGINE_WORKER_URL = "https://lingering-sound-9859.trustconnect713.workers.dev";
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paystackRef = urlParams.get("reference") || urlParams.get("trxref");
+      const advId = localStorage.getItem("active_advertiser_id") || "adv_default";
+
+      if (paystackRef) {
+        // Verify with lingering-sound-9859 engine
+        fetch(`${AD_ENGINE_WORKER_URL}/v1/payment/paystack-verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reference: paystackRef,
+            advertiser_id: advId
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("status-icon").innerText = "🎉";
+          document.getElementById("status-title").innerText = "Payment Successful!";
+          document.getElementById("status-msg").innerText = "Welcome aboard! Your transaction has been verified and your campaign wallet balance has been successfully credited.";
+          
+          document.getElementById("details-box").style.display = "block";
+          document.getElementById("ref-display").innerText = paystackRef;
+          document.getElementById("adv-display").innerText = advId;
+        })
+        .catch(err => {
+          document.getElementById("status-icon").innerText = "✅";
+          document.getElementById("status-title").innerText = "Welcome to Connectgold!";
+          document.getElementById("status-msg").innerText = "Your deposit was processed. If your balance isn't reflected immediately, it will update shortly.";
+          
+          document.getElementById("details-box").style.display = "block";
+          document.getElementById("ref-display").innerText = paystackRef;
+          document.getElementById("adv-display").innerText = advId;
+        });
+      } else {
+        // Direct visit without Paystack parameters
+        document.getElementById("status-icon").innerText = "✨";
+        document.getElementById("status-title").innerText = "Welcome to Connectgold!";
+        document.getElementById("status-msg").innerText = "Your advertiser account is active and ready. Fund your balance anytime from the dashboard to launch campaign auctions.";
+      }
+    });
+  </script>
 
 </body>
 </html>

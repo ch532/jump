@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Connectgold</title>
+  <link rel="icon" href="https://chyke.online/connectgold-2.png" type="image/png">
+  <style>
+    :root {
+      --primary: #d4af37;        /* Connectgold Accent */
+      --primary-hover: #b89628;  /* Deep Gold */
+      --dark-bg: #0d1117;       /* Dark Background */
+      --card-bg: #161b22;       /* Card Container */
+      --border-color: #30363d;  /* Border Slate */
+      --text-main: #f0f6fc;     /* Primary Text */
+      --text-muted: #8b949e;    /* Muted Text */
+      --success: #2ea44f;       /* Emerald Green */
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .header-bar {
+      background: #090d11;
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-bar img { height: 36px; width: auto; }
+    .header-bar span { font-size: 20px; font-weight: 700; color: #fff; }
+    .header-bar span .gold { color: var(--primary); }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px 60px 20px;
+    }
+
+    .about-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    h1 { font-size: 32px; margin-top: 0; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+    h1 .gold { color: var(--primary); }
+    h2 { font-size: 20px; color: var(--primary); margin-top: 32px; margin-bottom: 12px; }
+    p, li { font-size: 15px; color: #c9d1d9; }
+    ul { padding-left: 20px; }
+
+    /* FEATURE HIGHLIGHT GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 25px;
+      margin-bottom: 25px;
+    }
+
+    .feature-box {
+      background: #0d1117;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .feature-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .feature-box p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* MISSION BANNER */
+    .mission-banner {
+      background: rgba(212, 175, 55, 0.08);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .mission-banner h3 {
+      margin: 0 0 8px 0;
+      color: var(--primary);
+      font-size: 18px;
+    }
+
+    .mission-banner p {
+      margin: 0;
+      font-size: 14px;
+      color: #e6edf3;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-bar">
+    <img src="https://chyke.online/connectgold-2.png" alt="Connectgold Logo">
+    <span>Connect<span class="gold">gold</span></span>
+  </div>
+
+  <div class="container">
+    <div class="about-card">
+      <h1>About Connect<span class="gold">gold</span></h1>
+      
+      <p><strong>Connectgold</strong> is a next-generation, high-performance digital ad network designed to bridge the gap between global advertisers and independent publishers. Powered by edge-computed real-time bidding, we deliver sub-millisecond ad serving, transparent revenue distribution, and seamless monetization for modern websites and apps.</p>
+
+      <div class="mission-banner">
+        <h3>🚀 Our Mission</h3>
+        <p>To empower publishers with fair, transparent earnings while providing advertisers with targeted, high-converting ad placements across verified web properties globally.</p>
+      </div>
+
+      <h2>Why Connectgold?</h2>
+      <p>Traditional ad networks often lock creators into opaque revenue models or slow down websites with heavy third-party code. Connectgold changes the game:</p>
+
+      <div class="grid">
+        <div class="feature-box">
+          <h3>⚡ Ultra-Fast Edge Auction</h3>
+          <p>Delivered directly from Cloudflare edge nodes for instant ad rendering with zero page speed penalty.</p>
+        </div>
+
+        <div class="feature-box">
+          <h3>💰 80% Publisher Share</h3>
+          <p>Publishers retain 80% of every winning bid, with a transparent 20% platform commission model.</p>
+        </div>
+
+        <div class="feature-box">
+          <h3>💳 Instant Paystack Wallet</h3>
+          <p>Fund campaign budgets or request fast revenue withdrawals via secure Paystack processing rails.</p>
+        </div>
+
+        <div class="feature-box">
+          <h3>🔒 Privacy & GDPR Ready</h3>
+          <p>Built-in EEA consent detection and cookieless telemetry keep your site 100% privacy compliant.</p>
+        </div>
+      </div>
+
+      <h2>Multi-Format Ad Serving</h2>
+      <p>Connectgold supports all major digital advertising formats, enabling publishers to optimize layouts for maximum engagement:</p>
+      <ul>
+        <li><strong>Banner Ads:</strong> Responsive leaderboards (728x90), medium rectangles (300x250), and mobile units (320x50) with customizable auto-rotation.</li>
+        <li><strong>Native Content Units:</strong> Fully integrated native card ads that match your website's organic aesthetic.</li>
+        <li><strong>Rewarded Video:</strong> High-eCPM video integrations with server-to-server reward callback notifications.</li>
+        <li><strong>Interstitial Units:</strong> High-impact, full-screen transitions for maximum click-through performance.</li>
+      </ul>
+
+      <h2>Global Standards & Third-Party Integration</h2>
+      <p>We believe in total flexibility. Connectgold provides automated <code>ads.txt</code> certification to prevent fraud and supports direct client-side event tracking into <strong>Google Analytics 4 (GA4)</strong>, <strong>Plausible</strong>, and <strong>Mixpanel</strong>, allowing publishers to cross-verify every single impression in real time.</p>
+
+      <h2>Join Connectgold Today</h2>
+      <p>Whether you are an advertiser looking to launch targeted campaigns or a publisher ready to monetize your traffic, Connectgold offers the tools, speed, and transparency you need to succeed.</p>
+      <p><a href="index.html"><strong>➔ Access the Connectgold Platform Console</strong></a></p>
+    </div>
+
+    <div class="footer">
+      © <script>document.write(new Date().getFullYear())</script> <strong>Connectgold Ad Network</strong>. All Rights Reserved.
+    </div>
+  </div>
+
+</body>
+</html>
 

@@ -14,6 +14,21 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963"
      crossorigin="anonymous"></script>
 
+    <!-- Connectgold Ad Network: Tree (INTERSTITIAL) -->
+<script>
+  function showInterstitialAd() {
+    const consentVal = "1";
+    fetch("https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=plc_demo&format=interstitial&consent=" + consentVal)
+      .then(res => res.json())
+      .then(ad => {
+        if (ad.consent_required) return;
+        window.open(ad.click_url, '_blank');
+        fetch(ad.impression_url);
+        
+      });
+  }
+</script>
+
     <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){

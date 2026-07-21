@@ -752,8 +752,9 @@
   <script>
     // WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://lingering-sound-9859.trustconnect713.workers.dev";
-    const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev"; // Dedicated Analytics Worker
+    const AD_ENGINE_WORKER_URL = "https://broad-brook-39f4.trustconnect713.workers.dev"; // Primary AI Gateway Engine
+    const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
+    const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
     function parseJwt(token) {
       try {
@@ -810,7 +811,7 @@
     }
 
     function updateAdsTxt(pubId) {
-      const adsTxtContent = `lingering-sound-9859.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
+      const adsTxtContent = `broad-brook-39f4.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
       document.getElementById("ads-txt-output").innerText = adsTxtContent;
     }
 
@@ -906,7 +907,7 @@
       alert("Payout request submitted! Processing via Paystack Transfers API.");
     }
 
-    // ANALYTICS FETCHING (ROUTES TO DEDICATED FLORAL-PINE WORKER)
+    // ANALYTICS FETCHING (ROUTES TO FLORAL-PINE WORKER)
     async function fetchAnalytics() {
       const format = document.getElementById("analytics-format").value;
       let dateVal = document.getElementById("analytics-date").value;
@@ -1003,14 +1004,14 @@
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=banner&rotation=${rotationSec}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=banner&rotation=${rotationSec}&consent=" + consentVal)
         .then(res => res.json())
         .then(ad => {
           if (ad.consent_required) return;
           const box = document.getElementById("${plcId}");
-          box.innerHTML = ad.html_snippet || \`<a href="\${ad.click_url}" target="_blank"><img src="\${ad.payload.image_url}" width="${dims[0]}" height="${dims[1]}" /></a>\`;
+          box.innerHTML = ad.adHtml || ad.html_snippet || \`<a href="\${ad.click_url}" target="_blank"><img src="\${ad.payload.image_url}" width="${dims[0]}" height="${dims[1]}" /></a>\`;
           
-          fetch(ad.impression_url);
+          if (ad.impression_url) fetch(ad.impression_url);
           ${tpTrackingSnippet}
         });
     }
@@ -1030,18 +1031,18 @@
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=native&rotation=${rotationSec}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=native&rotation=${rotationSec}&consent=" + consentVal)
         .then(res => res.json())
         .then(ad => {
           if (ad.consent_required) return;
-          document.getElementById("${plcId}").innerHTML = ad.html_snippet || \`
+          document.getElementById("${plcId}").innerHTML = ad.adHtml || ad.html_snippet || \`
             <div style="border:1px solid #30363d; padding:12px; background:#161b22; color:#fff; border-radius:6px;">
               <h4>\${ad.payload.title}</h4>
               <p>\${ad.payload.body}</p>
               <a href="\${ad.click_url}" target="_blank" style="color:#d4af37; font-weight:bold;">\${ad.payload.cta_text}</a>
             </div>\`;
           
-          fetch(ad.impression_url);
+          if (ad.impression_url) fetch(ad.impression_url);
           ${tpTrackingSnippet}
         });
     }
@@ -1055,12 +1056,12 @@
 <script>
   function showRewardedAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=rewarded&consent=" + consentVal)
+    fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=rewarded&consent=" + consentVal)
       .then(res => res.json())
       .then(ad => {
         if (ad.consent_required) return;
-        alert("Playing Video Ad: " + ad.payload.title);
-        fetch(ad.impression_url);
+        alert("Playing Video Ad: " + (ad.payload ? ad.payload.title : "Connectgold Ad"));
+        if (ad.impression_url) fetch(ad.impression_url);
         ${tpTrackingSnippet}
         if ("${callbackUrl}") {
           fetch("${callbackUrl}?pub_id=${pubId}&status=completed");
@@ -1074,12 +1075,12 @@
 <script>
   function showInterstitialAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/v1/ad?placement_id=${plcId}&format=interstitial&consent=" + consentVal)
+    fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=interstitial&consent=" + consentVal)
       .then(res => res.json())
       .then(ad => {
         if (ad.consent_required) return;
-        window.open(ad.click_url, '_blank');
-        fetch(ad.impression_url);
+        if (ad.click_url) window.open(ad.click_url, '_blank');
+        if (ad.impression_url) fetch(ad.impression_url);
         ${tpTrackingSnippet}
       });
   }
@@ -1099,28 +1100,29 @@
       wrapper.innerHTML = "<p style='color:var(--text-muted);'>Running Connectgold auction engine...</p>";
 
       try {
-        const res = await fetch(`${AD_ENGINE_WORKER_URL}/v1/ad?format=banner&consent=1`);
+        const res = await fetch(`${AD_ENGINE_WORKER_URL}/api/ad?format=banner&consent=1`);
         if (!res.ok) {
           wrapper.innerHTML = "<p style='color:#f85149;'>No active funded ad found. Deposit funds or run /v1/setup!</p>";
           return;
         }
 
         const ad = await res.json();
-        const remBudget = typeof ad.remaining_budget === "number" ? `$${ad.remaining_budget.toFixed(4)}` : "Uncapped";
+        const remBudget = typeof ad.remaining_advertiser_balance === "string" ? `$${ad.remaining_advertiser_balance}` : (typeof ad.remaining_budget === "number" ? `$${ad.remaining_budget.toFixed(4)}` : "Uncapped");
+        const winningBid = ad.winning_bid || "1.00";
 
         wrapper.innerHTML = `
           <div style="margin-bottom: 12px;">
             <span style="background:var(--primary); color:#000; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">
-              WINNING BID: $${ad.winning_bid} CPM
+              WINNING BID: $${winningBid} CPM
             </span>
             <span style="background:var(--success); color:white; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold; margin-left:6px;">
               REMAINING BUDGET: ${remBudget}
             </span>
           </div>
-          <div>${ad.html_snippet}</div>
+          <div>${ad.adHtml || ad.html_snippet}</div>
         `;
 
-        fetch(ad.impression_url);
+        if (ad.impression_url) fetch(ad.impression_url);
 
       } catch (err) {
         wrapper.innerHTML = "<p style='color:#f85149;'>Error connecting to auction engine.</p>";
@@ -1159,7 +1161,8 @@
       if (paystackRef) {
         const advId = localStorage.getItem("active_advertiser_id") || "adv_default";
 
-        fetch(`${AD_ENGINE_WORKER_URL}/v1/payment/paystack-verify`, {
+        // Routes directly to Payment Verification Worker
+        fetch(`${PAYMENT_WORKER_URL}/v1/payment/paystack-verify`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1177,6 +1180,7 @@
   </script>
 </body>
 </html>
+
 
 
 

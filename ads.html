@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connectgold - Premium Ad Network Platform</title>
   <link rel="icon" href="https://chyke.online/connectgold-2.png" type="image/png">
+  
   <!-- PAYSTACK INLINE POPUP SDK -->
   <script src="https://js.paystack.co/v1/inline.js"></script>
+  
+  <!-- GOOGLE IDENTITY SERVICES SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <style>
     :root {
       --primary: #d4af37;        /* Gold Accent */
@@ -25,9 +30,71 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
       background: var(--dark-bg); 
       margin: 0; 
-      display: flex; 
       height: 100vh; 
       color: var(--text-main); 
+    }
+
+    /* ----------------------------------------------------
+       LOGIN GATE SCREEN (BEFORE ACCESSING DASHBOARD)
+       ---------------------------------------------------- */
+    #login-gate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      background: var(--dark-bg);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      max-width: 420px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .login-card img {
+      height: 60px;
+      margin-bottom: 16px;
+    }
+
+    .login-card h1 {
+      font-size: 26px;
+      margin: 0 0 8px 0;
+      color: #fff;
+    }
+
+    .login-card h1 .gold { color: var(--primary); }
+
+    .login-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ----------------------------------------------------
+       AUTHENTICATED DASHBOARD LAYOUT (HIDDEN UNTIL SIGNED IN)
+       ---------------------------------------------------- */
+    #app-dashboard {
+      display: none; /* Revealed after Google Sign-In */
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100%;
+      width: 100%;
     }
 
     /* SIDEBAR NAVIGATION MENU */
@@ -52,7 +119,70 @@
     .brand-header span { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
     .brand-header span .gold { color: var(--primary); }
 
-    .sidebar-menu { list-style: none; padding: 0; margin: 20px 0 0; }
+    /* USER PROFILE BADGE IN SIDEBAR */
+    .user-profile-bar {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--primary);
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      max-width: 130px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 130px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover {
+      border-color: #f85149;
+      color: #f85149;
+    }
+
+    .sidebar-menu { list-style: none; padding: 0; margin: 15px 0 0; }
     .sidebar-menu li { 
       padding: 14px 24px; 
       cursor: pointer; 
@@ -184,354 +314,432 @@
 </head>
 <body>
 
-  <!-- SIDEBAR NAVIGATION MENU -->
-  <div class="sidebar">
-    <div>
-      <div class="brand-header">
-        <img src="https://chyke.online/connectgold-2.png" alt="Connectgold Logo">
-        <span>Connect<span class="gold">gold</span></span>
+  <!-- ====================================================
+       1. LOGIN GATE SCREEN (SHOWN BEFORE SIGN IN)
+       ==================================================== -->
+  <div id="login-gate">
+    <div class="login-card">
+      <img src="https://chyke.online/connectgold-2.png" alt="Connectgold Logo">
+      <h1>Connect<span class="gold">gold</span></h1>
+      <p>Premium Global Ad Network Console.<br>Please sign in with your Google Account to access your dashboard.</p>
+      
+      <!-- GOOGLE SIGN IN BUTTON CONTAINER -->
+      <div id="g_id_onload"
+           data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
+           data-callback="handleCredentialResponse"
+           data-auto_select="false">
       </div>
-      <ul class="sidebar-menu">
-        <li class="active" onclick="switchTab('placement-tab', this)">
-          <span>📌</span> Placements & Code
-        </li>
-        <li onclick="switchTab('advertiser-tab', this)">
-          <span>📢</span> Advertisers & Bids
-        </li>
-        <li onclick="switchTab('payment-tab', this)">
-          <span>💳</span> Payments & Wallet
-        </li>
-        <li onclick="switchTab('preview-tab', this)">
-          <span>🎯</span> Active Ad Preview
-        </li>
-        <li onclick="switchTab('analytics-tab', this)">
-          <span>📊</span> Network Analytics
-        </li>
-        <li onclick="switchTab('settings-tab', this)">
-          <span>⚙️</span> Network Settings
-        </li>
-      </ul>
-    </div>
-
-    <!-- BOTTOM SIDEBAR LINKS & COPYRIGHT -->
-    <div class="sidebar-footer">
-      <ul>
-        <li><a href="privacy11.html" target="_blank">📄 Privacy Policy</a></li>
-        <li><a href="contact2.html" target="_blank">✉️ Contact Us</a></li>
-        <li><a href="about2.html" target="_blank">ℹ️ About Us</a></li>
-      </ul>
-      <div class="copyright">
-        © <script>document.write(new Date().getFullYear())</script> <strong>Connectgold Ad Network</strong>.<br>All Rights Reserved.
+      <div class="g_id_signin" 
+           data-type="standard" 
+           data-size="large" 
+           data-theme="filled_black" 
+           data-text="sign_in_with" 
+           data-shape="rectangular" 
+           data-logo_alignment="left">
       </div>
     </div>
   </div>
 
-  <!-- MAIN CONTENT AREA -->
-  <div class="main-content">
 
-    <!-- MENU 1: PUBLISHER PLACEMENT CREATION -->
-    <div id="placement-tab" class="tab-content active">
-      <div class="card">
-        <h2>Create Placement & Generate Embed Code</h2>
-        
-        <div class="form-group">
-          <label>Publisher ID (Auto-Generated Credentials)</label>
-          <input type="text" id="pub-id" readonly placeholder="Connecting to credentials worker...">
-        </div>
-
-        <div class="form-group">
-          <label>Placement Name</label>
-          <input type="text" id="plc-name" placeholder="e.g. Header Leaderboard Unit">
-        </div>
-
-        <div class="form-group">
-          <label>Select Ad Unit Format</label>
-          <select id="plc-format" onchange="toggleFormatFields()">
-            <option value="banner">Banner Ad</option>
-            <option value="interstitial">Interstitial Ad</option>
-            <option value="rewarded">Rewarded Video</option>
-            <option value="native">Native Ad</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Ad Rotation Duration</label>
-          <select id="plc-rotation">
-            <option value="15">Rotate every 15 Seconds (High Volume)</option>
-            <option value="30" selected>Rotate every 30 Seconds (Standard)</option>
-            <option value="60">Rotate every 60 Seconds (Long View)</option>
-            <option value="0">No Rotation (Single Load Only)</option>
-          </select>
-          <small style="color:var(--text-muted);">Automatically re-runs auction engine to serve fresh winning bids.</small>
-        </div>
-
-        <div class="form-group">
-          <label>EEA / GDPR Regional Consent Handling</label>
-          <select id="plc-consent">
-            <option value="1" selected>Consent Granted (Pass consent=1)</option>
-            <option value="0">Consent Denied (Pass consent=0 / Strict Block in EEA)</option>
-            <option value="auto">Auto-Check Local Storage (user_ad_consent)</option>
-          </select>
-          <small style="color:var(--text-muted);">Enforces strict privacy policy when serving ads in EEA/UK regions.</small>
-        </div>
-
-        <div id="banner-options">
-          <div class="form-group">
-            <label>Banner Size</label>
-            <select id="banner-size">
-              <option value="320x50">Mobile Leaderboard (320x50)</option>
-              <option value="300x250">Medium Rectangle (300x250)</option>
-              <option value="728x90">Leaderboard (728x90)</option>
-            </select>
+  <!-- ====================================================
+       2. AUTHENTICATED DASHBOARD (HIDDEN UNTIL SIGNED IN)
+       ==================================================== -->
+  <div id="app-dashboard">
+    <div class="app-container">
+      
+      <!-- SIDEBAR NAVIGATION MENU -->
+      <div class="sidebar">
+        <div>
+          <div class="brand-header">
+            <img src="https://chyke.online/connectgold-2.png" alt="Connectgold Logo">
+            <span>Connect<span class="gold">gold</span></span>
           </div>
 
-          <div class="form-group">
-            <label>Banner Location</label>
-            <select id="banner-location">
-              <option value="top">Top Header</option>
-              <option value="bottom">Bottom Footer</option>
-            </select>
+          <!-- USER PROFILE SUMMARY -->
+          <div class="user-profile-bar">
+            <div class="user-info">
+              <img id="usr-pic" src="" alt="Avatar" class="user-avatar">
+              <div class="user-details">
+                <span id="usr-name" class="user-name">User Name</span>
+                <span id="usr-email" class="user-email">user@gmail.com</span>
+              </div>
+            </div>
+            <button class="btn-logout" onclick="signOut()">Exit</button>
+          </div>
+
+          <ul class="sidebar-menu">
+            <li class="active" onclick="switchTab('placement-tab', this)">
+              <span>📌</span> Placements & Code
+            </li>
+            <li onclick="switchTab('advertiser-tab', this)">
+              <span>📢</span> Advertisers & Bids
+            </li>
+            <li onclick="switchTab('payment-tab', this)">
+              <span>💳</span> Payments & Wallet
+            </li>
+            <li onclick="switchTab('preview-tab', this)">
+              <span>🎯</span> Active Ad Preview
+            </li>
+            <li onclick="switchTab('analytics-tab', this)">
+              <span>📊</span> Network Analytics
+            </li>
+            <li onclick="switchTab('settings-tab', this)">
+              <span>⚙️</span> Network Settings
+            </li>
+          </ul>
+        </div>
+
+        <!-- BOTTOM SIDEBAR LINKS & COPYRIGHT -->
+        <div class="sidebar-footer">
+          <ul>
+            <li><a href="privacy11.html" target="_blank">📄 Privacy Policy</a></li>
+            <li><a href="contact2.html" target="_blank">✉️ Contact Us</a></li>
+            <li><a href="about2.html" target="_blank">ℹ️ About Us</a></li>
+          </ul>
+          <div class="copyright">
+            © <script>document.write(new Date().getFullYear())</script> <strong>Connectgold Ad Network</strong>.<br>All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT AREA -->
+      <div class="main-content">
+
+        <!-- MENU 1: PUBLISHER PLACEMENT CREATION -->
+        <div id="placement-tab" class="tab-content active">
+          <div class="card">
+            <h2>Create Placement & Generate Embed Code</h2>
+            
+            <div class="form-group">
+              <label>Publisher ID (Auto-Generated Credentials)</label>
+              <input type="text" id="pub-id" readonly placeholder="Connecting to credentials worker...">
+            </div>
+
+            <div class="form-group">
+              <label>Placement Name</label>
+              <input type="text" id="plc-name" placeholder="e.g. Header Leaderboard Unit">
+            </div>
+
+            <div class="form-group">
+              <label>Select Ad Unit Format</label>
+              <select id="plc-format" onchange="toggleFormatFields()">
+                <option value="banner">Banner Ad</option>
+                <option value="interstitial">Interstitial Ad</option>
+                <option value="rewarded">Rewarded Video</option>
+                <option value="native">Native Ad</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Ad Rotation Duration</label>
+              <select id="plc-rotation">
+                <option value="15">Rotate every 15 Seconds (High Volume)</option>
+                <option value="30" selected>Rotate every 30 Seconds (Standard)</option>
+                <option value="60">Rotate every 60 Seconds (Long View)</option>
+                <option value="0">No Rotation (Single Load Only)</option>
+              </select>
+              <small style="color:var(--text-muted);">Automatically re-runs auction engine to serve fresh winning bids.</small>
+            </div>
+
+            <div class="form-group">
+              <label>EEA / GDPR Regional Consent Handling</label>
+              <select id="plc-consent">
+                <option value="1" selected>Consent Granted (Pass consent=1)</option>
+                <option value="0">Consent Denied (Pass consent=0 / Strict Block in EEA)</option>
+                <option value="auto">Auto-Check Local Storage (user_ad_consent)</option>
+              </select>
+              <small style="color:var(--text-muted);">Enforces strict privacy policy when serving ads in EEA/UK regions.</small>
+            </div>
+
+            <div id="banner-options">
+              <div class="form-group">
+                <label>Banner Size</label>
+                <select id="banner-size">
+                  <option value="320x50">Mobile Leaderboard (320x50)</option>
+                  <option value="300x250">Medium Rectangle (300x250)</option>
+                  <option value="728x90">Leaderboard (728x90)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Banner Location</label>
+                <select id="banner-location">
+                  <option value="top">Top Header</option>
+                  <option value="bottom">Bottom Footer</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="callback-options" style="display: none;">
+              <div class="form-group">
+                <label>Callback URL (Server Notification)</label>
+                <input type="url" id="callback-url" placeholder="https://chyke.online/api/reward-callback">
+              </div>
+            </div>
+
+            <button class="btn" onclick="submitPlacement()">Generate Placement & Embed Code</button>
+
+            <div id="code-output-container" style="display: none; margin-top: 25px;">
+              <h3 style="margin-bottom:5px; color:#fff;">📋 Integration JavaScript Code</h3>
+              <p style="font-size:13px; color:var(--text-muted); margin-top:0;">Paste this snippet into your website HTML where the ad should display:</p>
+              <div id="result-code" class="code-box"></div>
+              <button class="btn btn-copy" onclick="copyCode('result-code')">Copy Code Snippet</button>
+            </div>
+
           </div>
         </div>
 
-        <div id="callback-options" style="display: none;">
-          <div class="form-group">
-            <label>Callback URL (Server Notification)</label>
-            <input type="url" id="callback-url" placeholder="https://chyke.online/api/reward-callback">
+        <!-- MENU 2: ADVERTISER CAMPAIGN SUBMISSION -->
+        <div id="advertiser-tab" class="tab-content">
+          <div class="card">
+            <h2>Submit Advertiser Campaign</h2>
+
+            <!-- INSTRUCTION BANNER FOR ADVERTISERS -->
+            <div class="notice-banner">
+              <div class="icon">⚠️</div>
+              <div>
+                <p><strong>Important Instruction for Advertisers:</strong></p>
+                <p>Please ensure you navigate to the <strong>💳 Payments & Wallet</strong> tab to fund your account wallet via Paystack <u>before</u> submitting campaign details and generating ad code. Unfunded campaigns with $0 remaining budget will be filtered out by the auction engine and will not serve live ads.</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Ad ID (Unique Identifier)</label>
+              <input type="text" id="adv-ad-id" placeholder="e.g. ad_banner_promo_99">
+            </div>
+
+            <div class="form-group">
+              <label>Campaign ID</label>
+              <input type="text" id="adv-camp-id" placeholder="e.g. camp_summer_sale">
+            </div>
+
+            <div class="form-group">
+              <label>Ad Format</label>
+              <select id="adv-format" onchange="toggleAdvertiserFields()">
+                <option value="banner">Banner Ad</option>
+                <option value="interstitial">Interstitial Ad</option>
+                <option value="rewarded">Rewarded Video</option>
+                <option value="native">Native Ad</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Ad Title</label>
+              <input type="text" id="adv-title" placeholder="e.g. Premium Software Solutions">
+            </div>
+
+            <div class="form-group">
+              <label>Ad Description / Body</label>
+              <textarea id="adv-body" rows="2" placeholder="e.g. Build fast scalable web and mobile software."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Destination Landing Page URL</label>
+              <input type="url" id="adv-dest-url" placeholder="https://chyke.online">
+            </div>
+
+            <div class="form-group" id="adv-image-group">
+              <label>Image URL</label>
+              <input type="url" id="adv-image-url" placeholder="https://dummyimage.com/320x50/d4af37/000000.png">
+            </div>
+
+            <div class="form-group" id="adv-video-group" style="display: none;">
+              <label>Video Stream URL</label>
+              <input type="url" id="adv-video-url" placeholder="https://example.com/video.mp4">
+            </div>
+
+            <div class="form-group">
+              <label>Call To Action (CTA Text)</label>
+              <input type="text" id="adv-cta" placeholder="e.g. Learn More / Install">
+            </div>
+
+            <div class="form-group">
+              <label>Bid Rate ($ CPM / eCPM)</label>
+              <input type="number" id="adv-bid-rate" step="0.10" value="2.50" placeholder="e.g. 5.00">
+            </div>
+
+            <div class="form-group">
+              <label>Total Campaign Budget ($ USD)</label>
+              <input type="number" id="adv-budget" step="1.00" value="50.00" placeholder="e.g. 100.00">
+            </div>
+
+            <button class="btn btn-green" onclick="submitAdvertiserAd()">Publish Campaign to Auction Engine</button>
+
+            <div id="adv-result-box" style="display: none;" class="code-box"></div>
           </div>
         </div>
 
-        <button class="btn" onclick="submitPlacement()">Generate Placement & Embed Code</button>
+        <!-- MENU 3: PAYMENTS & WALLET DEPOSIT (PAYSTACK) -->
+        <div id="payment-tab" class="tab-content">
+          <div class="card">
+            <h2>💳 Fund Advertiser Wallet (Step 1)</h2>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Advertisers must deposit funds to run live campaign auctions. Payments are securely processed via Paystack.
+            </p>
 
-        <div id="code-output-container" style="display: none; margin-top: 25px;">
-          <h3 style="margin-bottom:5px; color:#fff;">📋 Integration JavaScript Code</h3>
-          <p style="font-size:13px; color:var(--text-muted); margin-top:0;">Paste this snippet into your website HTML where the ad should display:</p>
-          <div id="result-code" class="code-box"></div>
-          <button class="btn btn-copy" onclick="copyCode('result-code')">Copy Code Snippet</button>
+            <div class="form-group">
+              <label>Advertiser ID (Saved for Credit)</label>
+              <input type="text" id="pay-adv-id" placeholder="e.g. adv_001" onchange="localStorage.setItem('active_advertiser_id', this.value)">
+            </div>
+
+            <a href="https://paystack.shop/pay/21ecy1w137" target="_blank" style="text-decoration:none;">
+              <button class="btn btn-green" onclick="saveAdvertiserContext()">Pay via Paystack Checkout ➔</button>
+            </a>
+          </div>
+
+          <div class="card">
+            <h2>🏦 Publisher Revenue & Payout Requests</h2>
+            <p style="font-size:13px; color:var(--text-muted);">Connectgold publishers earn 80% revenue share on every served ad impression.</p>
+
+            <div class="form-group">
+              <label>Bank Code / Name</label>
+              <input type="text" id="payout-bank" placeholder="e.g. 058 (GTBank) or 011 (First Bank)">
+            </div>
+
+            <div class="form-group">
+              <label>Account Number</label>
+              <input type="text" id="payout-account" placeholder="e.g. 0123456789">
+            </div>
+
+            <div class="form-group">
+              <label>Withdrawal Amount (₦ NGN)</label>
+              <input type="number" id="payout-amount" placeholder="e.g. 5000">
+            </div>
+
+            <!-- GLOBAL TAX & COMPLIANCE DECLARATION -->
+            <div style="border-top:1px solid var(--border-color); margin-top:20px; padding-top:18px;">
+              <h3 style="font-size:16px; color:#fff; margin-bottom:12px;">📑 Global Publisher Tax Declaration</h3>
+              
+              <div class="form-group">
+                <label>Tax Residency Country</label>
+                <input type="text" id="tax-country" placeholder="e.g. Nigeria, United States, United Kingdom, India">
+              </div>
+
+              <div class="form-group">
+                <label>Taxpayer ID / SSN / TIN / NIN</label>
+                <input type="text" id="tax-id-num" placeholder="e.g. 12345678901">
+              </div>
+
+              <div class="form-group">
+                <label>Publisher Entity Type</label>
+                <select id="tax-entity-type">
+                  <option value="individual">Individual / Freelancer</option>
+                  <option value="business">Registered Business / Corporation</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="display:flex; gap:10px; align-items:flex-start; margin-top:10px;">
+                <input type="checkbox" id="tax-cert-check" style="width:auto; margin-top:3px;">
+                <label for="tax-cert-check" style="font-size:12px; font-weight:normal; color:var(--text-muted); line-height:1.4;">
+                  I certify under penalty of perjury that I am the beneficial owner of the earnings generated on Connectgold and comply with global tax reporting requirements (W-8BEN/W-9 equivalent).
+                </label>
+              </div>
+            </div>
+
+            <button class="btn" onclick="requestPayout()">Request Publisher Payout</button>
+          </div>
+        </div>
+
+        <!-- MENU 4: ACTIVE AD PREVIEW -->
+        <div id="preview-tab" class="tab-content">
+          <div class="card">
+            <h2>Active Ad Unit Preview</h2>
+            <button class="btn" style="margin-bottom:15px;" onclick="previewWinningAd()">Fetch Highest-Bidder Ad</button>
+            <div id="ad-wrapper" style="border:1px dashed var(--border-color); padding:25px; text-align:center; background:#0d1117; border-radius:8px;">
+              <p style="color:var(--text-muted);">Click the button above to load active highest-bidder ad...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MENU 5: ANALYTICS (NATIVE + THIRD-PARTY INTEGRATIONS) -->
+        <div id="analytics-tab" class="tab-content">
+          <div class="card">
+            <h2>Connectgold Network Performance Analytics</h2>
+            
+            <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
+              <div style="flex: 1;">
+                <label>Select Format</label>
+                <select id="analytics-format" onchange="fetchAnalytics()">
+                  <option value="banner">Banner Ad</option>
+                  <option value="interstitial">Interstitial Ad</option>
+                  <option value="rewarded">Rewarded Video</option>
+                  <option value="native">Native Ad</option>
+                </select>
+              </div>
+
+              <div style="flex: 1;">
+                <label>Select Date</label>
+                <input type="date" id="analytics-date" onchange="fetchAnalytics()">
+              </div>
+
+              <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh</button>
+            </div>
+
+            <div style="margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: var(--primary);" id="stat-date-display">
+              Report Date: Loading...
+            </div>
+
+            <div class="analytics-grid">
+              <div class="stat-box">
+                <h3 id="stat-impressions">0</h3>
+                <p>Total Impressions</p>
+              </div>
+              <div class="stat-box">
+                <h3 id="stat-clicks">0</h3>
+                <p>Total Clicks</p>
+              </div>
+              <div class="stat-box">
+                <h3 id="stat-ctr">0.00%</h3>
+                <p>Click-Through Rate (CTR)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- THIRD-PARTY ANALYTICS INTEGRATION CARD -->
+          <div class="card">
+            <h2>🔌 Publisher Third-Party Analytics Setup</h2>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Enable client-side tracking to send real-time Connectgold ad impressions and clicks directly to your external measurement tools.
+            </p>
+
+            <div class="form-group">
+              <label>Google Analytics 4 (GA4) Measurement ID</label>
+              <input type="text" id="tp-ga4-id" placeholder="e.g. G-XXXXXXXXXX" onkeyup="saveAnalyticsConfig()">
+            </div>
+
+            <div class="form-group">
+              <label>Plausible Analytics Domain</label>
+              <input type="text" id="tp-plausible-domain" placeholder="e.g. yourwebsite.com" onkeyup="saveAnalyticsConfig()">
+            </div>
+
+            <div class="form-group">
+              <label>Mixpanel Project Token</label>
+              <input type="text" id="tp-mixpanel-token" placeholder="e.g. 361e...a28e" onkeyup="saveAnalyticsConfig()">
+            </div>
+
+            <small style="color:var(--primary);">* Saved automatically. Configured platforms will be injected directly into your generated ad code snippets!</small>
+          </div>
+        </div>
+
+        <!-- MENU 6: SETTINGS & ADS.TXT -->
+        <div id="settings-tab" class="tab-content">
+          <div class="card">
+            <h2>⚙️ Network Settings & Ads.txt Certification</h2>
+            <p style="font-size: 14px; color: var(--text-muted);">
+              Copy and add this line to your website's <code>ads.txt</code> file located at the root of your domain.
+            </p>
+
+            <div class="form-group">
+              <label>Authorized Connectgold Network ads.txt Entry</label>
+              <div id="ads-txt-output" class="code-box" style="color: #61dafb;">Loading Publisher credentials...</div>
+            </div>
+
+            <button class="btn btn-copy" onclick="copyCode('ads-txt-output')">Copy ads.txt Line</button>
+          </div>
         </div>
 
       </div>
     </div>
-
-    <!-- MENU 2: ADVERTISER CAMPAIGN SUBMISSION -->
-    <div id="advertiser-tab" class="tab-content">
-      <div class="card">
-        <h2>Submit Advertiser Campaign</h2>
-
-        <!-- INSTRUCTION BANNER FOR ADVERTISERS -->
-        <div class="notice-banner">
-          <div class="icon">⚠️</div>
-          <div>
-            <p><strong>Important Instruction for Advertisers:</strong></p>
-            <p>Please ensure you navigate to the <strong>💳 Payments & Wallet</strong> tab to fund your account wallet via Paystack <u>before</u> submitting campaign details and generating ad code. Unfunded campaigns with $0 remaining budget will be filtered out by the auction engine and will not serve live ads.</p>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Ad ID (Unique Identifier)</label>
-          <input type="text" id="adv-ad-id" placeholder="e.g. ad_banner_promo_99">
-        </div>
-
-        <div class="form-group">
-          <label>Campaign ID</label>
-          <input type="text" id="adv-camp-id" placeholder="e.g. camp_summer_sale">
-        </div>
-
-        <div class="form-group">
-          <label>Ad Format</label>
-          <select id="adv-format" onchange="toggleAdvertiserFields()">
-            <option value="banner">Banner Ad</option>
-            <option value="interstitial">Interstitial Ad</option>
-            <option value="rewarded">Rewarded Video</option>
-            <option value="native">Native Ad</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Ad Title</label>
-          <input type="text" id="adv-title" placeholder="e.g. Premium Software Solutions">
-        </div>
-
-        <div class="form-group">
-          <label>Ad Description / Body</label>
-          <textarea id="adv-body" rows="2" placeholder="e.g. Build fast scalable web and mobile software."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Destination Landing Page URL</label>
-          <input type="url" id="adv-dest-url" placeholder="https://chyke.online">
-        </div>
-
-        <div class="form-group" id="adv-image-group">
-          <label>Image URL</label>
-          <input type="url" id="adv-image-url" placeholder="https://dummyimage.com/320x50/d4af37/000000.png">
-        </div>
-
-        <div class="form-group" id="adv-video-group" style="display: none;">
-          <label>Video Stream URL</label>
-          <input type="url" id="adv-video-url" placeholder="https://example.com/video.mp4">
-        </div>
-
-        <div class="form-group">
-          <label>Call To Action (CTA Text)</label>
-          <input type="text" id="adv-cta" placeholder="e.g. Learn More / Install">
-        </div>
-
-        <div class="form-group">
-          <label>Bid Rate ($ CPM / eCPM)</label>
-          <input type="number" id="adv-bid-rate" step="0.10" value="2.50" placeholder="e.g. 5.00">
-        </div>
-
-        <div class="form-group">
-          <label>Total Campaign Budget ($ USD)</label>
-          <input type="number" id="adv-budget" step="1.00" value="50.00" placeholder="e.g. 100.00">
-        </div>
-
-        <button class="btn btn-green" onclick="submitAdvertiserAd()">Publish Campaign to Auction Engine</button>
-
-        <div id="adv-result-box" style="display: none;" class="code-box"></div>
-      </div>
-    </div>
-
-    <!-- MENU 3: PAYMENTS & WALLET DEPOSIT (PAYSTACK) -->
-    <div id="payment-tab" class="tab-content">
-      <div class="card">
-        <h2>💳 Fund Advertiser Wallet (Step 1)</h2>
-        <p style="font-size:13px; color:var(--text-muted);">
-          Advertisers must deposit funds to run live campaign auctions. Payments are securely processed via Paystack.
-        </p>
-
-        <div class="form-group">
-          <label>Advertiser ID (Saved for Credit)</label>
-          <input type="text" id="pay-adv-id" placeholder="e.g. adv_001" onchange="localStorage.setItem('active_advertiser_id', this.value)">
-        </div>
-
-        <a href="https://paystack.shop/pay/21ecy1w137" target="_blank" style="text-decoration:none;">
-          <button class="btn btn-green" onclick="saveAdvertiserContext()">Pay via Paystack Checkout ➔</button>
-        </a>
-      </div>
-
-      <div class="card">
-        <h2>🏦 Publisher Revenue & Payout Requests</h2>
-        <p style="font-size:13px; color:var(--text-muted);">Connectgold publishers earn 80% revenue share on every served ad impression.</p>
-
-        <div class="form-group">
-          <label>Bank Code / Name</label>
-          <input type="text" id="payout-bank" placeholder="e.g. 058 (GTBank) or 011 (First Bank)">
-        </div>
-
-        <div class="form-group">
-          <label>Account Number</label>
-          <input type="text" id="payout-account" placeholder="e.g. 0123456789">
-        </div>
-
-        <div class="form-group">
-          <label>Withdrawal Amount (₦ NGN)</label>
-          <input type="number" id="payout-amount" placeholder="e.g. 5000">
-        </div>
-
-        <button class="btn" onclick="requestPayout()">Request Publisher Payout</button>
-      </div>
-    </div>
-
-    <!-- MENU 4: ACTIVE AD PREVIEW -->
-    <div id="preview-tab" class="tab-content">
-      <div class="card">
-        <h2>Active Ad Unit Preview</h2>
-        <button class="btn" style="margin-bottom:15px;" onclick="previewWinningAd()">Fetch Highest-Bidder Ad</button>
-        <div id="ad-wrapper" style="border:1px dashed var(--border-color); padding:25px; text-align:center; background:#0d1117; border-radius:8px;">
-          <p style="color:var(--text-muted);">Click the button above to load active highest-bidder ad...</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- MENU 5: ANALYTICS (NATIVE + THIRD-PARTY INTEGRATIONS) -->
-    <div id="analytics-tab" class="tab-content">
-      <div class="card">
-        <h2>Connectgold Network Performance Analytics</h2>
-        
-        <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
-          <div style="flex: 1;">
-            <label>Select Format</label>
-            <select id="analytics-format" onchange="fetchAnalytics()">
-              <option value="banner">Banner Ad</option>
-              <option value="interstitial">Interstitial Ad</option>
-              <option value="rewarded">Rewarded Video</option>
-              <option value="native">Native Ad</option>
-            </select>
-          </div>
-
-          <div style="flex: 1;">
-            <label>Select Date</label>
-            <input type="date" id="analytics-date" onchange="fetchAnalytics()">
-          </div>
-
-          <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh</button>
-        </div>
-
-        <div style="margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: var(--primary);" id="stat-date-display">
-          Report Date: Loading...
-        </div>
-
-        <div class="analytics-grid">
-          <div class="stat-box">
-            <h3 id="stat-impressions">0</h3>
-            <p>Total Impressions</p>
-          </div>
-          <div class="stat-box">
-            <h3 id="stat-clicks">0</h3>
-            <p>Total Clicks</p>
-          </div>
-          <div class="stat-box">
-            <h3 id="stat-ctr">0.00%</h3>
-            <p>Click-Through Rate (CTR)</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- THIRD-PARTY ANALYTICS INTEGRATION CARD -->
-      <div class="card">
-        <h2>🔌 Publisher Third-Party Analytics Setup</h2>
-        <p style="font-size:13px; color:var(--text-muted);">
-          Enable client-side tracking to send real-time Connectgold ad impressions and clicks directly to your external measurement tools.
-        </p>
-
-        <div class="form-group">
-          <label>Google Analytics 4 (GA4) Measurement ID</label>
-          <input type="text" id="tp-ga4-id" placeholder="e.g. G-XXXXXXXXXX" onkeyup="saveAnalyticsConfig()">
-        </div>
-
-        <div class="form-group">
-          <label>Plausible Analytics Domain</label>
-          <input type="text" id="tp-plausible-domain" placeholder="e.g. yourwebsite.com" onkeyup="saveAnalyticsConfig()">
-        </div>
-
-        <div class="form-group">
-          <label>Mixpanel Project Token</label>
-          <input type="text" id="tp-mixpanel-token" placeholder="e.g. 361e...a28e" onkeyup="saveAnalyticsConfig()">
-        </div>
-
-        <small style="color:var(--primary);">* Saved automatically. Configured platforms will be injected directly into your generated ad code snippets!</small>
-      </div>
-    </div>
-
-    <!-- MENU 6: SETTINGS & ADS.TXT -->
-    <div id="settings-tab" class="tab-content">
-      <div class="card">
-        <h2>⚙️ Network Settings & Ads.txt Certification</h2>
-        <p style="font-size: 14px; color: var(--text-muted);">
-          Copy and add this line to your website's <code>ads.txt</code> file located at the root of your domain.
-        </p>
-
-        <div class="form-group">
-          <label>Authorized Connectgold Network ads.txt Entry</label>
-          <div id="ads-txt-output" class="code-box" style="color: #61dafb;">Loading Publisher credentials...</div>
-        </div>
-
-        <button class="btn btn-copy" onclick="copyCode('ads-txt-output')">Copy ads.txt Line</button>
-      </div>
-    </div>
-
   </div>
 
   <!-- JAVASCRIPT LOGIC -->
@@ -539,6 +747,50 @@
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
     const AD_ENGINE_WORKER_URL = "https://lingering-sound-9859.trustconnect713.workers.dev";
 
+    // ----------------------------------------------------
+    // GOOGLE AUTHENTICATION HANDLERS
+    // ----------------------------------------------------
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function handleCredentialResponse(response) {
+      const user = parseJwt(response.credential);
+      if (user) {
+        localStorage.setItem("cg_user_session", JSON.stringify(user));
+        renderUserSession(user);
+      }
+    }
+
+    function renderUserSession(user) {
+      document.getElementById("login-gate").style.display = "none";
+      document.getElementById("app-dashboard").style.display = "block";
+
+      document.getElementById("usr-name").innerText = user.name || "User";
+      document.getElementById("usr-email").innerText = user.email || "";
+      document.getElementById("usr-pic").src = user.picture || "https://dummyimage.com/100x100/d4af37/000.png&text=CG";
+
+      initPublisherId();
+      loadAnalyticsConfig();
+    }
+
+    function signOut() {
+      localStorage.removeItem("cg_user_session");
+      document.getElementById("app-dashboard").style.display = "none";
+      document.getElementById("login-gate").style.display = "flex";
+      location.reload();
+    }
+
+    // ----------------------------------------------------
+    // AD NETWORK DASHBOARD ENGINE LOGIC
+    // ----------------------------------------------------
     async function initPublisherId() {
       try {
         const res = await fetch(`${CREDENTIALS_WORKER_URL}/v1/publisher/create-id`, { method: "POST" });
@@ -641,6 +893,14 @@
     }
 
     function requestPayout() {
+      const isCertified = document.getElementById("tax-cert-check").checked;
+      const taxId = document.getElementById("tax-id-num").value.trim();
+
+      if (!isCertified || !taxId) {
+        alert("Please complete the Global Tax Declaration (TIN/NIN and Certification) before submitting payout request.");
+        return;
+      }
+
       alert("Payout request submitted! Processing via Paystack Transfers API.");
     }
 
@@ -671,7 +931,6 @@
       const rotationSec = parseInt(document.getElementById("plc-rotation").value, 10);
       const consentSetting = document.getElementById("plc-consent").value;
 
-      // Third-party tokens from Local Storage
       const ga4Id = localStorage.getItem("cg_ga4_id") || "";
       const plausibleDomain = localStorage.getItem("cg_plausible_domain") || "";
       const mixpanelToken = localStorage.getItem("cg_mixpanel_token") || "";
@@ -696,9 +955,7 @@
         const data = await res.json();
         const plcId = data.placement ? data.placement.placement_id : "plc_demo";
 
-        // Client-side Third Party Event Tracking Snippet Builder
         let tpTrackingSnippet = ``;
-        
         if (ga4Id) {
           tpTrackingSnippet += `
           if (typeof gtag === 'function') {
@@ -740,7 +997,6 @@
           const box = document.getElementById("${plcId}");
           box.innerHTML = ad.html_snippet || \`<a href="\${ad.click_url}" target="_blank"><img src="\${ad.payload.image_url}" width="${dims[0]}" height="${dims[1]}" /></a>\`;
           
-          // Native Connectgold Impression Track
           fetch(ad.impression_url);
           ${tpTrackingSnippet}
         });
@@ -772,7 +1028,6 @@
               <a href="\${ad.click_url}" target="_blank" style="color:#d4af37; font-weight:bold;">\${ad.payload.cta_text}</a>
             </div>\`;
           
-          // Native Connectgold Impression Track
           fetch(ad.impression_url);
           ${tpTrackingSnippet}
         });
@@ -876,9 +1131,12 @@
       }
     }
 
+    // ON DOM LOAD: CHECK FOR EXISTING SESSION OR PAYSTACK REDIRECTS
     window.addEventListener("DOMContentLoaded", () => {
-      initPublisherId();
-      loadAnalyticsConfig();
+      const savedUser = localStorage.getItem("cg_user_session");
+      if (savedUser) {
+        renderUserSession(JSON.parse(savedUser));
+      }
 
       const todayISO = new Date().toISOString().split('T')[0];
       document.getElementById("analytics-date").value = todayISO;
@@ -907,4 +1165,5 @@
   </script>
 </body>
 </html>
+
 

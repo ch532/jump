@@ -14,20 +14,6 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963"
      crossorigin="anonymous"></script>
 
-    <!-- Connectgold Ad Network: Tree (INTERSTITIAL) -->
-<script>
-  function showInterstitialAd() {
-    const consentVal = "1";
-    fetch("https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=plc_demo&format=interstitial&consent=" + consentVal)
-      .then(res => res.json())
-      .then(ad => {
-        if (ad.consent_required) return;
-        window.open(ad.click_url, '_blank');
-        fetch(ad.impression_url);
-        
-      });
-  }
-</script>
 
     <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -169,6 +155,28 @@
             </div>
         </div>
     </nav>
+
+    <!-- Connectgold Ad Network: Tree (320x50) -->
+<div id="plc_demo" style="width:320px; height:50px; margin:auto;"></div>
+<script>
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = "1";
+      fetch("https://lingering-sound-9859.trustconnect713.workers.dev/v1/ad?placement_id=plc_demo&format=banner&rotation=15&consent=" + consentVal)
+        .then(res => res.json())
+        .then(ad => {
+          if (ad.consent_required) return;
+          const box = document.getElementById("plc_demo");
+          box.innerHTML = ad.html_snippet || `<a href="${ad.click_url}" target="_blank"><img src="${ad.payload.image_url}" width="320" height="50" /></a>`;
+          
+          fetch(ad.impression_url);
+          
+        });
+    }
+    fetchAndRenderAd();
+    setInterval(fetchAndRenderAd, 15000);
+  })();
+</script>
 
     <script type="text/javascript">
     aclib.runAutoTag({

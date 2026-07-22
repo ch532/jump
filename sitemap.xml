@@ -9,10 +9,18 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- Connectgold Ad Network Platform -->
+    <!-- Connectgold Web Ad Network Platform -->
     <url>
         <loc>https://chyke.online/ads.html</loc>
         <lastmod>2026-07-21</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Connectgold Mobile Ad Mediation Console -->
+    <url>
+        <loc>https://chyke.online/mobile-ads.html</loc>
+        <lastmod>2026-07-22</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -25,10 +33,18 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- Platform Documentation -->
+    <!-- Platform Web Documentation -->
     <url>
         <loc>https://chyke.online/documentation.html</loc>
         <lastmod>2026-07-21</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Connectgold Mobile SDK Documentation -->
+    <url>
+        <loc>https://chyke.online/documentation2.html</loc>
+        <lastmod>2026-07-22</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>

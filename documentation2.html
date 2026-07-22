@@ -264,27 +264,36 @@ dependencies {
       </div>
     </div>
 
-    <!-- 3. MANIFEST SETUP -->
+        <!-- 3. MANIFEST SETUP -->
     <div id="sec-manifest" class="docs-section">
       <h2><span class="step-number">2</span>Android Manifest Configuration</h2>
-      <p>Ensure network permissions and required AdMob App ID meta-data entries are present in <code>AndroidManifest.xml</code>:</p>
+      <p>
+        Ensure network permissions are granted in <code>AndroidManifest.xml</code>. 
+        <strong>Important:</strong> If you are enabling the Google AdMob adapter, you must replace <code>ca-app-pub-YOUR_ADMOB_APP_ID~XXXXXXXXXX</code> with <u>your own</u> AdMob Application ID from your Google AdMob account.
+      </p>
 
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 &lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"&gt;
 
+    &lt;!-- Required Internet & Network State Permissions --&gt;
     &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
     &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
 
     &lt;application&gt;
-        &lt;!-- Required if using Google AdMob Adapter --&gt;
+        &lt;!-- REQUIRED FOR ADMOB: Replace with YOUR OWN AdMob App ID --&gt;
         &lt;meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7728035806961877~8294668466" /&gt;
+            android:value="ca-app-pub-YOUR_ADMOB_APP_ID~XXXXXXXXXX" /&gt;
     &lt;/application&gt;
 &lt;/manifest&gt;
       </div>
+
+      <div class="callout-info">
+        <strong>Note:</strong> If you are only using Connectgold Direct Ads or non-AdMob partner SDKs (like Yandex, Unity, or ironSource), the AdMob meta-data tag is optional.
+      </div>
     </div>
+
 
     <!-- 4. FORMAT-SPECIFIC JAVA IMPLEMENTATION -->
     <div id="sec-java-formats" class="docs-section">

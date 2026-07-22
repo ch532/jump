@@ -742,7 +742,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT LOGIC (SYNCED WITH BROAD-BROOK WORKER) -->
   <script>
     // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
@@ -953,7 +953,7 @@
     async function submitPlacement() {
       const pubId = document.getElementById("pub-id").value;
       const plcName = document.getElementById("plc-name").value || "Default Placement";
-      const format = document.getElementById("plc-format").value;
+      const format = document.getElementById("plc-format").value; // banner, native, rewarded, interstitial
       const bannerSize = document.getElementById("banner-size").value;
       const bannerLocation = document.getElementById("banner-location").value;
       const callbackUrl = document.getElementById("callback-url").value;
@@ -964,10 +964,17 @@
       const plausibleDomain = localStorage.getItem("cg_plausible_domain") || "";
       const mixpanelToken = localStorage.getItem("cg_mixpanel_token") || "";
 
+      // Map web format name to worker format standard
+      let workerFormat = format;
+      if (format === "banner") workerFormat = "banner";
+      if (format === "native") workerFormat = "native_display";
+      if (format === "rewarded") workerFormat = "rewarded_video";
+      if (format === "interstitial") workerFormat = "interstitial_fullscreen";
+
       const payload = {
         publisher_id: pubId,
         placement_name: plcName,
-        format: format,
+        format: workerFormat,
         banner_size: format === "banner" ? bannerSize : null,
         location: format === "banner" ? bannerLocation : null,
         callback_url: (format === "rewarded" || format === "interstitial") ? callbackUrl : null,
@@ -988,38 +995,40 @@
         if (ga4Id) {
           tpTrackingSnippet += `
           if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': '${plcId}', 'format': '${format}' });
+            gtag('event', 'connectgold_ad_impression', { 'placement_id': '${plcId}', 'format': '${workerFormat}' });
           }`;
         }
         if (plausibleDomain) {
           tpTrackingSnippet += `
           if (typeof plausible === 'function') {
-            plausible('Connectgold Impression', { props: { ad_id: (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), placement_id: '${plcId}' } });
+            plausible('Connectgold Impression', { props: { placement_id: '${plcId}' } });
           }`;
         }
         if (mixpanelToken) {
           tpTrackingSnippet += `
           if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
-            mixpanel.track('Connectgold Impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': '${plcId}' });
+            mixpanel.track('Connectgold Impression', { 'placement_id': '${plcId}' });
           }`;
         }
 
-        // UNIVERSAL SCRIPT EXECUTION HELPER FOR THIRD-PARTY PASSBACKS & WIDGETS
+        // UNIVERSAL SCRIPT & HTML MARKUP EXECUTION HELPER
         const scriptExecutorLogic = `
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data.adHtml || data.html_snippet;
-          box.innerHTML = "";
-          
-          Array.from(tempDiv.childNodes).forEach(node => {
-            if (node.tagName === "SCRIPT") {
-              const newScript = document.createElement("script");
-              Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-              if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-              box.appendChild(newScript);
-            } else {
-              box.appendChild(node.cloneNode(true));
-            }
-          });`;
+          const rawMarkup = data.adm || data.adHtml || data.html_snippet;
+          if (rawMarkup) {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = rawMarkup;
+            box.innerHTML = "";
+            Array.from(tempDiv.childNodes).forEach(node => {
+              if (node.tagName === "SCRIPT") {
+                const newScript = document.createElement("script");
+                Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
+                box.appendChild(newScript);
+              } else {
+                box.appendChild(node.cloneNode(true));
+              }
+            });
+          }`;
 
         let generatedSnippet = "";
 
@@ -1037,14 +1046,19 @@
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=banner&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
         .then(res => res.json())
         .then(data => {
-          if (!data || !data.success) return;
           const box = document.getElementById("${plcId}");
           if (!box) return;
+
+          // OpenRTB S2S Response Check
+          const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
           
-          if (data.adHtml || data.html_snippet) {
+          if (rtbBid && rtbBid.adm) {
+            box.innerHTML = rtbBid.adm;
+            if (rtbBid.nurl) fetch(rtbBid.nurl);
+          } else if (data.adHtml || data.html_snippet || data.adm) {
             ${scriptExecutorLogic}
           } else if (data.ad) {
             const adInfo = data.ad;
@@ -1076,14 +1090,18 @@
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=native&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=native_display&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
         .then(res => res.json())
         .then(data => {
-          if (!data || !data.success) return;
           const box = document.getElementById("${plcId}");
           if (!box) return;
-          
-          if (data.adHtml || data.html_snippet) {
+
+          const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
+
+          if (rtbBid && rtbBid.adm) {
+            box.innerHTML = rtbBid.adm;
+            if (rtbBid.nurl) fetch(rtbBid.nurl);
+          } else if (data.adHtml || data.html_snippet || data.adm) {
             ${scriptExecutorLogic}
           } else if (data.ad) {
             const adInfo = data.ad;
@@ -1113,17 +1131,21 @@
 <script>
   function showRewardedAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=rewarded&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
+    fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=rewarded_video&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
       .then(res => res.json())
       .then(data => {
-        if (!data || !data.success) {
+        if (!data) {
           alert("No rewarded video campaigns currently available.");
           return;
         }
-        
-        if (data.adHtml || data.html_snippet) {
-          const box = document.body;
-          ${scriptExecutorLogic}
+
+        const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
+
+        if (rtbBid && rtbBid.adm) {
+          const tempModal = document.createElement("div");
+          tempModal.innerHTML = rtbBid.adm;
+          document.body.appendChild(tempModal);
+          if (rtbBid.nurl) fetch(rtbBid.nurl);
         } else if (data.ad) {
           const adInfo = data.ad;
           alert("Playing Rewarded Ad: " + (adInfo.title || "Connectgold Network"));
@@ -1134,7 +1156,7 @@
         ${tpTrackingSnippet}
         
         if ("${callbackUrl}") {
-          fetch("${callbackUrl}?pub_id=${pubId}&status=completed&ad_id=" + (data.ad ? data.ad.campaign_id : 'house'));
+          fetch("${callbackUrl}?pub_id=${pubId}&status=completed&plc=${plcId}");
         }
       })
       .catch(err => console.error("Connectgold Ad Error:", err));
@@ -1148,14 +1170,18 @@
 <script>
   function showInterstitialAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=interstitial&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
+    fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=interstitial_fullscreen&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
       .then(res => res.json())
       .then(data => {
-        if (!data || !data.success) return;
-        
-        if (data.adHtml || data.html_snippet) {
-          const box = document.body;
-          ${scriptExecutorLogic}
+        if (!data) return;
+
+        const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
+
+        if (rtbBid && rtbBid.adm) {
+          const tempModal = document.createElement("div");
+          tempModal.innerHTML = rtbBid.adm;
+          document.body.appendChild(tempModal);
+          if (rtbBid.nurl) fetch(rtbBid.nurl);
         } else if (data.ad) {
           const adInfo = data.ad;
           if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
@@ -1229,3 +1255,4 @@
   </script>
 </body>
 </html>
+

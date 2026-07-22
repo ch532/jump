@@ -86,38 +86,14 @@
       align-items: center;
     }
 
-    .login-card img {
-      height: 60px;
-      margin-bottom: 16px;
-    }
-
-    .login-card h1 {
-      font-size: 26px;
-      margin: 0 0 8px 0;
-      color: #fff;
-    }
-
+    .login-card img { height: 60px; margin-bottom: 16px; }
+    .login-card h1 { font-size: 26px; margin: 0 0 8px 0; color: #fff; }
     .login-card h1 .gold { color: var(--primary); }
-
-    .login-card p {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 28px;
-      line-height: 1.5;
-    }
+    .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
 
     /* 2. AUTHENTICATED DASHBOARD LAYOUT */
-    #app-dashboard {
-      display: none;
-      height: 100vh;
-      width: 100vw;
-    }
-
-    .app-container {
-      display: flex;
-      height: 100%;
-      width: 100%;
-    }
+    #app-dashboard { display: none; height: 100vh; width: 100vw; }
+    .app-container { display: flex; height: 100%; width: 100%; }
 
     /* SIDEBAR NAVIGATION MENU */
     .sidebar { 
@@ -150,43 +126,11 @@
       justify-content: space-between;
     }
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1px solid var(--primary);
-    }
-
-    .user-details {
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-    }
-
-    .user-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      max-width: 130px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-email {
-      font-size: 11px;
-      color: var(--text-muted);
-      max-width: 130px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--primary); }
+    .user-details { display: flex; flex-direction: column; text-align: left; }
+    .user-name { font-size: 13px; font-weight: 600; color: #fff; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-email { font-size: 11px; color: var(--text-muted); max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .btn-logout {
       background: transparent;
@@ -198,10 +142,7 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-logout:hover {
-      border-color: #f85149;
-      color: #f85149;
-    }
+    .btn-logout:hover { border-color: #f85149; color: #f85149; }
 
     .sidebar-menu { list-style: none; padding: 0; margin: 15px 0 0; }
     .sidebar-menu li { 
@@ -221,22 +162,10 @@
       border-left: 4px solid var(--primary); 
     }
 
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid var(--border-color);
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+    .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); }
     .sidebar-footer ul { list-style: none; padding: 0; margin: 0 0 12px 0; }
     .sidebar-footer ul li { margin-bottom: 8px; }
-    .sidebar-footer ul li a { 
-      color: var(--text-muted); 
-      text-decoration: none; 
-      transition: color 0.2s; 
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .sidebar-footer ul li a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
     .sidebar-footer ul li a:hover { color: var(--primary); }
     .copyright { font-size: 11px; color: #6e7681; line-height: 1.4; }
 
@@ -426,12 +355,13 @@
             </div>
 
             <div class="form-group">
-              <label>Select Ad Unit Format</label>
+              <label>Select Web Ad Unit Format</label>
               <select id="plc-format" onchange="toggleFormatFields()">
-                <option value="banner">Banner Ad</option>
-                <option value="interstitial">Interstitial Ad</option>
-                <option value="rewarded">Rewarded Video</option>
-                <option value="native">Native Ad</option>
+                <option value="banner">Banner Ad (Display Banner)</option>
+                <option value="native_display">Native Display Card</option>
+                <option value="infeed">In-Feed Native Content</option>
+                <option value="interstitial_fullscreen">Full Screen Interstitial</option>
+                <option value="rewarded_video">Rewarded Video</option>
               </select>
             </div>
 
@@ -518,12 +448,13 @@
             </div>
 
             <div class="form-group">
-              <label>Ad Format</label>
+              <label>Target Web Ad Format</label>
               <select id="adv-format" onchange="toggleAdvertiserFields()">
-                <option value="banner">Banner Ad</option>
-                <option value="interstitial">Interstitial Ad</option>
-                <option value="rewarded">Rewarded Video</option>
-                <option value="native">Native Ad</option>
+                <option value="banner">Banner Ad (Display Banner)</option>
+                <option value="native_display">Native Display Card</option>
+                <option value="infeed">In-Feed Native Content</option>
+                <option value="interstitial_fullscreen">Full Screen Interstitial</option>
+                <option value="rewarded_video">Rewarded Video</option>
               </select>
             </div>
 
@@ -595,7 +526,6 @@
             <h2>🏦 Publisher Revenue & Payout Requests</h2>
             <p style="font-size:13px; color:var(--text-muted);">Connectgold publishers earn 80% revenue share on every served ad impression.</p>
 
-            <!-- VISUAL PUBLISHER EARNED BALANCE CARD -->
             <div style="background: #0d1117; border: 1px solid var(--primary); padding: 18px; border-radius: 8px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block;">Total Earned Balance</span>
@@ -662,9 +592,10 @@
                 <label>Select Format</label>
                 <select id="analytics-format" onchange="fetchAnalytics()">
                   <option value="banner">Banner Ad</option>
-                  <option value="interstitial">Interstitial Ad</option>
-                  <option value="rewarded">Rewarded Video</option>
-                  <option value="native">Native Ad</option>
+                  <option value="native_display">Native Display Card</option>
+                  <option value="infeed">In-Feed Native Content</option>
+                  <option value="interstitial_fullscreen">Full Screen Interstitial</option>
+                  <option value="rewarded_video">Rewarded Video</option>
                 </select>
               </div>
 
@@ -746,7 +677,7 @@
   <script>
     // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://broad-brook-39f4.trustconnect713.workers.dev"; // Primary Broad-Brook AI Engine
+    const AD_ENGINE_WORKER_URL = "https://broad-brook-39f4.trustconnect713.workers.dev"; 
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -856,7 +787,7 @@
       if (format === "banner") {
         bannerOpts.style.display = "block";
         callbackOpts.style.display = "none";
-      } else if (format === "rewarded" || format === "interstitial") {
+      } else if (format === "rewarded_video" || format === "interstitial_fullscreen") {
         bannerOpts.style.display = "none";
         callbackOpts.style.display = "block";
       } else {
@@ -870,7 +801,7 @@
       const imgGroup = document.getElementById("adv-image-group");
       const videoGroup = document.getElementById("adv-video-group");
 
-      if (format === "rewarded") {
+      if (format === "rewarded_video") {
         videoGroup.style.display = "block";
         imgGroup.style.display = "block";
       } else {
@@ -953,7 +884,7 @@
     async function submitPlacement() {
       const pubId = document.getElementById("pub-id").value;
       const plcName = document.getElementById("plc-name").value || "Default Placement";
-      const format = document.getElementById("plc-format").value; // banner, native, rewarded, interstitial
+      const workerFormat = document.getElementById("plc-format").value; // banner, native_display, infeed, interstitial_fullscreen, rewarded_video
       const bannerSize = document.getElementById("banner-size").value;
       const bannerLocation = document.getElementById("banner-location").value;
       const callbackUrl = document.getElementById("callback-url").value;
@@ -964,20 +895,13 @@
       const plausibleDomain = localStorage.getItem("cg_plausible_domain") || "";
       const mixpanelToken = localStorage.getItem("cg_mixpanel_token") || "";
 
-      // Map web format name to worker format standard
-      let workerFormat = format;
-      if (format === "banner") workerFormat = "banner";
-      if (format === "native") workerFormat = "native_display";
-      if (format === "rewarded") workerFormat = "rewarded_video";
-      if (format === "interstitial") workerFormat = "interstitial_fullscreen";
-
       const payload = {
         publisher_id: pubId,
         placement_name: plcName,
         format: workerFormat,
-        banner_size: format === "banner" ? bannerSize : null,
-        location: format === "banner" ? bannerLocation : null,
-        callback_url: (format === "rewarded" || format === "interstitial") ? callbackUrl : null,
+        banner_size: workerFormat === "banner" ? bannerSize : null,
+        location: workerFormat === "banner" ? bannerLocation : null,
+        callback_url: (workerFormat === "rewarded_video" || workerFormat === "interstitial_fullscreen") ? callbackUrl : null,
         rotation_seconds: rotationSec
       };
 
@@ -1033,7 +957,7 @@
         let generatedSnippet = "";
 
         // 1. BANNER AD EMBED CODE
-        if (format === "banner") {
+        if (workerFormat === "banner") {
           const dims = bannerSize.split("x");
           const rotationCode = rotationSec > 0 
             ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
@@ -1052,7 +976,6 @@
           const box = document.getElementById("${plcId}");
           if (!box) return;
 
-          // OpenRTB S2S Response Check
           const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
           
           if (rtbBid && rtbBid.adm) {
@@ -1077,20 +1000,20 @@
   })();
 <\/script>`;
 
-        // 2. NATIVE AD EMBED CODE
-        } else if (format === "native") {
+        // 2. NATIVE DISPLAY & IN-FEED AD EMBED CODE
+        } else if (workerFormat === "native_display" || workerFormat === "infeed") {
           const rotationCode = rotationSec > 0 
             ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
             : ``;
 
           generatedSnippet = 
-`<!-- Connectgold Ad Network: ${plcName} (NATIVE) -->
+`<!-- Connectgold Ad Network: ${plcName} (${workerFormat.toUpperCase()}) -->
 <div id="${plcId}"></div>
 <script>
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=native_display&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${workerFormat}&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
         .then(res => res.json())
         .then(data => {
           const box = document.getElementById("${plcId}");
@@ -1125,7 +1048,7 @@
 <\/script>`;
 
         // 3. REWARDED VIDEO EMBED CODE
-        } else if (format === "rewarded") {
+        } else if (workerFormat === "rewarded_video") {
           generatedSnippet = 
 `<!-- Connectgold Ad Network: ${plcName} (REWARDED VIDEO) -->
 <script>
@@ -1163,10 +1086,10 @@
   }
 <\/script>`;
 
-        // 4. INTERSTITIAL EMBED CODE
-        } else if (format === "interstitial") {
+        // 4. FULL SCREEN INTERSTITIAL EMBED CODE
+        } else if (workerFormat === "interstitial_fullscreen") {
           generatedSnippet = 
-`<!-- Connectgold Ad Network: ${plcName} (INTERSTITIAL) -->
+`<!-- Connectgold Ad Network: ${plcName} (INTERSTITIAL FULLSCREEN) -->
 <script>
   function showInterstitialAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
@@ -1255,4 +1178,5 @@
   </script>
 </body>
 </html>
+
 

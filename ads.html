@@ -759,7 +759,7 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // WORKER ENDPOINTS
+    // WORKER ENDPOINTS RESTORED
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
     const AD_ENGINE_WORKER_URL = "https://broad-brook-39f4.trustconnect713.workers.dev"; // Primary AI Gateway Engine
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
@@ -841,7 +841,6 @@
       document.getElementById("tp-mixpanel-token").value = localStorage.getItem("cg_mixpanel_token") || "";
     }
 
-    // FETCHES PUBLISHER LIVE 80% EARNED REVENUE VISUALLY
     async function loadPublisherBalance() {
       const pubId = document.getElementById("pub-id").value;
       const balanceDisplay = document.getElementById("publisher-earned-balance");
@@ -939,7 +938,6 @@
       alert("Payout request submitted! Processing via Paystack Transfers API.");
     }
 
-    // ANALYTICS FETCHING (ROUTES TO FLORAL-PINE WORKER)
     async function fetchAnalytics() {
       const format = document.getElementById("analytics-format").value;
       let dateVal = document.getElementById("analytics-date").value;
@@ -1214,6 +1212,7 @@
   </script>
 </body>
 </html>
+
 
 
 

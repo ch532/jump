@@ -988,19 +988,19 @@
         if (ga4Id) {
           tpTrackingSnippet += `
           if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data.ad ? data.ad.campaign_id : (data.source || 'passback')), 'placement_id': '${plcId}', 'format': '${format}' });
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': '${plcId}', 'format': '${format}' });
           }`;
         }
         if (plausibleDomain) {
           tpTrackingSnippet += `
           if (typeof plausible === 'function') {
-            plausible('Connectgold Impression', { props: { ad_id: (data.ad ? data.ad.campaign_id : (data.source || 'passback')), placement_id: '${plcId}' } });
+            plausible('Connectgold Impression', { props: { ad_id: (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), placement_id: '${plcId}' } });
           }`;
         }
         if (mixpanelToken) {
           tpTrackingSnippet += `
           if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
-            mixpanel.track('Connectgold Impression', { 'ad_id': (data.ad ? data.ad.campaign_id : (data.source || 'passback')), 'placement_id': '${plcId}' });
+            mixpanel.track('Connectgold Impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': '${plcId}' });
           }`;
         }
 
@@ -1225,6 +1225,7 @@
   </script>
 </body>
 </html>
+
 
 
 

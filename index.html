@@ -21,7 +21,7 @@
     <meta name='admaven-placement' content=BqdYHqHwH>
     <meta name="mnd-ver" content="0krjlo1bzhvvsglu470ong" />
 
-<!-- Connectgold Ad Network: Egg (INTERSTITIAL) -->
+<!-- Connectgold Ad Network: Toast (INTERSTITIAL) -->
 <script>
   function showInterstitialAd() {
     const consentVal = "1";
@@ -55,7 +55,7 @@
 
         
           if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data.ad ? data.ad.campaign_id : (data.source || 'passback')), 'placement_id': 'plc_demo', 'format': 'interstitial' });
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': 'plc_demo', 'format': 'interstitial' });
           }
       })
       .catch(err => console.error("Connectgold Ad Error:", err));
@@ -135,13 +135,13 @@
     </nav>
 </header>
 
-    <!-- Connectgold Ad Network: North  (320x50) -->
-<div id="plc_demo" style="width:320px; min-height:50px; margin:auto; overflow:hidden;"></div>
+    <!-- Connectgold Ad Network: Bring  (NATIVE) -->
+<div id="plc_demo"></div>
 <script>
   (function() {
     function fetchAndRenderAd() {
       const consentVal = "1";
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=banner&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
+      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=native&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
         .then(res => res.json())
         .then(data => {
           if (!data || !data.success) return;
@@ -166,15 +166,18 @@
           });
           } else if (data.ad) {
             const adInfo = data.ad;
-            box.innerHTML = `<a href="${adInfo.destination_url}" target="_blank" rel="noopener">
-              <img src="${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="320" height="50" alt="${adInfo.title || 'Ad'}" style="border:0;" />
-            </a>`;
+            box.innerHTML = `
+              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
+                <h4 style="margin:0 0 6px 0; font-size:16px;">${adInfo.title}</h4>
+                <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
+                <a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">${adInfo.cta_text || 'Learn More'}</a>
+              </div>`;
             if (adInfo.nurl) fetch(adInfo.nurl);
           }
           
           
           if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data.ad ? data.ad.campaign_id : (data.source || 'passback')), 'placement_id': 'plc_demo', 'format': 'banner' });
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': 'plc_demo', 'format': 'native' });
           }
         })
         .catch(err => console.error("Connectgold Ad Error:", err));

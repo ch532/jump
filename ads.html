@@ -385,9 +385,6 @@
             <li onclick="switchTab('payment-tab', this)">
               <span>💳</span> Payments & Wallet
             </li>
-            <li onclick="switchTab('preview-tab', this)">
-              <span>🎯</span> Active Ad Preview
-            </li>
             <li onclick="switchTab('analytics-tab', this)">
               <span>📊</span> Network Analytics
             </li>
@@ -655,18 +652,7 @@
           </div>
         </div>
 
-        <!-- MENU 4: ACTIVE AD PREVIEW -->
-        <div id="preview-tab" class="tab-content">
-          <div class="card">
-            <h2>Active Ad Unit Preview</h2>
-            <button class="btn" style="margin-bottom:15px;" onclick="previewWinningAd()">Fetch Highest-Bidder Ad</button>
-            <div id="ad-wrapper" style="border:1px dashed var(--border-color); padding:25px; text-align:center; background:#0d1117; border-radius:8px;">
-              <p style="color:var(--text-muted);">Click the button above to load active highest-bidder ad...</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- MENU 5: ANALYTICS -->
+        <!-- MENU 4: ANALYTICS -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>Connectgold Network Performance Analytics</h2>
@@ -735,7 +721,7 @@
           </div>
         </div>
 
-        <!-- MENU 6: SETTINGS & ADS.TXT -->
+        <!-- MENU 5: SETTINGS & ADS.TXT -->
         <div id="settings-tab" class="tab-content">
           <div class="card">
             <h2>⚙️ Network Settings & Ads.txt Certification</h2>
@@ -1198,62 +1184,6 @@
       }
     }
 
-    async function previewWinningAd() {
-      const wrapper = document.getElementById("ad-wrapper");
-      wrapper.innerHTML = "<p style='color:var(--text-muted);'>Running Connectgold auction engine...</p>";
-
-      try {
-        const res = await fetch(`${AD_ENGINE_WORKER_URL}/ad-request?type=banner&consent=1`);
-        if (!res.ok) {
-          wrapper.innerHTML = "<p style='color:#f85149;'>No active funded ad found. Deposit funds or run /v1/setup!</p>";
-          return;
-        }
-
-        const data = await res.json();
-        const ad = data.ad;
-        const remBudget = typeof data.remaining_advertiser_balance === "string" ? `$${data.remaining_advertiser_balance}` : "Uncapped";
-        const winningBid = ad ? (ad.ecpm || "0.10") : "0.10";
-
-        if (data.adHtml || data.html_snippet) {
-          wrapper.innerHTML = `
-            <div style="margin-bottom: 12px;">
-              <span style="background:var(--primary); color:#000; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">
-                SOURCE: ${data.source || 'Passback Network'}
-              </span>
-            </div>
-            <div>${data.adHtml || data.html_snippet}</div>
-          `;
-          const scripts = wrapper.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) oldScript.parentNode.replaceChild(newScript, oldScript);
-          });
-        } else if (ad) {
-          wrapper.innerHTML = `
-            <div style="margin-bottom: 12px;">
-              <span style="background:var(--primary); color:#000; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">
-                WINNING BID: $${winningBid} CPM
-              </span>
-              <span style="background:var(--success); color:white; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold; margin-left:6px;">
-                REMAINING BUDGET: ${remBudget}
-              </span>
-            </div>
-            <div>
-              <a href="${ad.destination_url}" target="_blank">
-                <img src="${ad.image_url || 'https://chyke.online/connectgold_2.png'}" style="max-width:100%; height:auto; border-radius:6px;" />
-              </a>
-            </div>
-          `;
-          if (ad.nurl) fetch(ad.nurl);
-        }
-
-      } catch (err) {
-        wrapper.innerHTML = "<p style='color:#f85149;'>Error connecting to auction engine.</p>";
-      }
-    }
-
     function copyCode(elementId) {
       const text = document.getElementById(elementId).innerText;
       navigator.clipboard.writeText(text);
@@ -1306,6 +1236,7 @@
   </script>
 </body>
 </html>
+
 
 
 

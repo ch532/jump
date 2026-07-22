@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact Us - Connectgold Ad Network</title>
+  <title>Contact & Advertise - Connectgold Ad Network</title>
   
   <!-- PRIMARY SEO META TAGS -->
-  <meta name="title" content="Contact Us - Connectgold Ad Network">
-  <meta name="description" content="Get in touch with Connectgold Ad Network. Contact customer support, advertiser billing, publisher revenue payouts, or business partnership teams.">
-  <meta name="keywords" content="contact connectgold, ad network support, publisher monetization help, paystack ad support">
+  <meta name="title" content="Contact & Advertise - Connectgold Ad Network">
+  <meta name="description" content="Get in touch with Connectgold Ad Network or launch targeted advertiser campaigns. Contact support, advertiser billing, publisher revenue payouts, or business partnerships.">
+  <meta name="keywords" content="contact connectgold, advertise on connectgold, ad network support, publisher monetization help, cpm advertising">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Connectgold">
 
   <!-- OPEN GRAPH / FACEBOOK / WHATSAPP / LINKEDIN -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://chyke.online/contact2.html">
-  <meta property="og:title" content="Contact Us - Connectgold Ad Network">
-  <meta property="og:description" content="Connect with the Connectgold ad infrastructure support team for publisher earnings, campaign support, and partnerships.">
+  <meta property="og:title" content="Contact & Advertise - Connectgold Ad Network">
+  <meta property="og:description" content="Connect with Connectgold for publisher earnings, advertiser campaign launches, and strategic partnerships.">
   <meta property="og:image" content="https://chyke.online/connectgold_2.png">
 
   <!-- TWITTER / X META TAGS -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://chyke.online/contact2.html">
-  <meta property="twitter:title" content="Contact Us - Connectgold Ad Network">
-  <meta property="twitter:description" content="Connect with the Connectgold ad infrastructure support team for publisher earnings, campaign support, and partnerships.">
+  <meta property="twitter:title" content="Contact & Advertise - Connectgold Ad Network">
+  <meta property="twitter:description" content="Connect with Connectgold for publisher earnings, advertiser campaign launches, and strategic partnerships.">
   <meta property="twitter:image" content="https://chyke.online/connectgold_2.png">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
@@ -120,6 +120,88 @@
     }
     .info-box a:hover { text-decoration: underline; }
 
+    /* ADVERTISE WITH US SECTION */
+    .advertise-section {
+      background: #0d1117;
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      padding: 28px;
+      margin: 35px 0;
+      position: relative;
+    }
+
+    .advertise-badge {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--primary);
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .advertise-section h2 {
+      margin-top: 0;
+      font-size: 22px;
+      color: #fff;
+    }
+    .advertise-section h2 .gold { color: var(--primary); }
+
+    .ad-features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 600px) {
+      .ad-features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ad-feature-card {
+      background: #161b22;
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .ad-feature-card h4 {
+      margin: 0 0 6px 0;
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .ad-feature-card p {
+      margin: 0;
+      font-size: 12px;
+      color: #8b949e;
+    }
+
+    .btn-outline-gold {
+      display: inline-block;
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-outline-gold:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
     /* FORM STYLING */
     .form-group { margin-bottom: 20px; }
     label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #c9d1d9; }
@@ -199,6 +281,30 @@
         </div>
       </div>
 
+      <!-- ADVERTISE WITH US BANNER -->
+      <div class="advertise-section" id="advertise">
+        <div class="advertise-badge">Direct Demand</div>
+        <h2>Advertise With <span class="gold">Connectgold</span></h2>
+        <p>Promote your product, web platform, or mobile application directly on Connectgold's edge-computed network across global publisher inventory.</p>
+
+        <div class="ad-features-grid">
+          <div class="ad-feature-card">
+            <h4>⚡ High-Impact Formats</h4>
+            <p>Deploy Banners, Native Feed Cards, and Fullscreen Interstitial Modals.</p>
+          </div>
+          <div class="ad-feature-card">
+            <h4>🎯 Dynamic Bidding</h4>
+            <p>Real-time edge auction engine with flexible bidding models (CPM & CPC).</p>
+          </div>
+          <div class="ad-feature-card">
+            <h4>📊 Live Telemetry</h4>
+            <p>Track live impressions and conversions in real time across GA4 and Mixpanel.</p>
+          </div>
+        </div>
+
+        <a href="#contact-form" onclick="selectAdvertiserOption()" class="btn-outline-gold">Launch Advertiser Campaign ➔</a>
+      </div>
+
       <!-- INQUIRY FORM -->
       <form id="contact-form" onsubmit="handleFormSubmit(event)">
         <h2 style="font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">Send Us a Message</h2>
@@ -217,15 +323,15 @@
           <label for="inquiry-type">Inquiry Subject</label>
           <select id="inquiry-type">
             <option value="Customer Support">Customer Support & Dashboard Help</option>
+            <option value="Advertiser Account">Advertiser Billing & Campaign Launch</option>
             <option value="Business Partnership">Strategic Business Partnership</option>
-            <option value="Advertiser Account">Advertiser Billing & Campaign Support</option>
             <option value="Publisher Revenue">Publisher Earnings & Payout Inquiry</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="contact-message">Message Details</label>
-          <textarea id="contact-message" rows="5" placeholder="Write your message or inquiry here..." required></textarea>
+          <textarea id="contact-message" rows="5" placeholder="Write your message, campaign goals, or ad request details here..." required></textarea>
         </div>
 
         <button type="submit" class="btn">Send Message ➔</button>
@@ -238,6 +344,13 @@
   </div>
 
   <script>
+    function selectAdvertiserOption() {
+      const selectElem = document.getElementById("inquiry-type");
+      if (selectElem) {
+        selectElem.value = "Advertiser Account";
+      }
+    }
+
     function handleFormSubmit(event) {
       event.preventDefault();
       const name = document.getElementById("contact-name").value;
@@ -250,4 +363,5 @@
 
 </body>
 </html>
+
 

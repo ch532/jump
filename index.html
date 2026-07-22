@@ -21,6 +21,41 @@
     <meta name='admaven-placement' content=BqdYHqHwH>
     <meta name="mnd-ver" content="0krjlo1bzhvvsglu470ong" />
 
+    <!-- Connectgold Ad Network: Treat (INTERSTITIAL) -->
+<script>
+  function showInterstitialAd() {
+    const consentVal = "1";
+    fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=interstitial&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
+      .then(res => res.json())
+      .then(data => {
+        if (!data || !data.success) return;
+        let adInfo = data.ad;
+        
+        if (data.adHtml || data.html_snippet) {
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = data.adHtml || data.html_snippet;
+          document.body.appendChild(tempDiv);
+          const scripts = tempDiv.querySelectorAll("script");
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            if (oldScript.parentNode) oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+        } else if (adInfo) {
+          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
+          if (adInfo.nurl) fetch(adInfo.nurl);
+        }
+
+        
+          if (typeof gtag === 'function') {
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'interstitial' });
+          }
+      })
+      .catch(err => console.error("Connectgold Ad Error:", err));
+  }
+</script>
+
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ES9LVEGT6"></script>
 <script>
@@ -93,11 +128,51 @@
         </div>
     </nav>
 </header>
-    
-<script type="text/javascript">
-    aclib.runInterstitial({ zoneId: '11736654' });
-</script>
 
+    <!-- Connectgold Ad Network: Treat (300x250) -->
+<div id="plc_demo" style="width:300px; height:250px; margin:auto; overflow:hidden;"></div>
+<script>
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = "1";
+      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=banner&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.success) return;
+          const box = document.getElementById("plc_demo");
+          let adInfo = data.ad;
+          
+          if (data.adHtml || data.html_snippet) {
+            box.innerHTML = data.adHtml || data.html_snippet;
+            
+          const scripts = box.querySelectorAll("script");
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            if (oldScript.parentNode) {
+              oldScript.parentNode.replaceChild(newScript, oldScript);
+            }
+          });
+          } else if (adInfo) {
+            box.innerHTML = `<a href="${adInfo.destination_url}" target="_blank" rel="noopener">
+              <img src="${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="300" height="250" alt="${adInfo.title}" style="border:0;" />
+            </a>`;
+            if (adInfo.nurl) fetch(adInfo.nurl);
+          }
+          
+          
+          if (typeof gtag === 'function') {
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'banner' });
+          }
+        })
+        .catch(err => console.error("Connectgold Ad Error:", err));
+    }
+    fetchAndRenderAd();
+    setInterval(fetchAndRenderAd, 30000);
+  })();
+</script>
+    
 <script async src="https://www.getchatads.com/widget.js?key=cwk_24625beca8802d7fcaad17a8762dead0a04afd51"></script>
 
 <main class="main-layout" data-sdk-feature="Dashboard">
@@ -116,6 +191,53 @@
     <div class="auto-ad-placeholder"></div>
 
     <section id="my-native-feed" data-sdk-feature="Live News Feed">Loading feed...</section>
+
+    <!-- Connectgold Ad Network: Treat (NATIVE) -->
+<div id="plc_demo"></div>
+<script>
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = "1";
+      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=native&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.success) return;
+          const box = document.getElementById("plc_demo");
+          let adInfo = data.ad;
+          
+          if (data.adHtml || data.html_snippet) {
+            box.innerHTML = data.adHtml || data.html_snippet;
+            
+          const scripts = box.querySelectorAll("script");
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            if (oldScript.parentNode) {
+              oldScript.parentNode.replaceChild(newScript, oldScript);
+            }
+          });
+          } else if (adInfo) {
+            box.innerHTML = `
+              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
+                <h4 style="margin:0 0 6px 0; font-size:16px;">${adInfo.title}</h4>
+                <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
+                <a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">${adInfo.cta_text || 'Learn More'}</a>
+              </div>`;
+            if (adInfo.nurl) fetch(adInfo.nurl);
+          }
+          
+          
+          if (typeof gtag === 'function') {
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'native' });
+          }
+        })
+        .catch(err => console.error("Connectgold Ad Error:", err));
+    }
+    fetchAndRenderAd();
+    setInterval(fetchAndRenderAd, 30000);
+  })();
+</script>
 
     <div class="yandex-map-container" data-sdk-feature="Regional Map">
         <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>

@@ -7,7 +7,7 @@
   <!-- PRIMARY SEO META TAGS -->
   <title>Connectgold - Premium Global Ad Network Platform</title>
   <meta name="title" content="Connectgold - Premium Global Ad Network Platform">
-  <meta name="description" content="Connectgold is a next-generation edge-computed ad network. Earn 80% revenue share with ultra-fast ad units, real-time analytics, and automated global payouts.">
+  <meta name="description" content="Connectgold is a next-generation edge-computed ad network. It use AI for improved ad performance and best ad experience. Earn 80% revenue share with ultra-fast ad units, real-time analytics, and automated global payouts.">
   <meta name="keywords" content="ad network, publisher monetization, eCPM, banner ads, native ads, rewarded video, paystack ad network, connectgold">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Connectgold">
@@ -27,10 +27,10 @@
   <meta property="twitter:image" content="https://chyke.online/connectgold_2.png">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
-  <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold-2.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="https://chyke.online/connectgold-2.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="https://chyke.online/connectgold-2.png">
-  <link rel="shortcut icon" href="https://chyke.online/connectgold-2.png" type="image/png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold_2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://chyke.online/connectgold_2.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://chyke.online/connectgold_2.png">
+  <link rel="shortcut icon" href="https://chyke.online/connectgold_2.png" type="image/png">
   
   <!-- PAYSTACK INLINE POPUP SDK -->
   <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -544,7 +544,7 @@
 
             <div class="form-group" id="adv-image-group">
               <label>Image URL</label>
-              <input type="url" id="adv-image-url" placeholder="https://dummyimage.com/320x50/d4af37/000000.png">
+              <input type="url" id="adv-image-url" placeholder="https://chyke.online/connectgold_2.png">
             </div>
 
             <div class="form-group" id="adv-video-group" style="display: none;">
@@ -744,9 +744,9 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // WORKER ENDPOINTS RESTORED
+    // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://broad-brook-39f4.trustconnect713.workers.dev"; // Primary AI Gateway Engine
+    const AD_ENGINE_WORKER_URL = "https://broad-brook-39f4.trustconnect713.workers.dev"; // Primary Broad-Brook AI Engine
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -775,7 +775,7 @@
 
       document.getElementById("usr-name").innerText = user.name || "User";
       document.getElementById("usr-email").innerText = user.email || "";
-      document.getElementById("usr-pic").src = user.picture || "https://dummyimage.com/100x100/d4af37/000.png&text=CG";
+      document.getElementById("usr-pic").src = user.picture || "https://chyke.online/connectgold_2.png";
 
       initPublisherId();
       loadAnalyticsConfig();
@@ -907,7 +907,7 @@
         box.innerText = JSON.stringify(data, null, 2);
 
       } catch (err) {
-        alert("Failed to submit campaign. Ensure worker is live.");
+        alert("Failed to submit campaign. Ensure broad-brook worker is live.");
       }
     }
 
@@ -1004,7 +1004,7 @@
           }`;
         }
 
-        // UNIVERSAL SCRIPT EXECUTION HELPER FOR THIRD-PARTY PASSBACKS
+        // UNIVERSAL SCRIPT EXECUTION HELPER FOR THIRD-PARTY PASSBACKS & WIDGETS
         const scriptExecutorLogic = `
           const tempDiv = document.createElement("div");
           tempDiv.innerHTML = data.adHtml || data.html_snippet;
@@ -1049,7 +1049,7 @@
           } else if (data.ad) {
             const adInfo = data.ad;
             box.innerHTML = \`<a href="\${adInfo.destination_url}" target="_blank" rel="noopener">
-              <img src="\${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="${dims[0]}" height="${dims[1]}" alt="\${adInfo.title || 'Ad'}" style="border:0;" />
+              <img src="\${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="${dims[0]}" height="${dims[1]}" alt="\${adInfo.title || 'Ad'}" style="border:0; max-width:100%; height:auto;" />
             </a>\`;
             if (adInfo.nurl) fetch(adInfo.nurl);
           }
@@ -1088,7 +1088,8 @@
           } else if (data.ad) {
             const adInfo = data.ad;
             box.innerHTML = \`
-              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
+              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif; text-align:left;">
+                \${adInfo.image_url ? \`<img src="\${adInfo.image_url}" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:10px;" />\` : ''}
                 <h4 style="margin:0 0 6px 0; font-size:16px;">\${adInfo.title}</h4>
                 <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">\${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
                 <a href="\${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">\${adInfo.cta_text || 'Learn More'}</a>
@@ -1115,7 +1116,10 @@
     fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=rewarded&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
       .then(res => res.json())
       .then(data => {
-        if (!data || !data.success) return;
+        if (!data || !data.success) {
+          alert("No rewarded video campaigns currently available.");
+          return;
+        }
         
         if (data.adHtml || data.html_snippet) {
           const box = document.body;
@@ -1225,14 +1229,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-

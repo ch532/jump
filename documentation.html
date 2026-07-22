@@ -45,22 +45,6 @@
       font-size: 14px;
       margin-top: 4px;
     }
-    .nav {
-      display: flex;
-      gap: 15px;
-      margin-top: 20px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 10px;
-    }
-    .nav a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .nav a:hover, .nav a.active {
-      color: var(--primary);
-    }
     .section {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -84,6 +68,7 @@
       color: #cbd5e1;
       font-size: 14px;
     }
+    ul { padding-left: 20px; }
     pre {
       background: var(--code-bg);
       border: 1px solid var(--border);
@@ -100,14 +85,6 @@
       border-radius: 4px;
       font-size: 13px;
       color: #f1f5f9;
-    }
-    .badge {
-      background: #10b981;
-      color: #fff;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: bold;
     }
     table {
       width: 100%;
@@ -134,43 +111,229 @@
 
   <div class="container">
 
-    <!-- QUICK START / PUBLISHER INTEGRATION -->
+    <!-- ARCHITECTURE OVERVIEW -->
     <div class="section">
-      <h2>1. Publisher Integration (Web & WebViews)</h2>
-      <p>To display Connectgold AI-optimized ads on your website or mobile WebView, insert the code snippet below into your page markup. Requests are served via our AI Gateway edge engine for maximum speed and CTR optimization.</p>
+      <h2>1. Architecture Overview</h2>
+      <p>Connectgold Edge Ad Network delivers AI-optimized programmatic ads directly at Cloudflare edge nodes. Real-time contextual decisions are routed via Cloudflare Workers and Workers AI to maximize yield and minimize latency for web platforms and mobile WebViews.</p>
       
-      <h3>Standard Banner Unit (320x50)</h3>
-      <pre>&lt;!-- Connectgold Ad Network Unit --&gt;
-&lt;div id="plc_banner_unit" style="width:320px; height:50px; margin:auto;"&gt;&lt;/div&gt;
+      <h3>Core Request Parameters</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>type</code></td>
+            <td>String</td>
+            <td>Ad unit format: <code>banner</code>, <code>native</code>, <code>interstitial</code></td>
+          </tr>
+          <tr>
+            <td><code>plc</code></td>
+            <td>String</td>
+            <td>Unique placement ID on your domain/app (e.g., <code>plc_banner_300</code>)</td>
+          </tr>
+          <tr>
+            <td><code>pub_id</code></td>
+            <td>String</td>
+            <td>Your verified Publisher Account ID</td>
+          </tr>
+          <tr>
+            <td><code>consent</code></td>
+            <td>String</td>
+            <td>User GDPR/CCPA consent state (<code>1</code> = Granted, <code>0</code> = Denied)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PUBLISHER INTEGRATION CODE SNIPPETS -->
+    <div class="section">
+      <h2>2. Publisher Integration Snippets</h2>
+
+      <h3>A. Banner Ad Unit (300x250)</h3>
+      <p>Place this container and script in your page HTML where you want the visual banner unit to display.</p>
+      <pre>&lt;!-- Connectgold Banner Unit --&gt;
+&lt;div id="plc_banner_300" style="width:300px; min-height:250px; margin:20px auto; overflow:hidden;"&gt;&lt;/div&gt;
 &lt;script&gt;
   (function() {
-    function loadAd() {
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/api/ad?plc=plc_banner_unit&pub_id=YOUR_PUBLISHER_ID&format=banner&consent=1")
+    function fetchAndRenderAd() {
+      const consentVal = "1";
+      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=banner&plc=plc_banner_300&pub_id=YOUR_PUBLISHER_ID&consent=" + consentVal)
         .then(res =&gt; res.json())
-        .then(ad =&gt; {
-          if (!ad) return;
-          const box = document.getElementById("plc_banner_unit");
-          box.innerHTML = ad.adHtml || `&lt;a href="${ad.click_url}" target="_blank"&gt;&lt;img src="${ad.payload.image_url}" width="320" height="50" /&gt;&lt;/a&gt;`;
-          if (ad.impression_url) fetch(ad.impression_url);
-        });
+        .then(data =&gt; {
+          if (!data || !data.success) return;
+          const box = document.getElementById("plc_banner_300");
+          if (!box) return;
+          
+          if (data.adHtml || data.html_snippet) {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = data.adHtml || data.html_snippet;
+            box.innerHTML = "";
+            Array.from(tempDiv.childNodes).forEach(node =&gt; {
+              if (node.tagName === "SCRIPT") {
+                const newScript = document.createElement("script");
+                Array.from(node.attributes).forEach(attr =&gt; newScript.setAttribute(attr.name, attr.value));
+                if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
+                box.appendChild(newScript);
+              } else {
+                box.appendChild(node.cloneNode(true));
+              }
+            });
+          } else if (data.ad) {
+            const adInfo = data.ad;
+            box.innerHTML = `&lt;a href="${adInfo.destination_url}" target="_blank" rel="noopener"&gt;
+              &lt;img src="${adInfo.image_url}" width="300" height="250" alt="${adInfo.title}" style="border:0; max-width:100%; height:auto; border-radius:6px;" /&gt;
+            &lt;/a&gt;`;
+            if (adInfo.nurl) fetch(adInfo.nurl);
+          }
+        })
+        .catch(err =&gt; console.error("Connectgold Ad Error:", err));
     }
-    loadAd();
-    setInterval(loadAd, 30000); // Auto-refresh auction every 30 seconds
+    fetchAndRenderAd();
+    setInterval(fetchAndRenderAd, 30000); // 30-second auction auto-refresh
   })();
+&lt;/script&gt;</pre>
+
+      <h3>B. Native Feed Unit</h3>
+      <p>Place this unit directly inside content feeds or between article paragraphs. Native units automatically expand to fit container dimensions.</p>
+      <pre>&lt;!-- Connectgold Native Feed Unit --&gt;
+&lt;div id="plc_native_feed" style="max-width:100%; margin:20px 0;"&gt;&lt;/div&gt;
+&lt;script&gt;
+  (function() {
+    function fetchAndRenderAd() {
+      const consentVal = "1";
+      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=native&plc=plc_native_feed&pub_id=YOUR_PUBLISHER_ID&consent=" + consentVal)
+        .then(res =&gt; res.json())
+        .then(data =&gt; {
+          if (!data || !data.success) return;
+          const box = document.getElementById("plc_native_feed");
+          if (!box) return;
+          
+          if (data.ad) {
+            const adInfo = data.ad;
+            box.innerHTML = `
+              &lt;div style="border:1px solid #334155; padding:18px; background:#1e293b; color:#fff; border-radius:8px; text-align:left;"&gt;
+                ${adInfo.image_url ? `&lt;img src="${adInfo.image_url}" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:12px;" /&gt;` : ''}
+                &lt;h4 style="margin:0 0 6px 0; font-size:16px; color:#fff;"&gt;${adInfo.title}&lt;/h4&gt;
+                &lt;p style="margin:0 0 12px 0; font-size:13px; color:#94a3b8;"&gt;${adInfo.description || adInfo.body || ''}&lt;/p&gt;
+                &lt;a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:8px 14px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;"&gt;${adInfo.cta_text || 'Learn More'}&lt;/a&gt;
+              &lt;/div&gt;`;
+            if (adInfo.nurl) fetch(adInfo.nurl);
+          }
+        })
+        .catch(err =&gt; console.error("Connectgold Ad Error:", err));
+    }
+    fetchAndRenderAd();
+    setInterval(fetchAndRenderAd, 30000);
+  })();
+&lt;/script&gt;</pre>
+
+      <h3>C. Automatic Interstitial Overlay Modal</h3>
+      <p>Place this script near the bottom of your <code>&lt;body&gt;</code> tag. It triggers a full-screen dismissible overlay at key navigation points or after page load.</p>
+      <pre>&lt;!-- Connectgold Interstitial Overlay Modal --&gt;
+&lt;div id="cg-interstitial-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center;"&gt;
+  &lt;div style="background:#1e293b; border:2px solid #d4af37; border-radius:12px; padding:24px; max-width:380px; width:85%; text-align:center; position:relative; color:#fff;"&gt;
+    &lt;span onclick="closeInterstitialAd()" style="position:absolute; top:8px; right:14px; font-size:24px; color:#94a3b8; cursor:pointer; font-weight:bold;"&gt;&amp;times;&lt;/span&gt;
+    &lt;h3 id="cg-int-title" style="margin:0 0 10px 0; font-size:18px; color:#fff;"&gt;Ad Title&lt;/h3&gt;
+    &lt;p id="cg-int-desc" style="margin:0 0 15px 0; font-size:13px; color:#94a3b8;"&gt;Ad Description&lt;/p&gt;
+    &lt;img id="cg-int-img" src="" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:15px; display:block; margin-left:auto; margin-right:auto;" /&gt;
+    &lt;a id="cg-int-cta" href="#" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:10px 20px; font-weight:bold; border-radius:6px; text-decoration:none; font-size:14px;"&gt;Learn More&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function closeInterstitialAd() {
+    document.getElementById("cg-interstitial-modal").style.display = "none";
+  }
+
+  function triggerAutoInterstitial() {
+    const consentVal = "1";
+    fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=interstitial&plc=plc_interstitial&pub_id=YOUR_PUBLISHER_ID&consent=" + consentVal)
+      .then(res =&gt; res.json())
+      .then(data =&gt; {
+        if (!data || !data.success || !data.ad) return;
+        const adInfo = data.ad;
+        document.getElementById("cg-int-title").innerText = adInfo.title || "Featured";
+        document.getElementById("cg-int-desc").innerText = adInfo.description || "";
+        document.getElementById("cg-int-img").src = adInfo.image_url || "";
+        document.getElementById("cg-int-cta").href = adInfo.destination_url;
+        document.getElementById("cg-int-cta").innerText = adInfo.cta_text || "Learn More";
+        
+        document.getElementById("cg-interstitial-modal").style.display = "flex";
+        if (adInfo.nurl) fetch(adInfo.nurl);
+      })
+      .catch(err =&gt; console.error("Interstitial Error:", err));
+  }
+
+  // Trigger automatically 3 seconds after page load
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(triggerAutoInterstitial, 3000);
+  });
 &lt;/script&gt;</pre>
     </div>
 
-    <!-- ADS.TXT -->
+    <!-- MULTI-ENGINE ANALYTICS TELEMETRY -->
     <div class="section">
-      <h2>2. Authorized Digital Sellers (ads.txt)</h2>
-      <p>Add this single line to your domain's root <code>ads.txt</code> file (e.g., <code>https://yourdomain.com/ads.txt</code>) to verify publisher ownership and enable authorized demand:</p>
+      <h2>3. Multi-Engine Analytics & Telemetry</h2>
+      <p>Connectgold ad units feature zero-configuration telemetry. Ad impression callbacks automatically detect and report impression events to active third-party analytics engines loaded on the host page:</p>
+      
+      <ul>
+        <li><strong>Google Analytics (GA4):</strong> Dispatches via <code>gtag('event', 'connectgold_ad_impression', ...)</code></li>
+        <li><strong>Mixpanel:</strong> Tracks event via <code>mixpanel.track('connectgold_ad_impression', ...)</code></li>
+        <li><strong>Plausible Analytics:</strong> Logs privacy-first goal via <code>plausible('connectgold_ad_impression', { props: {...} })</code></li>
+      </ul>
+
+      <h3>Sample Unified Impression Callback</h3>
+      <pre>function trackConnectgoldImpression(adData) {
+  const eventName = 'connectgold_ad_impression';
+  const payload = {
+    ad_id: adData.ad ? adData.ad.campaign_id : 'house',
+    placement_id: adData.plc || 'plc_demo',
+    format: adData.type || 'banner'
+  };
+
+  // 1. Google Analytics 4
+  if (typeof gtag === 'function') {
+    gtag('event', eventName, payload);
+  }
+
+  // 2. Mixpanel
+  if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
+    mixpanel.track(eventName, payload);
+  }
+
+  // 3. Plausible Analytics
+  if (typeof plausible === 'function') {
+    plausible(eventName, { props: payload });
+  }
+}</pre>
+    </div>
+
+    <!-- BEST PRACTICES -->
+    <div class="section">
+      <h2>4. Integration Best Practices for Developers</h2>
+      <ul>
+        <li><strong>DOM Placement:</strong> Always place Banner and Native tags inside the <code>&lt;body&gt;</code> element where the graphic should physically display. Never place visual unit containers inside <code>&lt;head&gt;</code>.</li>
+        <li><strong>Unique Placement IDs:</strong> Ensure each ad unit on a page uses a unique container ID and <code>plc</code> parameter (e.g., <code>plc_banner_top</code> vs <code>plc_banner_bottom</code>).</li>
+        <li><strong>Auto-Refresh Rate:</strong> Set unit refresh intervals to a minimum of 30 seconds (`30000ms`) to optimize viewability scores and prevent edge rate limits.</li>
+      </ul>
+    </div>
+
+    <!-- AUTHORIZED DIGITAL SELLERS -->
+    <div class="section">
+      <h2>5. Authorized Digital Sellers (ads.txt)</h2>
+      <p>Add this line to your domain root <code>ads.txt</code> file to authorize Connectgold demand sourcing:</p>
       <pre>broad-brook-39f4.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0</pre>
     </div>
 
     <!-- ADVERTISER API -->
     <div class="section">
-      <h2>3. Advertiser Campaign API</h2>
-      <p>Publish campaigns directly into the edge auction engine. Bids are verified against active KV advertiser wallet balances in real time.</p>
+      <h2>6. Advertiser Campaign API</h2>
+      <p>Publish direct campaigns into the edge auction engine. Bids are verified against active KV advertiser wallet balances in real time.</p>
       
       <p><strong>Endpoint:</strong> <code>POST https://broad-brook-39f4.trustconnect713.workers.dev/v1/advertiser/add-ad</code></p>
       
@@ -182,17 +345,17 @@
   "title": "Connectgold Premium Solutions",
   "body": "Scalable edge-computed software services.",
   "destination_url": "https://chyke.online",
-  "image_url": "https://dummyimage.com/320x50/d4af37/000000.png",
+  "image_url": "https://chyke.online/connectgold_2.png",
   "cta_text": "Learn More",
   "bid_rate": 2.50,
   "budget": 50.00
 }</pre>
     </div>
 
-    <!-- PUBLISHER CREDENTIALS & BALANCE API -->
+    <!-- PUBLISHER CREDENTIALS & REVENUE API -->
     <div class="section">
-      <h2>4. Publisher Account & Balance API</h2>
-      <p>Manage publisher credentials and retrieve accumulated 80% revenue split balances recorded across edge impressions.</p>
+      <h2>7. Publisher Account & Revenue API</h2>
+      <p>Manage publisher accounts and retrieve accumulated revenue split balances recorded across edge impressions.</p>
 
       <p><strong>Create Publisher ID:</strong> <code>POST https://hidden-river-56c3.trustconnect713.workers.dev/v1/publisher/create-id</code></p>
       <p><strong>Check Earnings Balance:</strong> <code>GET https://broad-brook-39f4.trustconnect713.workers.dev/v1/publisher/balance?pub_id=YOUR_PUBLISHER_ID</code></p>
@@ -205,16 +368,16 @@
 }</pre>
     </div>
 
-    <!-- ANALYTICS API -->
+    <!-- ANALYTICS REPORTING API -->
     <div class="section">
-      <h2>5. Network Analytics API</h2>
-      <p>Query performance analytics across formats and specific date ranges using our dedicated reporting worker.</p>
+      <h2>8. Network Analytics API</h2>
+      <p>Query performance analytics across formats and date ranges via dedicated worker endpoints.</p>
 
       <p><strong>Endpoint:</strong> <code>GET https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics?format=banner&date=YYYY-MM-DD</code></p>
 
       <h3>Sample Response</h3>
       <pre>{
-  "date": "2026-07-21",
+  "date": "2026-07-22",
   "format": "banner",
   "impressions": 1450,
   "clicks": 182,
@@ -226,5 +389,6 @@
 
 </body>
 </html>
+
 
 

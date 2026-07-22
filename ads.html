@@ -988,35 +988,40 @@
         if (ga4Id) {
           tpTrackingSnippet += `
           if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': '${plcId}', 'format': '${format}' });
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': (data.ad ? data.ad.campaign_id : (data.source || 'passback')), 'placement_id': '${plcId}', 'format': '${format}' });
           }`;
         }
         if (plausibleDomain) {
           tpTrackingSnippet += `
           if (typeof plausible === 'function') {
-            plausible('Connectgold Impression', { props: { ad_id: (adInfo ? adInfo.campaign_id : 'passback'), placement_id: '${plcId}' } });
+            plausible('Connectgold Impression', { props: { ad_id: (data.ad ? data.ad.campaign_id : (data.source || 'passback')), placement_id: '${plcId}' } });
           }`;
         }
         if (mixpanelToken) {
           tpTrackingSnippet += `
           if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
-            mixpanel.track('Connectgold Impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': '${plcId}' });
+            mixpanel.track('Connectgold Impression', { 'ad_id': (data.ad ? data.ad.campaign_id : (data.source || 'passback')), 'placement_id': '${plcId}' });
           }`;
         }
 
-        let generatedSnippet = "";
-
-        // HELPER LOGIC TO EXECUTE INJECTED PASSBACK SCRIPTS
+        // UNIVERSAL SCRIPT EXECUTION HELPER FOR THIRD-PARTY PASSBACKS
         const scriptExecutorLogic = `
-          const scripts = box.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) {
-              oldScript.parentNode.replaceChild(newScript, oldScript);
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = data.adHtml || data.html_snippet;
+          box.innerHTML = "";
+          
+          Array.from(tempDiv.childNodes).forEach(node => {
+            if (node.tagName === "SCRIPT") {
+              const newScript = document.createElement("script");
+              Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+              if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
+              box.appendChild(newScript);
+            } else {
+              box.appendChild(node.cloneNode(true));
             }
           });`;
+
+        let generatedSnippet = "";
 
         // 1. BANNER AD EMBED CODE
         if (format === "banner") {
@@ -1027,7 +1032,7 @@
 
           generatedSnippet = 
 `<!-- Connectgold Ad Network: ${plcName} (${bannerSize}) -->
-<div id="${plcId}" style="width:${dims[0]}px; height:${dims[1]}px; margin:auto; overflow:hidden;"></div>
+<div id="${plcId}" style="width:${dims[0]}px; min-height:${dims[1]}px; margin:auto; overflow:hidden;"></div>
 <script>
   (function() {
     function fetchAndRenderAd() {
@@ -1037,14 +1042,14 @@
         .then(data => {
           if (!data || !data.success) return;
           const box = document.getElementById("${plcId}");
-          let adInfo = data.ad;
+          if (!box) return;
           
           if (data.adHtml || data.html_snippet) {
-            box.innerHTML = data.adHtml || data.html_snippet;
             ${scriptExecutorLogic}
-          } else if (adInfo) {
+          } else if (data.ad) {
+            const adInfo = data.ad;
             box.innerHTML = \`<a href="\${adInfo.destination_url}" target="_blank" rel="noopener">
-              <img src="\${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="${dims[0]}" height="${dims[1]}" alt="\${adInfo.title}" style="border:0;" />
+              <img src="\${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="${dims[0]}" height="${dims[1]}" alt="\${adInfo.title || 'Ad'}" style="border:0;" />
             </a>\`;
             if (adInfo.nurl) fetch(adInfo.nurl);
           }
@@ -1076,12 +1081,12 @@
         .then(data => {
           if (!data || !data.success) return;
           const box = document.getElementById("${plcId}");
-          let adInfo = data.ad;
+          if (!box) return;
           
           if (data.adHtml || data.html_snippet) {
-            box.innerHTML = data.adHtml || data.html_snippet;
             ${scriptExecutorLogic}
-          } else if (adInfo) {
+          } else if (data.ad) {
+            const adInfo = data.ad;
             box.innerHTML = \`
               <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
                 <h4 style="margin:0 0 6px 0; font-size:16px;">\${adInfo.title}</h4>
@@ -1111,20 +1116,12 @@
       .then(res => res.json())
       .then(data => {
         if (!data || !data.success) return;
-        let adInfo = data.ad;
         
         if (data.adHtml || data.html_snippet) {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data.adHtml || data.html_snippet;
-          document.body.appendChild(tempDiv);
-          const scripts = tempDiv.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) oldScript.parentNode.replaceChild(newScript, oldScript);
-          });
-        } else if (adInfo) {
+          const box = document.body;
+          ${scriptExecutorLogic}
+        } else if (data.ad) {
+          const adInfo = data.ad;
           alert("Playing Rewarded Ad: " + (adInfo.title || "Connectgold Network"));
           if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
           if (adInfo.nurl) fetch(adInfo.nurl);
@@ -1133,7 +1130,7 @@
         ${tpTrackingSnippet}
         
         if ("${callbackUrl}") {
-          fetch("${callbackUrl}?pub_id=${pubId}&status=completed&ad_id=" + (adInfo ? adInfo.campaign_id : 'house'));
+          fetch("${callbackUrl}?pub_id=${pubId}&status=completed&ad_id=" + (data.ad ? data.ad.campaign_id : 'house'));
         }
       })
       .catch(err => console.error("Connectgold Ad Error:", err));
@@ -1151,20 +1148,12 @@
       .then(res => res.json())
       .then(data => {
         if (!data || !data.success) return;
-        let adInfo = data.ad;
         
         if (data.adHtml || data.html_snippet) {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data.adHtml || data.html_snippet;
-          document.body.appendChild(tempDiv);
-          const scripts = tempDiv.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) oldScript.parentNode.replaceChild(newScript, oldScript);
-          });
-        } else if (adInfo) {
+          const box = document.body;
+          ${scriptExecutorLogic}
+        } else if (data.ad) {
+          const adInfo = data.ad;
           if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
           if (adInfo.nurl) fetch(adInfo.nurl);
         }
@@ -1236,6 +1225,7 @@
   </script>
 </body>
 </html>
+
 
 
 

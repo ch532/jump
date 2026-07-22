@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Connectgold Mobile Mediation SDK - Developer Documentation</title>
+  <meta name="title" content="Connectgold Mobile Mediation SDK - Developer Documentation">
+  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Java reflection mediation, custom adapter creation, 30 SDK networks, app-ads.txt, and consent handling.">
+
+  <!-- FAVORITE ICON & APP LOGO LINKS -->
+  <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold_2.png">
+  <link rel="shortcut icon" href="https://chyke.online/connectgold_2.png" type="image/png">
+
+  <style>
+    :root {
+      --primary: #d4af37;        /* Gold Accent */
+      --primary-hover: #b89628;  /* Deep Gold */
+      --dark-bg: #0d1117;       /* Dark Slate Background */
+      --card-bg: #161b22;       /* Card Dark */
+      --sidebar-bg: #090d11;    /* Sidebar Base */
+      --text-main: #f0f6fc;     /* Main Text */
+      --text-muted: #8b949e;    /* Muted Text */
+      --border-color: #30363d;  /* Dark Border */
+      --code-bg: #010409;       /* Deep Black Code Box */
+      --keyword: #ff7b72;
+      --string: #a5d6ff;
+      --comment: #8b949e;
+      --class: #ffa657;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark-bg);
+      margin: 0;
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR NAVIGATION */
+    .docs-sidebar {
+      width: 300px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      justify-content: space-between;
+    }
+
+    .brand-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .brand-header img { height: 34px; width: auto; }
+    .brand-header span { font-size: 17px; font-weight: 700; color: #fff; }
+    .brand-header span .gold { color: var(--primary); }
+
+    .docs-nav {
+      list-style: none;
+      padding: 15px 0;
+      margin: 0;
+      overflow-y: auto;
+    }
+    .docs-nav li {
+      padding: 12px 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .docs-nav li:hover, .docs-nav li.active {
+      background: rgba(212, 175, 55, 0.08);
+      color: var(--primary);
+      border-left: 4px solid var(--primary);
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* MAIN DOCUMENTATION CONTENT AREA */
+    .docs-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 60px;
+      scroll-behavior: smooth;
+    }
+
+    .docs-section {
+      max-width: 920px;
+      margin-bottom: 50px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 40px;
+    }
+
+    h1 { font-size: 28px; color: #fff; margin-top: 0; }
+    h2 { font-size: 21px; color: var(--primary); margin-top: 32px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+    h3 { font-size: 15px; color: #fff; margin-top: 24px; }
+    p, li { font-size: 14px; color: #c9d1d9; line-height: 1.6; }
+    ul { padding-left: 20px; }
+
+    .callout-info {
+      background: rgba(56, 139, 253, 0.1);
+      border-left: 4px solid #388bfd;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-size: 13.5px;
+    }
+    .callout-gold {
+      background: rgba(212, 175, 55, 0.08);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+      font-size: 13.5px;
+    }
+
+    .code-box {
+      background: var(--code-bg);
+      color: #7ee787;
+      border: 1px solid var(--border-color);
+      padding: 18px;
+      border-radius: 8px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 12.5px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 15px 0;
+      position: relative;
+    }
+
+    .btn-copy {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .btn-copy:hover { background: var(--primary); color: #000; font-weight: bold; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    th { background: var(--card-bg); color: var(--primary); }
+    td { background: #0d1117; color: #c9d1d9; }
+
+    .step-number {
+      display: inline-block;
+      background: var(--primary);
+      color: #000;
+      font-weight: bold;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT NAVIGATION SIDEBAR -->
+  <div class="docs-sidebar">
+    <div>
+      <div class="brand-header">
+        <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo">
+        <span>Connect<span class="gold">gold</span> Mobile SDK</span>
+      </div>
+
+      <ul class="docs-nav">
+        <li class="active" onclick="scrollToSection('sec-architecture')">🧠 System Architecture</li>
+        <li onclick="scrollToSection('sec-gradle')">📦 1. Gradle Dependencies</li>
+        <li onclick="scrollToSection('sec-manifest')">📱 2. Android Manifest</li>
+        <li onclick="scrollToSection('sec-java-integration')">⚡ 3. Java Implementation</li>
+        <li onclick="scrollToSection('sec-custom-adapters')">🛠️ 4. Write / Update Adapters</li>
+        <li onclick="scrollToSection('sec-30-adapters')">🔌 5. 30 Network Matrix</li>
+        <li onclick="scrollToSection('sec-appads')">📄 6. App-Ads.txt Setup</li>
+        <li onclick="scrollToSection('sec-consent')">🔒 7. Privacy & Consent</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <p>© Connectgold Edge Engine.<br>Cloudflare Edge Worker SDK Integration v1.0</p>
+    </div>
+  </div>
+
+  <!-- MAIN DOCUMENTATION CONTENT -->
+  <div class="docs-content">
+
+    <!-- 1. ARCHITECTURE -->
+    <div id="sec-architecture" class="docs-section">
+      <h1>Connectgold Mobile Mediation SDK Integration Guide</h1>
+      <p>
+        Connectgold is an ultra-fast, edge-computed mobile mediation engine powered by Cloudflare Workers. Instead of hardcoding ad networks into a rigid SDK binary, Connectgold fetches a real-time JSON waterfall from the edge and uses <strong>Java Reflection (`Class.forName`)</strong> to load ad adapters dynamically.
+      </p>
+
+      <div class="callout-gold">
+        <strong>Why This Benefits Developers:</strong>
+        <ul>
+          <li><strong>Version Independence:</strong> Upgrade or downgrade any partner SDK (Google AdMob, Yandex, Unity, ironSource, etc.) in your <code>build.gradle</code> without waiting for a Connectgold SDK release.</li>
+          <li><strong>Zero Crashing (Graceful Failover):</strong> If an SDK dependency is missing from your app, the reflection engine catches <code>ClassNotFoundException</code> automatically and skips to the next network in the waterfall.</li>
+          <li><strong>Modular Footprint:</strong> Include only the ad network SDKs you actually want to use in your project.</li>
+        </ul>
+      </div>
+
+      <h3>Data Flow Diagram</h3>
+      <div class="code-box" style="color: #c9d1d9;">
+[ Android App Request ] ➔ [ Edge Worker: sweet-shape-f66a.trustconnect713.workers.dev ]
+                                              │ (Returns Sorted Waterfall JSON)
+                                              ▼
+[ Core SDK Engine ] ➔ [ Class.forName("...Adapter") ] ➔ [ Load Partner SDK ]
+                                              │
+                      ┌───────────────────────┴───────────────────────┐
+                      ▼                                               ▼
+             (Ad Loaded: Render)                       (Ad Failed: Try Next in Waterfall)
+      </div>
+    </div>
+
+    <!-- 2. GRADLE DEPENDENCIES -->
+    <div id="sec-gradle" class="docs-section">
+      <h2><span class="step-number">1</span>Gradle Setup (`app/build.gradle`)</h2>
+      <p>Add the Connectgold Core SDK along with any partner network SDKs you wish to monetise with:</p>
+
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+dependencies {
+    // 1. Core Connectgold Mobile Mediation SDK
+    implementation 'com.connectgold.sdk:connectgold-core:1.0.0'
+
+    // 2. Add Partner Network SDKs (Include only what you need; use ANY SDK version)
+    implementation 'com.yandex.android:mobileads:7.0.0'
+    implementation 'com.google.android.gms:play-services-ads:23.0.0'
+    implementation 'com.unity3d.ads:unity-ads:4.10.0'
+    implementation 'com.ironsource.sdk:mediationsdk:8.0.0'
+    implementation 'com.inmobi.monetization:inmobi-ads-kotlin:10.7.0'
+    implementation 'com.startapp:inapp-sdk:5.0.0'
+}
+      </div>
+    </div>
+
+    <!-- 3. MANIFEST SETUP -->
+    <div id="sec-manifest" class="docs-section">
+      <h2><span class="step-number">2</span>Android Manifest Configuration</h2>
+      <p>Ensure network permissions and required AdMob App ID meta-data entries are present in <code>AndroidManifest.xml</code>:</p>
+
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+
+    &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+    &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
+
+    &lt;application&gt;
+        &lt;!-- Required if using Google AdMob Adapter --&gt;
+        &lt;meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7728035806961877~8294668466" /&gt;
+    &lt;/application&gt;
+&lt;/manifest&gt;
+      </div>
+    </div>
+
+    <!-- 4. JAVA IMPLEMENTATION -->
+    <div id="sec-java-integration" class="docs-section">
+      <h2><span class="step-number">3</span>Programmatic Java Integration Code</h2>
+      <p>Request and render ads programmatically inside your Android Activity or Fragment:</p>
+
+      <h3>Loading an Interstitial / Rewarded Video Ad</h3>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+package com.yourpackage.app;
+
+import android.os.Bundle;
+import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.connectgold.sdk.ConnectgoldMediation;
+import com.connectgold.sdk.listeners.AdLoadListener;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String WORKER_ENDPOINT = 
+        "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Fetch waterfall JSON from edge worker and trigger mediation sequence
+        ConnectgoldMediation.fetchAndLoad(this, WORKER_ENDPOINT, new AdLoadListener() {
+            @Override
+            public void onAdLoaded(String networkName, Object adObject) {
+                Log.d("Connectgold", "Ad successfully loaded by network: " + networkName);
+                // Show ad when ready
+                ConnectgoldMediation.showAd(MainActivity.this, adObject);
+            }
+
+            @Override
+            public void onAdFailedToLoad(String reason) {
+                Log.e("Connectgold", "Waterfall exhausted. All networks failed: " + reason);
+            }
+        });
+    }
+}
+      </div>
+
+      <h3>Programmatic Banner Ad Integration (Pure Java Layout)</h3>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+// Inside your Activity class:
+FrameLayout bannerContainer = new FrameLayout(this);
+setContentView(bannerContainer);
+
+String bannerEndpoint = 
+    "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID";
+
+ConnectgoldMediation.fetchAndLoad(this, bannerEndpoint, new AdLoadListener() {
+    @Override
+    public void onAdLoaded(String networkName, Object adView) {
+        if (adView instanceof android.view.View) {
+            bannerContainer.removeAllViews();
+            bannerContainer.addView((android.view.View) adView);
+        }
+    }
+
+    @Override
+    public void onAdFailedToLoad(String reason) {
+        Log.e("Connectgold", "Banner load failed: " + reason);
+    }
+});
+      </div>
+    </div>
+
+    <!-- 5. WRITING AND UPDATING CUSTOM ADAPTERS -->
+    <div id="sec-custom-adapters" class="docs-section">
+      <h2><span class="step-number">4</span>Writing, Updating, or Overriding Adapters</h2>
+      <p>
+        Developers have 100% freedom to create custom adapters or update existing ones. Every adapter implements the <code>ConnectgoldAdapter</code> interface.
+      </p>
+
+      <h3>Step A: Define the Adapter Interface</h3>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+package com.connectgold.sdk.adapters;
+
+import android.content.Context;
+import org.json.JSONObject;
+
+public interface ConnectgoldAdapter {
+    interface Listener {
+        void onSuccess(String networkName, Object adView);
+        void onFailure(String errorReason);
+    }
+
+    void loadAd(Context context, JSONObject params, Listener listener);
+}
+      </div>
+
+      <h3>Step B: Sample Custom Adapter Class Implementation</h3>
+      <p>Create a class matching the package path returned in the Worker waterfall (or pass your own custom class name):</p>
+
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+package com.yourcompany.app.adapters;
+
+import android.content.Context;
+import org.json.JSONObject;
+import com.connectgold.sdk.adapters.ConnectgoldAdapter;
+
+public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
+
+    @Override
+    public void loadAd(Context context, JSONObject params, Listener listener) {
+        // Extract server parameters passed from Cloudflare Worker
+        String placementId = params.optString("placement_id");
+        String appId = params.optString("app_id");
+
+        // Invoke Third-Party Ad Network SDK
+        ThirdPartySDK.requestAd(context, appId, placementId, new ThirdPartySDK.Callback() {
+            @Override
+            public void onAdReady(Object view) {
+                // Pass control back to Connectgold Core Engine
+                listener.onSuccess("CustomAdNetwork", view);
+            }
+
+            @Override
+            public void onError(String error) {
+                // Trigger automatic failover to the next network in the waterfall
+                listener.onFailure(error);
+            }
+        });
+    }
+}
+      </div>
+
+      <div class="callout-info">
+        <strong>Pro-Tip for SDK Updates:</strong> When upgrading a third-party SDK version (e.g., Yandex v6 to v7) that introduces breaking API changes, simply update the code inside your local adapter class. You do NOT need to wait for a Connectgold SDK update or update the Cloudflare Worker!
+      </div>
+    </div>
+
+    <!-- 6. 30 SUPPORTED ADAPTERS -->
+    <div id="sec-30-adapters" class="docs-section">
+      <h2><span class="step-number">5</span>30 Supported SDK Network Matrix</h2>
+      <p>Connectgold ships with built-in reflection class mappings for 30 major mobile ad networks:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Network</th>
+            <th>Default Reflection Class Path</th>
+            <th>Query Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Connectgold Direct</td><td><code>com.connectgold.sdk.adapters.ConnectgoldDirectSdkAdapter</code></td><td><code>pub_id, format</code></td></tr>
+          <tr><td>2</td><td>Yandex Ads</td><td><code>com.connectgold.sdk.adapters.YandexSdkAdapter</code></td><td><code>yandex_app_id, yandex_ad_unit_id</code></td></tr>
+          <tr><td>3</td><td>Google AdMob</td><td><code>com.connectgold.sdk.adapters.AdMobSdkAdapter</code></td><td><code>admob_app_id, admob_ad_unit_id</code></td></tr>
+          <tr><td>4</td><td>Meta Audience</td><td><code>com.connectgold.sdk.adapters.MetaAudienceSdkAdapter</code></td><td><code>meta_placement_id</code></td></tr>
+          <tr><td>5</td><td>ironSource</td><td><code>com.connectgold.sdk.adapters.IronSourceSdkAdapter</code></td><td><code>ironsource_app_key</code></td></tr>
+          <tr><td>6</td><td>Unity Ads</td><td><code>com.connectgold.sdk.adapters.UnityAdsSdkAdapter</code></td><td><code>unity_game_id, unity_placement_id</code></td></tr>
+          <tr><td>7</td><td>InMobi</td><td><code>com.connectgold.sdk.adapters.InMobiSdkAdapter</code></td><td><code>inmobi_placement_id</code></td></tr>
+          <tr><td>8</td><td>Start.io</td><td><code>com.connectgold.sdk.adapters.StartIoSdkAdapter</code></td><td><code>startio_app_id</code></td></tr>
+          <tr><td>9</td><td>AppLovin MAX</td><td><code>com.connectgold.sdk.adapters.AppLovinSdkAdapter</code></td><td><code>applovin_sdk_key, applovin_zone_id</code></td></tr>
+          <tr><td>10</td><td>Pangle (TikTok)</td><td><code>com.connectgold.sdk.adapters.PangleSdkAdapter</code></td><td><code>pangle_app_id, pangle_slot_id</code></td></tr>
+          <tr><td>11-30</td><td>Mintegral, Vungle, Chartboost, Digital Turbine, Amazon APS, BidMachine, Smaato, myTarget, Ogury, Kidoz, Appnext, Tapjoy, Moloco, BIGO, AdColony, HyprMX, MobFox, PubMatic, CAS.AI, Appodeal</td><td><code>com.connectgold.sdk.adapters.[Network]SdkAdapter</code></td><td>Network Keys / App IDs</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 7. APP-ADS.TXT -->
+    <div id="sec-appads" class="docs-section">
+      <h2><span class="step-number">6</span>App-Ads.txt Certification</h2>
+      <p>
+        To verify developer identity and maximize programmatic bid rates, publish this entry on your developer website (root path: <code>https://yourdomain.com/app-ads.txt</code>):
+      </p>
+
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0
+      </div>
+    </div>
+
+    <!-- 8. PRIVACY AND CONSENT -->
+    <div id="sec-consent" class="docs-section">
+      <h2><span class="step-number">7</span>GDPR, EEA & Regional Privacy Consent</h2>
+      <p>
+        Pass regional consent status in your worker request parameters:
+      </p>
+
+      <ul>
+        <li><code>&consent=1</code> : User granted consent for personalized ads.</li>
+        <li><code>&consent=0</code> : User denied consent (Serves non-personalized house ads).</li>
+      </ul>
+
+      <div class="callout-gold">
+        <strong>Note:</strong> Mediated third-party SDKs (AdMob, Yandex, Unity, ironSource) manage their own native CMP consent dialogs independently according to regional regulations.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.docs-nav li').forEach(el => el.classList.remove('active'));
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+    }
+
+    function copyCode(btn) {
+      const codeText = btn.parentElement.innerText.replace("Copy", "").trim();
+      navigator.clipboard.writeText(codeText);
+      btn.innerText = "Copied!";
+      setTimeout(() => { btn.innerText = "Copy"; }, 2000);
+    }
+  </script>
+</body>
+</html>

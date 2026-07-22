@@ -6,7 +6,7 @@
   
   <title>Connectgold Mobile Mediation SDK - Developer Documentation</title>
   <meta name="title" content="Connectgold Mobile Mediation SDK - Developer Documentation">
-  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Java reflection mediation, custom adapter creation, 30 SDK networks, app-ads.txt, and consent handling.">
+  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Format-specific code (Banner, Interstitial, Rewarded, Native, VAST), custom adapter creation, 30 SDK networks, app-ads.txt, and consent handling.">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
   <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold_2.png">
@@ -23,10 +23,6 @@
       --text-muted: #8b949e;    /* Muted Text */
       --border-color: #30363d;  /* Dark Border */
       --code-bg: #010409;       /* Deep Black Code Box */
-      --keyword: #ff7b72;
-      --string: #a5d6ff;
-      --comment: #8b949e;
-      --class: #ffa657;
     }
 
     * { box-sizing: border-box; }
@@ -199,9 +195,9 @@
 
       <ul class="docs-nav">
         <li class="active" onclick="scrollToSection('sec-architecture')">🧠 System Architecture</li>
-        <li onclick="scrollToSection('sec-gradle')">📦 1. Gradle Dependencies</li>
+        <li onclick="scrollToSection('sec-gradle')">📦 1. Gradle Setup</li>
         <li onclick="scrollToSection('sec-manifest')">📱 2. Android Manifest</li>
-        <li onclick="scrollToSection('sec-java-integration')">⚡ 3. Java Implementation</li>
+        <li onclick="scrollToSection('sec-java-formats')">⚡ 3. Format Implementation</li>
         <li onclick="scrollToSection('sec-custom-adapters')">🛠️ 4. Write / Update Adapters</li>
         <li onclick="scrollToSection('sec-30-adapters')">🔌 5. 30 Network Matrix</li>
         <li onclick="scrollToSection('sec-appads')">📄 6. App-Ads.txt Setup</li>
@@ -290,61 +286,25 @@ dependencies {
       </div>
     </div>
 
-    <!-- 4. JAVA IMPLEMENTATION -->
-    <div id="sec-java-integration" class="docs-section">
-      <h2><span class="step-number">3</span>Programmatic Java Integration Code</h2>
-      <p>Request and render ads programmatically inside your Android Activity or Fragment:</p>
+    <!-- 4. FORMAT-SPECIFIC JAVA IMPLEMENTATION -->
+    <div id="sec-java-formats" class="docs-section">
+      <h2><span class="step-number">3</span>Format-Specific Java Implementation Guide</h2>
+      <p>
+        While the underlying waterfall engine is universal, <strong>how you request and handle ad objects in Java differs by ad format</strong>:
+      </p>
 
-      <h3>Loading an Interstitial / Rewarded Video Ad</h3>
+      <!-- FORMAT A: BANNER -->
+      <h3>A. Banner Ad (Programmatic View Layout)</h3>
+      <p>Banners return an <code>android.view.View</code> object that must be added programmatically to an existing layout container:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-package com.yourpackage.app;
-
-import android.os.Bundle;
-import android.util.Log;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.connectgold.sdk.ConnectgoldMediation;
-import com.connectgold.sdk.listeners.AdLoadListener;
-
-public class MainActivity extends AppCompatActivity {
-
-    private static final String WORKER_ENDPOINT = 
-        "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Fetch waterfall JSON from edge worker and trigger mediation sequence
-        ConnectgoldMediation.fetchAndLoad(this, WORKER_ENDPOINT, new AdLoadListener() {
-            @Override
-            public void onAdLoaded(String networkName, Object adObject) {
-                Log.d("Connectgold", "Ad successfully loaded by network: " + networkName);
-                // Show ad when ready
-                ConnectgoldMediation.showAd(MainActivity.this, adObject);
-            }
-
-            @Override
-            public void onAdFailedToLoad(String reason) {
-                Log.e("Connectgold", "Waterfall exhausted. All networks failed: " + reason);
-            }
-        });
-    }
-}
-      </div>
-
-      <h3>Programmatic Banner Ad Integration (Pure Java Layout)</h3>
-      <div class="code-box">
-        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-// Inside your Activity class:
+// 1. Programmatically create layout container in Java
 FrameLayout bannerContainer = new FrameLayout(this);
 setContentView(bannerContainer);
 
-String bannerEndpoint = 
-    "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID";
+String bannerUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID";
 
-ConnectgoldMediation.fetchAndLoad(this, bannerEndpoint, new AdLoadListener() {
+ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
     @Override
     public void onAdLoaded(String networkName, Object adView) {
         if (adView instanceof android.view.View) {
@@ -355,7 +315,114 @@ ConnectgoldMediation.fetchAndLoad(this, bannerEndpoint, new AdLoadListener() {
 
     @Override
     public void onAdFailedToLoad(String reason) {
-        Log.e("Connectgold", "Banner load failed: " + reason);
+        Log.e("Connectgold", "Banner load failed across waterfall: " + reason);
+    }
+});
+      </div>
+
+      <!-- FORMAT B: INTERSTITIAL -->
+      <h3>B. Fullscreen Interstitial Ad</h3>
+      <p>Interstitials load in memory and are displayed over the current Activity using <code>ConnectgoldMediation.showAd()</code>:</p>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+String interstitialUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID";
+
+ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
+    @Override
+    public void onAdLoaded(String networkName, Object adObject) {
+        Log.d("Connectgold", "Interstitial ready from: " + networkName);
+        
+        // Show fullscreen overlay over current activity
+        ConnectgoldMediation.showAd(MainActivity.this, adObject);
+    }
+
+    @Override
+    public void onAdFailedToLoad(String reason) {
+        Log.e("Connectgold", "Interstitial failed: " + reason);
+    }
+});
+      </div>
+
+      <!-- FORMAT C: REWARDED VIDEO -->
+      <h3>C. Rewarded Video Ad (With User Reward Callback)</h3>
+      <p>Rewarded ads trigger a reward callback listener when video playback completes:</p>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+String rewardedUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID";
+
+ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
+    @Override
+    public void onAdLoaded(String networkName, Object adObject) {
+        // Pass a RewardListener to grant in-app coins/items upon video completion
+        ConnectgoldMediation.showRewardedAd(MainActivity.this, adObject, new RewardListener() {
+            @Override
+            public void onUserRewarded(String rewardType, int amount) {
+                Log.d("Connectgold", "Reward earned: " + amount + " " + rewardType);
+                grantInAppCoins(amount);
+            }
+        });
+    }
+
+    @Override
+    public void onAdFailedToLoad(String reason) {
+        Log.e("Connectgold", "Rewarded video failed: " + reason);
+    }
+});
+      </div>
+
+      <!-- FORMAT D: NATIVE AD -->
+      <h3>D. Native Ad (Custom View Card Binding)</h3>
+      <p>Native ads return a structured object containing headline, body text, image, and CTA button:</p>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+String nativeUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID";
+
+ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
+    @Override
+    public void onAdLoaded(String networkName, Object nativeAdObj) {
+        ConnectgoldNativeAd nativeAd = (ConnectgoldNativeAd) nativeAdObj;
+
+        // Bind data programmatically into custom Java view
+        TextView titleView = new TextView(MainActivity.this);
+        titleView.setText(nativeAd.getTitle());
+
+        Button ctaButton = new Button(MainActivity.this);
+        ctaButton.setText(nativeAd.getCtaText());
+        ctaButton.setOnClickListener(v -> nativeAd.performClick());
+
+        LinearLayout nativeLayout = new LinearLayout(MainActivity.this);
+        nativeLayout.setOrientation(LinearLayout.VERTICAL);
+        nativeLayout.addView(titleView);
+        nativeLayout.addView(ctaButton);
+
+        setContentView(nativeLayout);
+    }
+
+    @Override
+    public void onAdFailedToLoad(String reason) {
+        Log.e("Connectgold", "Native ad failed: " + reason);
+    }
+});
+      </div>
+
+      <!-- FORMAT E: VAST VIDEO -->
+      <h3>E. VAST Video Stream XML</h3>
+      <p>For custom video players (ExoPlayer / MediaPlayer), pass <code>format=vast</code> to retrieve raw VAST XML streams:</p>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+String vastUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID";
+
+ConnectgoldMediation.fetchVastStream(this, vastUrl, new VastStreamListener() {
+    @Override
+    public void onVastReady(String vastXmlUrl) {
+        // Pass VAST URL to ExoPlayer MediaItem
+        exoPlayer.setMediaItem(MediaItem.fromUri(vastXmlUrl));
+        exoPlayer.prepare();
+    }
+
+    @Override
+    public void onVastFailed(String error) {
+        Log.e("Connectgold", "VAST stream failed: " + error);
     }
 });
       </div>
@@ -508,3 +575,4 @@ sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47f
   </script>
 </body>
 </html>
+

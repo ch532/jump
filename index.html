@@ -300,46 +300,58 @@ loadFeed();
   eruda.init();
 </script>
 
-<!-- OPTIONAL TRIGGER BUTTON FOR INTERSTITIAL OVERLAY -->
-<button class="interstitial-trigger-btn" onclick="showInterstitialAd()">⚡ Test Interstitial Ad</button>
+<!-- CONNECTGOLD AD UNIT 3: AUTOMATIC INTERSTITIAL OVERLAY -->
+<div id="cg-interstitial-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center;">
+  <div style="background:#161b22; border:2px solid #d4af37; border-radius:12px; padding:24px; max-width:380px; width:85%; text-align:center; position:relative; color:#fff; box-shadow:0 10px 25px rgba(0,0,0,0.5); font-family:sans-serif;">
+    <span onclick="closeInterstitialAd()" style="position:absolute; top:8px; right:14px; font-size:24px; color:#8b949e; cursor:pointer; font-weight:bold;">&times;</span>
+    <h3 id="cg-int-title" style="margin:0 0 10px 0; font-size:18px; color:#fff;">Ad Title</h3>
+    <p id="cg-int-desc" style="margin:0 0 15px 0; font-size:13px; color:#8b949e;">Ad Description</p>
+    <img id="cg-int-img" src="" alt="Ad Creative" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:15px; display:block; margin-left:auto; margin-right:auto;">
+    <a id="cg-int-cta" href="#" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:10px 20px; font-weight:bold; border-radius:6px; text-decoration:none; font-size:14px;">Install Now</a>
+  </div>
+</div>
 
-<!-- CONNECTGOLD AD UNIT 3: INTERSTITIAL SCRIPT (PLACED AT BOTTOM OF BODY) -->
 <script>
-  function showInterstitialAd() {
+  function closeInterstitialAd() {
+    document.getElementById("cg-interstitial-modal").style.display = "none";
+  }
+
+  function triggerAutoInterstitial() {
     const consentVal = "1";
     fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=interstitial&plc=plc_interstitial&pub_id=pub_connectgold1234&consent=" + consentVal)
       .then(res => res.json())
       .then(data => {
-        if (!data || !data.success) return;
-        
-        if (data.adHtml || data.html_snippet) {
-          const box = document.body;
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data.adHtml || data.html_snippet;
-          
-          Array.from(tempDiv.childNodes).forEach(node => {
-            if (node.tagName === "SCRIPT") {
-              const newScript = document.createElement("script");
-              Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-              if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-              box.appendChild(newScript);
-            } else {
-              box.appendChild(node.cloneNode(true));
-            }
-          });
-        } else if (data.ad) {
-          const adInfo = data.ad;
-          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
-          if (adInfo.nurl) fetch(adInfo.nurl);
-        }
+        if (!data || !data.success || !data.ad) return;
+
+        const adInfo = data.ad;
+        document.getElementById("cg-int-title").innerText = adInfo.title || "Featured App";
+        document.getElementById("cg-int-desc").innerText = adInfo.description || "";
+        document.getElementById("cg-int-img").src = adInfo.image_url || "https://chyke.online/connectgold_2.png";
+        document.getElementById("cg-int-cta").href = adInfo.destination_url;
+        document.getElementById("cg-int-cta").innerText = adInfo.cta_text || "Learn More";
+
+        // Show the full-screen overlay modal
+        document.getElementById("cg-interstitial-modal").style.display = "flex";
+
+        if (adInfo.nurl) fetch(adInfo.nurl);
 
         if (typeof gtag === 'function') {
-          gtag('event', 'connectgold_ad_impression', { 'ad_id': (data && data.ad ? data.ad.campaign_id : (data && data.source ? data.source : 'passback')), 'placement_id': 'plc_interstitial', 'format': 'interstitial' });
+          gtag('event', 'connectgold_ad_impression', { 
+            'ad_id': adInfo.campaign_id || 'house', 
+            'placement_id': 'plc_interstitial', 
+            'format': 'interstitial' 
+          });
         }
       })
-      .catch(err => console.error("Connectgold Ad Error:", err));
+      .catch(err => console.error("Connectgold Interstitial Error:", err));
   }
+
+  // AUTOMATIC TRIGGER: Fires 3 seconds after page load
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(triggerAutoInterstitial, 3000);
+  });
 </script>
+
 
 </body>
 </html>

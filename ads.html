@@ -352,7 +352,6 @@
     </div>
   </div>
 
-
   <!-- 2. AUTHENTICATED DASHBOARD -->
   <div id="app-dashboard">
     <div class="app-container">
@@ -1003,24 +1002,25 @@
         if (ga4Id) {
           tpTrackingSnippet += `
           if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': ad.ad_id, 'placement_id': '${plcId}', 'format': '${format}' });
+            gtag('event', 'connectgold_ad_impression', { 'ad_id': adInfo.campaign_id || 'house', 'placement_id': '${plcId}', 'format': '${format}' });
           }`;
         }
         if (plausibleDomain) {
           tpTrackingSnippet += `
           if (typeof plausible === 'function') {
-            plausible('Connectgold Impression', { props: { ad_id: ad.ad_id, placement_id: '${plcId}' } });
+            plausible('Connectgold Impression', { props: { ad_id: adInfo.campaign_id || 'house', placement_id: '${plcId}' } });
           }`;
         }
         if (mixpanelToken) {
           tpTrackingSnippet += `
           if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
-            mixpanel.track('Connectgold Impression', { 'ad_id': ad.ad_id, 'placement_id': '${plcId}' });
+            mixpanel.track('Connectgold Impression', { 'ad_id': adInfo.campaign_id || 'house', 'placement_id': '${plcId}' });
           }`;
         }
 
         let generatedSnippet = "";
 
+        // 1. BANNER AD EMBED CODE
         if (format === "banner") {
           const dims = bannerSize.split("x");
           const rotationCode = rotationSec > 0 
@@ -1029,26 +1029,37 @@
 
           generatedSnippet = 
 `<!-- Connectgold Ad Network: ${plcName} (${bannerSize}) -->
-<div id="${plcId}" style="width:${dims[0]}px; height:${dims[1]}px; margin:auto;"></div>
+<div id="${plcId}" style="width:${dims[0]}px; height:${dims[1]}px; margin:auto; overflow:hidden;"></div>
 <script>
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=banner&rotation=${rotationSec}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=banner&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
         .then(res => res.json())
-        .then(ad => {
-          if (ad.consent_required) return;
+        .then(data => {
+          if (!data || !data.success) return;
+          const adInfo = data.ad;
           const box = document.getElementById("${plcId}");
-          box.innerHTML = ad.adHtml || ad.html_snippet || \`<a href="\${ad.click_url}" target="_blank"><img src="\${ad.payload.image_url}" width="${dims[0]}" height="${dims[1]}" /></a>\`;
           
-          if (ad.impression_url) fetch(ad.impression_url);
+          if (data.adHtml || data.html_snippet) {
+            box.innerHTML = data.adHtml || data.html_snippet;
+          } else {
+            box.innerHTML = \`<a href="\${adInfo.destination_url}" target="_blank" rel="noopener">
+              <img src="\${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="${dims[0]}" height="${dims[1]}" alt="\${adInfo.title}" style="border:0;" />
+            </a>\`;
+          }
+          
+          if (adInfo.nurl) fetch(adInfo.nurl);
           ${tpTrackingSnippet}
-        });
+        })
+        .catch(err => console.error("Connectgold Ad Error:", err));
     }
     fetchAndRenderAd();
     ${rotationCode}
   })();
 <\/script>`;
+
+        // 2. NATIVE AD EMBED CODE
         } else if (format === "native") {
           const rotationCode = rotationSec > 0 
             ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
@@ -1061,58 +1072,74 @@
   (function() {
     function fetchAndRenderAd() {
       const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=native&rotation=${rotationSec}&consent=" + consentVal)
+      fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=native&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
         .then(res => res.json())
-        .then(ad => {
-          if (ad.consent_required) return;
-          document.getElementById("${plcId}").innerHTML = ad.adHtml || ad.html_snippet || \`
-            <div style="border:1px solid #30363d; padding:12px; background:#161b22; color:#fff; border-radius:6px;">
-              <h4>\${ad.payload.title}</h4>
-              <p>\${ad.payload.body}</p>
-              <a href="\${ad.click_url}" target="_blank" style="color:#d4af37; font-weight:bold;">\${ad.payload.cta_text}</a>
+        .then(data => {
+          if (!data || !data.success) return;
+          const adInfo = data.ad;
+          const box = document.getElementById("${plcId}");
+          
+          box.innerHTML = data.adHtml || \`
+            <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
+              <h4 style="margin:0 0 6px 0; font-size:16px;">\${adInfo.title}</h4>
+              <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">\${adInfo.description || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
+              <a href="\${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">\${adInfo.cta_text || 'Learn More'}</a>
             </div>\`;
           
-          if (ad.impression_url) fetch(ad.impression_url);
+          if (adInfo.nurl) fetch(adInfo.nurl);
           ${tpTrackingSnippet}
-        });
+        })
+        .catch(err => console.error("Connectgold Ad Error:", err));
     }
     fetchAndRenderAd();
     ${rotationCode}
   })();
 <\/script>`;
+
+        // 3. REWARDED VIDEO EMBED CODE
         } else if (format === "rewarded") {
           generatedSnippet = 
 `<!-- Connectgold Ad Network: ${plcName} (REWARDED VIDEO) -->
 <script>
   function showRewardedAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=rewarded&consent=" + consentVal)
+    fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=rewarded&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
       .then(res => res.json())
-      .then(ad => {
-        if (ad.consent_required) return;
-        alert("Playing Video Ad: " + (ad.payload ? ad.payload.title : "Connectgold Ad"));
-        if (ad.impression_url) fetch(ad.impression_url);
+      .then(data => {
+        if (!data || !data.success) return;
+        const adInfo = data.ad;
+        
+        alert("Playing Rewarded Ad: " + (adInfo.title || "Connectgold Network"));
+        if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
+        if (adInfo.nurl) fetch(adInfo.nurl);
         ${tpTrackingSnippet}
+        
         if ("${callbackUrl}") {
-          fetch("${callbackUrl}?pub_id=${pubId}&status=completed");
+          fetch("${callbackUrl}?pub_id=${pubId}&status=completed&ad_id=" + (adInfo.campaign_id || 'house'));
         }
-      });
+      })
+      .catch(err => console.error("Connectgold Ad Error:", err));
   }
 <\/script>`;
+
+        // 4. INTERSTITIAL EMBED CODE
         } else if (format === "interstitial") {
           generatedSnippet = 
 `<!-- Connectgold Ad Network: ${plcName} (INTERSTITIAL) -->
 <script>
   function showInterstitialAd() {
     const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/api/ad?plc=${plcId}&pub_id=${pubId}&format=interstitial&consent=" + consentVal)
+    fetch("${AD_ENGINE_WORKER_URL}/ad-request?type=interstitial&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
       .then(res => res.json())
-      .then(ad => {
-        if (ad.consent_required) return;
-        if (ad.click_url) window.open(ad.click_url, '_blank');
-        if (ad.impression_url) fetch(ad.impression_url);
+      .then(data => {
+        if (!data || !data.success) return;
+        const adInfo = data.ad;
+        
+        if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
+        if (adInfo.nurl) fetch(adInfo.nurl);
         ${tpTrackingSnippet}
-      });
+      })
+      .catch(err => console.error("Connectgold Ad Error:", err));
   }
 <\/script>`;
         }
@@ -1130,15 +1157,16 @@
       wrapper.innerHTML = "<p style='color:var(--text-muted);'>Running Connectgold auction engine...</p>";
 
       try {
-        const res = await fetch(`${AD_ENGINE_WORKER_URL}/api/ad?format=banner&consent=1`);
+        const res = await fetch(`${AD_ENGINE_WORKER_URL}/ad-request?type=banner&consent=1`);
         if (!res.ok) {
           wrapper.innerHTML = "<p style='color:#f85149;'>No active funded ad found. Deposit funds or run /v1/setup!</p>";
           return;
         }
 
-        const ad = await res.json();
-        const remBudget = typeof ad.remaining_advertiser_balance === "string" ? `$${ad.remaining_advertiser_balance}` : (typeof ad.remaining_budget === "number" ? `$${ad.remaining_budget.toFixed(4)}` : "Uncapped");
-        const winningBid = ad.winning_bid || "1.00";
+        const data = await res.json();
+        const ad = data.ad;
+        const remBudget = typeof data.remaining_advertiser_balance === "string" ? `$${data.remaining_advertiser_balance}` : "Uncapped";
+        const winningBid = ad.ecpm || "0.10";
 
         wrapper.innerHTML = `
           <div style="margin-bottom: 12px;">
@@ -1149,10 +1177,14 @@
               REMAINING BUDGET: ${remBudget}
             </span>
           </div>
-          <div>${ad.adHtml || ad.html_snippet}</div>
+          <div>
+            <a href="${ad.destination_url}" target="_blank">
+              <img src="${ad.image_url || 'https://chyke.online/connectgold_2.png'}" style="max-width:100%; height:auto; border-radius:6px;" />
+            </a>
+          </div>
         `;
 
-        if (ad.impression_url) fetch(ad.impression_url);
+        if (ad.nurl) fetch(ad.nurl);
 
       } catch (err) {
         wrapper.innerHTML = "<p style='color:#f85149;'>Error connecting to auction engine.</p>";
@@ -1174,7 +1206,7 @@
       if (tabId === 'analytics-tab') {
         fetchAnalytics();
       } else if (tabId === 'payment-tab') {
-        loadPublisherBalance(); // AUTO-FETCHES LIVE BALANCE VISUALLY
+        loadPublisherBalance();
       }
     }
 
@@ -1193,7 +1225,6 @@
       if (paystackRef) {
         const advId = localStorage.getItem("active_advertiser_id") || "adv_default";
 
-        // Routes directly to Payment Verification Worker
         fetch(`${PAYMENT_WORKER_URL}/v1/payment/paystack-verify`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1212,6 +1243,7 @@
   </script>
 </body>
 </html>
+
 
 
 

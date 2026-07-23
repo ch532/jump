@@ -114,7 +114,7 @@
     <!-- ARCHITECTURE OVERVIEW -->
     <div class="section">
       <h2>1. Architecture Overview</h2>
-      <p>Connectgold Edge Ad Network delivers AI-optimized programmatic ads directly at Cloudflare edge nodes. Real-time contextual decisions are routed via Cloudflare Workers and Workers AI Gateway to maximize yield across direct advertisers and global S2S OpenRTB demand sources (InMobi, ExoClick, Adcash, Opera Ads, PubMatic, Magnite, Adform, etc.).</p>
+      <p>Connectgold Edge Ad Network delivers AI-optimized programmatic ads directly at Cloudflare edge nodes. Real-time contextual decisions are routed via Cloudflare Workers and Workers AI Gateway to maximize yield across direct advertisers and programmatic demand partners (InMobi OpenRTB 2.5, ExoClick, HilltopAds, A-Ads, etc.).</p>
       
       <h3>Core Request Parameters</h3>
       <table>
@@ -134,7 +134,7 @@
           <tr>
             <td><code>format</code></td>
             <td>String</td>
-            <td>Ad unit format: <code>banner</code>, <code>native_display</code>, <code>infeed</code>, <code>interstitial_fullscreen</code>, <code>rewarded_video</code></td>
+            <td>Ad unit format: <code>banner</code>, <code>hilltop_banner</code>, <code>native</code>, <code>interstitial</code></td>
           </tr>
           <tr>
             <td><code>plc</code></td>
@@ -161,24 +161,19 @@
 
       <h3>A. Display Banner Ad Unit (300x250)</h3>
       <p>Place this container and script in your page HTML where you want the visual banner unit to display.</p>
-      <pre>&lt;!-- Connectgold: Top Banner (300x250) --&gt;
-&lt;div id="plc_demo" style="width:300px;min-height:250px;margin:auto;overflow:hidden;"&gt;&lt;/div&gt;
+      <pre>&lt;!-- CG: Top Banner (300x250) --&gt;
+&lt;div id="plc_demo" style="width:300px;min-height:250px;margin:auto;"&gt;&lt;/div&gt;
 &lt;script&gt;
 (function(){
   function loadAd(){
     var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&amp;format=banner&amp;plc=plc_demo&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
+    fetch("https://shiny-rice-8cb3.trustconnect713.workers.dev/?platform=web&amp;format=banner&amp;plc=plc_demo&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
       .then(function(r){return r.json();})
       .then(function(d){
-        var b=document.getElementById("plc_demo");if(!b)return;
-        var r=d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0];
-        if(r&amp;&amp;r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
-        else if(d.ad){
-          var a=d.ad;
-          b.innerHTML='&lt;a href="'+a.destination_url+'" target="_blank" rel="noopener"&gt;&lt;img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="300" height="250" style="border:0;max-width:100%;height:auto;"/&gt;&lt;/a&gt;';
-          if(a.nurl)fetch(a.nurl);
-        }
-      }).catch(function(e){console.error("Ad error:",e);});
+        var e=document.getElementById("plc_demo");if(!e)return;
+        var m=(d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0]&amp;&amp;d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&amp;&amp;('&lt;a href="'+d.ad.destination_url+'" target="_blank"&gt;&lt;img src="'+d.ad.image_url+'" width="300" height="250"/&gt;&lt;/a&gt;'));
+        if(m){e.innerHTML='';var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(m));}
+      }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();setInterval(loadAd,30000);
 })();
@@ -186,43 +181,37 @@
 
       <h3>B. Native Display Unit</h3>
       <p>Place this unit directly inside content feeds or between article paragraphs. Native units automatically adapt to container styling.</p>
-      <pre>&lt;!-- Connectgold: Native Card --&gt;
+      <pre>&lt;!-- CG: Native Card --&gt;
 &lt;div id="plc_native_demo"&gt;&lt;/div&gt;
 &lt;script&gt;
 (function(){
   function loadAd(){
     var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&amp;format=native_display&amp;plc=plc_native_demo&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
+    fetch("https://shiny-rice-8cb3.trustconnect713.workers.dev/?platform=web&amp;format=native&amp;plc=plc_native_demo&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
       .then(function(r){return r.json();})
       .then(function(d){
-        var b=document.getElementById("plc_native_demo");if(!b)return;
-        var r=d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0];
-        if(r&amp;&amp;r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
-        else if(d.ad){
-          var a=d.ad;
-          b.innerHTML='&lt;div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;"&gt;'+(a.image_url?'&lt;img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/&gt;':'')+'&lt;h4 style="margin:0 0 4px 0;font-size:15px;"&gt;'+a.title+'&lt;/h4&gt;&lt;p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;"&gt;'+(a.description||a.body||'')+'&lt;/p&gt;&lt;a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;"&gt;'+(a.cta_text||'Learn More')+'&lt;/a&gt;&lt;/div&gt;';
-          if(a.nurl)fetch(a.nurl);
-        }
-      }).catch(function(e){console.error("Ad error:",e);});
+        var e=document.getElementById("plc_native_demo");if(!e)return;
+        var m=(d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0]&amp;&amp;d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&amp;&amp;('&lt;div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;"&gt;&lt;h4 style="margin:0;"&gt;'+d.ad.title+'&lt;/h4&gt;&lt;p style="font-size:12px;color:#8b949e;"&gt;'+(d.ad.description||'')+'&lt;/p&gt;&lt;a href="'+d.ad.destination_url+'" target="_blank" style="background:#d4af37;color:#000;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:bold;"&gt;'+(d.ad.cta_text||'Learn More')+'&lt;/a&gt;&lt;/div&gt;'));
+        if(m){e.innerHTML='';var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(m));}
+      }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();setInterval(loadAd,30000);
 })();
 &lt;/script&gt;</pre>
 
-      <h3>C. Rewarded Video Trigger</h3>
-      <p>Call the function below when a user requests a reward or reaches a game checkpoint.</p>
-      <pre>&lt;!-- Connectgold: Rewarded Video Function --&gt;
+      <h3>C. Interstitial / Rewarded Trigger</h3>
+      <p>Call the function below when a user requests an ad trigger or reaches a checkpoint.</p>
+      <pre>&lt;!-- CG: Fullscreen Interstitial Function --&gt;
 &lt;script&gt;
-function showRewardedAd(){
+function showConnectGoldAd(){
   var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-  fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&amp;format=rewarded_video&amp;plc=plc_demo_rewarded&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
+  fetch("https://shiny-rice-8cb3.trustconnect713.workers.dev/?platform=web&amp;format=interstitial&amp;plc=plc_demo_interstitial&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
     .then(function(r){return r.json();})
     .then(function(d){
-      if(!d)return alert("No rewarded ad available.");
-      var r=d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0];
-      if(r&amp;&amp;r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
-      else if(d.ad){var a=d.ad;alert("Rewarded Ad: "+(a.title||"Connectgold"));if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
-    }).catch(function(e){console.error("Ad error:",e);});
+      var m=(d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0]&amp;&amp;d.seatbid[0].bid[0].adm)||(d.adm);
+      if(m){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(m));}
+      else if(d.ad&amp;&amp;d.ad.destination_url){window.open(d.ad.destination_url,"_blank");}
+    }).catch(function(err){console.error("CG Ad Error:",err);});
 }
 &lt;/script&gt;</pre>
     </div>
@@ -232,7 +221,7 @@ function showRewardedAd(){
       <h2>3. Programmatic OpenRTB 2.5 / Prebid Endpoint</h2>
       <p>Connectgold supports direct Server-to-Server (S2S) OpenRTB 2.5 auctions. External DSPs and Prebid Server bidders can submit standard JSON POST requests to our edge auction pipeline.</p>
 
-      <p><strong>Endpoint:</strong> <code>POST https://delicate-night-fb02.trustconnect713.workers.dev/openrtb2/auction</code></p>
+      <p><strong>Endpoint:</strong> <code>POST https://shiny-rice-8cb3.trustconnect713.workers.dev/openrtb2/auction</code></p>
 
       <h3>Sample OpenRTB 2.5 Request Payload</h3>
       <pre>{
@@ -269,7 +258,7 @@ function showRewardedAd(){
     <div class="section">
       <h2>5. Authorized Digital Sellers (ads.txt)</h2>
       <p>Add this line to your domain root <code>ads.txt</code> file to authorize Connectgold demand sourcing:</p>
-      <pre>delicate-night-fb02.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0</pre>
+      <pre>shiny-rice-8cb3.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0</pre>
     </div>
 
     <!-- ADVERTISER API -->
@@ -277,7 +266,7 @@ function showRewardedAd(){
       <h2>6. Advertiser Campaign API</h2>
       <p>Publish direct campaigns into the edge auction engine. Bids are verified against active advertiser balances in real time.</p>
       
-      <p><strong>Endpoint:</strong> <code>POST https://delicate-night-fb02.trustconnect713.workers.dev/v1/advertiser/add-ad</code></p>
+      <p><strong>Endpoint:</strong> <code>POST https://shiny-rice-8cb3.trustconnect713.workers.dev/v1/advertiser/add-ad</code></p>
       
       <h3>Request Body (JSON)</h3>
       <pre>{
@@ -300,7 +289,7 @@ function showRewardedAd(){
       <p>Manage publisher accounts and retrieve accumulated 80% revenue share balance recorded across edge impressions.</p>
 
       <p><strong>Create Publisher ID:</strong> <code>POST https://hidden-river-56c3.trustconnect713.workers.dev/v1/publisher/create-id</code></p>
-      <p><strong>Check Earnings Balance:</strong> <code>GET https://delicate-night-fb02.trustconnect713.workers.dev/v1/publisher/balance?pub_id=YOUR_PUBLISHER_ID</code></p>
+      <p><strong>Check Earnings Balance:</strong> <code>GET https://shiny-rice-8cb3.trustconnect713.workers.dev/v1/publisher/balance?pub_id=YOUR_PUBLISHER_ID</code></p>
 
       <h3>Sample Balance Response</h3>
       <pre>{
@@ -331,6 +320,7 @@ function showRewardedAd(){
 
 </body>
 </html>
+
 
 
 

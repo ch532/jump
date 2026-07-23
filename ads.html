@@ -687,7 +687,7 @@
   <script>
     // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://shiny-rice-482f.trustconnect713.workers.dev"; // Updated to latest Gemma 4 Worker URL
+    const AD_ENGINE_WORKER_URL = "https://shiny-rice-482f.trustconnect713.workers.dev"; 
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -887,9 +887,13 @@
         const res = await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics?format=${encodeURIComponent(format)}&date=${encodeURIComponent(dateVal)}`);
         const data = await res.json();
 
-        document.getElementById("stat-impressions").innerText = Number(data.impressions || 0).toLocaleString();
-        document.getElementById("stat-clicks").innerText = Number(data.clicks || 0).toLocaleString();
-        document.getElementById("stat-ctr").innerText = data.ctr || "0.00%";
+        const impressions = data.metrics ? data.metrics.impressions : (data.impressions || 0);
+        const clicks = data.metrics ? data.metrics.clicks : (data.clicks || 0);
+        const ctr = data.metrics ? data.metrics.ctr : (data.ctr || "0.00%");
+
+        document.getElementById("stat-impressions").innerText = Number(impressions).toLocaleString();
+        document.getElementById("stat-clicks").innerText = Number(clicks).toLocaleString();
+        document.getElementById("stat-ctr").innerText = ctr;
         document.getElementById("stat-date-display").innerText = `Report Date: ${data.date || dateVal}`;
       } catch (err) {
         document.getElementById("stat-date-display").innerText = `Report Date: ${dateVal} (No Data / Offline)`;
@@ -915,7 +919,7 @@
       const plausibleDomain = localStorage.getItem("cg_plausible_domain") || "";
       const mixpanelToken = localStorage.getItem("cg_mixpanel_token") || "";
 
-      // 2. BUILD EXPLICIT TELEMETRY CODE SNIPPET
+      // 2. BUILD THIRD-PARTY ANALYTICS CODE SNIPPETS
       let tpSnippet = "";
       if (ga4Id) {
         tpSnippet += `\n          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'${plcName}','pub':'${pubId}'});`;
@@ -926,6 +930,17 @@
       if (mixpanelToken) {
         tpSnippet += `\n          if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcName}'});`;
       }
+
+      // 3. TELEMETRY INGESTION DISPATCH LOGIC (Sends metrics to floral-pine-5c44)
+      const telemetryCode = 
+`\n          var net = (d.seatbid&&d.seatbid[0]&&d.seatbid[0].seat)||"connectgold_direct";
+          var ecpm = (d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].price)||2.50;
+          var rev = ecpm / 1000;
+          fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({type:"impression",platform:"web",format:"${workerFormat}",network:net,pub_id:"${pubId}",ecpm:ecpm,revenue:rev})
+          }).catch(function(e){});`;
 
       const payload = {
         publisher_id: pubId,
@@ -949,7 +964,7 @@
 
         let generatedSnippet = "";
 
-        // 3. GENERATE TAGS WITH EXPLICIT ANALYTICS EMBEDDED
+        // 4. GENERATE TAGS WITH TELEMETRY & ANALYTICS EMBEDDED
         if (workerFormat === "banner") {
           const dims = bannerSize.split("x");
           const rotCode = rotationSec > 0 ? `setInterval(loadAd,${rotationSec * 1000});` : ``;
@@ -970,7 +985,7 @@
           e.innerHTML='';
           var rng=document.createRange();
           rng.selectNode(e);
-          e.appendChild(rng.createContextualFragment(m));${tpSnippet}
+          e.appendChild(rng.createContextualFragment(m));${tpSnippet}${telemetryCode}
         }
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
@@ -979,7 +994,6 @@
 <\/script>`;
 
         } else if (workerFormat === "ai_text") {
-          // --- AI DYNAMIC TEXT AD GENERATOR SNIPPET ---
           const rotCode = rotationSec > 0 ? `setInterval(loadAiAd,${rotationSec * 1000});` : ``;
 
           generatedSnippet = 
@@ -994,7 +1008,7 @@
         var e=document.getElementById("${plcId}");if(!e)return;
         var h=d.headline||"Special Offer";
         var c=d.cta||"Shop Now";
-        e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);"><h4 style="margin:0 0 10px 0;color:#fff;font-size:15px;line-height:1.4;">'+h+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:bold;display:inline-block;">'+c+'</a></div>';${tpSnippet}
+        e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);"><h4 style="margin:0 0 10px 0;color:#fff;font-size:15px;line-height:1.4;">'+h+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:bold;display:inline-block;">'+c+'</a></div>';${tpSnippet}${telemetryCode}
       }).catch(function(err){console.error("CG AI Ad Error:",err);});
   }
   loadAiAd();${rotCode}
@@ -1020,7 +1034,7 @@
           e.innerHTML='';
           var rng=document.createRange();
           rng.selectNode(e);
-          e.appendChild(rng.createContextualFragment(m));${tpSnippet}
+          e.appendChild(rng.createContextualFragment(m));${tpSnippet}${telemetryCode}
         }
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
@@ -1043,10 +1057,10 @@ function showConnectGoldAd(){
         document.body.appendChild(el);
         var rng=document.createRange();
         rng.selectNode(el);
-        el.appendChild(rng.createContextualFragment(m));${tpSnippet}
+        el.appendChild(rng.createContextualFragment(m));${tpSnippet}${telemetryCode}
       }
       else if(d.ad&&d.ad.destination_url){
-        window.open(d.ad.destination_url,"_blank");${tpSnippet}
+        window.open(d.ad.destination_url,"_blank");${tpSnippet}${telemetryCode}
       }
     }).catch(function(err){console.error("CG Ad Error:",err);});
 }
@@ -1113,6 +1127,7 @@ function showConnectGoldAd(){
   </script>
 </body>
 </html>
+
 
 
 

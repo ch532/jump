@@ -358,11 +358,21 @@
               <label>Select Web Ad Unit Format</label>
               <select id="plc-format" onchange="toggleFormatFields()">
                 <option value="banner">Banner Ad (Display Banner)</option>
+                <option value="ai_text">🤖 AI Dynamic Text Ad (Gemma 4 Powered)</option>
                 <option value="native_display">Native Display Card</option>
                 <option value="infeed">In-Feed Native Content</option>
                 <option value="interstitial_fullscreen">Full Screen Interstitial</option>
                 <option value="rewarded_video">Rewarded Video</option>
               </select>
+            </div>
+
+            <!-- AI PRODUCT TARGETING FIELD -->
+            <div id="ai-options" style="display: none;">
+              <div class="form-group">
+                <label>Target Product / Niche Keyword</label>
+                <input type="text" id="ai-product-keyword" placeholder="e.g. Gaming Laptop, Real Estate, Smartphones">
+                <small style="color:var(--text-muted);">Gemma 4 will generate localized headline & CTA copy for this niche in real-time.</small>
+              </div>
             </div>
 
             <div class="form-group">
@@ -677,7 +687,7 @@
   <script>
     // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://shiny-rice-8cb3.trustconnect713.workers.dev"; 
+    const AD_ENGINE_WORKER_URL = "https://shiny-rice-482f.trustconnect713.workers.dev"; // Updated to latest Gemma 4 Worker URL
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -736,7 +746,7 @@
     }
 
     function updateAdsTxt(pubId) {
-      const adsTxtContent = `shiny-rice-8cb3.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
+      const adsTxtContent = `shiny-rice-482f.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
       document.getElementById("ads-txt-output").innerText = adsTxtContent;
     }
 
@@ -783,16 +793,24 @@
       const format = document.getElementById("plc-format").value;
       const bannerOpts = document.getElementById("banner-options");
       const callbackOpts = document.getElementById("callback-options");
+      const aiOpts = document.getElementById("ai-options");
 
       if (format === "banner") {
         bannerOpts.style.display = "block";
         callbackOpts.style.display = "none";
+        aiOpts.style.display = "none";
+      } else if (format === "ai_text") {
+        bannerOpts.style.display = "none";
+        callbackOpts.style.display = "none";
+        aiOpts.style.display = "block";
       } else if (format === "rewarded_video" || format === "interstitial_fullscreen") {
         bannerOpts.style.display = "none";
         callbackOpts.style.display = "block";
+        aiOpts.style.display = "none";
       } else {
         bannerOpts.style.display = "none";
         callbackOpts.style.display = "none";
+        aiOpts.style.display = "none";
       }
     }
 
@@ -890,6 +908,7 @@
       const callbackUrl = document.getElementById("callback-url").value;
       const rotationSec = parseInt(document.getElementById("plc-rotation").value, 10);
       const consentSetting = document.getElementById("plc-consent").value;
+      const aiProduct = document.getElementById("ai-product-keyword").value || "Premium Offer";
 
       // 1. READ ALL SAVED THIRD-PARTY ANALYTICS CREDENTIALS
       const ga4Id = localStorage.getItem("cg_ga4_id") || "";
@@ -956,6 +975,29 @@
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();${rotCode}
+})();
+<\/script>`;
+
+        } else if (workerFormat === "ai_text") {
+          // --- AI DYNAMIC TEXT AD GENERATOR SNIPPET ---
+          const rotCode = rotationSec > 0 ? `setInterval(loadAiAd,${rotationSec * 1000});` : ``;
+
+          generatedSnippet = 
+`<!-- CG AI Ad: ${plcName} -->
+<div id="${plcId}"></div>
+<script>
+(function(){
+  function loadAiAd(){
+    fetch("${AD_ENGINE_WORKER_URL}/ai/ad-generator?product=${encodeURIComponent(aiProduct)}")
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var e=document.getElementById("${plcId}");if(!e)return;
+        var h=d.headline||"Special Offer";
+        var c=d.cta||"Shop Now";
+        e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);"><h4 style="margin:0 0 10px 0;color:#fff;font-size:15px;line-height:1.4;">'+h+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:bold;display:inline-block;">'+c+'</a></div>';${tpSnippet}
+      }).catch(function(err){console.error("CG AI Ad Error:",err);});
+  }
+  loadAiAd();${rotCode}
 })();
 <\/script>`;
 
@@ -1071,6 +1113,7 @@ function showConnectGoldAd(){
   </script>
 </body>
 </html>
+
 
 
 

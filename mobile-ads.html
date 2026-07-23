@@ -7,7 +7,7 @@
   <!-- PRIMARY SEO META TAGS -->
   <title>Connectgold</title>
   <meta name="title" content="Connectgold - Mobile Ad Mediation Console">
-  <meta name="description" content="Manage 30+ mobile ad network SDK adapters, tune eCPM waterfalls, manage app-ads.txt, configure GDPR consent, and track analytics for Connectgold Mobile SDK.">
+  <meta name="description" content="Manage 30+ mobile ad network SDK adapters, retrieve Publisher ID credentials, manage app-ads.txt, configure GDPR consent, and track performance.">
   <meta name="robots" content="index, follow">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
@@ -231,7 +231,7 @@
     <div class="login-card">
       <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo">
       <h1>Connect<span class="gold">gold</span></h1>
-      <p>Mobile Mediation Console.<br>Sign in to manage 30 SDK ad adapters, app-ads.txt, GDPR consent, and track mobile performance.</p>
+      <p>Mobile Mediation Console.<br>Sign in to retrieve your Publisher ID, manage app-ads.txt, configure GDPR consent, and track performance.</p>
       
       <div id="g_id_onload"
            data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
@@ -253,7 +253,7 @@
   <div id="app-dashboard">
     <div class="app-container">
       
-      <!-- SIDEBAR MENU -->
+      <!-- SIDEBAR NAVIGATION MENU -->
       <div class="sidebar">
         <div>
           <div class="brand-header">
@@ -274,7 +274,7 @@
 
           <ul class="sidebar-menu">
             <li class="active" onclick="switchTab('apps-tab', this)">
-              <span>📱</span> Apps & Placements
+              <span>📱</span> App
             </li>
             <li onclick="switchTab('appads-tab', this)">
               <span>📄</span> App-Ads.txt Setup
@@ -306,47 +306,20 @@
       <!-- MAIN CONTENT -->
       <div class="main-content">
 
-        <!-- MENU 1: APP & PLACEMENT REGISTRATION -->
+        <!-- MENU 1: APP (PUBLISHER ID CREDENTIALS) -->
         <div id="apps-tab" class="tab-content active">
           <div class="card">
-            <h2>📱 Register Android App & Ad Placements</h2>
+            <h2>📱 Publisher ID Credentials</h2>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">
+              Use your unique Publisher ID to authenticate your app in code when making SDK requests.
+            </p>
             
             <div class="form-group">
-              <label>Publisher / Developer ID</label>
+              <label>Connectgold Publisher ID (`pub_id`)</label>
               <input type="text" id="pub-id" readonly placeholder="Generating developer credentials...">
             </div>
 
-            <div class="form-group">
-              <label>Android Package Name (`applicationId`)</label>
-              <input type="text" id="app-pkg-name" placeholder="e.g. com.company.game">
-            </div>
-
-            <div class="form-group">
-              <label>Mobile Ad Unit Format</label>
-              <select id="mobile-format">
-                <option value="banner">Banner Ad (320x50 / 300x250)</option>
-                <option value="interstitial">Full Screen Interstitial</option>
-                <option value="rewarded">Rewarded Video Ad</option>
-                <option value="native">Native Template View</option>
-                <option value="vast">VAST Video Stream</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Connectgold Direct Network Consent Setting (EEA / GDPR / CCPA)</label>
-              <select id="cg-direct-consent" onchange="saveAppConfig()">
-                <option value="1" selected>Consent Granted (Pass consent=1 for personalized Connectgold Direct Ads)</option>
-                <option value="0">Consent Denied (Pass consent=0 for non-personalized Connectgold Direct House Ads)</option>
-                <option value="auto">Auto-Check App Local Storage (`user_ad_consent` key)</option>
-              </select>
-              <small style="color:var(--text-muted);">
-                * Dedicated consent handling for your Connectgold Direct Adapter. Mediated networks (AdMob, Yandex, Unity, ironSource, etc.) execute their own native consent SDK dialogs.
-              </small>
-            </div>
-
-            <button class="btn" onclick="saveAppConfig()">Register Mobile Placement</button>
-
-            <div id="app-save-box" style="display: none; margin-top: 20px;" class="code-box"></div>
+            <button class="btn btn-copy" onclick="copyCode('pub-id')">Copy Publisher ID</button>
           </div>
         </div>
 
@@ -604,26 +577,9 @@
       document.getElementById("tp-mixpanel-token").value = localStorage.getItem("cg_mixpanel_token") || "";
     }
 
-    function saveAppConfig() {
-      const pkg = document.getElementById("app-pkg-name").value || "com.example.app";
-      const fmt = document.getElementById("mobile-format").value;
-      const pubId = document.getElementById("pub-id").value;
-      const consentVal = document.getElementById("cg-direct-consent").value;
-
-      localStorage.setItem("cg_direct_consent", consentVal);
-
-      const resultBox = document.getElementById("app-save-box");
-      resultBox.style.display = "block";
-      resultBox.innerText = `App Registered!\nPackage: ${pkg}\nFormat: ${fmt}\nDeveloper ID: ${pubId}\nConnectgold Consent: ${consentVal}\nStatus: Active on Mobile Edge Server`;
-    }
-
     function buildQueryParams(formatVal) {
       const pubId = document.getElementById("pub-id").value || "pub_direct";
-      const consentVal = document.getElementById("cg-direct-consent") 
-        ? document.getElementById("cg-direct-consent").value 
-        : (localStorage.getItem("cg_direct_consent") || "1");
-
-      let params = `?platform=android&format=${formatVal}&pub_id=${pubId}&consent=${consentVal}`;
+      let params = `?platform=android&format=${formatVal}&pub_id=${pubId}&consent=1`;
 
       const ga4Id = localStorage.getItem("cg_ga4_id");
       const plausibleDomain = localStorage.getItem("cg_plausible_domain");
@@ -716,9 +672,10 @@
     }
 
     function copyCode(elementId) {
-      const text = document.getElementById(elementId).innerText;
+      const elem = document.getElementById(elementId);
+      const text = elem.value || elem.innerText;
       navigator.clipboard.writeText(text);
-      alert("Copied code snippet to clipboard!");
+      alert("Copied Publisher ID to clipboard!");
     }
 
     function switchTab(tabId, elem) {
@@ -742,14 +699,10 @@
 
       const todayISO = new Date().toISOString().split('T')[0];
       document.getElementById("analytics-date").value = todayISO;
-
-      const savedConsent = localStorage.getItem("cg_direct_consent");
-      if (savedConsent && document.getElementById("cg-direct-consent")) {
-        document.getElementById("cg-direct-consent").value = savedConsent;
-      }
     });
   </script>
 </body>
 </html>
+
 
 

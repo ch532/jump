@@ -648,7 +648,7 @@
               <input type="text" id="tp-mixpanel-token" placeholder="e.g. 361e...a28e" onkeyup="saveAnalyticsConfig()">
             </div>
 
-            <small style="color:var(--primary);">* Saved automatically. Configured platforms will be injected directly into your generated ad code snippets!</small>
+            <small style="color:var(--primary);">* Saved automatically. Configured platforms will be explicitly injected into your generated ad code snippets!</small>
           </div>
         </div>
 
@@ -891,6 +891,23 @@
       const rotationSec = parseInt(document.getElementById("plc-rotation").value, 10);
       const consentSetting = document.getElementById("plc-consent").value;
 
+      // 1. READ ALL SAVED THIRD-PARTY ANALYTICS CREDENTIALS
+      const ga4Id = localStorage.getItem("cg_ga4_id") || "";
+      const plausibleDomain = localStorage.getItem("cg_plausible_domain") || "";
+      const mixpanelToken = localStorage.getItem("cg_mixpanel_token") || "";
+
+      // 2. BUILD EXPLICIT TELEMETRY CODE SNIPPET
+      let tpSnippet = "";
+      if (ga4Id) {
+        tpSnippet += `\n          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'${plcName}','pub':'${pubId}'});`;
+      }
+      if (plausibleDomain) {
+        tpSnippet += `\n          if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcName}'}});`;
+      }
+      if (mixpanelToken) {
+        tpSnippet += `\n          if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcName}'});`;
+      }
+
       const payload = {
         publisher_id: pubId,
         placement_name: plcName,
@@ -913,7 +930,7 @@
 
         let generatedSnippet = "";
 
-        // COMPRESSED & LIGHTWEIGHT CLIENT TAG GENERATOR
+        // 3. GENERATE TAGS WITH EXPLICIT ANALYTICS EMBEDDED
         if (workerFormat === "banner") {
           const dims = bannerSize.split("x");
           const rotCode = rotationSec > 0 ? `setInterval(loadAd,${rotationSec * 1000});` : ``;
@@ -930,7 +947,12 @@
       .then(function(d){
         var e=document.getElementById("${plcId}");if(!e)return;
         var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&&('<a href="'+d.ad.destination_url+'" target="_blank"><img src="'+d.ad.image_url+'" width="${dims[0]}" height="${dims[1]}"/></a>'));
-        if(m){e.innerHTML='';var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(m));}
+        if(m){
+          e.innerHTML='';
+          var rng=document.createRange();
+          rng.selectNode(e);
+          e.appendChild(rng.createContextualFragment(m));${tpSnippet}
+        }
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();${rotCode}
@@ -952,7 +974,12 @@
       .then(function(d){
         var e=document.getElementById("${plcId}");if(!e)return;
         var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&&('<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;"><h4 style="margin:0;">'+d.ad.title+'</h4><p style="font-size:12px;color:#8b949e;">'+(d.ad.description||'')+'</p><a href="'+d.ad.destination_url+'" target="_blank" style="background:#d4af37;color:#000;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:bold;">'+(d.ad.cta_text||'Learn More')+'</a></div>'));
-        if(m){e.innerHTML='';var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(m));}
+        if(m){
+          e.innerHTML='';
+          var rng=document.createRange();
+          rng.selectNode(e);
+          e.appendChild(rng.createContextualFragment(m));${tpSnippet}
+        }
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();${rotCode}
@@ -969,8 +996,16 @@ function showConnectGoldAd(){
     .then(function(r){return r.json();})
     .then(function(d){
       var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm);
-      if(m){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(m));}
-      else if(d.ad&&d.ad.destination_url){window.open(d.ad.destination_url,"_blank");}
+      if(m){
+        var el=document.createElement("div");
+        document.body.appendChild(el);
+        var rng=document.createRange();
+        rng.selectNode(el);
+        el.appendChild(rng.createContextualFragment(m));${tpSnippet}
+      }
+      else if(d.ad&&d.ad.destination_url){
+        window.open(d.ad.destination_url,"_blank");${tpSnippet}
+      }
     }).catch(function(err){console.error("CG Ad Error:",err);});
 }
 <\/script>`;
@@ -1036,6 +1071,7 @@ function showConnectGoldAd(){
   </script>
 </body>
 </html>
+
 
 
 

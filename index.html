@@ -117,23 +117,23 @@
     </nav>
 </header>
 
-<!-- CG: Feel -->
-<div id="plc_65gz7r" style="width:300px;min-height:250px;margin:auto;"></div>
+<!-- CG: Gift -->
+<div id="plc_m2x4rd" style="width:300px;min-height:250px;margin:auto;"></div>
 <script>
 (function(){
   function loadAd(){
     var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-    fetch("https://shiny-rice-8cb3.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_65gz7r&pub_id=pub_connectgold1234&consent="+c)
+    fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_m2x4rd&pub_id=pub_connectgold1234&consent="+c)
       .then(function(r){return r.json();})
       .then(function(d){
-        var e=document.getElementById("plc_65gz7r");if(!e)return;
+        var e=document.getElementById("plc_m2x4rd");if(!e)return;
         var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&&('<a href="'+d.ad.destination_url+'" target="_blank"><img src="'+d.ad.image_url+'" width="300" height="250"/></a>'));
         if(m){
           e.innerHTML='';
           var rng=document.createRange();
           rng.selectNode(e);
           e.appendChild(rng.createContextualFragment(m));
-          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Feel','pub':'pub_connectgold1234'});
+          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Gift','pub':'pub_connectgold1234'});
         }
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
@@ -157,33 +157,52 @@
     <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
     <div class="gcse-search" data-sdk-feature="Site Search"></div>
 
+    <!-- CG AI Ad: Prince -->
+<div id="plc_2pd4em"></div>
+<script>
+(function(){
+  function loadAiAd(){
+    fetch("https://shiny-rice-482f.trustconnect713.workers.dev/ai/ad-generator?product=Food")
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var e=document.getElementById("plc_2pd4em");if(!e)return;
+        var h=d.headline||"Special Offer";
+        var c=d.cta||"Shop Now";
+        e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);"><h4 style="margin:0 0 10px 0;color:#fff;font-size:15px;line-height:1.4;">'+h+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:bold;display:inline-block;">'+c+'</a></div>';
+          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Prince','pub':'pub_connectgold1234'});
+      }).catch(function(err){console.error("CG AI Ad Error:",err);});
+  }
+  loadAiAd();setInterval(loadAiAd,30000);
+})();
+</script>
+
     <!-- LIVE NEWS RSS FEED CONTAINER -->
     <section id="my-native-feed" data-sdk-feature="Live News Feed">Loading feed...</section>
 
-    <!-- CG: Run -->
-<div id="plc_rgjron"></div>
+<!-- CG: Rays -->
+<div id="plc_gtn0vx"></div>
 <script>
 (function(){
   function loadAd(){
     var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-    fetch("https://shiny-rice-8cb3.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_rgjron&pub_id=pub_connectgold1234&consent="+c)
+    fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_gtn0vx&pub_id=pub_connectgold1234&consent="+c)
       .then(function(r){return r.json();})
       .then(function(d){
-        var e=document.getElementById("plc_rgjron");if(!e)return;
+        var e=document.getElementById("plc_gtn0vx");if(!e)return;
         var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&&('<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;"><h4 style="margin:0;">'+d.ad.title+'</h4><p style="font-size:12px;color:#8b949e;">'+(d.ad.description||'')+'</p><a href="'+d.ad.destination_url+'" target="_blank" style="background:#d4af37;color:#000;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:bold;">'+(d.ad.cta_text||'Learn More')+'</a></div>'));
         if(m){
           e.innerHTML='';
           var rng=document.createRange();
           rng.selectNode(e);
           e.appendChild(rng.createContextualFragment(m));
-          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Run','pub':'pub_connectgold1234'});
+          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Rays','pub':'pub_connectgold1234'});
         }
       }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();setInterval(loadAd,30000);
 })();
 </script>
-
+    
 </main>
 
 <!-- RSS FEED LOADER SCRIPT -->
@@ -215,11 +234,11 @@ async function loadFeed() {
 loadFeed();
 </script>
 
-<!-- CG: Run -->
+<!-- CG: Even  -->
 <script>
 function showConnectGoldAd(){
   var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-  fetch("https://shiny-rice-8cb3.trustconnect713.workers.dev/?platform=web&format=interstitial_fullscreen&plc=plc_ua00gm&pub_id=pub_connectgold1234&consent="+c)
+  fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=interstitial_fullscreen&plc=plc_c87hxz&pub_id=pub_connectgold1234&consent="+c)
     .then(function(r){return r.json();})
     .then(function(d){
       var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm);
@@ -229,11 +248,11 @@ function showConnectGoldAd(){
         var rng=document.createRange();
         rng.selectNode(el);
         el.appendChild(rng.createContextualFragment(m));
-          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Run','pub':'pub_connectgold1234'});
+          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Even ','pub':'pub_connectgold1234'});
       }
       else if(d.ad&&d.ad.destination_url){
         window.open(d.ad.destination_url,"_blank");
-          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Run','pub':'pub_connectgold1234'});
+          if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Even ','pub':'pub_connectgold1234'});
       }
     }).catch(function(err){console.error("CG Ad Error:",err);});
 }

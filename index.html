@@ -115,61 +115,28 @@
     </nav>
 </header>
 
-<!-- ======================================================== -->
-<!-- 1. CONNECTGOLD AD SLOT: TOP BANNER (300x250) -->
-<!-- ======================================================== -->
-<div class="ad-container-top">
-  <div id="plc_demo"></div>
-</div>
+<!-- Connectgold: Fire (300x250) -->
+<div id="plc_demo" style="width:300px;min-height:250px;margin:auto;overflow:hidden;"></div>
 <script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = (localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0");
-      fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          const box = document.getElementById("plc_demo");
-          if (!box) return;
-
-          const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-          
-          if (rtbBid && rtbBid.adm) {
-            box.innerHTML = rtbBid.adm;
-            if (rtbBid.nurl) fetch(rtbBid.nurl);
-          } else if (data.adHtml || data.html_snippet || data.adm) {
-            const rawMarkup = data.adm || data.adHtml || data.html_snippet;
-            if (rawMarkup) {
-              const tempDiv = document.createElement("div");
-              tempDiv.innerHTML = rawMarkup;
-              box.innerHTML = "";
-              Array.from(tempDiv.childNodes).forEach(node => {
-                if (node.tagName === "SCRIPT") {
-                  const newScript = document.createElement("script");
-                  Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                  if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-                  box.appendChild(newScript);
-                } else {
-                  box.appendChild(node.cloneNode(true));
-                }
-              });
-            }
-          } else if (data.ad) {
-            const adInfo = data.ad;
-            box.innerHTML = `<a href="${adInfo.destination_url}" target="_blank" rel="noopener">
-              <img src="${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="300" height="250" alt="${adInfo.title || 'Ad'}" style="border:0; max-width:100%; height:auto; border-radius:6px;" />
-            </a>`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'placement_id': 'plc_demo', 'format': 'banner' });
-          }
-        })
-        .catch(err => console.error("Connectgold Banner Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 30000);
-  })();
+(function(){
+  function loadAd(){
+    var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_demo&pub_id=pub_connectgold1234&consent="+c)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var b=document.getElementById("plc_demo");if(!b)return;
+        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+        else if(d.ad){
+          var a=d.ad;
+          b.innerHTML='<a href="'+a.destination_url+'" target="_blank" rel="noopener"><img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="300" height="250" style="border:0;max-width:100%;height:auto;"/></a>';
+          if(a.nurl)fetch(a.nurl);
+        }
+        if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo','fmt':'banner'});
+      }).catch(function(e){console.error("Ad error:",e);});
+  }
+  loadAd();setInterval(loadAd,30000);
+})();
 </script>
     
 <script async src="https://www.getchatads.com/widget.js?key=cwk_24625beca8802d7fcaad17a8762dead0a04afd51"></script>
@@ -191,144 +158,52 @@
     <!-- LIVE NEWS RSS FEED CONTAINER -->
     <section id="my-native-feed" data-sdk-feature="Live News Feed">Loading feed...</section>
 
-    <!-- ======================================================== -->
-    <!-- 2. CONNECTGOLD AD SLOT: NATIVE DISPLAY IN-FEED -->
-    <!-- ======================================================== -->
-    <div class="ad-container-native">
-      <div id="plc_demo_native"></div>
-    </div>
-    <script>
-      (function() {
-        function fetchAndRenderNativeAd() {
-          const consentVal = (localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0");
-          fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_demo_native&pub_id=pub_connectgold1234&consent=" + consentVal)
-            .then(res => res.json())
-            .then(data => {
-              const box = document.getElementById("plc_demo_native");
-              if (!box) return;
-
-              const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-
-              if (rtbBid && rtbBid.adm) {
-                box.innerHTML = rtbBid.adm;
-                if (rtbBid.nurl) fetch(rtbBid.nurl);
-              } else if (data.adHtml || data.html_snippet || data.adm) {
-                const rawMarkup = data.adm || data.adHtml || data.html_snippet;
-                if (rawMarkup) {
-                  const tempDiv = document.createElement("div");
-                  tempDiv.innerHTML = rawMarkup;
-                  box.innerHTML = "";
-                  Array.from(tempDiv.childNodes).forEach(node => {
-                    if (node.tagName === "SCRIPT") {
-                      const newScript = document.createElement("script");
-                      Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                      if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-                      box.appendChild(newScript);
-                    } else {
-                      box.appendChild(node.cloneNode(true));
-                    }
-                  });
-                }
-              } else if (data.ad) {
-                const adInfo = data.ad;
-                box.innerHTML = `
-                  <div style="border:1px solid #cbd5e1; padding:18px; background:#fff; color:#1e293b; border-radius:8px; font-family:sans-serif; text-align:left; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                    ${adInfo.image_url ? `<img src="${adInfo.image_url}" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:12px;" />` : ''}
-                    <h4 style="margin:0 0 8px 0; font-size:18px; color:#0f172a;">${adInfo.title}</h4>
-                    <p style="margin:0 0 12px 0; font-size:14px; color:#475569; line-height:1.5;">${adInfo.description || adInfo.body || 'Monetize and scale your web traffic with Connectgold Edge Network.'}</p>
-                    <a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:8px 16px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:13px;">${adInfo.cta_text || 'Learn More'}</a>
-                  </div>`;
-                if (adInfo.nurl) fetch(adInfo.nurl);
-              }
-              
-              if (typeof gtag === 'function') {
-                gtag('event', 'connectgold_ad_impression', { 'placement_id': 'plc_demo_native', 'format': 'native_display' });
-              }
-            })
-            .catch(err => console.error("Connectgold Native Error:", err));
+    <!-- Connectgold: Fire (NATIVE_DISPLAY) -->
+<div id="plc_demo"></div>
+<script>
+(function(){
+  function loadAd(){
+    var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_demo&pub_id=pub_connectgold1234&consent="+c)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var b=document.getElementById("plc_demo");if(!b)return;
+        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+        else if(d.ad){
+          var a=d.ad;
+          b.innerHTML='<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;">'+(a.image_url?'<img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/>':'')+'<h4 style="margin:0 0 4px 0;font-size:15px;">'+a.title+'</h4><p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;">'+(a.description||a.body||'')+'</p><a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;">'+(a.cta_text||'Learn More')+'</a></div>';
+          if(a.nurl)fetch(a.nurl);
         }
-        fetchAndRenderNativeAd();
-        setInterval(fetchAndRenderNativeAd, 30000);
-      })();
-    </script>
+        if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo','fmt':'native_display'});
+      }).catch(function(e){console.error("Ad error:",e);});
+  }
+  loadAd();setInterval(loadAd,30000);
+})();
+</script>
         
     <!-- YANDEX MAP WIDGET -->
     <div class="yandex-map-container" data-sdk-feature="Regional Map">
         <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
     </div>
 
-    <!-- ======================================================== -->
-    <!-- 3. CONNECTGOLD REWARDED VIDEO TEST TRIGGER -->
-    <!-- ======================================================== -->
-    <div style="text-align: center; margin: 20px 0;">
-      <button class="rewarded-ad-btn" onclick="showRewardedAd()">🎬 Watch Video Ad</button>
-    </div>
-
-</main>
-
-<!-- RSS FEED LOADER SCRIPT -->
+<!-- Connectgold: Holiday  (REWARDED VIDEO) -->
 <script>
-async function loadFeed() {
-    const rssUrl = "https://www.bellanaija.com/event/feed/";
-    const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    
-    try {
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-        const feedContainer = document.getElementById('my-native-feed');
-        feedContainer.innerHTML = ''; 
-
-        data.items.forEach((item) => {
-            const div = document.createElement('div');
-            div.className = 'news-item';
-            div.innerHTML = `
-                <h3 style="margin-top:0; color:#1e293b;">${item.title}</h3>
-                <p style="color:#475569; font-size:14px;">${item.description}</p>
-                <a href="${item.link}" target="_blank" rel="noopener" style="color:#0284c7; text-decoration:none; font-weight:bold; font-size:13px;">Read Full Article →</a>
-            `;
-            feedContainer.appendChild(div);
-        });
-    } catch (e) {
-        document.getElementById('my-native-feed').innerHTML = "Unable to load RSS feed.";
-    }
+function showRewardedAd(){
+  var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+  fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=rewarded_video&plc=plc_demo&pub_id=pub_connectgold1234&consent="+c)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d)return alert("No rewarded ad available.");
+      var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+      if(r&&r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
+      else if(d.ad){var a=d.ad;alert("Rewarded Ad: "+(a.title||"Connectgold"));if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
+      if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo','fmt':'rewarded_video'});
+      if("")fetch("?pub_id=pub_connectgold1234&status=completed&plc=plc_demo");
+    }).catch(function(e){console.error("Ad error:",e);});
 }
-loadFeed();
 </script>
-
-<!-- REWARDED VIDEO AD TRIGGER FUNCTION -->
-<script>
-  function showRewardedAd() {
-    const consentVal = (localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0");
-    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=rewarded_video&plc=plc_demo_rewarded&pub_id=pub_connectgold1234&consent=" + consentVal)
-      .then(res => res.json())
-      .then(data => {
-        if (!data) {
-          alert("No rewarded video campaigns currently available.");
-          return;
-        }
-
-        const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-
-        if (rtbBid && rtbBid.adm) {
-          const tempModal = document.createElement("div");
-          tempModal.innerHTML = rtbBid.adm;
-          document.body.appendChild(tempModal);
-          if (rtbBid.nurl) fetch(rtbBid.nurl);
-        } else if (data.ad) {
-          const adInfo = data.ad;
-          alert("Playing Rewarded Ad: " + (adInfo.title || "Connectgold Network"));
-          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
-          if (adInfo.nurl) fetch(adInfo.nurl);
-        }
-
-        if (typeof gtag === 'function') {
-          gtag('event', 'connectgold_ad_impression', { 'placement_id': 'plc_demo_rewarded', 'format': 'rewarded_video' });
-        }
-      })
-      .catch(err => console.error("Connectgold Rewarded Video Error:", err));
-  }
-</script>
-
+    
 <!-- COOKIE CONSENT BANNER -->
 <div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 18px 24px; border-radius: 8px; z-index: 9999; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
     <p style="margin:0; font-size:14px;">SkyIPworld uses cookies to optimize your terminal experience and customize ad recommendations.</p>

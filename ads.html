@@ -7,7 +7,7 @@
   <!-- PRIMARY SEO META TAGS -->
   <title>Connectgold - Premium Global Ad Network Platform</title>
   <meta name="title" content="Connectgold - Premium Global Ad Network Platform">
-  <meta name="description" content="Connectgold is a next-generation edge-computed ad network. It use AI for improved ad performance and best ad experience. Earn 80% revenue share with ultra-fast ad units, real-time analytics, and automated global payouts.">
+  <meta name="description" content="Connectgold is a next-generation edge-computed ad network. Earn 80% revenue share with ultra-fast ad units, real-time analytics, and automated global payouts.">
   <meta name="keywords" content="ad network, publisher monetization, eCPM, banner ads, native ads, rewarded video, paystack ad network, connectgold">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Connectgold">
@@ -16,14 +16,14 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://chyke.online/ads.html">
   <meta property="og:title" content="Connectgold - Premium Global Ad Network Platform">
-  <meta property="og:description" content="Monetize your website with edge-computed real-time bidding. It use AI for improved ad performance and best ad experience. 80% revenue share for publishers and instant campaign setup for global advertisers.">
+  <meta property="og:description" content="Monetize your website with edge-computed real-time bidding. 80% revenue share for publishers and instant campaign setup for global advertisers.">
   <meta property="og:image" content="https://chyke.online/connectgold_2.png">
 
   <!-- TWITTER / X META TAGS -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://chyke.online/ads.html">
   <meta property="twitter:title" content="Connectgold - Premium Global Ad Network Platform">
-  <meta property="twitter:description" content="Monetize your website with edge-computed real-time bidding. It use AI for improved ad performance and best ad experience. 80% revenue share for publishers and instant campaign setup for global advertisers.">
+  <meta property="twitter:description" content="Monetize your website with edge-computed real-time bidding. 80% revenue share for publishers and instant campaign setup for global advertisers.">
   <meta property="twitter:image" content="https://chyke.online/connectgold_2.png">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
@@ -677,7 +677,7 @@
   <script>
     // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://delicate-night-fb02.trustconnect713.workers.dev"; 
+    const AD_ENGINE_WORKER_URL = "https://shiny-rice-8cb3.trustconnect713.workers.dev"; 
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -736,7 +736,7 @@
     }
 
     function updateAdsTxt(pubId) {
-      const adsTxtContent = `delicate-night-fb02.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
+      const adsTxtContent = `shiny-rice-8cb3.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
       document.getElementById("ads-txt-output").innerText = adsTxtContent;
     }
 
@@ -891,10 +891,6 @@
       const rotationSec = parseInt(document.getElementById("plc-rotation").value, 10);
       const consentSetting = document.getElementById("plc-consent").value;
 
-      const ga4Id = localStorage.getItem("cg_ga4_id") || "";
-      const plausibleDomain = localStorage.getItem("cg_plausible_domain") || "";
-      const mixpanelToken = localStorage.getItem("cg_mixpanel_token") || "";
-
       const payload = {
         publisher_id: pubId,
         placement_name: plcName,
@@ -913,23 +909,18 @@
         });
 
         const data = await res.json();
-        const plcId = data.placement ? data.placement.placement_id : "plc_demo";
-
-        let tpSnippet = ``;
-        if (ga4Id) tpSnippet += `if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'${plcId}','fmt':'${workerFormat}'});`;
-        if (plausibleDomain) tpSnippet += `if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcId}'}});`;
-        if (mixpanelToken) tpSnippet += `if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcId}'});`;
+        const plcId = data.placement ? data.placement.placement_id : "plc_" + Math.random().toString(36).substring(2, 8);
 
         let generatedSnippet = "";
 
-        // STREAMLINED EMBED CODE GENERATOR
+        // COMPRESSED & LIGHTWEIGHT CLIENT TAG GENERATOR
         if (workerFormat === "banner") {
           const dims = bannerSize.split("x");
           const rotCode = rotationSec > 0 ? `setInterval(loadAd,${rotationSec * 1000});` : ``;
 
           generatedSnippet = 
-`<!-- Connectgold: ${plcName} (${bannerSize}) -->
-<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;overflow:hidden;"></div>
+`<!-- CG: ${plcName} -->
+<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;"></div>
 <script>
 (function(){
   function loadAd(){
@@ -937,16 +928,10 @@
     fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&consent="+c)
       .then(function(r){return r.json();})
       .then(function(d){
-        var b=document.getElementById("${plcId}");if(!b)return;
-        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
-        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
-        else if(d.ad){
-          var a=d.ad;
-          b.innerHTML='<a href="'+a.destination_url+'" target="_blank" rel="noopener"><img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="${dims[0]}" height="${dims[1]}" style="border:0;max-width:100%;height:auto;"/></a>';
-          if(a.nurl)fetch(a.nurl);
-        }
-        ${tpSnippet}
-      }).catch(function(e){console.error("Ad error:",e);});
+        var e=document.getElementById("${plcId}");if(!e)return;
+        var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&&('<a href="'+d.ad.destination_url+'" target="_blank"><img src="'+d.ad.image_url+'" width="${dims[0]}" height="${dims[1]}"/></a>'));
+        if(m){e.innerHTML='';var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(m));}
+      }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();${rotCode}
 })();
@@ -956,7 +941,7 @@
           const rotCode = rotationSec > 0 ? `setInterval(loadAd,${rotationSec * 1000});` : ``;
 
           generatedSnippet = 
-`<!-- Connectgold: ${plcName} (${workerFormat.toUpperCase()}) -->
+`<!-- CG: ${plcName} -->
 <div id="${plcId}"></div>
 <script>
 (function(){
@@ -965,55 +950,28 @@
     fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${workerFormat}&plc=${plcId}&pub_id=${pubId}&consent="+c)
       .then(function(r){return r.json();})
       .then(function(d){
-        var b=document.getElementById("${plcId}");if(!b)return;
-        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
-        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
-        else if(d.ad){
-          var a=d.ad;
-          b.innerHTML='<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;">'+(a.image_url?'<img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/>':'')+'<h4 style="margin:0 0 4px 0;font-size:15px;">'+a.title+'</h4><p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;">'+(a.description||a.body||'')+'</p><a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;">'+(a.cta_text||'Learn More')+'</a></div>';
-          if(a.nurl)fetch(a.nurl);
-        }
-        ${tpSnippet}
-      }).catch(function(e){console.error("Ad error:",e);});
+        var e=document.getElementById("${plcId}");if(!e)return;
+        var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm)||(d.ad&&('<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;"><h4 style="margin:0;">'+d.ad.title+'</h4><p style="font-size:12px;color:#8b949e;">'+(d.ad.description||'')+'</p><a href="'+d.ad.destination_url+'" target="_blank" style="background:#d4af37;color:#000;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:bold;">'+(d.ad.cta_text||'Learn More')+'</a></div>'));
+        if(m){e.innerHTML='';var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(m));}
+      }).catch(function(err){console.error("CG Ad Error:",err);});
   }
   loadAd();${rotCode}
 })();
 <\/script>`;
 
-        } else if (workerFormat === "rewarded_video") {
+        } else if (workerFormat === "rewarded_video" || workerFormat === "interstitial_fullscreen") {
           generatedSnippet = 
-`<!-- Connectgold: ${plcName} (REWARDED VIDEO) -->
+`<!-- CG: ${plcName} -->
 <script>
-function showRewardedAd(){
+function showConnectGoldAd(){
   var c=${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")' : `"${consentSetting}"`};
-  fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=rewarded_video&plc=${plcId}&pub_id=${pubId}&consent="+c)
+  fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${workerFormat}&plc=${plcId}&pub_id=${pubId}&consent="+c)
     .then(function(r){return r.json();})
     .then(function(d){
-      if(!d)return alert("No rewarded ad available.");
-      var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
-      if(r&&r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
-      else if(d.ad){var a=d.ad;alert("Rewarded Ad: "+(a.title||"Connectgold"));if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
-      ${tpSnippet}
-      if("${callbackUrl}")fetch("${callbackUrl}?pub_id=${pubId}&status=completed&plc=${plcId}");
-    }).catch(function(e){console.error("Ad error:",e);});
-}
-<\/script>`;
-
-        } else if (workerFormat === "interstitial_fullscreen") {
-          generatedSnippet = 
-`<!-- Connectgold: ${plcName} (INTERSTITIAL FULLSCREEN) -->
-<script>
-function showInterstitialAd(){
-  var c=${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")' : `"${consentSetting}"`};
-  fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=interstitial_fullscreen&plc=${plcId}&pub_id=${pubId}&consent="+c)
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(!d)return;
-      var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
-      if(r&&r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
-      else if(d.ad){var a=d.ad;if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
-      ${tpSnippet}
-    }).catch(function(e){console.error("Ad error:",e);});
+      var m=(d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0]&&d.seatbid[0].bid[0].adm)||(d.adm);
+      if(m){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(m));}
+      else if(d.ad&&d.ad.destination_url){window.open(d.ad.destination_url,"_blank");}
+    }).catch(function(err){console.error("CG Ad Error:",err);});
 }
 <\/script>`;
         }
@@ -1078,6 +1036,7 @@ function showInterstitialAd(){
   </script>
 </body>
 </html>
+
 
 
 

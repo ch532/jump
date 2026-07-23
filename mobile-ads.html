@@ -7,7 +7,7 @@
   <!-- PRIMARY SEO META TAGS -->
   <title>Connectgold</title>
   <meta name="title" content="Connectgold - Mobile Ad Mediation Console">
-  <meta name="description" content="Manage 30+ mobile ad network SDK adapters, configure network credentials, tune eCPM waterfalls, manage app-ads.txt, configure GDPR consent, and copy Android Studio integration code for Connectgold Mobile SDK.">
+  <meta name="description" content="Manage 30+ mobile ad network SDK adapters, tune eCPM waterfalls, manage app-ads.txt, configure GDPR consent, and track analytics for Connectgold Mobile SDK.">
   <meta name="robots" content="index, follow">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
@@ -167,20 +167,6 @@
     }
     h2 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-size: 20px; color: #fff; }
 
-    .notice-banner {
-      background: rgba(212, 175, 55, 0.1);
-      border: 1px solid var(--primary);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .notice-banner .icon { font-size: 20px; color: var(--primary); }
-    .notice-banner p { margin: 0; font-size: 13px; color: #e6edf3; line-height: 1.5; }
-    .notice-banner strong { color: var(--primary); }
-
     .form-group { margin-bottom: 18px; }
     label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 13px; color: #c9d1d9; }
     input, select, textarea { 
@@ -210,8 +196,6 @@
       display: inline-block;
     }
     .btn:hover { background: var(--primary-hover); }
-    .btn-green { background: var(--success); color: #fff; }
-    .btn-green:hover { background: #2c974b; }
     .btn-copy { background: #238636; margin-top: 12px; padding: 8px 16px; font-size: 12px; color: #fff; }
     
     .code-box { 
@@ -238,8 +222,6 @@
     }
     .stat-box h3 { margin: 0; font-size: 26px; color: #fff; }
     .stat-box p { margin: 6px 0 0; color: var(--text-muted); font-size: 12px; }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   </style>
 </head>
 <body>
@@ -249,7 +231,7 @@
     <div class="login-card">
       <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo">
       <h1>Connect<span class="gold">gold</span></h1>
-      <p>Mobile Mediation Console.<br>Sign in to manage 30 SDK ad adapters, app credentials, app-ads.txt, GDPR consent, and Android Studio code snippets.</p>
+      <p>Mobile Mediation Console.<br>Sign in to manage 30 SDK ad adapters, app-ads.txt, GDPR consent, and track mobile performance.</p>
       
       <div id="g_id_onload"
            data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
@@ -294,17 +276,11 @@
             <li class="active" onclick="switchTab('apps-tab', this)">
               <span>📱</span> Apps & Placements
             </li>
-            <li onclick="switchTab('adapters-tab', this)">
-              <span>🔌</span> SDK Network Keys
-            </li>
             <li onclick="switchTab('appads-tab', this)">
               <span>📄</span> App-Ads.txt Setup
             </li>
             <li onclick="switchTab('waterfall-tab', this)">
               <span>⚡</span> Live Waterfall Tester
-            </li>
-            <li onclick="switchTab('integration-tab', this)">
-              <span>💻</span> Android Studio Code
             </li>
             <li onclick="switchTab('revenue-tab', this)">
               <span>💳</span> Earnings & Payouts
@@ -374,101 +350,7 @@
           </div>
         </div>
 
-        <!-- MENU 2: SDK ADAPTER CREDENTIALS (30 NETWORKS) -->
-        <div id="adapters-tab" class="tab-content">
-          <div class="card">
-            <h2>🔌 Custom SDK Ad Network Credentials</h2>
-            <p style="font-size:13px; color:var(--text-muted);">
-              Pass your own ad network credentials to serve ads directly from your accounts. If left empty, Connectgold default production adapters will be served automatically.
-            </p>
-
-            <div class="notice-banner">
-              <div class="icon">💡</div>
-              <p>Credentials entered here are automatically saved to your browser session and appended to your mobile worker requests.</p>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>AdMob App ID</label>
-                <input type="text" id="key-admob-app" placeholder="ca-app-pub-xxx~yyy" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>AdMob Ad Unit ID</label>
-                <input type="text" id="key-admob-unit" placeholder="ca-app-pub-xxx/zzz" onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Yandex App ID</label>
-                <input type="text" id="key-yandex-app" placeholder="e.g. 18858022" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>Yandex Ad Unit ID</label>
-                <input type="text" id="key-yandex-unit" placeholder="e.g. RM-18858022-1" onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Unity Game ID</label>
-                <input type="text" id="key-unity-game" placeholder="e.g. 6057927" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>Unity Placement ID</label>
-                <input type="text" id="key-unity-placement" placeholder="e.g. 13a3ee15-..." onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>ironSource App Key</label>
-                <input type="text" id="key-ironsource-app" placeholder="e.g. 256d5e765" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>Start.io App ID</label>
-                <input type="text" id="key-startio-app" placeholder="e.g. 202185423" onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Pangle App ID</label>
-                <input type="text" id="key-pangle-app" placeholder="e.g. 500123" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>Pangle Slot ID</label>
-                <input type="text" id="key-pangle-slot" placeholder="e.g. 900456" onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>AppLovin SDK Key</label>
-                <input type="text" id="key-applovin-sdk" placeholder="e.g. applovin_key_xxx" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>AppLovin Zone ID</label>
-                <input type="text" id="key-applovin-zone" placeholder="e.g. zone_xxx" onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label>InMobi Placement ID</label>
-                <input type="text" id="key-inmobi-placement" placeholder="e.g. 10000761098" onkeyup="saveKeys()">
-              </div>
-              <div class="form-group">
-                <label>Meta Placement ID</label>
-                <input type="text" id="key-meta-placement" placeholder="e.g. 1159864489514758_..." onkeyup="saveKeys()">
-              </div>
-            </div>
-
-            <button class="btn btn-green" onclick="alert('Network SDK keys saved successfully!')">Save All Credentials</button>
-          </div>
-        </div>
-
-        <!-- MENU 3: APP-ADS.TXT VERIFICATION -->
+        <!-- MENU 2: APP-ADS.TXT VERIFICATION -->
         <div id="appads-tab" class="tab-content">
           <div class="card">
             <h2>📄 App-Ads.txt Authorized Seller Certification</h2>
@@ -485,7 +367,7 @@
           </div>
         </div>
 
-        <!-- MENU 4: LIVE WATERFALL TESTER -->
+        <!-- MENU 3: LIVE WATERFALL TESTER -->
         <div id="waterfall-tab" class="tab-content">
           <div class="card">
             <h2>⚡ Live Edge Waterfall Inspection</h2>
@@ -509,27 +391,12 @@
           </div>
         </div>
 
-        <!-- MENU 5: ANDROID STUDIO CODE GENERATOR -->
-        <div id="integration-tab" class="tab-content">
-          <div class="card">
-            <h2>💻 Android Studio Integration Snippets</h2>
-            
-            <h3 style="color:#fff; font-size:15px; margin-top:0;">1. `app/build.gradle` Dependencies</h3>
-            <div id="gradle-code" class="code-box"></div>
-            <button class="btn btn-copy" onclick="copyCode('gradle-code')">Copy Gradle Code</button>
-
-            <h3 style="color:#fff; font-size:15px; margin-top:25px;">2. Android Java SDK Waterfall Fetcher</h3>
-            <div id="java-code" class="code-box"></div>
-            <button class="btn btn-copy" onclick="copyCode('java-code')">Copy Java Code</button>
-          </div>
-        </div>
-
-        <!-- MENU 6: EARNINGS & PAYOUTS -->
+        <!-- MENU 4: EARNINGS & PAYOUTS -->
         <div id="revenue-tab" class="tab-content">
           <div class="card">
             <h2>🏦 Developer Earnings & Payout Requests</h2>
             <p style="font-size:13px; color:var(--text-muted);">
-              Developers earn 80% revenue share on every ad impression served via Connectgold Direct Ads. Third-party network impressions (AdMob, Yandex, Unity, etc.) are paid 100% directly to your respective network accounts.
+              Developers earn automated revenue share on every ad impression served via Connectgold Mobile Mediation.
             </p>
 
             <div style="background: #0d1117; border: 1px solid var(--primary); padding: 18px; border-radius: 8px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center;">
@@ -588,7 +455,7 @@
           </div>
         </div>
 
-        <!-- MENU 7: MOBILE ANALYTICS & THIRD-PARTY TRACKING -->
+        <!-- MENU 5: MOBILE ANALYTICS & THIRD-PARTY TRACKING -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>📊 Mobile SDK Performance Analytics</h2>
@@ -697,9 +564,7 @@
       document.getElementById("usr-pic").src = user.picture || "https://chyke.online/connectgold_2.png";
 
       initPublisherId();
-      loadKeys();
       loadAnalyticsConfig();
-      updateIntegrationCode();
     }
 
     function signOut() {
@@ -720,7 +585,6 @@
         document.getElementById("pub-id").value = pubId;
       }
       updateAppAdsTxt(pubId);
-      updateIntegrationCode();
     }
 
     function updateAppAdsTxt(pubId) {
@@ -740,47 +604,6 @@
       document.getElementById("tp-mixpanel-token").value = localStorage.getItem("cg_mixpanel_token") || "";
     }
 
-    function saveKeys() {
-      const keys = {
-        admob_app: document.getElementById("key-admob-app").value.trim(),
-        admob_unit: document.getElementById("key-admob-unit").value.trim(),
-        yandex_app: document.getElementById("key-yandex-app").value.trim(),
-        yandex_unit: document.getElementById("key-yandex-unit").value.trim(),
-        unity_game: document.getElementById("key-unity-game").value.trim(),
-        unity_placement: document.getElementById("key-unity-placement").value.trim(),
-        ironsource_app: document.getElementById("key-ironsource-app").value.trim(),
-        startio_app: document.getElementById("key-startio-app").value.trim(),
-        pangle_app: document.getElementById("key-pangle-app").value.trim(),
-        pangle_slot: document.getElementById("key-pangle-slot").value.trim(),
-        applovin_sdk: document.getElementById("key-applovin-sdk").value.trim(),
-        applovin_zone: document.getElementById("key-applovin-zone").value.trim(),
-        inmobi_placement: document.getElementById("key-inmobi-placement").value.trim(),
-        meta_placement: document.getElementById("key-meta-placement").value.trim()
-      };
-      localStorage.setItem("cg_mobile_keys", JSON.stringify(keys));
-      updateIntegrationCode();
-    }
-
-    function loadKeys() {
-      const saved = localStorage.getItem("cg_mobile_keys");
-      if (!saved) return;
-      const k = JSON.parse(saved);
-      document.getElementById("key-admob-app").value = k.admob_app || "";
-      document.getElementById("key-admob-unit").value = k.admob_unit || "";
-      document.getElementById("key-yandex-app").value = k.yandex_app || "";
-      document.getElementById("key-yandex-unit").value = k.yandex_unit || "";
-      document.getElementById("key-unity-game").value = k.unity_game || "";
-      document.getElementById("key-unity-placement").value = k.unity_placement || "";
-      document.getElementById("key-ironsource-app").value = k.ironsource_app || "";
-      document.getElementById("key-startio-app").value = k.startio_app || "";
-      document.getElementById("key-pangle-app").value = k.pangle_app || "";
-      document.getElementById("key-pangle-slot").value = k.pangle_slot || "";
-      document.getElementById("key-applovin-sdk").value = k.applovin_sdk || "";
-      document.getElementById("key-applovin-zone").value = k.applovin_zone || "";
-      document.getElementById("key-inmobi-placement").value = k.inmobi_placement || "";
-      document.getElementById("key-meta-placement").value = k.meta_placement || "";
-    }
-
     function saveAppConfig() {
       const pkg = document.getElementById("app-pkg-name").value || "com.example.app";
       const fmt = document.getElementById("mobile-format").value;
@@ -792,8 +615,6 @@
       const resultBox = document.getElementById("app-save-box");
       resultBox.style.display = "block";
       resultBox.innerText = `App Registered!\nPackage: ${pkg}\nFormat: ${fmt}\nDeveloper ID: ${pubId}\nConnectgold Consent: ${consentVal}\nStatus: Active on Mobile Edge Server`;
-      
-      updateIntegrationCode();
     }
 
     function buildQueryParams(formatVal) {
@@ -803,25 +624,6 @@
         : (localStorage.getItem("cg_direct_consent") || "1");
 
       let params = `?platform=android&format=${formatVal}&pub_id=${pubId}&consent=${consentVal}`;
-
-      const saved = localStorage.getItem("cg_mobile_keys");
-      if (saved) {
-        const k = JSON.parse(saved);
-        if (k.admob_app) params += `&admob_app_id=${encodeURIComponent(k.admob_app)}`;
-        if (k.admob_unit) params += `&admob_ad_unit_id=${encodeURIComponent(k.admob_unit)}`;
-        if (k.yandex_app) params += `&yandex_app_id=${encodeURIComponent(k.yandex_app)}`;
-        if (k.yandex_unit) params += `&yandex_ad_unit_id=${encodeURIComponent(k.yandex_unit)}`;
-        if (k.unity_game) params += `&unity_game_id=${encodeURIComponent(k.unity_game)}`;
-        if (k.unity_placement) params += `&unity_placement_id=${encodeURIComponent(k.unity_placement)}`;
-        if (k.ironsource_app) params += `&ironsource_app_key=${encodeURIComponent(k.ironsource_app)}`;
-        if (k.startio_app) params += `&startio_app_id=${encodeURIComponent(k.startio_app)}`;
-        if (k.pangle_app) params += `&pangle_app_id=${encodeURIComponent(k.pangle_app)}`;
-        if (k.pangle_slot) params += `&pangle_slot_id=${encodeURIComponent(k.pangle_slot)}`;
-        if (k.applovin_sdk) params += `&applovin_sdk_key=${encodeURIComponent(k.applovin_sdk)}`;
-        if (k.applovin_zone) params += `&applovin_zone_id=${encodeURIComponent(k.applovin_zone)}`;
-        if (k.inmobi_placement) params += `&inmobi_placement_id=${encodeURIComponent(k.inmobi_placement)}`;
-        if (k.meta_placement) params += `&meta_placement_id=${encodeURIComponent(k.meta_placement)}`;
-      }
 
       const ga4Id = localStorage.getItem("cg_ga4_id");
       const plausibleDomain = localStorage.getItem("cg_plausible_domain");
@@ -850,50 +652,6 @@
       } catch (e) {
         box.innerText = "Error contacting Mobile Worker endpoint.";
       }
-    }
-
-    function updateIntegrationCode() {
-      const pubId = document.getElementById("pub-id").value || "pub_direct";
-
-      const gradleSnippet = 
-`// app/build.gradle
-dependencies {
-    // Connectgold Core Mobile SDK
-    implementation 'com.connectgold.sdk:connectgold-core:1.0.0'
-
-    // Supported SDK Adapter Libraries
-    implementation 'com.yandex.android:mobileads:7.0.0'
-    implementation 'com.google.android.gms:play-services-ads:23.0.0'
-    implementation 'com.unity3d.ads:unity-ads:4.10.0'
-    implementation 'com.ironsource.sdk:mediationsdk:8.0.0'
-    implementation 'com.inmobi.monetization:inmobi-ads-kotlin:10.7.0'
-    implementation 'com.startapp:inapp-sdk:5.0.0'
-}`;
-
-      const javaSnippet = 
-`// MainActivity.java
-String requestUrl = "${MOBILE_WORKER_URL}/" + buildQueryParams("interstitial");
-
-OkHttpClient client = new OkHttpClient();
-Request request = new Request.Builder().url(requestUrl).build();
-
-client.newCall(request).enqueue(new Callback() {
-    @Override
-    public void onResponse(Call call, Response response) throws IOException {
-        if (response.isSuccessful()) {
-            String jsonResponse = response.body().string();
-            // Connectgold SDK iterates through the received waterfall JSON array via Reflection
-            ConnectgoldMediation.loadWaterfall(MainActivity.this, jsonResponse);
-        }
-    }
-    @Override
-    public void onFailure(Call call, IOException e) {
-        Log.e("Connectgold", "Failed to fetch waterfall", e);
-    }
-});`;
-
-      document.getElementById("gradle-code").innerText = gradleSnippet;
-      document.getElementById("java-code").innerText = javaSnippet;
     }
 
     async function loadPublisherBalance() {
@@ -993,4 +751,5 @@ client.newCall(request).enqueue(new Callback() {
   </script>
 </body>
 </html>
+
 

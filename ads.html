@@ -884,7 +884,7 @@
     async function submitPlacement() {
       const pubId = document.getElementById("pub-id").value;
       const plcName = document.getElementById("plc-name").value || "Default Placement";
-      const workerFormat = document.getElementById("plc-format").value; // banner, native_display, infeed, interstitial_fullscreen, rewarded_video
+      const workerFormat = document.getElementById("plc-format").value;
       const bannerSize = document.getElementById("banner-size").value;
       const bannerLocation = document.getElementById("banner-location").value;
       const callbackUrl = document.getElementById("callback-url").value;
@@ -915,206 +915,106 @@
         const data = await res.json();
         const plcId = data.placement ? data.placement.placement_id : "plc_demo";
 
-        let tpTrackingSnippet = ``;
-        if (ga4Id) {
-          tpTrackingSnippet += `
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'placement_id': '${plcId}', 'format': '${workerFormat}' });
-          }`;
-        }
-        if (plausibleDomain) {
-          tpTrackingSnippet += `
-          if (typeof plausible === 'function') {
-            plausible('Connectgold Impression', { props: { placement_id: '${plcId}' } });
-          }`;
-        }
-        if (mixpanelToken) {
-          tpTrackingSnippet += `
-          if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
-            mixpanel.track('Connectgold Impression', { 'placement_id': '${plcId}' });
-          }`;
-        }
-
-        // UNIVERSAL SCRIPT & HTML MARKUP EXECUTION HELPER
-        const scriptExecutorLogic = `
-          const rawMarkup = data.adm || data.adHtml || data.html_snippet;
-          if (rawMarkup) {
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = rawMarkup;
-            box.innerHTML = "";
-            Array.from(tempDiv.childNodes).forEach(node => {
-              if (node.tagName === "SCRIPT") {
-                const newScript = document.createElement("script");
-                Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-                box.appendChild(newScript);
-              } else {
-                box.appendChild(node.cloneNode(true));
-              }
-            });
-          }`;
+        let tpSnippet = ``;
+        if (ga4Id) tpSnippet += `if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'${plcId}','fmt':'${workerFormat}'});`;
+        if (plausibleDomain) tpSnippet += `if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcId}'}});`;
+        if (mixpanelToken) tpSnippet += `if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcId}'});`;
 
         let generatedSnippet = "";
 
-        // 1. BANNER AD EMBED CODE
+        // STREAMLINED EMBED CODE GENERATOR
         if (workerFormat === "banner") {
           const dims = bannerSize.split("x");
-          const rotationCode = rotationSec > 0 
-            ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
-            : ``;
+          const rotCode = rotationSec > 0 ? `setInterval(loadAd,${rotationSec * 1000});` : ``;
 
           generatedSnippet = 
-`<!-- Connectgold Ad Network: ${plcName} (${bannerSize}) -->
-<div id="${plcId}" style="width:${dims[0]}px; min-height:${dims[1]}px; margin:auto; overflow:hidden;"></div>
+`<!-- Connectgold: ${plcName} (${bannerSize}) -->
+<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;overflow:hidden;"></div>
 <script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          const box = document.getElementById("${plcId}");
-          if (!box) return;
-
-          const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-          
-          if (rtbBid && rtbBid.adm) {
-            box.innerHTML = rtbBid.adm;
-            if (rtbBid.nurl) fetch(rtbBid.nurl);
-          } else if (data.adHtml || data.html_snippet || data.adm) {
-            ${scriptExecutorLogic}
-          } else if (data.ad) {
-            const adInfo = data.ad;
-            box.innerHTML = \`<a href="\${adInfo.destination_url}" target="_blank" rel="noopener">
-              <img src="\${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="${dims[0]}" height="${dims[1]}" alt="\${adInfo.title || 'Ad'}" style="border:0; max-width:100%; height:auto;" />
-            </a>\`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          ${tpTrackingSnippet}
-        })
-        .catch(err => console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    ${rotationCode}
-  })();
+(function(){
+  function loadAd(){
+    var c=${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")' : `"${consentSetting}"`};
+    fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&consent="+c)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var b=document.getElementById("${plcId}");if(!b)return;
+        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+        else if(d.ad){
+          var a=d.ad;
+          b.innerHTML='<a href="'+a.destination_url+'" target="_blank" rel="noopener"><img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="${dims[0]}" height="${dims[1]}" style="border:0;max-width:100%;height:auto;"/></a>';
+          if(a.nurl)fetch(a.nurl);
+        }
+        ${tpSnippet}
+      }).catch(function(e){console.error("Ad error:",e);});
+  }
+  loadAd();${rotCode}
+})();
 <\/script>`;
 
-        // 2. NATIVE DISPLAY & IN-FEED AD EMBED CODE
         } else if (workerFormat === "native_display" || workerFormat === "infeed") {
-          const rotationCode = rotationSec > 0 
-            ? `setInterval(fetchAndRenderAd, ${rotationSec * 1000});` 
-            : ``;
+          const rotCode = rotationSec > 0 ? `setInterval(loadAd,${rotationSec * 1000});` : ``;
 
           generatedSnippet = 
-`<!-- Connectgold Ad Network: ${plcName} (${workerFormat.toUpperCase()}) -->
+`<!-- Connectgold: ${plcName} (${workerFormat.toUpperCase()}) -->
 <div id="${plcId}"></div>
 <script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-      fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${workerFormat}&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          const box = document.getElementById("${plcId}");
-          if (!box) return;
-
-          const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-
-          if (rtbBid && rtbBid.adm) {
-            box.innerHTML = rtbBid.adm;
-            if (rtbBid.nurl) fetch(rtbBid.nurl);
-          } else if (data.adHtml || data.html_snippet || data.adm) {
-            ${scriptExecutorLogic}
-          } else if (data.ad) {
-            const adInfo = data.ad;
-            box.innerHTML = \`
-              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif; text-align:left;">
-                \${adInfo.image_url ? \`<img src="\${adInfo.image_url}" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:10px;" />\` : ''}
-                <h4 style="margin:0 0 6px 0; font-size:16px;">\${adInfo.title}</h4>
-                <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">\${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
-                <a href="\${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">\${adInfo.cta_text || 'Learn More'}</a>
-              </div>\`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          ${tpTrackingSnippet}
-        })
-        .catch(err => console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    ${rotationCode}
-  })();
+(function(){
+  function loadAd(){
+    var c=${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")' : `"${consentSetting}"`};
+    fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${workerFormat}&plc=${plcId}&pub_id=${pubId}&consent="+c)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var b=document.getElementById("${plcId}");if(!b)return;
+        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+        else if(d.ad){
+          var a=d.ad;
+          b.innerHTML='<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;">'+(a.image_url?'<img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/>':'')+'<h4 style="margin:0 0 4px 0;font-size:15px;">'+a.title+'</h4><p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;">'+(a.description||a.body||'')+'</p><a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;">'+(a.cta_text||'Learn More')+'</a></div>';
+          if(a.nurl)fetch(a.nurl);
+        }
+        ${tpSnippet}
+      }).catch(function(e){console.error("Ad error:",e);});
+  }
+  loadAd();${rotCode}
+})();
 <\/script>`;
 
-        // 3. REWARDED VIDEO EMBED CODE
         } else if (workerFormat === "rewarded_video") {
           generatedSnippet = 
-`<!-- Connectgold Ad Network: ${plcName} (REWARDED VIDEO) -->
+`<!-- Connectgold: ${plcName} (REWARDED VIDEO) -->
 <script>
-  function showRewardedAd() {
-    const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=rewarded_video&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
-      .then(res => res.json())
-      .then(data => {
-        if (!data) {
-          alert("No rewarded video campaigns currently available.");
-          return;
-        }
-
-        const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-
-        if (rtbBid && rtbBid.adm) {
-          const tempModal = document.createElement("div");
-          tempModal.innerHTML = rtbBid.adm;
-          document.body.appendChild(tempModal);
-          if (rtbBid.nurl) fetch(rtbBid.nurl);
-        } else if (data.ad) {
-          const adInfo = data.ad;
-          alert("Playing Rewarded Ad: " + (adInfo.title || "Connectgold Network"));
-          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
-          if (adInfo.nurl) fetch(adInfo.nurl);
-        }
-
-        ${tpTrackingSnippet}
-        
-        if ("${callbackUrl}") {
-          fetch("${callbackUrl}?pub_id=${pubId}&status=completed&plc=${plcId}");
-        }
-      })
-      .catch(err => console.error("Connectgold Ad Error:", err));
-  }
+function showRewardedAd(){
+  var c=${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")' : `"${consentSetting}"`};
+  fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=rewarded_video&plc=${plcId}&pub_id=${pubId}&consent="+c)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d)return alert("No rewarded ad available.");
+      var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+      if(r&&r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
+      else if(d.ad){var a=d.ad;alert("Rewarded Ad: "+(a.title||"Connectgold"));if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
+      ${tpSnippet}
+      if("${callbackUrl}")fetch("${callbackUrl}?pub_id=${pubId}&status=completed&plc=${plcId}");
+    }).catch(function(e){console.error("Ad error:",e);});
+}
 <\/script>`;
 
-        // 4. FULL SCREEN INTERSTITIAL EMBED CODE
         } else if (workerFormat === "interstitial_fullscreen") {
           generatedSnippet = 
-`<!-- Connectgold Ad Network: ${plcName} (INTERSTITIAL FULLSCREEN) -->
+`<!-- Connectgold: ${plcName} (INTERSTITIAL FULLSCREEN) -->
 <script>
-  function showInterstitialAd() {
-    const consentVal = ${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0")' : `"${consentSetting}"`};
-    fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=interstitial_fullscreen&plc=${plcId}&pub_id=${pubId}&consent=" + consentVal)
-      .then(res => res.json())
-      .then(data => {
-        if (!data) return;
-
-        const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-
-        if (rtbBid && rtbBid.adm) {
-          const tempModal = document.createElement("div");
-          tempModal.innerHTML = rtbBid.adm;
-          document.body.appendChild(tempModal);
-          if (rtbBid.nurl) fetch(rtbBid.nurl);
-        } else if (data.ad) {
-          const adInfo = data.ad;
-          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
-          if (adInfo.nurl) fetch(adInfo.nurl);
-        }
-
-        ${tpTrackingSnippet}
-      })
-      .catch(err => console.error("Connectgold Ad Error:", err));
-  }
+function showInterstitialAd(){
+  var c=${consentSetting === "auto" ? '(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")' : `"${consentSetting}"`};
+  fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=interstitial_fullscreen&plc=${plcId}&pub_id=${pubId}&consent="+c)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d)return;
+      var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+      if(r&&r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
+      else if(d.ad){var a=d.ad;if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
+      ${tpSnippet}
+    }).catch(function(e){console.error("Ad error:",e);});
+}
 <\/script>`;
         }
 
@@ -1178,6 +1078,7 @@
   </script>
 </body>
 </html>
+
 
 
 

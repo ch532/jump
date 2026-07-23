@@ -6,7 +6,7 @@
   
   <title>Connectgold Mobile Mediation SDK - Developer Documentation</title>
   <meta name="title" content="Connectgold Mobile Mediation SDK - Developer Documentation">
-  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Format-specific code (Banner, Interstitial, Rewarded, Native, VAST), custom adapter creation, 30 SDK networks, app-ads.txt, and consent handling.">
+  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Format-specific code (Banner, Interstitial, Rewarded, Native, VAST), third-party analytics integration, custom adapter creation, 30 SDK networks, app-ads.txt, and consent handling.">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
   <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold_2.png">
@@ -201,7 +201,8 @@
         <li onclick="scrollToSection('sec-custom-adapters')">🛠️ 4. Write / Update Adapters</li>
         <li onclick="scrollToSection('sec-30-adapters')">🔌 5. 30 Network Matrix</li>
         <li onclick="scrollToSection('sec-appads')">📄 6. App-Ads.txt Setup</li>
-        <li onclick="scrollToSection('sec-consent')">🔒 7. Privacy & Consent</li>
+        <li onclick="scrollToSection('sec-third-party-analytics')">📊 7. Third-Party Analytics</li>
+        <li onclick="scrollToSection('sec-consent')">🔒 8. Privacy & Consent</li>
       </ul>
     </div>
 
@@ -231,7 +232,7 @@
 
       <h3>Data Flow Diagram</h3>
       <div class="code-box" style="color: #c9d1d9;">
-[ Android App Request ] ➔ [ Edge Worker: sweet-shape-f66a.trustconnect713.workers.dev ]
+[ Android App Request ] ➔ [ Edge Worker: shiny-glade-ecd9.trustconnect713.workers.dev ]
                                               │ (Returns Sorted Waterfall JSON)
                                               ▼
 [ Core SDK Engine ] ➔ [ Class.forName("...Adapter") ] ➔ [ Load Target Network SDK ]
@@ -276,7 +277,7 @@ dependencies {
       </p>
 
       <div class="callout-gold">
-        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="dashboard.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App</strong> menu tab to copy your unique <code>pub_id</code> string.
+        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="ads_mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App</strong> menu tab to copy your unique <code>pub_id</code> string.
       </div>
 
       <div class="code-box">
@@ -313,7 +314,7 @@ dependencies {
 FrameLayout bannerContainer = new FrameLayout(this);
 setContentView(bannerContainer);
 
-String bannerUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String bannerUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
     @Override
@@ -336,7 +337,7 @@ ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
       <p>Interstitials load in memory and are displayed over the current Activity using <code>ConnectgoldMediation.showAd()</code>:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String interstitialUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String interstitialUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
     @Override
@@ -359,7 +360,7 @@ ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
       <p>Rewarded ads trigger a reward callback listener when video playback completes:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String rewardedUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String rewardedUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
     @Override
@@ -386,7 +387,7 @@ ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
       <p>Native ads return a structured object containing headline, body text, image, and CTA button:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String nativeUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String nativeUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
     @Override
@@ -421,7 +422,7 @@ ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
       <p>For custom video players (ExoPlayer / MediaPlayer), pass <code>format=vast</code> to retrieve raw VAST XML streams:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String vastUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String vastUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchVastStream(this, vastUrl, new VastStreamListener() {
     @Override
@@ -527,20 +528,154 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
 
     <!-- 7. APP-ADS.TXT -->
     <div id="sec-appads" class="docs-section">
-      <h2><span class="step-number">6</span>App-Ads.txt Certification</h2>
+      <h2><span class="step-number">6</span>App-Ads.txt Certification Matrix (30 Networks)</h2>
       <p>
-        To authorize Connectgold demand partners to place bids on your app inventory, publish this line on your developer website root (<code>https://yourdomain.com/app-ads.txt</code>), replacing <code>YOUR_PUB_ID_FROM_DASHBOARD</code> with the Publisher ID retrieved from the dashboard:
+        To authorize Connectgold and demand partners to place bids on your app inventory, copy and publish these seller lines on your developer website root (<code>https://chyke.online/app-ads.txt</code>), replacing <code>YOUR_PUB_ID_FROM_DASHBOARD</code> with your Publisher ID retrieved from the console:
       </p>
 
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT, f08c47fec0942fa0
+# ====================================================================
+# CONNECTGOLD INTEGRATED NETWORK MATRIX (30 SDK NETWORKS)
+# Developer Domain: https://chyke.online/app-ads.txt
+# ====================================================================
+
+# 1. Connectgold Primary Engine
+shiny-glade-ecd9.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT, f08c47fec0942fa0
+
+# 2. Yandex Ads
+yandex.com, 18858022, DIRECT
+
+# 3. Google AdMob
+google.com, ca-app-pub-7728035806961877, DIRECT, f08c47fec0942fa0
+
+# 4. Meta Audience Network
+facebook.com, 1159864489514758, DIRECT
+
+# 5. ironSource
+ironsrc.com, 256d5e765, DIRECT
+
+# 6. Unity Ads
+unity.com, 6057927, DIRECT
+
+# 7. InMobi
+inmobi.com, 10000761098, DIRECT
+
+# 8. Start.io (StartApp)
+startapp.com, 202185423, DIRECT
+
+# 9. AppLovin MAX
+applovin.com, applovin_sdk_key_here, DIRECT
+
+# 10. Pangle (TikTok)
+pangleglobal.com, pangle_account_id_here, DIRECT
+
+# 11. Mintegral
+mintegral.com, mintegral_publisher_id_here, DIRECT, 0aeed750c80d6423
+
+# 12. Liftoff / Vungle
+vungle.com, vungle_publisher_id_here, DIRECT, c107d686becd2d77
+
+# 13. Chartboost
+chartboost.com, chartboost_app_id_here, DIRECT
+
+# 14. Digital Turbine (Fyber)
+fyber.com, dt_publisher_id_here, DIRECT
+
+# 15. Amazon Publisher Services (APS)
+amazon.com, amazon_app_key_here, DIRECT
+
+# 16. BidMachine
+bidmachine.io, bidmachine_seller_id_here, DIRECT
+
+# 17. Smaato
+smaato.com, smaato_publisher_id_here, DIRECT
+
+# 18. myTarget
+target.my.com, mytarget_slot_id_here, DIRECT
+
+# 19. Ogury
+ogury.com, ogury_asset_key_here, DIRECT
+
+# 20. Kidoz
+kidoz.net, kidoz_publisher_id_here, DIRECT
+
+# 21. Appnext
+appnext.com, appnext_placement_id_here, DIRECT
+
+# 22. Tapjoy
+tapjoy.com, tapjoy_sdk_key_here, DIRECT
+
+# 23. Moloco
+moloco.com, moloco_app_id_here, DIRECT
+
+# 24. BIGO Ads
+bigo.sg, bigo_app_id_here, DIRECT
+
+# 25. AdColony
+adcolony.com, adcolony_app_id_here, DIRECT
+
+# 26. HyprMX
+hyprmx.com, hyprmx_distributor_id_here, DIRECT
+
+# 27. MobFox
+mobfox.com, mobfox_hash_here, DIRECT
+
+# 28. PubMatic OpenWrap
+pubmatic.com, pubmatic_publisher_id_here, DIRECT, 5d62403b186f2ace
+
+# 29. CAS.AI (CleverAdsSolutions)
+cas.ai, cas_id_here, DIRECT
+
+# 30. Appodeal
+appodeal.com, appodeal_app_key_here, DIRECT
       </div>
     </div>
 
-    <!-- 8. PRIVACY AND CONSENT -->
+    <!-- 8. THIRD-PARTY ANALYTICS INTEGRATION -->
+    <div id="sec-third-party-analytics" class="docs-section">
+      <h2><span class="step-number">7</span>Third-Party Analytics Integration (Optional)</h2>
+      
+      <div class="callout-gold">
+        <strong>⚠️ Important Setup Notice:</strong>
+        <p style="margin: 4px 0 0 0;">
+          Before using third-party tracking parameters in your ad requests, you <strong>must configure and save your credentials</strong> in the <strong>📊 Mobile Analytics</strong> menu tab inside the <a href="ads_mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard</a>.
+        </p>
+      </div>
+
+      <p>
+        Connecting third-party analytics is <strong>completely optional</strong>. If configured in your dashboard, you can append your tracking parameters (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string. The Connectgold engine will automatically attach telemetry events for ad impressions and user interactions:
+      </p>
+
+      <h3>Optional Analytics Query Example (Java)</h3>
+      <div class="code-box">
+        <button class="btn-copy" onclick="copyCode(this)">Copy</button>
+// Construct URL with optional analytics credentials configured in your dashboard
+String adUrlWithAnalytics = "https://shiny-glade-ecd9.trustconnect713.workers.dev/"
+    + "?platform=android&format=interstitial"
+    + "&pub_id=YOUR_PUB_ID_FROM_DASHBOARD"
+    + "&ga4_id=G-XXXXXXXXXX"
+    + "&plausible_domain=yourwebsite.com"
+    + "&mixpanel_token=361e...a28e";
+
+ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener() {
+    @Override
+    public void onAdLoaded(String networkName, Object adObject) {
+        // Analytics telemetry events are automatically dispatched on load
+        ConnectgoldMediation.showAd(MainActivity.this, adObject);
+    }
+
+    @Override
+    public void onAdFailedToLoad(String reason) {
+        Log.e("Connectgold", "Ad load failed: " + reason);
+    }
+});
+      </div>
+    </div>
+
+    <!-- 9. PRIVACY AND CONSENT -->
     <div id="sec-consent" class="docs-section">
-      <h2><span class="step-number">7</span>GDPR, EEA & Regional Privacy Consent</h2>
+      <h2><span class="step-number">8</span>GDPR, EEA & Regional Privacy Consent</h2>
       <p>
         Pass regional user consent status in your worker request parameters:
       </p>
@@ -571,6 +706,7 @@ sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT
   </script>
 </body>
 </html>
+
 
 
 

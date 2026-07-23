@@ -217,15 +217,15 @@
     <div id="sec-architecture" class="docs-section">
       <h1>Connectgold Mobile Mediation SDK Integration Guide</h1>
       <p>
-        Connectgold is an ultra-fast, edge-computed mobile mediation engine powered by Cloudflare Workers. Instead of hardcoding ad networks into a rigid SDK binary, Connectgold fetches a real-time JSON waterfall from the edge and uses <strong>Java Reflection (`Class.forName`)</strong> to load ad adapters dynamically.
+        Connectgold is a high-yield mobile ad mediation engine powered by Cloudflare Workers. Developers integrate Connectgold's SDK and adapters to connect 30 major mobile ad networks into a unified, AI-optimized mediation waterfall.
       </p>
 
       <div class="callout-gold">
-        <strong>Why This Benefits Developers:</strong>
+        <strong>How Connectgold Mediation Works:</strong>
         <ul>
-          <li><strong>Version Independence:</strong> Upgrade or downgrade any partner SDK (Google AdMob, Yandex, Unity, ironSource, etc.) in your <code>build.gradle</code> without waiting for a Connectgold SDK release.</li>
-          <li><strong>Zero Crashing (Graceful Failover):</strong> If an SDK dependency is missing from your app, the reflection engine catches <code>ClassNotFoundException</code> automatically and skips to the next network in the waterfall.</li>
-          <li><strong>Modular Footprint:</strong> Include only the ad network SDKs you actually want to use in your project.</li>
+          <li><strong>Dynamic Reflection Engine:</strong> The SDK uses <code>Class.forName</code> to dynamically discover and instantiate installed network adapters from a real-time Cloudflare Worker waterfall.</li>
+          <li><strong>Zero Crashing (Graceful Failover):</strong> If an SDK dependency is omitted from an app build, the reflection engine catches <code>ClassNotFoundException</code> automatically and skips to the next available network in the waterfall.</li>
+          <li><strong>30 Integrated Networks:</strong> Enable high fill rates across global regions through built-in adapter classes.</li>
         </ul>
       </div>
 
@@ -234,7 +234,7 @@
 [ Android App Request ] ➔ [ Edge Worker: sweet-shape-f66a.trustconnect713.workers.dev ]
                                               │ (Returns Sorted Waterfall JSON)
                                               ▼
-[ Core SDK Engine ] ➔ [ Class.forName("...Adapter") ] ➔ [ Load Partner SDK ]
+[ Core SDK Engine ] ➔ [ Class.forName("...Adapter") ] ➔ [ Load Target Network SDK ]
                                               │
                       ┌───────────────────────┴───────────────────────┐
                       ▼                                               ▼
@@ -245,31 +245,34 @@
     <!-- 2. GRADLE DEPENDENCIES -->
     <div id="sec-gradle" class="docs-section">
       <h2><span class="step-number">1</span>Gradle Setup (`app/build.gradle`)</h2>
-      <p>Add the Connectgold Core SDK along with any partner network SDKs you wish to monetise with:</p>
+      <p>
+        Add the <strong>Connectgold Core SDK</strong> (which includes Connectgold's personal ad network adapter and all 30 built-in mediation adapter classes). Then, simply add the official Gradle dependencies for any of the 30 partner networks listed in <a href="#sec-30-adapters" style="color:var(--primary);">Section 5: Connectgold Integrated Network Matrix</a> that you want to enable in your mediation waterfall. Developers can use whichever SDK versions they prefer:
+      </p>
 
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 dependencies {
-    // 1. Core Connectgold Mobile Mediation SDK
+    // 1. Core Connectgold Mobile SDK (Includes Connectgold Core Adapter + 30 Integrated Network Adapters)
     implementation 'com.connectgold.sdk:connectgold-core:1.0.0'
 
-    // 2. Add Partner Network SDKs (Include only what you need; use ANY SDK version)
-    implementation 'com.yandex.android:mobileads:7.0.0'
-    implementation 'com.google.android.gms:play-services-ads:23.0.0'
-    implementation 'com.unity3d.ads:unity-ads:4.10.0'
-    implementation 'com.ironsource.sdk:mediationsdk:8.0.0'
-    implementation 'com.inmobi.monetization:inmobi-ads-kotlin:10.7.0'
-    implementation 'com.startapp:inapp-sdk:5.0.0'
+    // 2. Add Partner Network SDKs from the 30-Network Matrix to enable them in your mediation waterfall
+    //    (Replace X.Y.Z with your preferred version for each SDK)
+    implementation 'com.yandex.android:mobileads:X.Y.Z'                 // Yandex Ads
+    implementation 'com.google.android.gms:play-services-ads:X.Y.Z'   // Google AdMob
+    implementation 'com.unity3d.ads:unity-ads:X.Y.Z'                   // Unity Ads
+    implementation 'com.ironsource.sdk:mediationsdk:X.Y.Z'             // ironSource
+    implementation 'com.inmobi.monetization:inmobi-ads-kotlin:X.Y.Z'   // InMobi
+    implementation 'com.startapp:inapp-sdk:X.Y.Z'                      // Start.io
+    // ... add any additional SDKs from the 30 Supported Network Matrix as needed
 }
       </div>
     </div>
 
-        <!-- 3. MANIFEST SETUP -->
+    <!-- 3. MANIFEST SETUP -->
     <div id="sec-manifest" class="docs-section">
       <h2><span class="step-number">2</span>Android Manifest Configuration</h2>
       <p>
-        Ensure network permissions are granted in <code>AndroidManifest.xml</code>. 
-        <strong>Important:</strong> If you are enabling the Google AdMob adapter, you must replace <code>ca-app-pub-YOUR_ADMOB_APP_ID~XXXXXXXXXX</code> with <u>your own</u> AdMob Application ID from your Google AdMob account.
+        Ensure standard network permissions are granted in <code>AndroidManifest.xml</code> to allow mediation ad networks to fetch ad creatives:
       </p>
 
       <div class="code-box">
@@ -281,19 +284,14 @@ dependencies {
     &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
 
     &lt;application&gt;
-        &lt;!-- REQUIRED FOR ADMOB: Replace with YOUR OWN AdMob App ID --&gt;
+        &lt;!-- CONNECTGOLD PUBLISHER ID --&gt;
         &lt;meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-YOUR_ADMOB_APP_ID~XXXXXXXXXX" /&gt;
+            android:name="com.connectgold.sdk.PUBLISHER_ID"
+            android:value="YOUR_PUBLISHER_ID" /&gt;
     &lt;/application&gt;
 &lt;/manifest&gt;
       </div>
-
-      <div class="callout-info">
-        <strong>Note:</strong> If you are only using Connectgold Direct Ads or non-AdMob partner SDKs (like Yandex, Unity, or ironSource), the AdMob meta-data tag is optional.
-      </div>
     </div>
-
 
     <!-- 4. FORMAT-SPECIFIC JAVA IMPLEMENTATION -->
     <div id="sec-java-formats" class="docs-section">
@@ -439,9 +437,9 @@ ConnectgoldMediation.fetchVastStream(this, vastUrl, new VastStreamListener() {
 
     <!-- 5. WRITING AND UPDATING CUSTOM ADAPTERS -->
     <div id="sec-custom-adapters" class="docs-section">
-      <h2><span class="step-number">4</span>Writing, Updating, or Overriding Adapters</h2>
+      <h2><span class="step-number">4</span>Writing Custom Mediation Adapters</h2>
       <p>
-        Developers have 100% freedom to create custom adapters or update existing ones. Every adapter implements the <code>ConnectgoldAdapter</code> interface.
+        Developers can extend Connectgold mediation by creating custom adapter classes implementing the <code>ConnectgoldAdapter</code> interface:
       </p>
 
       <h3>Step A: Define the Adapter Interface</h3>
@@ -462,9 +460,7 @@ public interface ConnectgoldAdapter {
 }
       </div>
 
-      <h3>Step B: Sample Custom Adapter Class Implementation</h3>
-      <p>Create a class matching the package path returned in the Worker waterfall (or pass your own custom class name):</p>
-
+      <h3>Step B: Sample Custom Adapter Implementation</h3>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 package com.yourcompany.app.adapters;
@@ -477,59 +473,50 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
 
     @Override
     public void loadAd(Context context, JSONObject params, Listener listener) {
-        // Extract server parameters passed from Cloudflare Worker
         String placementId = params.optString("placement_id");
         String appId = params.optString("app_id");
 
-        // Invoke Third-Party Ad Network SDK
         ThirdPartySDK.requestAd(context, appId, placementId, new ThirdPartySDK.Callback() {
             @Override
             public void onAdReady(Object view) {
-                // Pass control back to Connectgold Core Engine
                 listener.onSuccess("CustomAdNetwork", view);
             }
 
             @Override
             public void onError(String error) {
-                // Trigger automatic failover to the next network in the waterfall
                 listener.onFailure(error);
             }
         });
     }
 }
       </div>
-
-      <div class="callout-info">
-        <strong>Pro-Tip for SDK Updates:</strong> When upgrading a third-party SDK version (e.g., Yandex v6 to v7) that introduces breaking API changes, simply update the code inside your local adapter class. You do NOT need to wait for a Connectgold SDK update or update the Cloudflare Worker!
-      </div>
     </div>
 
     <!-- 6. 30 SUPPORTED ADAPTERS -->
     <div id="sec-30-adapters" class="docs-section">
-      <h2><span class="step-number">5</span>30 Supported SDK Network Matrix</h2>
-      <p>Connectgold ships with built-in reflection class mappings for 30 major mobile ad networks:</p>
+      <h2><span class="step-number">5</span>Connectgold Integrated Network Matrix (30 SDK Networks)</h2>
+      <p>Connectgold includes built-in reflection adapter classes for 30 major mobile ad networks:</p>
 
       <table>
         <thead>
           <tr>
             <th>#</th>
             <th>Network</th>
-            <th>Default Reflection Class Path</th>
-            <th>Query Parameters</th>
+            <th>Built-in Reflection Class Path</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>1</td><td>Connectgold Direct</td><td><code>com.connectgold.sdk.adapters.ConnectgoldDirectSdkAdapter</code></td><td><code>pub_id, format</code></td></tr>
-          <tr><td>2</td><td>Yandex Ads</td><td><code>com.connectgold.sdk.adapters.YandexSdkAdapter</code></td><td><code>yandex_app_id, yandex_ad_unit_id</code></td></tr>
-          <tr><td>3</td><td>Google AdMob</td><td><code>com.connectgold.sdk.adapters.AdMobSdkAdapter</code></td><td><code>admob_app_id, admob_ad_unit_id</code></td></tr>
-          <tr><td>4</td><td>Meta Audience</td><td><code>com.connectgold.sdk.adapters.MetaAudienceSdkAdapter</code></td><td><code>meta_placement_id</code></td></tr>
-          <tr><td>5</td><td>ironSource</td><td><code>com.connectgold.sdk.adapters.IronSourceSdkAdapter</code></td><td><code>ironsource_app_key</code></td></tr>
-          <tr><td>6</td><td>Unity Ads</td><td><code>com.connectgold.sdk.adapters.UnityAdsSdkAdapter</code></td><td><code>unity_game_id, unity_placement_id</code></td></tr>
-          <tr><td>7</td><td>InMobi</td><td><code>com.connectgold.sdk.adapters.InMobiSdkAdapter</code></td><td><code>inmobi_placement_id</code></td></tr>
-          <tr><td>8</td><td>Start.io</td><td><code>com.connectgold.sdk.adapters.StartIoSdkAdapter</code></td><td><code>startio_app_id</code></td></tr>
-          <tr><td>9</td><td>AppLovin MAX</td><td><code>com.connectgold.sdk.adapters.AppLovinSdkAdapter</code></td><td><code>applovin_sdk_key, applovin_zone_id</code></td></tr>
-          <tr><td>10</td><td>Pangle (TikTok)</td><td><code>com.connectgold.sdk.adapters.PangleSdkAdapter</code></td><td><code>pangle_app_id, pangle_slot_id</code></td></tr>
-          <tr><td>11-30</td><td>Mintegral, Vungle, Chartboost, Digital Turbine, Amazon APS, BidMachine, Smaato, myTarget, Ogury, Kidoz, Appnext, Tapjoy, Moloco, BIGO, AdColony, HyprMX, MobFox, PubMatic, CAS.AI, Appodeal</td><td><code>com.connectgold.sdk.adapters.[Network]SdkAdapter</code></td><td>Network Keys / App IDs</td></tr>
+          <tr><td>1</td><td>Connectgold Direct</td><td><code>com.connectgold.sdk.adapters.ConnectgoldDirectSdkAdapter</code></td></tr>
+          <tr><td>2</td><td>Yandex Ads</td><td><code>com.connectgold.sdk.adapters.YandexSdkAdapter</code></td></tr>
+          <tr><td>3</td><td>Google AdMob</td><td><code>com.connectgold.sdk.adapters.AdMobSdkAdapter</code></td></tr>
+          <tr><td>4</td><td>Meta Audience</td><td><code>com.connectgold.sdk.adapters.MetaAudienceSdkAdapter</code></td></tr>
+          <tr><td>5</td><td>ironSource</td><td><code>com.connectgold.sdk.adapters.IronSourceSdkAdapter</code></td></tr>
+          <tr><td>6</td><td>Unity Ads</td><td><code>com.connectgold.sdk.adapters.UnityAdsSdkAdapter</code></td></tr>
+          <tr><td>7</td><td>InMobi</td><td><code>com.connectgold.sdk.adapters.InMobiSdkAdapter</code></td></tr>
+          <tr><td>8</td><td>Start.io</td><td><code>com.connectgold.sdk.adapters.StartIoSdkAdapter</code></td></tr>
+          <tr><td>9</td><td>AppLovin MAX</td><td><code>com.connectgold.sdk.adapters.AppLovinSdkAdapter</code></td></tr>
+          <tr><td>10</td><td>Pangle (TikTok)</td><td><code>com.connectgold.sdk.adapters.PangleSdkAdapter</code></td></tr>
+          <tr><td>11-30</td><td>Mintegral, Vungle, Chartboost, Digital Turbine, Amazon APS, BidMachine, Smaato, myTarget, Ogury, Kidoz, Appnext, Tapjoy, Moloco, BIGO, AdColony, HyprMX, MobFox, PubMatic, CAS.AI, Appodeal</td><td><code>com.connectgold.sdk.adapters.[Network]SdkAdapter</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -538,7 +525,7 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
     <div id="sec-appads" class="docs-section">
       <h2><span class="step-number">6</span>App-Ads.txt Certification</h2>
       <p>
-        To verify developer identity and maximize programmatic bid rates, publish this entry on your developer website (root path: <code>https://yourdomain.com/app-ads.txt</code>):
+        To authorize Connectgold demand partners to place bids on your app inventory, publish this line on your developer website root (<code>https://yourdomain.com/app-ads.txt</code>):
       </p>
 
       <div class="code-box">
@@ -551,17 +538,13 @@ sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47f
     <div id="sec-consent" class="docs-section">
       <h2><span class="step-number">7</span>GDPR, EEA & Regional Privacy Consent</h2>
       <p>
-        Pass regional consent status in your worker request parameters:
+        Pass regional user consent status in your worker request parameters:
       </p>
 
       <ul>
         <li><code>&consent=1</code> : User granted consent for personalized ads.</li>
-        <li><code>&consent=0</code> : User denied consent (Serves non-personalized house ads).</li>
+        <li><code>&consent=0</code> : User denied consent (Serves non-personalized ads).</li>
       </ul>
-
-      <div class="callout-gold">
-        <strong>Note:</strong> Mediated third-party SDKs (AdMob, Yandex, Unity, ironSource) manage their own native CMP consent dialogs independently according to regional regulations.
-      </div>
     </div>
 
   </div>
@@ -584,4 +567,5 @@ sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47f
   </script>
 </body>
 </html>
+
 

@@ -272,8 +272,12 @@ dependencies {
     <div id="sec-manifest" class="docs-section">
       <h2><span class="step-number">2</span>Android Manifest Configuration</h2>
       <p>
-        Ensure standard network permissions are granted in <code>AndroidManifest.xml</code> to allow mediation ad networks to fetch ad creatives:
+        Ensure standard network permissions are granted in <code>AndroidManifest.xml</code> to allow mediation ad networks to fetch ad creatives.
       </p>
+
+      <div class="callout-gold">
+        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="dashboard.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App</strong> menu tab to copy your unique <code>pub_id</code> string.
+      </div>
 
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
@@ -284,10 +288,10 @@ dependencies {
     &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
 
     &lt;application&gt;
-        &lt;!-- CONNECTGOLD PUBLISHER ID --&gt;
+        &lt;!-- CONNECTGOLD PUBLISHER ID (Get your pub_id from the App menu in Dashboard) --&gt;
         &lt;meta-data
             android:name="com.connectgold.sdk.PUBLISHER_ID"
-            android:value="YOUR_PUBLISHER_ID" /&gt;
+            android:value="YOUR_PUB_ID_FROM_DASHBOARD" /&gt;
     &lt;/application&gt;
 &lt;/manifest&gt;
       </div>
@@ -302,14 +306,14 @@ dependencies {
 
       <!-- FORMAT A: BANNER -->
       <h3>A. Banner Ad (Programmatic View Layout)</h3>
-      <p>Banners return an <code>android.view.View</code> object that must be added programmatically to an existing layout container:</p>
+      <p>Banners return an <code>android.view.View</code> object that must be added programmatically to an existing layout container (replace <code>YOUR_PUB_ID_FROM_DASHBOARD</code> with your Publisher ID retrieved from the <strong>App</strong> menu in the console):</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 // 1. Programmatically create layout container in Java
 FrameLayout bannerContainer = new FrameLayout(this);
 setContentView(bannerContainer);
 
-String bannerUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID";
+String bannerUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
     @Override
@@ -332,7 +336,7 @@ ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
       <p>Interstitials load in memory and are displayed over the current Activity using <code>ConnectgoldMediation.showAd()</code>:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String interstitialUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID";
+String interstitialUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
     @Override
@@ -355,7 +359,7 @@ ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
       <p>Rewarded ads trigger a reward callback listener when video playback completes:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String rewardedUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID";
+String rewardedUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
     @Override
@@ -382,7 +386,7 @@ ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
       <p>Native ads return a structured object containing headline, body text, image, and CTA button:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String nativeUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID";
+String nativeUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
     @Override
@@ -417,7 +421,7 @@ ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
       <p>For custom video players (ExoPlayer / MediaPlayer), pass <code>format=vast</code> to retrieve raw VAST XML streams:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String vastUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID";
+String vastUrl = "https://sweet-shape-f66a.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchVastStream(this, vastUrl, new VastStreamListener() {
     @Override
@@ -525,12 +529,12 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
     <div id="sec-appads" class="docs-section">
       <h2><span class="step-number">6</span>App-Ads.txt Certification</h2>
       <p>
-        To authorize Connectgold demand partners to place bids on your app inventory, publish this line on your developer website root (<code>https://yourdomain.com/app-ads.txt</code>):
+        To authorize Connectgold demand partners to place bids on your app inventory, publish this line on your developer website root (<code>https://yourdomain.com/app-ads.txt</code>), replacing <code>YOUR_PUB_ID_FROM_DASHBOARD</code> with the Publisher ID retrieved from the dashboard:
       </p>
 
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0
+sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT, f08c47fec0942fa0
       </div>
     </div>
 
@@ -567,5 +571,6 @@ sweet-shape-f66a.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47f
   </script>
 </body>
 </html>
+
 
 

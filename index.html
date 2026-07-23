@@ -75,7 +75,7 @@
         .editorial-hub h1 { color: #1e293b; margin-top: 0; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
-        /* CONNECTGOLD AD PLACEMENT WRAPPERS */
+        /* CONNECTGOLD AD CONTAINER WRAPPERS */
         .ad-container-top { width: 100%; max-width: 300px; min-height: 250px; margin: 20px auto 0 auto; text-align: center; }
         .ad-container-native { width: 100%; margin: 20px 0; }
 
@@ -115,8 +115,12 @@
     </nav>
 </header>
 
-<!-- Connectgold: Fire (300x250) -->
-<div id="plc_demo" style="width:300px;min-height:250px;margin:auto;overflow:hidden;"></div>
+<!-- ======================================================== -->
+<!-- 1. CONNECTGOLD AD SLOT: TOP BANNER (300x250) -->
+<!-- ======================================================== -->
+<div class="ad-container-top">
+  <div id="plc_demo"></div>
+</div>
 <script>
 (function(){
   function loadAd(){
@@ -129,7 +133,7 @@
         if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
         else if(d.ad){
           var a=d.ad;
-          b.innerHTML='<a href="'+a.destination_url+'" target="_blank" rel="noopener"><img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="300" height="250" style="border:0;max-width:100%;height:auto;"/></a>';
+          b.innerHTML='<a href="'+a.destination_url+'" target="_blank" rel="noopener"><img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="300" height="250" style="border:0;max-width:100%;height:auto;border-radius:6px;"/></a>';
           if(a.nurl)fetch(a.nurl);
         }
         if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo','fmt':'banner'});
@@ -158,52 +162,93 @@
     <!-- LIVE NEWS RSS FEED CONTAINER -->
     <section id="my-native-feed" data-sdk-feature="Live News Feed">Loading feed...</section>
 
-    <!-- Connectgold: Fire (NATIVE_DISPLAY) -->
-<div id="plc_demo"></div>
-<script>
-(function(){
-  function loadAd(){
-    var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_demo&pub_id=pub_connectgold1234&consent="+c)
-      .then(function(r){return r.json();})
-      .then(function(d){
-        var b=document.getElementById("plc_demo");if(!b)return;
-        var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
-        if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
-        else if(d.ad){
-          var a=d.ad;
-          b.innerHTML='<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;">'+(a.image_url?'<img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/>':'')+'<h4 style="margin:0 0 4px 0;font-size:15px;">'+a.title+'</h4><p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;">'+(a.description||a.body||'')+'</p><a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;">'+(a.cta_text||'Learn More')+'</a></div>';
-          if(a.nurl)fetch(a.nurl);
-        }
-        if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo','fmt':'native_display'});
-      }).catch(function(e){console.error("Ad error:",e);});
-  }
-  loadAd();setInterval(loadAd,30000);
-})();
-</script>
+    <!-- ======================================================== -->
+    <!-- 2. CONNECTGOLD AD SLOT: NATIVE DISPLAY IN-FEED -->
+    <!-- ======================================================== -->
+    <div class="ad-container-native">
+      <div id="plc_demo_native"></div>
+    </div>
+    <script>
+    (function(){
+      function loadAd(){
+        var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+        fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_demo_native&pub_id=pub_connectgold1234&consent="+c)
+          .then(function(r){return r.json();})
+          .then(function(d){
+            var b=document.getElementById("plc_demo_native");if(!b)return;
+            var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
+            if(r&&r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+            else if(d.ad){
+              var a=d.ad;
+              b.innerHTML='<div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;">'+(a.image_url?'<img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/>':'')+'<h4 style="margin:0 0 4px 0;font-size:15px;">'+a.title+'</h4><p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;">'+(a.description||a.body||'')+'</p><a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;">'+(a.cta_text||'Learn More')+'</a></div>';
+              if(a.nurl)fetch(a.nurl);
+            }
+            if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo_native','fmt':'native_display'});
+          }).catch(function(e){console.error("Ad error:",e);});
+      }
+      loadAd();setInterval(loadAd,30000);
+    })();
+    </script>
         
     <!-- YANDEX MAP WIDGET -->
     <div class="yandex-map-container" data-sdk-feature="Regional Map">
         <iframe src="https://yandex.com/map-widget/v1/?ll=38.583678%2C55.221603&z=7" width="100%" height="400" frameborder="0"></iframe>
     </div>
 
-<!-- Connectgold: Holiday  (REWARDED VIDEO) -->
+    <!-- ======================================================== -->
+    <!-- 3. CONNECTGOLD REWARDED VIDEO TRIGGER BUTTON -->
+    <!-- ======================================================== -->
+    <div style="text-align: center; margin: 10px 0;">
+      <button class="rewarded-ad-btn" onclick="showRewardedAd()">🎬 Watch Video Ad</button>
+    </div>
+
+</main>
+
+<!-- RSS FEED LOADER SCRIPT -->
+<script>
+async function loadFeed() {
+    const rssUrl = "https://www.bellanaija.com/event/feed/";
+    const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+    
+    try {
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        const feedContainer = document.getElementById('my-native-feed');
+        feedContainer.innerHTML = ''; 
+
+        data.items.forEach((item) => {
+            const div = document.createElement('div');
+            div.className = 'news-item';
+            div.innerHTML = `
+                <h3 style="margin-top:0; color:#1e293b;">${item.title}</h3>
+                <p style="color:#475569; font-size:14px;">${item.description}</p>
+                <a href="${item.link}" target="_blank" rel="noopener" style="color:#0284c7; text-decoration:none; font-weight:bold; font-size:13px;">Read Full Article →</a>
+            `;
+            feedContainer.appendChild(div);
+        });
+    } catch (e) {
+        document.getElementById('my-native-feed').innerHTML = "Unable to load RSS feed.";
+    }
+}
+loadFeed();
+</script>
+
+<!-- REWARDED VIDEO AD FUNCTION -->
 <script>
 function showRewardedAd(){
   var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
-  fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=rewarded_video&plc=plc_demo&pub_id=pub_connectgold1234&consent="+c)
+  fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=rewarded_video&plc=plc_demo_rewarded&pub_id=pub_connectgold1234&consent="+c)
     .then(function(r){return r.json();})
     .then(function(d){
       if(!d)return alert("No rewarded ad available.");
       var r=d.seatbid&&d.seatbid[0]&&d.seatbid[0].bid&&d.seatbid[0].bid[0];
       if(r&&r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
       else if(d.ad){var a=d.ad;alert("Rewarded Ad: "+(a.title||"Connectgold"));if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
-      if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo','fmt':'rewarded_video'});
-      if("")fetch("?pub_id=pub_connectgold1234&status=completed&plc=plc_demo");
+      if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'plc_demo_rewarded','fmt':'rewarded_video'});
     }).catch(function(e){console.error("Ad error:",e);});
 }
 </script>
-    
+
 <!-- COOKIE CONSENT BANNER -->
 <div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 18px 24px; border-radius: 8px; z-index: 9999; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
     <p style="margin:0; font-size:14px;">SkyIPworld uses cookies to optimize your terminal experience and customize ad recommendations.</p>
@@ -249,6 +294,7 @@ function showRewardedAd(){
 
 </body>
 </html>
+
 
 
 

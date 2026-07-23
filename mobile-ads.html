@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- PRIMARY SEO META TAGS -->
-  <title>Connectgold</title>
+  <title>Connectgold - Mobile Ad Mediation Console</title>
   <meta name="title" content="Connectgold - Mobile Ad Mediation Console">
   <meta name="description" content="Manage 30+ mobile ad network SDK adapters, retrieve Publisher ID credentials, manage app-ads.txt, configure GDPR consent, and track performance.">
   <meta name="robots" content="index, follow">
@@ -209,6 +209,8 @@
       margin-top: 15px; 
       font-size: 12px; 
       white-space: pre-wrap; 
+      max-height: 400px;
+      overflow-y: auto;
     }
     
     .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
@@ -323,20 +325,20 @@
           </div>
         </div>
 
-        <!-- MENU 2: APP-ADS.TXT VERIFICATION -->
+        <!-- MENU 2: APP-ADS.TXT VERIFICATION (30 NETWORKS MATRIX) -->
         <div id="appads-tab" class="tab-content">
           <div class="card">
-            <h2>📄 App-Ads.txt Authorized Seller Certification</h2>
+            <h2>📄 App-Ads.txt Certification (30 Integrated Networks)</h2>
             <p style="font-size: 14px; color: var(--text-muted);">
-              Create or update the <code>app-ads.txt</code> file hosted at the root of your developer website domain (e.g., <code>https://yourdomain.com/app-ads.txt</code>). This URL must match the Developer Website listed on your Google Play Store store listing.
+              Copy and paste these authorized seller lines for all 30 supported SDK networks into the <code>app-ads.txt</code> file hosted at the root of your developer domain (e.g., <code>https://chyke.online/app-ads.txt</code>).
             </p>
 
             <div class="form-group">
-              <label>Authorized Connectgold Mobile Network Entry</label>
+              <label>Authorized 30-Network Seller Matrix</label>
               <div id="app-ads-txt-output" class="code-box" style="color: #61dafb;">Loading Developer credentials...</div>
             </div>
 
-            <button class="btn btn-copy" onclick="copyCode('app-ads-txt-output')">Copy app-ads.txt Line</button>
+            <button class="btn btn-copy" onclick="copyCode('app-ads-txt-output')">Copy All 30 app-ads.txt Lines</button>
           </div>
         </div>
 
@@ -345,7 +347,7 @@
           <div class="card">
             <h2>⚡ Live Edge Waterfall Inspection</h2>
             <p style="font-size:13px; color:var(--text-muted);">
-              Test the response from your active Cloudflare Mobile Worker (`https://sweet-shape-f66a.trustconnect713.workers.dev`) in real-time.
+              Test the response from your active Cloudflare Mobile Worker (`https://shiny-glade-ecd9.trustconnect713.workers.dev`) in real-time.
             </p>
 
             <div class="form-group">
@@ -505,7 +507,7 @@
   <script>
     // ACTIVE WORKER ENDPOINTS
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const MOBILE_WORKER_URL = "https://sweet-shape-f66a.trustconnect713.workers.dev"; 
+    const MOBILE_WORKER_URL = "https://shiny-glade-ecd9.trustconnect713.workers.dev"; 
     const WEB_AD_WORKER_URL = "https://delicate-night-fb02.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -561,7 +563,102 @@
     }
 
     function updateAppAdsTxt(pubId) {
-      const appAdsTxtContent = `sweet-shape-f66a.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0`;
+      const appAdsTxtContent = 
+`# ====================================================================
+# CONNECTGOLD INTEGRATED NETWORK MATRIX (30 SDK NETWORKS)
+# Developer Domain: https://chyke.online/app-ads.txt
+# ====================================================================
+
+# 1. Connectgold Primary Engine
+shiny-glade-ecd9.trustconnect713.workers.dev, ${pubId}, DIRECT, f08c47fec0942fa0
+
+# 2. Yandex Ads
+yandex.com, 18858022, DIRECT
+
+# 3. Google AdMob
+google.com, ca-app-pub-7728035806961877, DIRECT, f08c47fec0942fa0
+
+# 4. Meta Audience Network
+facebook.com, 1159864489514758, DIRECT
+
+# 5. ironSource
+ironsrc.com, 256d5e765, DIRECT
+
+# 6. Unity Ads
+unity.com, 6057927, DIRECT
+
+# 7. InMobi
+inmobi.com, 10000761098, DIRECT
+
+# 8. Start.io (StartApp)
+startapp.com, 202185423, DIRECT
+
+# 9. AppLovin MAX
+applovin.com, applovin_sdk_key_here, DIRECT
+
+# 10. Pangle (TikTok)
+pangleglobal.com, pangle_account_id_here, DIRECT
+
+# 11. Mintegral
+mintegral.com, mintegral_publisher_id_here, DIRECT, 0aeed750c80d6423
+
+# 12. Liftoff / Vungle
+vungle.com, vungle_publisher_id_here, DIRECT, c107d686becd2d77
+
+# 13. Chartboost
+chartboost.com, chartboost_app_id_here, DIRECT
+
+# 14. Digital Turbine (Fyber)
+fyber.com, dt_publisher_id_here, DIRECT
+
+# 15. Amazon Publisher Services (APS)
+amazon.com, amazon_app_key_here, DIRECT
+
+# 16. BidMachine
+bidmachine.io, bidmachine_seller_id_here, DIRECT
+
+# 17. Smaato
+smaato.com, smaato_publisher_id_here, DIRECT
+
+# 18. myTarget
+target.my.com, mytarget_slot_id_here, DIRECT
+
+# 19. Ogury
+ogury.com, ogury_asset_key_here, DIRECT
+
+# 20. Kidoz
+kidoz.net, kidoz_publisher_id_here, DIRECT
+
+# 21. Appnext
+appnext.com, appnext_placement_id_here, DIRECT
+
+# 22. Tapjoy
+tapjoy.com, tapjoy_sdk_key_here, DIRECT
+
+# 23. Moloco
+moloco.com, moloco_app_id_here, DIRECT
+
+# 24. BIGO Ads
+bigo.sg, bigo_app_id_here, DIRECT
+
+# 25. AdColony
+adcolony.com, adcolony_app_id_here, DIRECT
+
+# 26. HyprMX
+hyprmx.com, hyprmx_distributor_id_here, DIRECT
+
+# 27. MobFox
+mobfox.com, mobfox_hash_here, DIRECT
+
+# 28. PubMatic OpenWrap
+pubmatic.com, pubmatic_publisher_id_here, DIRECT, 5d62403b186f2ace
+
+# 29. CAS.AI (CleverAdsSolutions)
+cas.ai, cas_id_here, DIRECT
+
+# 30. Appodeal
+appodeal.com, appodeal_app_key_here, DIRECT`;
+
       document.getElementById("app-ads-txt-output").innerText = appAdsTxtContent;
     }
 
@@ -675,7 +772,7 @@
       const elem = document.getElementById(elementId);
       const text = elem.value || elem.innerText;
       navigator.clipboard.writeText(text);
-      alert("Copied Publisher ID to clipboard!");
+      alert("Copied 30-Network app-ads.txt entries to clipboard!");
     }
 
     function switchTab(tabId, elem) {
@@ -703,6 +800,7 @@
   </script>
 </body>
 </html>
+
 
 
 

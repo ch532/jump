@@ -114,7 +114,7 @@
     <!-- ARCHITECTURE OVERVIEW -->
     <div class="section">
       <h2>1. Architecture Overview</h2>
-      <p>Connectgold Edge Ad Network delivers AI-optimized programmatic ads directly at Cloudflare edge nodes. Real-time contextual decisions are routed via Cloudflare Workers and Workers AI to maximize yield and minimize latency for web platforms and mobile WebViews.</p>
+      <p>Connectgold Edge Ad Network delivers AI-optimized programmatic ads directly at Cloudflare edge nodes. Real-time contextual decisions are routed via Cloudflare Workers and Workers AI Gateway to maximize yield across direct advertisers and global S2S OpenRTB demand sources (InMobi, ExoClick, Adcash, Opera Ads, PubMatic, Magnite, Adform, etc.).</p>
       
       <h3>Core Request Parameters</h3>
       <table>
@@ -127,19 +127,24 @@
         </thead>
         <tbody>
           <tr>
-            <td><code>type</code></td>
+            <td><code>platform</code></td>
             <td>String</td>
-            <td>Ad unit format: <code>banner</code>, <code>native</code>, <code>interstitial</code></td>
+            <td>Target environment: <code>web</code>, <code>webview</code></td>
+          </tr>
+          <tr>
+            <td><code>format</code></td>
+            <td>String</td>
+            <td>Ad unit format: <code>banner</code>, <code>native_display</code>, <code>infeed</code>, <code>interstitial_fullscreen</code>, <code>rewarded_video</code></td>
           </tr>
           <tr>
             <td><code>plc</code></td>
             <td>String</td>
-            <td>Unique placement ID on your domain/app (e.g., <code>plc_banner_300</code>)</td>
+            <td>Unique placement ID on your domain/app (e.g., <code>plc_demo</code>)</td>
           </tr>
           <tr>
             <td><code>pub_id</code></td>
             <td>String</td>
-            <td>Your verified Publisher Account ID</td>
+            <td>Your verified Publisher Account ID (e.g., <code>pub_connectgold1234</code>)</td>
           </tr>
           <tr>
             <td><code>consent</code></td>
@@ -154,172 +159,109 @@
     <div class="section">
       <h2>2. Publisher Integration Snippets</h2>
 
-      <h3>A. Banner Ad Unit (300x250)</h3>
+      <h3>A. Display Banner Ad Unit (300x250)</h3>
       <p>Place this container and script in your page HTML where you want the visual banner unit to display.</p>
-      <pre>&lt;!-- Connectgold Banner Unit --&gt;
-&lt;div id="plc_banner_300" style="width:300px; min-height:250px; margin:20px auto; overflow:hidden;"&gt;&lt;/div&gt;
+      <pre>&lt;!-- Connectgold: Top Banner (300x250) --&gt;
+&lt;div id="plc_demo" style="width:300px;min-height:250px;margin:auto;overflow:hidden;"&gt;&lt;/div&gt;
 &lt;script&gt;
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = "1";
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=banner&plc=plc_banner_300&pub_id=YOUR_PUBLISHER_ID&consent=" + consentVal)
-        .then(res =&gt; res.json())
-        .then(data =&gt; {
-          if (!data || !data.success) return;
-          const box = document.getElementById("plc_banner_300");
-          if (!box) return;
-          
-          if (data.adHtml || data.html_snippet) {
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = data.adHtml || data.html_snippet;
-            box.innerHTML = "";
-            Array.from(tempDiv.childNodes).forEach(node =&gt; {
-              if (node.tagName === "SCRIPT") {
-                const newScript = document.createElement("script");
-                Array.from(node.attributes).forEach(attr =&gt; newScript.setAttribute(attr.name, attr.value));
-                if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-                box.appendChild(newScript);
-              } else {
-                box.appendChild(node.cloneNode(true));
-              }
-            });
-          } else if (data.ad) {
-            const adInfo = data.ad;
-            box.innerHTML = `&lt;a href="${adInfo.destination_url}" target="_blank" rel="noopener"&gt;
-              &lt;img src="${adInfo.image_url}" width="300" height="250" alt="${adInfo.title}" style="border:0; max-width:100%; height:auto; border-radius:6px;" /&gt;
-            &lt;/a&gt;`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-        })
-        .catch(err =&gt; console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 30000); // 30-second auction auto-refresh
-  })();
+(function(){
+  function loadAd(){
+    var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&amp;format=banner&amp;plc=plc_demo&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var b=document.getElementById("plc_demo");if(!b)return;
+        var r=d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0];
+        if(r&amp;&amp;r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+        else if(d.ad){
+          var a=d.ad;
+          b.innerHTML='&lt;a href="'+a.destination_url+'" target="_blank" rel="noopener"&gt;&lt;img src="'+(a.image_url||"https://chyke.online/connectgold_2.png")+'" width="300" height="250" style="border:0;max-width:100%;height:auto;"/&gt;&lt;/a&gt;';
+          if(a.nurl)fetch(a.nurl);
+        }
+      }).catch(function(e){console.error("Ad error:",e);});
+  }
+  loadAd();setInterval(loadAd,30000);
+})();
 &lt;/script&gt;</pre>
 
-      <h3>B. Native Feed Unit</h3>
-      <p>Place this unit directly inside content feeds or between article paragraphs. Native units automatically expand to fit container dimensions.</p>
-      <pre>&lt;!-- Connectgold Native Feed Unit --&gt;
-&lt;div id="plc_native_feed" style="max-width:100%; margin:20px 0;"&gt;&lt;/div&gt;
+      <h3>B. Native Display Unit</h3>
+      <p>Place this unit directly inside content feeds or between article paragraphs. Native units automatically adapt to container styling.</p>
+      <pre>&lt;!-- Connectgold: Native Card --&gt;
+&lt;div id="plc_native_demo"&gt;&lt;/div&gt;
 &lt;script&gt;
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = "1";
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=native&plc=plc_native_feed&pub_id=YOUR_PUBLISHER_ID&consent=" + consentVal)
-        .then(res =&gt; res.json())
-        .then(data =&gt; {
-          if (!data || !data.success) return;
-          const box = document.getElementById("plc_native_feed");
-          if (!box) return;
-          
-          if (data.ad) {
-            const adInfo = data.ad;
-            box.innerHTML = `
-              &lt;div style="border:1px solid #334155; padding:18px; background:#1e293b; color:#fff; border-radius:8px; text-align:left;"&gt;
-                ${adInfo.image_url ? `&lt;img src="${adInfo.image_url}" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:12px;" /&gt;` : ''}
-                &lt;h4 style="margin:0 0 6px 0; font-size:16px; color:#fff;"&gt;${adInfo.title}&lt;/h4&gt;
-                &lt;p style="margin:0 0 12px 0; font-size:13px; color:#94a3b8;"&gt;${adInfo.description || adInfo.body || ''}&lt;/p&gt;
-                &lt;a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:8px 14px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;"&gt;${adInfo.cta_text || 'Learn More'}&lt;/a&gt;
-              &lt;/div&gt;`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-        })
-        .catch(err =&gt; console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 30000);
-  })();
+(function(){
+  function loadAd(){
+    var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+    fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&amp;format=native_display&amp;plc=plc_native_demo&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var b=document.getElementById("plc_native_demo");if(!b)return;
+        var r=d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0];
+        if(r&amp;&amp;r.adm){b.innerHTML=r.adm;if(r.nurl)fetch(r.nurl);}
+        else if(d.ad){
+          var a=d.ad;
+          b.innerHTML='&lt;div style="border:1px solid #30363d;padding:12px;background:#161b22;color:#fff;border-radius:8px;font-family:sans-serif;"&gt;'+(a.image_url?'&lt;img src="'+a.image_url+'" style="max-width:100%;height:auto;border-radius:6px;margin-bottom:8px;"/&gt;':'')+'&lt;h4 style="margin:0 0 4px 0;font-size:15px;"&gt;'+a.title+'&lt;/h4&gt;&lt;p style="margin:0 0 8px 0;font-size:12px;color:#8b949e;"&gt;'+(a.description||a.body||'')+'&lt;/p&gt;&lt;a href="'+a.destination_url+'" target="_blank" rel="noopener" style="display:inline-block;background:#d4af37;color:#000;padding:5px 10px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:12px;"&gt;'+(a.cta_text||'Learn More')+'&lt;/a&gt;&lt;/div&gt;';
+          if(a.nurl)fetch(a.nurl);
+        }
+      }).catch(function(e){console.error("Ad error:",e);});
+  }
+  loadAd();setInterval(loadAd,30000);
+})();
 &lt;/script&gt;</pre>
 
-      <h3>C. Automatic Interstitial Overlay Modal</h3>
-      <p>Place this script near the bottom of your <code>&lt;body&gt;</code> tag. It triggers a full-screen dismissible overlay at key navigation points or after page load.</p>
-      <pre>&lt;!-- Connectgold Interstitial Overlay Modal --&gt;
-&lt;div id="cg-interstitial-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center;"&gt;
-  &lt;div style="background:#1e293b; border:2px solid #d4af37; border-radius:12px; padding:24px; max-width:380px; width:85%; text-align:center; position:relative; color:#fff;"&gt;
-    &lt;span onclick="closeInterstitialAd()" style="position:absolute; top:8px; right:14px; font-size:24px; color:#94a3b8; cursor:pointer; font-weight:bold;"&gt;&amp;times;&lt;/span&gt;
-    &lt;h3 id="cg-int-title" style="margin:0 0 10px 0; font-size:18px; color:#fff;"&gt;Ad Title&lt;/h3&gt;
-    &lt;p id="cg-int-desc" style="margin:0 0 15px 0; font-size:13px; color:#94a3b8;"&gt;Ad Description&lt;/p&gt;
-    &lt;img id="cg-int-img" src="" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:15px; display:block; margin-left:auto; margin-right:auto;" /&gt;
-    &lt;a id="cg-int-cta" href="#" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:10px 20px; font-weight:bold; border-radius:6px; text-decoration:none; font-size:14px;"&gt;Learn More&lt;/a&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-
+      <h3>C. Rewarded Video Trigger</h3>
+      <p>Call the function below when a user requests a reward or reaches a game checkpoint.</p>
+      <pre>&lt;!-- Connectgold: Rewarded Video Function --&gt;
 &lt;script&gt;
-  function closeInterstitialAd() {
-    document.getElementById("cg-interstitial-modal").style.display = "none";
-  }
-
-  function triggerAutoInterstitial() {
-    const consentVal = "1";
-    fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=interstitial&plc=plc_interstitial&pub_id=YOUR_PUBLISHER_ID&consent=" + consentVal)
-      .then(res =&gt; res.json())
-      .then(data =&gt; {
-        if (!data || !data.success || !data.ad) return;
-        const adInfo = data.ad;
-        document.getElementById("cg-int-title").innerText = adInfo.title || "Featured";
-        document.getElementById("cg-int-desc").innerText = adInfo.description || "";
-        document.getElementById("cg-int-img").src = adInfo.image_url || "";
-        document.getElementById("cg-int-cta").href = adInfo.destination_url;
-        document.getElementById("cg-int-cta").innerText = adInfo.cta_text || "Learn More";
-        
-        document.getElementById("cg-interstitial-modal").style.display = "flex";
-        if (adInfo.nurl) fetch(adInfo.nurl);
-      })
-      .catch(err =&gt; console.error("Interstitial Error:", err));
-  }
-
-  // Trigger automatically 3 seconds after page load
-  window.addEventListener("DOMContentLoaded", () => {
-    setTimeout(triggerAutoInterstitial, 3000);
-  });
+function showRewardedAd(){
+  var c=(localStorage.getItem("user_ad_consent")==="granted"?"1":"0");
+  fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&amp;format=rewarded_video&amp;plc=plc_demo_rewarded&amp;pub_id=YOUR_PUBLISHER_ID&amp;consent="+c)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d)return alert("No rewarded ad available.");
+      var r=d.seatbid&amp;&amp;d.seatbid[0]&amp;&amp;d.seatbid[0].bid&amp;&amp;d.seatbid[0].bid[0];
+      if(r&amp;&amp;r.adm){var m=document.createElement("div");m.innerHTML=r.adm;document.body.appendChild(m);if(r.nurl)fetch(r.nurl);}
+      else if(d.ad){var a=d.ad;alert("Rewarded Ad: "+(a.title||"Connectgold"));if(a.destination_url)window.open(a.destination_url,"_blank");if(a.nurl)fetch(a.nurl);}
+    }).catch(function(e){console.error("Ad error:",e);});
+}
 &lt;/script&gt;</pre>
     </div>
 
-    <!-- MULTI-ENGINE ANALYTICS TELEMETRY -->
+    <!-- OPENRTB 2.5 & PREBID SERVER ENDPOINT -->
     <div class="section">
-      <h2>3. Multi-Engine Analytics & Telemetry</h2>
-      <p>Connectgold ad units feature zero-configuration telemetry. Ad impression callbacks automatically detect and report impression events to active third-party analytics engines loaded on the host page:</p>
-      
-      <ul>
-        <li><strong>Google Analytics (GA4):</strong> Dispatches via <code>gtag('event', 'connectgold_ad_impression', ...)</code></li>
-        <li><strong>Mixpanel:</strong> Tracks event via <code>mixpanel.track('connectgold_ad_impression', ...)</code></li>
-        <li><strong>Plausible Analytics:</strong> Logs privacy-first goal via <code>plausible('connectgold_ad_impression', { props: {...} })</code></li>
-      </ul>
+      <h2>3. Programmatic OpenRTB 2.5 / Prebid Endpoint</h2>
+      <p>Connectgold supports direct Server-to-Server (S2S) OpenRTB 2.5 auctions. External DSPs and Prebid Server bidders can submit standard JSON POST requests to our edge auction pipeline.</p>
 
-      <h3>Sample Unified Impression Callback</h3>
-      <pre>function trackConnectgoldImpression(adData) {
-  const eventName = 'connectgold_ad_impression';
-  const payload = {
-    ad_id: adData.ad ? adData.ad.campaign_id : 'house',
-    placement_id: adData.plc || 'plc_demo',
-    format: adData.type || 'banner'
-  };
+      <p><strong>Endpoint:</strong> <code>POST https://delicate-night-fb02.trustconnect713.workers.dev/openrtb2/auction</code></p>
 
-  // 1. Google Analytics 4
-  if (typeof gtag === 'function') {
-    gtag('event', eventName, payload);
-  }
-
-  // 2. Mixpanel
-  if (typeof mixpanel === 'object' && typeof mixpanel.track === 'function') {
-    mixpanel.track(eventName, payload);
-  }
-
-  // 3. Plausible Analytics
-  if (typeof plausible === 'function') {
-    plausible(eventName, { props: payload });
+      <h3>Sample OpenRTB 2.5 Request Payload</h3>
+      <pre>{
+  "id": "cg-req-100234",
+  "site": {
+    "domain": "chyke.online",
+    "page": "https://chyke.online/index.html"
+  },
+  "imp": [
+    {
+      "id": "imp-1",
+      "banner": { "w": 300, "h": 250 }
+    }
+  ],
+  "user": {
+    "ext": { "consent": "CP123456789...TCF_STRING" }
   }
 }</pre>
     </div>
 
-    <!-- BEST PRACTICES -->
+    <!-- MULTI-ENGINE ANALYTICS TELEMETRY -->
     <div class="section">
-      <h2>4. Integration Best Practices for Developers</h2>
+      <h2>4. Multi-Engine Analytics & Telemetry</h2>
+      <p>Ad impression callbacks automatically detect and report impression events to active third-party analytics engines loaded on the host page:</p>
+      
       <ul>
-        <li><strong>DOM Placement:</strong> Always place Banner and Native tags inside the <code>&lt;body&gt;</code> element where the graphic should physically display. Never place visual unit containers inside <code>&lt;head&gt;</code>.</li>
-        <li><strong>Unique Placement IDs:</strong> Ensure each ad unit on a page uses a unique container ID and <code>plc</code> parameter (e.g., <code>plc_banner_top</code> vs <code>plc_banner_bottom</code>).</li>
-        <li><strong>Auto-Refresh Rate:</strong> Set unit refresh intervals to a minimum of 30 seconds (`30000ms`) to optimize viewability scores and prevent edge rate limits.</li>
+        <li><strong>Google Analytics (GA4):</strong> Dispatches via <code>gtag('event', 'cg_ad_imp', ...)</code></li>
+        <li><strong>Mixpanel:</strong> Tracks event via <code>mixpanel.track('cg_imp', ...)</code></li>
+        <li><strong>Plausible Analytics:</strong> Logs privacy-first goal via <code>plausible('cg_imp', { props: {...} })</code></li>
       </ul>
     </div>
 
@@ -327,15 +269,15 @@
     <div class="section">
       <h2>5. Authorized Digital Sellers (ads.txt)</h2>
       <p>Add this line to your domain root <code>ads.txt</code> file to authorize Connectgold demand sourcing:</p>
-      <pre>broad-brook-39f4.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0</pre>
+      <pre>delicate-night-fb02.trustconnect713.workers.dev, YOUR_PUBLISHER_ID, DIRECT, f08c47fec0942fa0</pre>
     </div>
 
     <!-- ADVERTISER API -->
     <div class="section">
       <h2>6. Advertiser Campaign API</h2>
-      <p>Publish direct campaigns into the edge auction engine. Bids are verified against active KV advertiser wallet balances in real time.</p>
+      <p>Publish direct campaigns into the edge auction engine. Bids are verified against active advertiser balances in real time.</p>
       
-      <p><strong>Endpoint:</strong> <code>POST https://broad-brook-39f4.trustconnect713.workers.dev/v1/advertiser/add-ad</code></p>
+      <p><strong>Endpoint:</strong> <code>POST https://delicate-night-fb02.trustconnect713.workers.dev/v1/advertiser/add-ad</code></p>
       
       <h3>Request Body (JSON)</h3>
       <pre>{
@@ -355,10 +297,10 @@
     <!-- PUBLISHER CREDENTIALS & REVENUE API -->
     <div class="section">
       <h2>7. Publisher Account & Revenue API</h2>
-      <p>Manage publisher accounts and retrieve accumulated revenue split balances recorded across edge impressions.</p>
+      <p>Manage publisher accounts and retrieve accumulated 80% revenue share balance recorded across edge impressions.</p>
 
       <p><strong>Create Publisher ID:</strong> <code>POST https://hidden-river-56c3.trustconnect713.workers.dev/v1/publisher/create-id</code></p>
-      <p><strong>Check Earnings Balance:</strong> <code>GET https://broad-brook-39f4.trustconnect713.workers.dev/v1/publisher/balance?pub_id=YOUR_PUBLISHER_ID</code></p>
+      <p><strong>Check Earnings Balance:</strong> <code>GET https://delicate-night-fb02.trustconnect713.workers.dev/v1/publisher/balance?pub_id=YOUR_PUBLISHER_ID</code></p>
 
       <h3>Sample Balance Response</h3>
       <pre>{
@@ -373,11 +315,11 @@
       <h2>8. Network Analytics API</h2>
       <p>Query performance analytics across formats and date ranges via dedicated worker endpoints.</p>
 
-      <p><strong>Endpoint:</strong> <code>GET https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics?format=banner&date=YYYY-MM-DD</code></p>
+      <p><strong>Endpoint:</strong> <code>GET https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics?format=banner&amp;date=YYYY-MM-DD</code></p>
 
       <h3>Sample Response</h3>
       <pre>{
-  "date": "2026-07-22",
+  "date": "2026-07-23",
   "format": "banner",
   "impressions": 1450,
   "clicks": 182,
@@ -389,6 +331,7 @@
 
 </body>
 </html>
+
 
 
 

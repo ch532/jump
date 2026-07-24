@@ -430,32 +430,15 @@
               </div>
             </div>
 
-            <div class="analytics-filter-grid">
-              <div>
-                <label>Demand Network</label>
-                <select id="analytics-network" onchange="fetchAnalytics()">
-                  <option value="all">All Networks</option>
-                  <option value="connectgold_direct">Connectgold Direct</option>
-                  <option value="exoclick">ExoClick</option>
-                  <option value="yandex">Yandex Ads</option>
-                  <option value="admob">Google AdMob</option>
-                  <option value="ironsource">ironSource</option>
-                  <option value="unity">Unity Ads</option>
-                </select>
-              </div>
+            
               <div>
                 <label>Country Code</label>
                 <input type="text" id="analytics-country" placeholder="e.g. NG, US (or 'all')" onchange="fetchAnalytics()">
               </div>
-              <div>
-                <label>SDK Version</label>
-                <input type="text" id="analytics-sdk-ver" placeholder="e.g. 1.0.0 (or 'all')" onchange="fetchAnalytics()">
-              </div>
-            </div>
 
             <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
               <div style="flex: 2;">
-                <label>App ID / Domain</label>
+                <label>Domain</label>
                 <input type="text" id="analytics-app-id" placeholder="e.g. chyke.online (or 'all')" onchange="fetchAnalytics()">
               </div>
               <div style="flex: 1;">

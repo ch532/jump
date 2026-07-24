@@ -163,9 +163,42 @@
       </table>
     </div>
 
+    <!-- AD UNIT FORMATS & PUBLISHER USAGE -->
+    <div class="section">
+      <h2>2. Ad Unit Formats & Publisher Usage Guide</h2>
+      <p>Connectgold offers six flexible ad formats designed for high eCPM yield across desktop and mobile layouts. Here is how each unit functions and how to place the generated snippet in your code:</p>
+
+      <h3>1. Display Banners (`banner`)</h3>
+      <p><strong>How It Works:</strong> Standard fixed-size display units (320x50, 300x250, 728x90) that render high-converting image or rich-media banners. Auto-rotates at specified intervals (15s–60s) to refresh winning bids dynamically.</p>
+      <p><strong>Publisher Usage:</strong> Paste the generated snippet inside an HTML container at the top header, sidebar, or footer of your layout where you want the banner to display.</p>
+
+      <h3>2. AI Dynamic Text Ads (`ai_text`)</h3>
+      <p><strong>How It Works:</strong> Powered by Cloudflare Workers AI (Google Gemma 4 26B). It dynamically writes targeted, high-converting ad copy and call-to-action buttons matched to specified niche keywords in real-time.</p>
+      <p><strong>Publisher Usage:</strong> Place inside article body paragraphs, product review cards, or sidebar widgets to display contextual text recommendations.</p>
+
+      <h3>3. Native Display Cards (`native_display`)</h3>
+      <p><strong>How It Works:</strong> Blends into your site design using native HTML components (headline, thumbnail, body text, and CTA button) to match host page styling and deliver high click-through rates (CTR).</p>
+
+      <p><strong>Publisher Usage:</strong> Insert anywhere in article main body sections, content grids, or recommended reading blocks.</p>
+
+      <h3>4. In-Feed Native Content (`infeed`)</h3>
+      <p><strong>How It Works:</strong> Automatically scans host page DOM for post elements (<code>&lt;article&gt;</code>, <code>.post</code>, <code>.card</code>). When posts are present (`has_posts=true`), it injects structured native sponsored posts naturally within your newsfeed stream.</p>
+      <p><strong>Publisher Usage:</strong> Place the embed snippet directly between repeating feed elements or blog article loops in your homepage or blog template.</p>
+
+      <h3>5. Full Screen Interstitials (`interstitial_fullscreen`)</h3>
+      <p><strong>How It Works:</strong> High-eCPM full-screen overlay ads triggered by user navigation actions (e.g., page change, level completion, or button clicks).</p>
+      <p><strong>Publisher Usage:</strong> Paste the generated function script into your page header, then trigger it programmatically using:
+      <br><code>showConnectGoldAd(function() { console.log('Overlay closed'); });</code></p>
+
+      <h3>6. Rewarded Video (`rewarded_video`)</h3>
+      <p><strong>How It Works:</strong> Users watch a full-screen video or interactive ad in exchange for in-game currency, unlocked premium articles, or user points.</p>
+      <p><strong>Publisher Usage:</strong> Bind the generated script to a click event (e.g., "Watch Ad to Unlock Premium Content") like so:
+      <br><code>&lt;button onclick="showConnectGoldAd(grantUserReward)"&gt;Unlock Content&lt;/button&gt;</code></p>
+    </div>
+
     <!-- PUBLISHER INTEGRATION CODE GENERATION -->
     <div class="section">
-      <h2>2. Generating Publisher Embed Code</h2>
+      <h2>3. Generating Publisher Embed Code</h2>
       <p>To ensure proper credentials, rotation intervals, GDPR consent settings, and third-party telemetry bindings are accurately configured, all ad integration tags should be generated through your account dashboard.</p>
 
       <div class="instruction-box">
@@ -183,7 +216,7 @@
 
     <!-- OPENRTB 2.5 & PREBID SERVER ENDPOINT -->
     <div class="section">
-      <h2>3. Programmatic OpenRTB 2.5 / Prebid Endpoint</h2>
+      <h2>4. Programmatic OpenRTB 2.5 / Prebid Endpoint</h2>
       <p>Connectgold supports direct Server-to-Server (S2S) OpenRTB 2.5 auctions. External DSPs and Prebid Server bidders can submit standard JSON POST requests to our edge auction pipeline.</p>
 
       <div class="instruction-box">
@@ -197,7 +230,7 @@
 
     <!-- MULTI-ENGINE ANALYTICS TELEMETRY -->
     <div class="section">
-      <h2>4. Multi-Engine Analytics & Telemetry</h2>
+      <h2>5. Multi-Engine Analytics & Telemetry</h2>
       <p>Ad impression callbacks automatically detect and report impression events to active third-party analytics engines loaded on the host page (Google Analytics GA4, Mixpanel, and Plausible Analytics).</p>
       
       <div class="instruction-box">
@@ -212,7 +245,7 @@
 
     <!-- AUTHORIZED DIGITAL SELLERS -->
     <div class="section">
-      <h2>5. Authorized Digital Sellers (ads.txt)</h2>
+      <h2>6. Authorized Digital Sellers (ads.txt)</h2>
       <p>To authorize Connectgold demand sources to bid on your domain inventory, you must publish your authorized seller line on your domain root (<code>https://yourdomain.com/ads.txt</code>).</p>
       
       <div class="instruction-box">
@@ -227,7 +260,7 @@
 
     <!-- ADVERTISER API -->
     <div class="section">
-      <h2>6. Advertiser Campaign Submission</h2>
+      <h2>7. Advertiser Campaign Submission</h2>
       <p>Advertisers can publish direct campaigns into the edge auction engine. Bids are verified against active account balances in real time.</p>
       
       <div class="instruction-box">
@@ -242,7 +275,7 @@
 
     <!-- PUBLISHER CREDENTIALS & REVENUE API -->
     <div class="section">
-      <h2>7. Publisher Earnings & Payout Requests</h2>
+      <h2>8. Publisher Earnings & Payout Requests</h2>
       <p>Connectgold publishers earn 80% revenue share on every served ad impression. Earnings are accumulated and tracked in real time across edge workers.</p>
 
       <div class="instruction-box">
@@ -257,7 +290,7 @@
 
     <!-- ANALYTICS REPORTING API -->
     <div class="section">
-      <h2>8. Network Analytics Reporting</h2>
+      <h2>9. Network Analytics Reporting</h2>
       <p>Query real-time performance analytics across ad formats, impressions, clicks, and Click-Through Rates (CTR).</p>
 
       <div class="instruction-box">
@@ -273,6 +306,7 @@
 
 </body>
 </html>
+
 
 
 

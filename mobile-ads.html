@@ -262,7 +262,7 @@
           </div>
         </div>
 
-        <!-- TAB 5: MOBILE ANALYTICS -->
+        <!-- TAB 5: MOBILE ANALYTICS (FULLY UPDATED MULTI-DIMENSION FILTERS) -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>📊 Mobile SDK Performance Analytics</h2>
@@ -274,14 +274,18 @@
                   <option value="all">All Platforms</option>
                   <option value="android" selected>Android Mobile SDK</option>
                   <option value="ios">iOS Mobile SDK</option>
+                  <option value="web">Web Terminal</option>
                 </select>
               </div>
               <div>
-                <label>Timeframe</label>
+                <label>Timeframe Filter</label>
                 <select id="analytics-timeframe" onchange="fetchAnalytics()">
                   <option value="last_24h" selected>Last 24 Hours</option>
                   <option value="last_7d">Last 7 Days</option>
+                  <option value="last_14d">Last 14 Days</option>
                   <option value="last_30d">Last 30 Days</option>
+                  <option value="last_60d">Last 60 Days</option>
+                  <option value="last_90d">Last 90 Days</option>
                 </select>
               </div>
               <div>
@@ -292,6 +296,7 @@
                   <option value="interstitial">Interstitial Ad</option>
                   <option value="rewarded">Rewarded Video</option>
                   <option value="native">Native Display</option>
+                  <option value="vast">VAST Video</option>
                 </select>
               </div>
             </div>
@@ -307,6 +312,7 @@
                   <option value="ironsource">ironSource</option>
                   <option value="unity">Unity Ads</option>
                   <option value="startapp">Start.io</option>
+                  <option value="inmobi">InMobi</option>
                 </select>
               </div>
               <div>
@@ -319,15 +325,20 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <label>App Package Name</label>
-              <input type="text" id="analytics-app-id" placeholder="e.g. com.chyke.online (or 'all')" onchange="fetchAnalytics()">
+            <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
+              <div style="flex: 2;">
+                <label>App Package Name / Domain</label>
+                <input type="text" id="analytics-app-id" placeholder="e.g. com.chyke.online (or 'all')" onchange="fetchAnalytics()">
+              </div>
+              <div style="flex: 1;">
+                <label>Specific Date</label>
+                <input type="date" id="analytics-date" onchange="fetchAnalytics()">
+              </div>
+              <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh Metrics</button>
             </div>
 
-            <button class="btn" onclick="fetchAnalytics()" style="width: 100%; margin-top: 5px;">Refresh Live Analytics</button>
-
             <div style="margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: var(--primary);" id="stat-date-display">
-              Query Window: Loading live metrics...
+              Report Window: Loading live metrics...
             </div>
 
             <div class="analytics-grid">
@@ -504,13 +515,15 @@ appodeal.com, appodeal_app_key_here, DIRECT`;
       const country=document.getElementById("analytics-country").value.trim()||"all";
       const sdkVer=document.getElementById("analytics-sdk-ver").value.trim()||"all";
       const appId=document.getElementById("analytics-app-id").value.trim()||"all";
+      let dt=document.getElementById("analytics-date").value||new Date().toISOString().split('T')[0];
 
-      document.getElementById("stat-date-display").innerText=`Querying ${timeframe} telemetry window...`;
+      document.getElementById("stat-date-display").innerText=`Querying telemetry window...`;
 
       try{
-        const r=await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics?platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&network=${encodeURIComponent(network)}&country=${encodeURIComponent(country)}&sdk_version=${encodeURIComponent(sdkVer)}&app_id=${encodeURIComponent(appId)}`);
+        const query=`?platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&network=${encodeURIComponent(network)}&country=${encodeURIComponent(country)}&sdk_version=${encodeURIComponent(sdkVer)}&app_id=${encodeURIComponent(appId)}&date=${encodeURIComponent(dt)}`;
+        const r=await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics${query}`);
         const d=await r.json();
-        const m=d.metrics||{};
+        const m=d.metrics||d;
 
         document.getElementById("stat-requests").innerText=Number(m.requests||0).toLocaleString();
         document.getElementById("stat-impressions").innerText=Number(m.impressions||0).toLocaleString();
@@ -519,7 +532,7 @@ appodeal.com, appodeal_app_key_here, DIRECT`;
         document.getElementById("stat-ctr").innerText=m.ctr||"0.00%";
         document.getElementById("stat-ecpm").innerText=m.avg_ecpm_usd||"$0.00";
         document.getElementById("stat-revenue").innerText=`${m.estimated_revenue_usd||"$0.0000"} USD`;
-        document.getElementById("stat-date-display").innerText=`Timeframe: ${d.timeframe||timeframe} | Platform: ${d.platform||platform}`;
+        document.getElementById("stat-date-display").innerText=`Timeframe: ${d.timeframe||timeframe} | Platform: ${d.platform||platform} | Date: ${d.date||dt}`;
       }catch(e){
         document.getElementById("stat-date-display").innerText="Offline / Error querying analytics worker";
         document.getElementById("stat-requests").innerText="0";
@@ -550,10 +563,12 @@ appodeal.com, appodeal_app_key_here, DIRECT`;
     window.addEventListener("DOMContentLoaded",()=>{
       const s=localStorage.getItem("cg_user_session");
       if(s)renderUserSession(JSON.parse(s));
+      document.getElementById("analytics-date").value=new Date().toISOString().split('T')[0];
     });
   </script>
 </body>
 </html>
+
 
 
 

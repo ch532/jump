@@ -262,7 +262,7 @@
           </div>
         </div>
 
-        <!-- TAB 5: MOBILE ANALYTICS (FULLY UPDATED MULTI-DIMENSION FILTERS) -->
+        <!-- TAB 5: MOBILE ANALYTICS -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>📊 Mobile SDK Performance Analytics</h2>
@@ -393,11 +393,12 @@
     </div>
   </div>
 
-  <!-- COMPACT CLIENT LOGIC -->
+  <!-- CLIENT LOGIC WITH DEPLOYED WORKER ENDPOINTS -->
   <script>
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
     const MOBILE_WORKER_URL = "https://throbbing-frog-102d.trustconnect713.workers.dev";
-    const WEB_AD_WORKER_URL = "https://shiny-rice-482f.trustconnect713.workers.dev";
+    // Mapped directly to your newly deployed web ad worker
+    const WEB_AD_WORKER_URL = "https://lingering-sea-4dad.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
     function parseJwt(t){try{return JSON.parse(decodeURIComponent(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')))}catch(e){return null}}
@@ -566,6 +567,7 @@ appodeal.com, appodeal_app_key_here, DIRECT`;
   </script>
 </body>
 </html>
+
 
 
 

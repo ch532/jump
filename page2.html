@@ -11,41 +11,6 @@
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963" crossorigin="anonymous"></script>
 
-    <!-- Connectgold Ad Network: Treat (INTERSTITIAL) -->
-<script>
-  function showInterstitialAd() {
-    const consentVal = "1";
-    fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=interstitial&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || !data.success) return;
-        let adInfo = data.ad;
-        
-        if (data.adHtml || data.html_snippet) {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data.adHtml || data.html_snippet;
-          document.body.appendChild(tempDiv);
-          const scripts = tempDiv.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) oldScript.parentNode.replaceChild(newScript, oldScript);
-          });
-        } else if (adInfo) {
-          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
-          if (adInfo.nurl) fetch(adInfo.nurl);
-        }
-
-        
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'interstitial' });
-          }
-      })
-      .catch(err => console.error("Connectgold Ad Error:", err));
-  }
-</script>
-
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
         (function(m,e,t,r,i,k,a){
@@ -102,6 +67,10 @@
     </div>
 </nav>
 
+    <!-- CG: Fish -->
+<div id="plc_5p570t71" style="width:728px;min-height:90px;margin:auto;"></div>
+<script>(function(){function l(){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_5p570t71&pub_id=pub_cg_5u2t022y&rotation_seconds=30&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{var e=document.getElementById("plc_5p570t71");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Fish'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"banner",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});}).catch(err=>console.error(err))}l();setInterval(l,30000);})();</script>
+
 <script type="text/javascript">
     aclib.runInterstitial({ zoneId: '11736654' });
 </script>
@@ -117,53 +86,14 @@
     <div id="my-native-feed" data-sdk-feature="Developer Intelligence Feed">Loading feed...</div>
 </main>
 
-    <!-- Connectgold Ad Network: Treat (NATIVE) -->
-<div id="plc_demo"></div>
-<script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = "1";
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=native&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || !data.success) return;
-          const box = document.getElementById("plc_demo");
-          let adInfo = data.ad;
-          
-          if (data.adHtml || data.html_snippet) {
-            box.innerHTML = data.adHtml || data.html_snippet;
-            
-          const scripts = box.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) {
-              oldScript.parentNode.replaceChild(newScript, oldScript);
-            }
-          });
-          } else if (adInfo) {
-            box.innerHTML = `
-              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
-                <h4 style="margin:0 0 6px 0; font-size:16px;">${adInfo.title}</h4>
-                <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
-                <a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">${adInfo.cta_text || 'Learn More'}</a>
-              </div>`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'native' });
-          }
-        })
-        .catch(err => console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 60000);
-  })();
-</script>
+<!-- CG Native: Voice  -->
+<div id="plc_683c0b00"></div>
+<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_683c0b00&pub_id=pub_cg_5u2t022y&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_683c0b00");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Voice '});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"native_display",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
 
+    <!-- CG AI: Unknown  -->
+<div id="plc_0k372544"></div>
+<script>(function(){function l(){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/ai/ad-generator?product=Sports").then(r=>r.json()).then(d=>{var e=document.getElementById("plc_0k372544");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Unknown '});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"ai_text",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+    
 <script>
 async function loadLiveDevArticles() {
     const feedContainer = document.getElementById('my-native-feed');

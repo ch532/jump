@@ -108,6 +108,7 @@
     .btn-copy { background: #238636; margin-top: 12px; padding: 8px 16px; font-size: 12px; color: #fff; }
     
     .code-box { background: #0d1117; color: #7ee787; border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; font-family: monospace; word-break: break-all; margin-top: 15px; font-size: 13px; white-space: pre-wrap; }
+    .analytics-filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
     .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
     .stat-box { background: #0d1117; padding: 22px; border-radius: 8px; border: 1px solid var(--border-color); border-left: 4px solid var(--primary); text-align: center; }
     .stat-box h3 { margin: 0; font-size: 28px; color: #fff; }
@@ -390,33 +391,89 @@
           </div>
         </div>
 
-        <!-- TAB 4: ANALYTICS -->
+        <!-- TAB 4: NETWORK ANALYTICS -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>Connectgold Network Performance Analytics</h2>
-            <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
-              <div style="flex: 1;">
+            
+            <div class="analytics-filter-grid">
+              <div>
+                <label>Target Platform</label>
+                <select id="analytics-platform" onchange="fetchAnalytics()">
+                  <option value="all">All Platforms</option>
+                  <option value="web" selected>Web Terminal</option>
+                  <option value="android">Android Mobile SDK</option>
+                  <option value="ios">iOS Mobile SDK</option>
+                </select>
+              </div>
+              <div>
+                <label>Timeframe Filter</label>
+                <select id="analytics-timeframe" onchange="fetchAnalytics()">
+                  <option value="last_24h" selected>Last 24 Hours</option>
+                  <option value="last_7d">Last 7 Days</option>
+                  <option value="last_14d">Last 14 Days</option>
+                  <option value="last_30d">Last 30 Days</option>
+                  <option value="last_60d">Last 60 Days</option>
+                  <option value="last_90d">Last 90 Days</option>
+                </select>
+              </div>
+              <div>
                 <label>Select Format</label>
                 <select id="analytics-format" onchange="fetchAnalytics()">
-                  <option value="banner">Banner Ad</option>
+                  <option value="all">All Formats</option>
+                  <option value="banner" selected>Banner Ad</option>
                   <option value="native_display">Native Display Card</option>
                   <option value="infeed">In-Feed Native Content</option>
                   <option value="interstitial_fullscreen">Full Screen Interstitial</option>
                   <option value="rewarded_video">Rewarded Video</option>
                 </select>
               </div>
+            </div>
+
+            <div class="analytics-filter-grid">
+              <div>
+                <label>Demand Network</label>
+                <select id="analytics-network" onchange="fetchAnalytics()">
+                  <option value="all">All Networks</option>
+                  <option value="connectgold_direct">Connectgold Direct</option>
+                  <option value="exoclick">ExoClick</option>
+                  <option value="yandex">Yandex Ads</option>
+                  <option value="admob">Google AdMob</option>
+                  <option value="ironsource">ironSource</option>
+                  <option value="unity">Unity Ads</option>
+                </select>
+              </div>
+              <div>
+                <label>Country Code</label>
+                <input type="text" id="analytics-country" placeholder="e.g. NG, US (or 'all')" onchange="fetchAnalytics()">
+              </div>
+              <div>
+                <label>SDK Version</label>
+                <input type="text" id="analytics-sdk-ver" placeholder="e.g. 1.0.0 (or 'all')" onchange="fetchAnalytics()">
+              </div>
+            </div>
+
+            <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
+              <div style="flex: 2;">
+                <label>App ID / Domain</label>
+                <input type="text" id="analytics-app-id" placeholder="e.g. chyke.online (or 'all')" onchange="fetchAnalytics()">
+              </div>
               <div style="flex: 1;">
-                <label>Select Date</label>
+                <label>Specific Date</label>
                 <input type="date" id="analytics-date" onchange="fetchAnalytics()">
               </div>
-              <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh</button>
+              <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh Metrics</button>
             </div>
 
             <div style="margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: var(--primary);" id="stat-date-display">
-              Report Date: Loading...
+              Report Window: Loading live metrics...
             </div>
 
             <div class="analytics-grid">
+              <div class="stat-box">
+                <h3 id="stat-requests">0</h3>
+                <p>Total Requests</p>
+              </div>
               <div class="stat-box">
                 <h3 id="stat-impressions">0</h3>
                 <p>Total Impressions</p>
@@ -426,9 +483,22 @@
                 <p>Total Clicks</p>
               </div>
               <div class="stat-box">
+                <h3 id="stat-fillrate">0.00%</h3>
+                <p>Fill Rate</p>
+              </div>
+              <div class="stat-box">
                 <h3 id="stat-ctr">0.00%</h3>
                 <p>CTR</p>
               </div>
+              <div class="stat-box">
+                <h3 id="stat-ecpm">$0.00</h3>
+                <p>Average eCPM</p>
+              </div>
+            </div>
+
+            <div style="background:#0d1117; border:1px solid var(--primary); padding:16px; border-radius:8px; margin-top:16px; text-align:center;">
+              <span style="font-size:12px; color:var(--text-muted); text-transform:uppercase;">Estimated Revenue</span>
+              <h3 id="stat-revenue" style="font-size:24px; color:var(--primary); margin:4px 0 0 0;">$0.0000 USD</h3>
             </div>
           </div>
 
@@ -568,23 +638,40 @@
     }
 
     async function fetchAnalytics(){
-      const f=document.getElementById("analytics-format").value;
+      const platform=document.getElementById("analytics-platform").value;
+      const timeframe=document.getElementById("analytics-timeframe").value;
+      const format=document.getElementById("analytics-format").value;
+      const network=document.getElementById("analytics-network").value;
+      const country=document.getElementById("analytics-country").value.trim()||"all";
+      const sdkVer=document.getElementById("analytics-sdk-ver").value.trim()||"all";
+      const appId=document.getElementById("analytics-app-id").value.trim()||"all";
       let dt=document.getElementById("analytics-date").value||new Date().toISOString().split('T')[0];
-      document.getElementById("analytics-date").value=dt;
-      document.getElementById("stat-date-display").innerText=`Fetching stats for ${dt}...`;
+
+      document.getElementById("stat-date-display").innerText=`Querying telemetry window...`;
+
       try{
-        const r=await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics?format=${encodeURIComponent(f)}&date=${encodeURIComponent(dt)}`);
+        const query=`?platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&network=${encodeURIComponent(network)}&country=${encodeURIComponent(country)}&sdk_version=${encodeURIComponent(sdkVer)}&app_id=${encodeURIComponent(appId)}&date=${encodeURIComponent(dt)}`;
+        const r=await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics${query}`);
         const d=await r.json();
         const m=d.metrics||d;
+
+        document.getElementById("stat-requests").innerText=Number(m.requests||0).toLocaleString();
         document.getElementById("stat-impressions").innerText=Number(m.impressions||0).toLocaleString();
         document.getElementById("stat-clicks").innerText=Number(m.clicks||0).toLocaleString();
+        document.getElementById("stat-fillrate").innerText=m.fill_rate||"0.00%";
         document.getElementById("stat-ctr").innerText=m.ctr||"0.00%";
-        document.getElementById("stat-date-display").innerText=`Report Date: ${d.date||dt}`;
+        document.getElementById("stat-ecpm").innerText=m.avg_ecpm_usd||"$0.00";
+        document.getElementById("stat-revenue").innerText=`${m.estimated_revenue_usd||"$0.0000"} USD`;
+        document.getElementById("stat-date-display").innerText=`Timeframe: ${d.timeframe||timeframe} | Platform: ${d.platform||platform} | Date: ${d.date||dt}`;
       }catch(e){
-        document.getElementById("stat-date-display").innerText=`Report Date: ${dt} (No Data)`;
+        document.getElementById("stat-date-display").innerText=`Offline / Error querying analytics worker`;
+        document.getElementById("stat-requests").innerText="0";
         document.getElementById("stat-impressions").innerText="0";
         document.getElementById("stat-clicks").innerText="0";
+        document.getElementById("stat-fillrate").innerText="0.00%";
         document.getElementById("stat-ctr").innerText="0.00%";
+        document.getElementById("stat-ecpm").innerText="$0.00";
+        document.getElementById("stat-revenue").innerText="$0.0000 USD";
       }
     }
 
@@ -606,7 +693,8 @@
       if(plsb)tp+=`if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcName}'}});`;
       if(mixp)tp+=`if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcName}'});`;
 
-      const telem=`var n=(d.network)||"exoclick",e=d.ecpm||2.50;fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"${fmt}",network:n,pub_id:"${pubId}",ecpm:e,revenue:e/1000})}).catch(function(){});`;
+      // Complete multi-parameter telemetry payload
+      const telem=`var n=(d.network)||"exoclick",e=parseFloat(d.ecpm)||2.50;fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"${fmt}",network:n,pub_id:"${pubId}",ecpm:e,revenue:e/1000})}).catch(function(){});`;
 
       try{
         const r=await fetch(`${CREDENTIALS_WORKER_URL}/v1/publisher/create-placement`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({publisher_id:pubId,placement_name:plcName,format:fmt,rotation_seconds:rot})});
@@ -658,12 +746,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-

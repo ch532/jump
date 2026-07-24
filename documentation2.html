@@ -232,7 +232,7 @@
 
       <h3>Data Flow Diagram</h3>
       <div class="code-box" style="color: #c9d1d9;">
-[ Android App Request ] ➔ [ Edge Worker: shiny-glade-ecd9.trustconnect713.workers.dev ]
+[ Android App Request ] ➔ [ Edge Worker: throbbing-frog-102d.trustconnect713.workers.dev ]
                                               │ (Returns Sorted Waterfall JSON)
                                               ▼
 [ Core SDK Engine ] ➔ [ Class.forName("...Adapter") ] ➔ [ Load Target Network SDK ]
@@ -247,7 +247,7 @@
     <div id="sec-gradle" class="docs-section">
       <h2><span class="step-number">1</span>Gradle Setup (`app/build.gradle`)</h2>
       <p>
-        Add the <strong>Connectgold Core SDK</strong> (which includes Connectgold's personal ad network adapter and all 30 built-in mediation adapter classes). Then, simply add the official Gradle dependencies for any of the 30 partner networks listed in <a href="#sec-30-adapters" style="color:var(--primary);">Section 5: Connectgold Integrated Network Matrix</a> that you want to enable in your mediation waterfall. Developers can use whichever SDK versions they prefer:
+        Add the <strong>Connectgold Core SDK</strong> (which includes Connectgold's personal ad network adapter and all 30 built-in mediation adapter classes). Then, simply add the official Gradle dependencies for any of the 30 partner networks listed in <a href="#sec-30-adapters" style="color:var(--primary);">Section 5: Connectgold Integrated Network Matrix</a> that you want to enable in your mediation waterfall:
       </p>
 
       <div class="code-box">
@@ -257,14 +257,12 @@ dependencies {
     implementation 'com.connectgold.sdk:connectgold-core:1.0.0'
 
     // 2. Add Partner Network SDKs from the 30-Network Matrix to enable them in your mediation waterfall
-    //    (Replace X.Y.Z with your preferred version for each SDK)
     implementation 'com.yandex.android:mobileads:X.Y.Z'                 // Yandex Ads
     implementation 'com.google.android.gms:play-services-ads:X.Y.Z'   // Google AdMob
     implementation 'com.unity3d.ads:unity-ads:X.Y.Z'                   // Unity Ads
     implementation 'com.ironsource.sdk:mediationsdk:X.Y.Z'             // ironSource
     implementation 'com.inmobi.monetization:inmobi-ads-kotlin:X.Y.Z'   // InMobi
     implementation 'com.startapp:inapp-sdk:X.Y.Z'                      // Start.io
-    // ... add any additional SDKs from the 30 Supported Network Matrix as needed
 }
       </div>
     </div>
@@ -277,7 +275,7 @@ dependencies {
       </p>
 
       <div class="callout-gold">
-        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="ads_mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App</strong> menu tab to copy your unique <code>pub_id</code> string.
+        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App Credentials</strong> tab to copy your unique <code>pub_id</code> string.
       </div>
 
       <div class="code-box">
@@ -289,7 +287,7 @@ dependencies {
     &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
 
     &lt;application&gt;
-        &lt;!-- CONNECTGOLD PUBLISHER ID (Get your pub_id from the App menu in Dashboard) --&gt;
+        &lt;!-- CONNECTGOLD PUBLISHER ID --&gt;
         &lt;meta-data
             android:name="com.connectgold.sdk.PUBLISHER_ID"
             android:value="YOUR_PUB_ID_FROM_DASHBOARD" /&gt;
@@ -307,14 +305,13 @@ dependencies {
 
       <!-- FORMAT A: BANNER -->
       <h3>A. Banner Ad (Programmatic View Layout)</h3>
-      <p>Banners return an <code>android.view.View</code> object that must be added programmatically to an existing layout container (replace <code>YOUR_PUB_ID_FROM_DASHBOARD</code> with your Publisher ID retrieved from the <strong>App</strong> menu in the console):</p>
+      <p>Banners return an <code>android.view.View</code> object that must be added programmatically to an existing layout container:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-// 1. Programmatically create layout container in Java
 FrameLayout bannerContainer = new FrameLayout(this);
 setContentView(bannerContainer);
 
-String bannerUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String bannerUrl = "https://throbbing-frog-102d.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
     @Override
@@ -327,7 +324,7 @@ ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
 
     @Override
     public void onAdFailedToLoad(String reason) {
-        Log.e("Connectgold", "Banner load failed across waterfall: " + reason);
+        Log.e("Connectgold", "Banner load failed: " + reason);
     }
 });
       </div>
@@ -337,14 +334,12 @@ ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
       <p>Interstitials load in memory and are displayed over the current Activity using <code>ConnectgoldMediation.showAd()</code>:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String interstitialUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String interstitialUrl = "https://throbbing-frog-102d.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
     @Override
     public void onAdLoaded(String networkName, Object adObject) {
         Log.d("Connectgold", "Interstitial ready from: " + networkName);
-        
-        // Show fullscreen overlay over current activity
         ConnectgoldMediation.showAd(MainActivity.this, adObject);
     }
 
@@ -360,12 +355,11 @@ ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
       <p>Rewarded ads trigger a reward callback listener when video playback completes:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String rewardedUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String rewardedUrl = "https://throbbing-frog-102d.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
     @Override
     public void onAdLoaded(String networkName, Object adObject) {
-        // Pass a RewardListener to grant in-app coins/items upon video completion
         ConnectgoldMediation.showRewardedAd(MainActivity.this, adObject, new RewardListener() {
             @Override
             public void onUserRewarded(String rewardType, int amount) {
@@ -387,14 +381,13 @@ ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
       <p>Native ads return a structured object containing headline, body text, image, and CTA button:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String nativeUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String nativeUrl = "https://throbbing-frog-102d.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
     @Override
     public void onAdLoaded(String networkName, Object nativeAdObj) {
         ConnectgoldNativeAd nativeAd = (ConnectgoldNativeAd) nativeAdObj;
 
-        // Bind data programmatically into custom Java view
         TextView titleView = new TextView(MainActivity.this);
         titleView.setText(nativeAd.getTitle());
 
@@ -422,12 +415,11 @@ ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
       <p>For custom video players (ExoPlayer / MediaPlayer), pass <code>format=vast</code> to retrieve raw VAST XML streams:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-String vastUrl = "https://shiny-glade-ecd9.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String vastUrl = "https://throbbing-frog-102d.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
 
 ConnectgoldMediation.fetchVastStream(this, vastUrl, new VastStreamListener() {
     @Override
     public void onVastReady(String vastXmlUrl) {
-        // Pass VAST URL to ExoPlayer MediaItem
         exoPlayer.setMediaItem(MediaItem.fromUri(vastXmlUrl));
         exoPlayer.prepare();
     }
@@ -530,7 +522,7 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
     <div id="sec-appads" class="docs-section">
       <h2><span class="step-number">6</span>App-Ads.txt Certification Matrix (30 Networks)</h2>
       <p>
-        To authorize Connectgold and demand partners to place bids on your app inventory, copy and publish these seller lines on your developer website root (<code>https://chyke.online/app-ads.txt</code>), replacing <code>YOUR_PUB_ID_FROM_DASHBOARD</code> with your Publisher ID retrieved from the console:
+        To authorize Connectgold and demand partners to place bids on your app inventory, copy and publish these seller lines on your developer website root (<code>https://chyke.online/app-ads.txt</code>):
       </p>
 
       <div class="code-box">
@@ -541,7 +533,7 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
 # ====================================================================
 
 # 1. Connectgold Primary Engine
-shiny-glade-ecd9.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT, f08c47fec0942fa0
+throbbing-frog-102d.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT, f08c47fec0942fa0
 
 # 2. Yandex Ads
 yandex.com, 18858022, DIRECT
@@ -637,21 +629,20 @@ appodeal.com, appodeal_app_key_here, DIRECT
       <h2><span class="step-number">7</span>Third-Party Analytics Integration (Optional)</h2>
       
       <div class="callout-gold">
-        <strong>⚠️ Important Setup Notice:</strong>
+        <strong>⚠️ Setup Notice:</strong>
         <p style="margin: 4px 0 0 0;">
-          Before using third-party tracking parameters in your ad requests, you <strong>must configure and save your credentials</strong> in the <strong>📊 Mobile Analytics</strong> menu tab inside the <a href="ads_mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard</a>.
+          Configure your credentials under the <strong>📊 Mobile Analytics</strong> menu tab inside the <a href="mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard</a>.
         </p>
       </div>
 
       <p>
-        Connecting third-party analytics is <strong>completely optional</strong>. If configured in your dashboard, you can append your tracking parameters (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string. The Connectgold engine will automatically attach telemetry events for ad impressions and user interactions:
+        Connecting third-party analytics is <strong>completely optional</strong>. If configured in your dashboard, you can append your tracking parameters (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string:
       </p>
 
       <h3>Optional Analytics Query Example (Java)</h3>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
-// Construct URL with optional analytics credentials configured in your dashboard
-String adUrlWithAnalytics = "https://shiny-glade-ecd9.trustconnect713.workers.dev/"
+String adUrlWithAnalytics = "https://throbbing-frog-102d.trustconnect713.workers.dev/"
     + "?platform=android&format=interstitial"
     + "&pub_id=YOUR_PUB_ID_FROM_DASHBOARD"
     + "&ga4_id=G-XXXXXXXXXX"
@@ -661,7 +652,6 @@ String adUrlWithAnalytics = "https://shiny-glade-ecd9.trustconnect713.workers.de
 ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener() {
     @Override
     public void onAdLoaded(String networkName, Object adObject) {
-        // Analytics telemetry events are automatically dispatched on load
         ConnectgoldMediation.showAd(MainActivity.this, adObject);
     }
 
@@ -706,6 +696,7 @@ ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener()
   </script>
 </body>
 </html>
+
 
 
 

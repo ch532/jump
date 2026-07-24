@@ -1,5 +1,7 @@
 google.com, pub-7103045303312963, DIRECT, f08c47fec0942fa0
 
+shiny-rice-482f.trustconnect713.workers.dev, pub_cg_141z4i18, DIRECT, f08c47fec0942fa0
+
 delicate-night-fb02.trustconnect713.workers.dev, pub_connectgold1234, DIRECT, f08c47fec0942fa0
 
 broad-brook-39f4.trustconnect713.workers.dev, pub_connectgold1234, DIRECT, f08c47fec0942fa0

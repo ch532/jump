@@ -11,9 +11,6 @@
     
     <link rel="icon" type="image/png" href="https://chyke.online/connectgold_2.png">
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963"
-     crossorigin="anonymous"></script>
-
 
     <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -156,49 +153,9 @@
         </div>
     </nav>
 
-    <!-- Connectgold Ad Network: Treat (300x250) -->
-<div id="plc_demo" style="width:300px; height:250px; margin:auto; overflow:hidden;"></div>
-<script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = "1";
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=banner&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || !data.success) return;
-          const box = document.getElementById("plc_demo");
-          let adInfo = data.ad;
-          
-          if (data.adHtml || data.html_snippet) {
-            box.innerHTML = data.adHtml || data.html_snippet;
-            
-          const scripts = box.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) {
-              oldScript.parentNode.replaceChild(newScript, oldScript);
-            }
-          });
-          } else if (adInfo) {
-            box.innerHTML = `<a href="${adInfo.destination_url}" target="_blank" rel="noopener">
-              <img src="${adInfo.image_url || 'https://chyke.online/connectgold_2.png'}" width="300" height="250" alt="${adInfo.title}" style="border:0;" />
-            </a>`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'banner' });
-          }
-        })
-        .catch(err => console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 60000);
-  })();
-</script>
+    <!-- CG: Long -->
+<div id="plc_5m5b6f6x" style="width:320px;min-height:50px;margin:auto;"></div>
+<script>(function(){function l(){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_5m5b6f6x&pub_id=pub_cg_5u2t022y&rotation_seconds=30&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{var e=document.getElementById("plc_5m5b6f6x");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Long'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"banner",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});}).catch(err=>console.error(err))}l();setInterval(l,30000);})();</script>
 
 
     <!-- Placement Slot 1: Below Navbar Wide Header Ad Banner -->
@@ -269,64 +226,9 @@
                     </form>
                 </div>
 
-                <!-- Connectgold Ad Network: Nice (INFEED) -->
-<div id="plc_demo"></div>
-<script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = (localStorage.getItem("user_ad_consent") === "granted" ? "1" : "0");
-      fetch("https://delicate-night-fb02.trustconnect713.workers.dev/?platform=web&format=infeed&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          const box = document.getElementById("plc_demo");
-          if (!box) return;
-
-          const rtbBid = data.seatbid && data.seatbid[0] && data.seatbid[0].bid && data.seatbid[0].bid[0];
-
-          if (rtbBid && rtbBid.adm) {
-            box.innerHTML = rtbBid.adm;
-            if (rtbBid.nurl) fetch(rtbBid.nurl);
-          } else if (data.adHtml || data.html_snippet || data.adm) {
-            
-          const rawMarkup = data.adm || data.adHtml || data.html_snippet;
-          if (rawMarkup) {
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = rawMarkup;
-            box.innerHTML = "";
-            Array.from(tempDiv.childNodes).forEach(node => {
-              if (node.tagName === "SCRIPT") {
-                const newScript = document.createElement("script");
-                Array.from(node.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                if (node.innerHTML) newScript.appendChild(document.createTextNode(node.innerHTML));
-                box.appendChild(newScript);
-              } else {
-                box.appendChild(node.cloneNode(true));
-              }
-            });
-          }
-          } else if (data.ad) {
-            const adInfo = data.ad;
-            box.innerHTML = `
-              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif; text-align:left;">
-                ${adInfo.image_url ? `<img src="${adInfo.image_url}" style="max-width:100%; height:auto; border-radius:6px; margin-bottom:10px;" />` : ''}
-                <h4 style="margin:0 0 6px 0; font-size:16px;">${adInfo.title}</h4>
-                <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
-                <a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">${adInfo.cta_text || 'Learn More'}</a>
-              </div>`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'placement_id': 'plc_demo', 'format': 'infeed' });
-          }
-        })
-        .catch(err => console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 30000);
-  })();
-</script>
+                <!-- CG AI: Free -->
+<div id="plc_5s6p5o38"></div>
+<script>(function(){function l(){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/ai/ad-generator?product=Entertainment%20").then(r=>r.json()).then(d=>{var e=document.getElementById("plc_5s6p5o38");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Free'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"ai_text",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
 
                 <!-- Widget 2: Word Finder Cheat Lookup Form -->
                 <div class="widget-wrapper-card" data-sdk-feature="Word Finder">
@@ -370,6 +272,10 @@
                 <!-- Placement Slot 2: Mid-Content Horizontal Ad break -->
                 <div class="adsense-autoad-stripe"></div>
 
+                <!-- CG Native: Check  -->
+<div id="plc_1f655n5d"></div>
+<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=infeed&plc=plc_1f655n5d&pub_id=pub_cg_5u2t022y&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_1f655n5d");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Check '});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"infeed",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+
                 <!-- Widget 3: Word of the Day Framework -->
                 <div class="widget-wrapper-card" data-sdk-feature="Word of the Day">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Word of the Day</div>
@@ -387,52 +293,9 @@
                     </div>
                 </div>
 
-<!-- Connectgold Ad Network: Treat (NATIVE) -->
-<div id="plc_demo"></div>
-<script>
-  (function() {
-    function fetchAndRenderAd() {
-      const consentVal = "1";
-      fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=native&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || !data.success) return;
-          const box = document.getElementById("plc_demo");
-          let adInfo = data.ad;
-          
-          if (data.adHtml || data.html_snippet) {
-            box.innerHTML = data.adHtml || data.html_snippet;
-            
-          const scripts = box.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) {
-              oldScript.parentNode.replaceChild(newScript, oldScript);
-            }
-          });
-          } else if (adInfo) {
-            box.innerHTML = `
-              <div style="border:1px solid #30363d; padding:14px; background:#161b22; color:#fff; border-radius:8px; font-family:sans-serif;">
-                <h4 style="margin:0 0 6px 0; font-size:16px;">${adInfo.title}</h4>
-                <p style="margin:0 0 10px 0; font-size:13px; color:#8b949e;">${adInfo.description || adInfo.body || 'Monetize and scale your apps with Connectgold Edge Network.'}</p>
-                <a href="${adInfo.destination_url}" target="_blank" rel="noopener" style="display:inline-block; background:#d4af37; color:#000; padding:6px 12px; border-radius:4px; font-weight:bold; text-decoration:none; font-size:12px;">${adInfo.cta_text || 'Learn More'}</a>
-              </div>`;
-            if (adInfo.nurl) fetch(adInfo.nurl);
-          }
-          
-          
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'native' });
-          }
-        })
-        .catch(err => console.error("Connectgold Ad Error:", err));
-    }
-    fetchAndRenderAd();
-    setInterval(fetchAndRenderAd, 30000);
-  })();
-</script>
+<!-- CG Native: Check  -->
+<div id="plc_1f655n5d"></div>
+<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=infeed&plc=plc_1f655n5d&pub_id=pub_cg_5u2t022y&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_1f655n5d");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Check '});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"infeed",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
                 
                 <!-- Widget 4: Comprehensive Article of the Day Element -->
                 <div class="widget-wrapper-card" data-sdk-feature="Article of the Day">
@@ -456,6 +319,10 @@
 
                 <!-- Placement Slot 3: Mid-Content Ad Section before Entertainment Widgets -->
                 <div class="adsense-autoad-stripe"></div>
+
+                <!-- CG Native: Check  -->
+<div id="plc_1f655n5d"></div>
+<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=infeed&plc=plc_1f655n5d&pub_id=pub_cg_5u2t022y&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_1f655n5d");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Check '});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"infeed",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
 
                 <!-- Widget 6: Idiom of the Day Box -->
                 <div class="widget-wrapper-card" data-sdk-feature="Idiom of the Day">

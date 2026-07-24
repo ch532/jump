@@ -142,7 +142,7 @@
         <div>
           <div class="brand-header">
             <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo">
-            <span>Connect<span class="gold">gold</span></span> <span class="gold">web</span></span>
+            <span>Connect<span class="gold">gold Web</span></span>
           </div>
 
           <div class="user-profile-bar">
@@ -391,19 +391,18 @@
           </div>
         </div>
 
-        <!-- TAB 4: NETWORK ANALYTICS -->
+        <!-- TAB 4: NETWORK ANALYTICS (CLEANED FOR WEB - DOMAIN INSTEAD OF APP ID) -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>Connectgold Network Performance Analytics</h2>
             
+            <!-- FILTER ROW 1 -->
             <div class="analytics-filter-grid">
               <div>
                 <label>Target Platform</label>
                 <select id="analytics-platform" onchange="fetchAnalytics()">
-                  <option value="all">All Platforms</option>
                   <option value="web" selected>Web Terminal</option>
-                  <option value="android">Android Mobile SDK</option>
-                  <option value="ios">iOS Mobile SDK</option>
+                  <option value="all">All Platforms</option>
                 </select>
               </div>
               <div>
@@ -422,6 +421,7 @@
                 <select id="analytics-format" onchange="fetchAnalytics()">
                   <option value="all">All Formats</option>
                   <option value="banner" selected>Banner Ad</option>
+                  <option value="ai_text">AI Text Ad</option>
                   <option value="native_display">Native Display Card</option>
                   <option value="infeed">In-Feed Native Content</option>
                   <option value="interstitial_fullscreen">Full Screen Interstitial</option>
@@ -430,28 +430,29 @@
               </div>
             </div>
 
-            
+            <!-- FILTER ROW 2 -->
+            <div class="analytics-filter-grid">
               <div>
                 <label>Country Code</label>
                 <input type="text" id="analytics-country" placeholder="e.g. NG, US (or 'all')" onchange="fetchAnalytics()">
               </div>
-
-            <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
-              <div style="flex: 2;">
-                <label>Domain</label>
-                <input type="text" id="analytics-app-id" placeholder="e.g. chyke.online (or 'all')" onchange="fetchAnalytics()">
+              <div>
+                <label>Website Domain</label>
+                <input type="text" id="analytics-domain" placeholder="e.g. chyke.online (or 'all')" onchange="fetchAnalytics()">
               </div>
-              <div style="flex: 1;">
+              <div>
                 <label>Specific Date</label>
                 <input type="date" id="analytics-date" onchange="fetchAnalytics()">
               </div>
-              <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh Metrics</button>
             </div>
+
+            <button class="btn" onclick="fetchAnalytics()" style="width:100%; margin-top: 5px;">Refresh Metrics</button>
 
             <div style="margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: var(--primary);" id="stat-date-display">
               Report Window: Loading live metrics...
             </div>
 
+            <!-- METRIC CARDS -->
             <div class="analytics-grid">
               <div class="stat-box">
                 <h3 id="stat-requests">0</h3>
@@ -621,19 +622,18 @@
     }
 
     async function fetchAnalytics(){
+      const pubId=document.getElementById("pub-id").value||"pub_direct";
       const platform=document.getElementById("analytics-platform").value;
       const timeframe=document.getElementById("analytics-timeframe").value;
       const format=document.getElementById("analytics-format").value;
-      const network=document.getElementById("analytics-network").value;
       const country=document.getElementById("analytics-country").value.trim()||"all";
-      const sdkVer=document.getElementById("analytics-sdk-ver").value.trim()||"all";
-      const appId=document.getElementById("analytics-app-id").value.trim()||"all";
+      const domain=document.getElementById("analytics-domain").value.trim()||"all";
       let dt=document.getElementById("analytics-date").value||new Date().toISOString().split('T')[0];
 
       document.getElementById("stat-date-display").innerText=`Querying telemetry window...`;
 
       try{
-        const query=`?platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&network=${encodeURIComponent(network)}&country=${encodeURIComponent(country)}&sdk_version=${encodeURIComponent(sdkVer)}&app_id=${encodeURIComponent(appId)}&date=${encodeURIComponent(dt)}`;
+        const query=`?pub_id=${encodeURIComponent(pubId)}&platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&country=${encodeURIComponent(country)}&domain=${encodeURIComponent(domain)}&date=${encodeURIComponent(dt)}`;
         const r=await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics${query}`);
         const d=await r.json();
         const m=d.metrics||d;
@@ -676,8 +676,8 @@
       if(plsb)tp+=`if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcName}'}});`;
       if(mixp)tp+=`if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcName}'});`;
 
-      // Complete multi-parameter telemetry payload
-      const telem=`var n=(d.network)||"exoclick",e=parseFloat(d.ecpm)||2.50;fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"${fmt}",network:n,pub_id:"${pubId}",ecpm:e,revenue:e/1000})}).catch(function(){});`;
+      // Complete web telemetry payload sent to analytics worker
+      const telem=`var e=parseFloat(d.ecpm)||2.50;fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"${fmt}",pub_id:"${pubId}",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});`;
 
       try{
         const r=await fetch(`${CREDENTIALS_WORKER_URL}/v1/publisher/create-placement`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({publisher_id:pubId,placement_name:plcName,format:fmt,rotation_seconds:rot})});
@@ -729,3 +729,4 @@
   </script>
 </body>
 </html>
+

@@ -38,6 +38,7 @@
       --text-muted: #8b949e;
       --border-color: #30363d;
       --success: #2ea44f;
+      --danger: #f85149;
     }
 
     * { box-sizing: border-box; }
@@ -70,7 +71,7 @@
     .user-email { font-size: 11px; color: var(--text-muted); max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .btn-logout { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: all 0.2s; }
-    .btn-logout:hover { border-color: #f85149; color: #f85149; }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
 
     .sidebar-menu { list-style: none; padding: 0; margin: 15px 0 0; }
     .sidebar-menu li { padding: 14px 24px; cursor: pointer; color: var(--text-muted); transition: all 0.25s ease; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 15px; }
@@ -161,6 +162,7 @@
             <li onclick="switchTab('advertiser-tab', this)">📢 Advertisers & Bids</li>
             <li onclick="switchTab('payment-tab', this)">💳 Payments & Wallet</li>
             <li onclick="switchTab('analytics-tab', this)">📊 Network Analytics</li>
+            <li onclick="switchTab('risk-tab', this)">🛡️ Risk & Moderation</li>
             <li onclick="switchTab('settings-tab', this)">⚙️ Network Settings</li>
           </ul>
         </div>
@@ -269,7 +271,7 @@
             <div class="notice-banner">
               <div class="icon">⚠️</div>
               <div>
-                <p><strong>Note for Advertisers:</strong> Deposit funds under Payments & Wallet before submitting campaigns. Unfunded ads will not be served in auctions.</p>
+                <p><strong>Note for Advertisers:</strong> All submitted campaigns pass through our Workers AI safety scanner. Prohibited categories (gambling, adult, fake claims, political ads) will be automatically flagged or suspended.</p>
               </div>
             </div>
             
@@ -503,7 +505,24 @@
           </div>
         </div>
 
-        <!-- TAB 5: SETTINGS -->
+        <!-- TAB 5: RISK & MODERATION -->
+        <div id="risk-tab" class="tab-content">
+          <div class="card">
+            <h2>🛡️ Campaign Safety & Moderation Queue</h2>
+            <p style="font-size:13px; color:var(--text-muted);">Audit high-risk ad creative flagged by Workers AI, keyword scanners, or publisher reports.</p>
+            
+            <div class="form-group">
+              <label>Admin Secret Authorization</label>
+              <input type="password" id="admin-sec-input" placeholder="Enter ADMIN_SECRET key...">
+            </div>
+
+            <button class="btn" onclick="fetchFlaggedQueue()">Query Moderation Worker</button>
+
+            <div id="risk-queue-output" class="code-box" style="display:none; margin-top:20px;"></div>
+          </div>
+        </div>
+
+        <!-- TAB 6: SETTINGS -->
         <div id="settings-tab" class="tab-content">
           <div class="card">
             <h2>⚙️ Ads.txt Certification Entry</h2>
@@ -521,10 +540,11 @@
   <!-- CLIENT LOGIC WITH DEPLOYED WORKER ENDPOINTS -->
   <script>
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    // Mapped directly to your newly deployed web ad worker
     const AD_ENGINE_WORKER_URL = "https://lingering-sea-4dad.trustconnect713.workers.dev"; 
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
+    // Mapped directly to your deployed moderation worker
+    const RISK_WORKER_URL = "https://rapid-moon-2f68.trustconnect713.workers.dev";
 
     function parseJwt(t){try{return JSON.parse(decodeURIComponent(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')))}catch(e){return null}}
     function handleCredentialResponse(r){const u=parseJwt(r.credential);if(u){localStorage.setItem("cg_user_session",JSON.stringify(u));renderUserSession(u)}}
@@ -600,22 +620,63 @@
         id:document.getElementById("adv-ad-id").value||"ad_"+Math.random().toString(36).substring(2,8),
         campaign_id:document.getElementById("adv-camp-id").value||"camp_default",
         format:document.getElementById("adv-format").value,
-        title:document.getElementById("adv-title").value,
+        headline:document.getElementById("adv-title").value,
         body:document.getElementById("adv-body").value,
+        target_url:document.getElementById("adv-dest-url").value,
         destination_url:document.getElementById("adv-dest-url").value,
         image_url:document.getElementById("adv-image-url").value||null,
         video_url:document.getElementById("adv-video-url").value||null,
+        cta:document.getElementById("adv-cta").value||"Learn More",
         cta_text:document.getElementById("adv-cta").value||"Learn More",
         bid_rate:parseFloat(document.getElementById("adv-bid-rate").value)||1.00,
         budget:parseFloat(document.getElementById("adv-budget").value)||50.00
       };
+
       try{
-        const r=await fetch(`${AD_ENGINE_WORKER_URL}/v1/advertiser/add-ad`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
+        // Step 1: Scan via Moderation Engine
+        const scanRes = await fetch(`${RISK_WORKER_URL}/v1/risk/scan`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(p)
+        });
+        const scanData = await scanRes.json();
+
+        if (scanData.recommended_status === "suspended") {
+          alert(`Campaign Rejected: Violates content policies (Risk Score: ${scanData.risk_score})`);
+          return;
+        }
+
+        p.status = scanData.recommended_status;
+
+        // Step 2: Publish to Main Ad Engine
+        const r=await fetch(`${AD_ENGINE_WORKER_URL}/v1/advertiser/add-ad`,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(p)
+        });
         const d=await r.json();
+        
         const bx=document.getElementById("adv-result-box");
         bx.style.display="block";
-        bx.innerText=JSON.stringify(d,null,2);
+        bx.innerText=JSON.stringify({ ad_engine: d, risk_evaluation: scanData }, null, 2);
       }catch(e){alert("Failed to submit campaign.")}
+    }
+
+    async function fetchFlaggedQueue(){
+      const sec = document.getElementById("admin-sec-input").value.trim();
+      const bx = document.getElementById("risk-queue-output");
+      bx.style.display="block";
+      bx.innerText="Querying moderation queue...";
+
+      try{
+        const r = await fetch(`${RISK_WORKER_URL}/v1/risk/flagged`, {
+          headers: { "X-Admin-Auth": sec }
+        });
+        const d = await r.json();
+        bx.innerText = JSON.stringify(d, null, 2);
+      }catch(e){
+        bx.innerText = "Error querying moderation queue or unauthorized.";
+      }
     }
 
     function requestPayout(){
@@ -680,8 +741,9 @@
       if(plsb)tp+=`if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcName}'}});`;
       if(mixp)tp+=`if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcName}'});`;
 
-      // Complete web telemetry payload sent to analytics worker
+      // Telemetry & Report Hooks
       const telem=`var e=parseFloat(d.ecpm)||2.50;fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"${fmt}",pub_id:"${pubId}",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});`;
+      const rptHook=`function reportAd(id){fetch("${RISK_WORKER_URL}/v1/risk/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:id,reason:"user_flagged"})}).then(()=>alert("Ad reported. Thank you.")).catch(()=>{});}`;
 
       try{
         const r=await fetch(`${CREDENTIALS_WORKER_URL}/v1/publisher/create-placement`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({publisher_id:pubId,placement_name:plcName,format:fmt,rotation_seconds:rot})});
@@ -693,11 +755,11 @@
 
         if(fmt==="banner"){
           const dims=bSize.split("x");
-          code=`<!-- CG: ${plcName} -->\n<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;"></div>\n<script>(function(){function l(){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&consent="+${cVal}).then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}}).catch(err=>console.error(err))}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
+          code=`<!-- CG: ${plcName} -->\n<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;position:relative;"></div>\n<script>(function(){${rptHook}function l(){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&consent="+${cVal}).then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm+'<div style="text-align:right;font-size:9px;"><a href="#" onclick="reportAd(\\\''+(d.id||'direct')+'\\\');return false;" style="color:#8b949e;text-decoration:none;">🚩 Report</a></div>'));${tp}${telem}}).catch(err=>console.error(err))}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
         }else if(fmt==="ai_text"){
-          code=`<!-- CG AI: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){function l(){fetch("${AD_ENGINE_WORKER_URL}/ai/ad-generator?product=${encodeURIComponent(aiProd)}").then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
+          code=`<!-- CG AI: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){${rptHook}function l(){fetch("${AD_ENGINE_WORKER_URL}/ai/ad-generator?product=${encodeURIComponent(aiProd)}").then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a><div style="text-align:right;font-size:9px;margin-top:8px;"><a href="#" onclick="reportAd(\\\''+(d.id||'ai_ad')+'\\\');return false;" style="color:#8b949e;text-decoration:none;">🚩 Report</a></div></div>';${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
         }else if(fmt==="native_display"||fmt==="infeed"){
-          code=`<!-- CG Native: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt}&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&has_posts="+hp+"&consent="+${cVal}).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
+          code=`<!-- CG Native: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){${rptHook}function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt}&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&has_posts="+hp+"&consent="+${cVal}).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
         }else if(fmt==="rewarded_video"||fmt==="interstitial_fullscreen"){
           code=`<!-- CG Event Unit: ${plcName} -->\n<script>function showConnectGoldAd(cb){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt==="rewarded_video"?"rewarded":"interstitial"}&plc=${plcId}&pub_id=${pubId}&consent="+${cVal}).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}<\/script>`;
         }
@@ -733,5 +795,6 @@
   </script>
 </body>
 </html>
+
 
 

@@ -178,7 +178,7 @@
         </div>
       </div>
 
-      <!-- MAIN TAB CONTENT -->
+      <!-- MAIN CONTENT LAYOUT -->
       <div class="main-content">
 
         <!-- TAB 1: PLACEMENT CREATION -->
@@ -391,7 +391,7 @@
           </div>
         </div>
 
-        <!-- TAB 4: NETWORK ANALYTICS (CLEANED FOR WEB - DOMAIN INSTEAD OF APP ID) -->
+        <!-- TAB 4: NETWORK ANALYTICS -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
             <h2>Connectgold Network Performance Analytics</h2>
@@ -518,10 +518,11 @@
     </div>
   </div>
 
-  <!-- COMPACT CLIENT LOGIC -->
+  <!-- CLIENT LOGIC WITH DEPLOYED WORKER ENDPOINTS -->
   <script>
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://shiny-rice-482f.trustconnect713.workers.dev"; 
+    // Mapped directly to your newly deployed web ad worker
+    const AD_ENGINE_WORKER_URL = "https://lingering-sea-4dad.trustconnect713.workers.dev"; 
     const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
 
@@ -553,7 +554,10 @@
       }
     }
 
-    function updateAdsTxt(p){document.getElementById("ads-txt-output").innerText=`shiny-rice-482f.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0`}
+    function updateAdsTxt(p){
+      document.getElementById("ads-txt-output").innerText=`lingering-sea-4dad.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0`;
+    }
+
     function saveAdvertiserContext(){localStorage.setItem("active_advertiser_id",document.getElementById("pay-adv-id").value||"adv_default")}
 
     function saveAnalyticsConfig(){
@@ -729,4 +733,5 @@
   </script>
 </body>
 </html>
+
 

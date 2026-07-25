@@ -12,46 +12,12 @@
 
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
 
-    <!-- Connectgold Ad Network: Treat (INTERSTITIAL) -->
-<script>
-  function showInterstitialAd() {
-    const consentVal = "1";
-    fetch("https://broad-brook-39f4.trustconnect713.workers.dev/ad-request?type=interstitial&plc=plc_demo&pub_id=pub_connectgold1234&consent=" + consentVal)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || !data.success) return;
-        let adInfo = data.ad;
-        
-        if (data.adHtml || data.html_snippet) {
-          const tempDiv = document.createElement("div");
-          tempDiv.innerHTML = data.adHtml || data.html_snippet;
-          document.body.appendChild(tempDiv);
-          const scripts = tempDiv.querySelectorAll("script");
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-            if (oldScript.parentNode) oldScript.parentNode.replaceChild(newScript, oldScript);
-          });
-        } else if (adInfo) {
-          if (adInfo.destination_url) window.open(adInfo.destination_url, '_blank');
-          if (adInfo.nurl) fetch(adInfo.nurl);
-        }
-
-        
-          if (typeof gtag === 'function') {
-            gtag('event', 'connectgold_ad_impression', { 'ad_id': (adInfo ? adInfo.campaign_id : 'passback'), 'placement_id': 'plc_demo', 'format': 'interstitial' });
-          }
-      })
-      .catch(err => console.error("Connectgold Ad Error:", err));
-  }
-</script>
 
     <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
+        m[i].l=1*new Date(); b
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110805897', 'ym');
@@ -115,9 +81,9 @@
     </div>
 </nav>
 
-<!-- CG: Ice -->
-<div id="plc_6y4v255a" style="width:300px;min-height:250px;margin:auto;"></div>
-<script>(function(){function l(){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_6y4v255a&pub_id=pub_cg_5u2t022y&rotation_seconds=30&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{var e=document.getElementById("plc_6y4v255a");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Ice'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"banner",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});}).catch(err=>console.error(err))}l();setInterval(l,30000);})();</script>
+<!-- CG: Due -->
+<div id="plc_4f4l5r6f" style="width:300px;min-height:250px;margin:auto;position:relative;"></div>
+<script>(function(){function reportAd(id){fetch("https://rapid-moon-2f68.trustconnect713.workers.dev/v1/risk/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:id,reason:"user_flagged"})}).then(()=>alert("Ad reported. Thank you.")).catch(()=>{});}function l(){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_4f4l5r6f&pub_id=pub_cg_5q0x1i2s&rotation_seconds=30&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{var e=document.getElementById("plc_4f4l5r6f");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm+'<div style="text-align:right;font-size:9px;"><a href="#" onclick="reportAd(\''+(d.id||'direct')+'\');return false;" style="color:#8b949e;text-decoration:none;">🚩 Report</a></div>'));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Due'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"banner",pub_id:"pub_cg_5q0x1i2s",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});}).catch(err=>console.error(err))}l();setInterval(l,30000);})();</script>
     
 <main class="container" data-sdk-feature="Global Reporting Terminal">
     <div class="grid">
@@ -131,14 +97,14 @@
             <div id="my-native-feed">Loading Live News Feed...</div>
         </section>
 
-<!-- CG Native: Yes -->
-<div id="plc_4z292447"></div>
-<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_4z292447&pub_id=pub_cg_5u2t022y&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_4z292447");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Yes'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"native_display",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+<!-- CG AI: Beauty -->
+<div id="plc_4t5e4m62"></div>
+<script>(function(){function reportAd(id){fetch("https://rapid-moon-2f68.trustconnect713.workers.dev/v1/risk/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:id,reason:"user_flagged"})}).then(()=>alert("Ad reported. Thank you.")).catch(()=>{});}function l(){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/ai/ad-generator?product=Movie").then(r=>r.json()).then(d=>{var e=document.getElementById("plc_4t5e4m62");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a><div style="text-align:right;font-size:9px;margin-top:8px;"><a href="#" onclick="reportAd(\''+(d.id||'ai_ad')+'\');return false;" style="color:#8b949e;text-decoration:none;">🚩 Report</a></div></div>';if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Beauty'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"ai_text",pub_id:"pub_cg_5q0x1i2s",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
         
-        <!-- CG AI: Think -->
-<div id="plc_504w0w6p"></div>
-<script>(function(){function l(){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/ai/ad-generator?product=Game").then(r=>r.json()).then(d=>{var e=document.getElementById("plc_504w0w6p");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Think'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"ai_text",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
-
+<!-- CG Native: Say -->
+<div id="plc_52355h4z"></div>
+<script>(function(){function reportAd(id){fetch("https://rapid-moon-2f68.trustconnect713.workers.dev/v1/risk/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:id,reason:"user_flagged"})}).then(()=>alert("Ad reported. Thank you.")).catch(()=>{});}function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_52355h4z&pub_id=pub_cg_5q0x1i2s&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_52355h4z");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Say'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"native_display",pub_id:"pub_cg_5q0x1i2s",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+        
         <aside class="sidebar-ad-space" data-sdk-feature="Advertisements">
             <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8877351541430254" data-ad-slot="5656610761" data-ad-format="auto"></ins>
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>

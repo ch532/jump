@@ -1,6 +1,7 @@
 google.com, pub-7103045303312963, DIRECT, f08c47fec0942fa
 
-royal-thunder-8246.trustconnect713.workers.dev, pub_cg_3t475z6x, DIRECT, f08c47fec0942fa0
+royal-thunder-8246.trustconnect713.workers.dev, pub_cg_3n3g1r4o, DIRECT, f08c47fec0942fa0
+inmobi.com, 10000214635, RESELLER, c3c977c3dfd1c8b4
 
 inmobi.com, a56bae86dc2f4213984b9608a83efa7f, DIRECT, 83e75a7ae333ca9d
 rubiconproject.com, 12266, RESELLER, 0bfd66d529a55807

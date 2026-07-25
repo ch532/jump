@@ -6,7 +6,7 @@
   
   <title>Connectgold Mobile Mediation SDK - Developer Documentation</title>
   <meta name="title" content="Connectgold Mobile Mediation SDK - Developer Documentation">
-  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Format-specific code (Banner, Interstitial, Rewarded, Native, VAST), third-party analytics integration, custom adapter creation, 30 SDK networks, app-ads.txt, and consent handling.">
+  <meta name="description" content="Technical integration guide for Connectgold Mobile SDK: Prebid OpenRTB 2.5, Format-specific Java implementation, InMobi Outbound Bidding, Custom Adapters, 30 SDK networks, app-ads.txt, and consent handling.">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
   <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold_2.png">
@@ -218,28 +218,31 @@
     <div id="sec-architecture" class="docs-section">
       <h1>Connectgold Mobile Mediation SDK Integration Guide</h1>
       <p>
-        Connectgold is a high-yield mobile ad mediation engine powered by Cloudflare Workers. Developers integrate Connectgold's SDK and adapters to connect 30 major mobile ad networks into a unified, AI-optimized mediation waterfall.
+        Connectgold is a high-yield mobile ad mediation engine powered by Cloudflare Workers. Developers integrate Connectgold's SDK and adapters to run real-time Prebid OpenRTB 2.5 auctions, combining InMobi DSP demand, direct Paystack advertiser campaigns, and 30 integrated mobile ad networks.
       </p>
 
       <div class="callout-gold">
-        <strong>How Connectgold Mediation Works:</strong>
+        <strong>How Connectgold Edge Bidding Works:</strong>
         <ul>
-          <li><strong>Dynamic Reflection Engine:</strong> The SDK uses <code>Class.forName</code> to dynamically discover and instantiate installed network adapters from a real-time Cloudflare Worker waterfall.</li>
-          <li><strong>Zero Crashing (Graceful Failover):</strong> If an SDK dependency is omitted from an app build, the reflection engine catches <code>ClassNotFoundException</code> automatically and skips to the next available network in the waterfall.</li>
-          <li><strong>30 Integrated Networks:</strong> Enable high fill rates across global regions through built-in adapter classes.</li>
+          <li><strong>Real-Time OpenRTB 2.5 Auction:</strong> Your app sends a single request to <code>/openrtb2/auction</code>. The Cloudflare Worker fires parallel requests to third-party DSPs (InMobi, SmartyAds) and evaluates Direct Paystack Campaigns in real time.</li>
+          <li><strong>Dynamic Reflection Engine:</strong> For local SDK fallback, the SDK uses <code>Class.forName</code> to dynamically discover and instantiate installed network adapters from a real-time waterfall payload.</li>
+          <li><strong>Zero Crashing (Graceful Failover):</strong> Unused SDK dependencies catch <code>ClassNotFoundException</code> automatically and seamlessly route to available networks or fallback tags.</li>
         </ul>
       </div>
 
-      <h3>Data Flow Diagram</h3>
+      <h3>Edge Data Flow Diagram</h3>
       <div class="code-box" style="color: #c9d1d9;">
-[ Android App Request ] ➔ [ Edge Worker: royal-thunder-8246.trustconnect713.workers.dev ]
-                                              │ (Returns Sorted Waterfall JSON)
-                                              ▼
-[ Core SDK Engine ] ➔ [ Class.forName("...Adapter") ] ➔ [ Load Target Network SDK ]
-                                              │
-                      ┌───────────────────────┴───────────────────────┐
-                      ▼                                               ▼
-             (Ad Loaded: Render)                       (Ad Failed: Try Next in Waterfall)
+[ Mobile App / Prebid Request ]
+              │
+              ▼
+[ Connectgold Cloudflare Worker ] ── (Parallel Outbound Auction < 120ms)
+              │
+              ├──► [ InMobi OpenRTB DSP ] ── (Site ID: 10000214635)
+              ├──► [ Direct KV Campaigns ] ── (Paystack Funded Balance)
+              └──► [ Fallback Tag Pool ]  ── (Adsterra / Monetag)
+              │
+              ▼
+   [ Highest eCPM Bid Returned & Rendered ]
       </div>
     </div>
 
@@ -247,16 +250,16 @@
     <div id="sec-gradle" class="docs-section">
       <h2><span class="step-number">1</span>Gradle Setup (`app/build.gradle`)</h2>
       <p>
-        Add the <strong>Connectgold Core SDK</strong> (which includes Connectgold's personal ad network adapter and all 30 built-in mediation adapter classes). Then, simply add the official Gradle dependencies for any of the 30 partner networks listed in <a href="#sec-30-adapters" style="color:var(--primary);">Section 5: Connectgold Integrated Network Matrix</a> that you want to enable in your mediation waterfall:
+        Add the <strong>Connectgold Core SDK</strong> (which includes Connectgold's personal ad network adapter and all 30 built-in mediation adapter classes). Then, add official Gradle dependencies for any partner networks you wish to include in local reflection mediation:
       </p>
 
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 dependencies {
-    // 1. Core Connectgold Mobile SDK (Includes Connectgold Core Adapter + 30 Integrated Network Adapters)
+    // 1. Core Connectgold Mobile SDK (Includes OpenRTB Engine + 30 Integrated Network Adapters)
     implementation 'com.connectgold.sdk:connectgold-core:1.0.0'
 
-    // 2. Add Partner Network SDKs from the 30-Network Matrix to enable them in your mediation waterfall
+    // 2. Add Partner Network SDKs from the 30-Network Matrix to enable local reflection
     implementation 'com.yandex.android:mobileads:X.Y.Z'                 // Yandex Ads
     implementation 'com.google.android.gms:play-services-ads:X.Y.Z'   // Google AdMob
     implementation 'com.unity3d.ads:unity-ads:X.Y.Z'                   // Unity Ads
@@ -271,11 +274,11 @@ dependencies {
     <div id="sec-manifest" class="docs-section">
       <h2><span class="step-number">2</span>Android Manifest Configuration</h2>
       <p>
-        Ensure standard network permissions are granted in <code>AndroidManifest.xml</code> to allow mediation ad networks to fetch ad creatives.
+        Ensure required network permissions are declared in <code>AndroidManifest.xml</code> to allow Connectgold to execute edge auctions and render ad creatives programmatically.
       </p>
 
       <div class="callout-gold">
-        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App Credentials</strong> tab to copy your unique <code>pub_id</code> string.
+        <strong>Getting Your Publisher ID:</strong> Sign in to the <a href="ads.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard Console</a> and navigate to the <strong>App Credentials</strong> tab to copy your unique <code>pub_id</code> string.
       </div>
 
       <div class="code-box">
@@ -300,20 +303,34 @@ dependencies {
     <div id="sec-java-formats" class="docs-section">
       <h2><span class="step-number">3</span>Format-Specific Java Implementation Guide</h2>
       <p>
-        While the underlying waterfall engine is universal, <strong>how you request and handle ad objects in Java differs by ad format</strong>:
+        Programmatic UI layouts are constructed directly in Java. Request ad markup from your Cloudflare Worker endpoint using standard OpenRTB parameters:
       </p>
 
       <!-- FORMAT A: BANNER -->
-      <h3>A. Banner Ad (Programmatic View Layout)</h3>
-      <p>Banners return an <code>android.view.View</code> object that must be added programmatically to an existing layout container:</p>
+      <h3>A. Banner Ad (Programmatic FrameLayout Container)</h3>
+      <p>Banners return responsive HTML markup or a `View` object added programmatically to a container layout:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 FrameLayout bannerContainer = new FrameLayout(this);
 setContentView(bannerContainer);
 
-String bannerUrl = "https://royal-thunder-8246.trustconnect713.workers.dev/?platform=android&format=banner&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
+String auctionUrl = "https://royal-thunder-8246.trustconnect713.workers.dev/openrtb2/auction";
 
-ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
+JSONObject openRtbPayload = new JSONObject();
+try {
+    openRtbPayload.put("id", "req_" + System.currentTimeMillis());
+    JSONArray impArray = new JSONArray();
+    JSONObject imp = new JSONObject();
+    imp.put("id", "1");
+    JSONObject banner = new JSONObject();
+    banner.put("w", 300);
+    banner.put("h", 250);
+    imp.put("banner", banner);
+    impArray.put(imp);
+    openRtbPayload.put("imp", impArray);
+} catch (JSONException e) { e.printStackTrace(); }
+
+ConnectgoldMediation.executeAuction(this, auctionUrl, openRtbPayload, new AdLoadListener() {
     @Override
     public void onAdLoaded(String networkName, Object adView) {
         if (adView instanceof android.view.View) {
@@ -324,14 +341,14 @@ ConnectgoldMediation.fetchAndLoad(this, bannerUrl, new AdLoadListener() {
 
     @Override
     public void onAdFailedToLoad(String reason) {
-        Log.e("Connectgold", "Banner load failed: " + reason);
+        Log.e("Connectgold", "Banner auction failed: " + reason);
     }
 });
       </div>
 
       <!-- FORMAT B: INTERSTITIAL -->
       <h3>B. Fullscreen Interstitial Ad</h3>
-      <p>Interstitials load in memory and are displayed over the current Activity using <code>ConnectgoldMediation.showAd()</code>:</p>
+      <p>Interstitials load in memory and display over the current Activity upon winning auction selection:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 String interstitialUrl = "https://royal-thunder-8246.trustconnect713.workers.dev/?platform=android&format=interstitial&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
@@ -352,7 +369,7 @@ ConnectgoldMediation.fetchAndLoad(this, interstitialUrl, new AdLoadListener() {
 
       <!-- FORMAT C: REWARDED VIDEO -->
       <h3>C. Rewarded Video Ad (With User Reward Callback)</h3>
-      <p>Rewarded ads trigger a reward callback listener when video playback completes:</p>
+      <p>Rewarded ads trigger completion callbacks when video playback finishes:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 String rewardedUrl = "https://royal-thunder-8246.trustconnect713.workers.dev/?platform=android&format=rewarded&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
@@ -377,8 +394,8 @@ ConnectgoldMediation.fetchAndLoad(this, rewardedUrl, new AdLoadListener() {
       </div>
 
       <!-- FORMAT D: NATIVE AD -->
-      <h3>D. Native Ad (Custom View Card Binding)</h3>
-      <p>Native ads return a structured object containing headline, body text, image, and CTA button:</p>
+      <h3>D. Native Ad (Dynamic Card Binding)</h3>
+      <p>Native ads return structured components (Headline, Image, Body, CTA) bound directly to Java UI elements:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 String nativeUrl = "https://royal-thunder-8246.trustconnect713.workers.dev/?platform=android&format=native&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
@@ -412,7 +429,7 @@ ConnectgoldMediation.fetchAndLoad(this, nativeUrl, new AdLoadListener() {
 
       <!-- FORMAT E: VAST VIDEO -->
       <h3>E. VAST Video Stream XML</h3>
-      <p>For custom video players (ExoPlayer / MediaPlayer), pass <code>format=vast</code> to retrieve raw VAST XML streams:</p>
+      <p>For custom player implementations (ExoPlayer / MediaPlayer), retrieve raw VAST streams by specifying `format=vast`:</p>
       <div class="code-box">
         <button class="btn-copy" onclick="copyCode(this)">Copy</button>
 String vastUrl = "https://royal-thunder-8246.trustconnect713.workers.dev/?platform=android&format=vast&pub_id=YOUR_PUB_ID_FROM_DASHBOARD";
@@ -436,7 +453,7 @@ ConnectgoldMediation.fetchVastStream(this, vastUrl, new VastStreamListener() {
     <div id="sec-custom-adapters" class="docs-section">
       <h2><span class="step-number">4</span>Writing Custom Mediation Adapters</h2>
       <p>
-        Developers can extend Connectgold mediation by creating custom adapter classes implementing the <code>ConnectgoldAdapter</code> interface:
+        Developers can extend Connectgold mediation by implementing the <code>ConnectgoldAdapter</code> interface:
       </p>
 
       <h3>Step A: Define the Adapter Interface</h3>
@@ -503,13 +520,13 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
           </tr>
         </thead>
         <tbody>
-          <tr><td>1</td><td>Connectgold Direct</td><td><code>com.connectgold.sdk.adapters.ConnectgoldDirectSdkAdapter</code></td></tr>
-          <tr><td>2</td><td>Yandex Ads</td><td><code>com.connectgold.sdk.adapters.YandexSdkAdapter</code></td></tr>
-          <tr><td>3</td><td>Google AdMob</td><td><code>com.connectgold.sdk.adapters.AdMobSdkAdapter</code></td></tr>
-          <tr><td>4</td><td>Meta Audience</td><td><code>com.connectgold.sdk.adapters.MetaAudienceSdkAdapter</code></td></tr>
-          <tr><td>5</td><td>ironSource</td><td><code>com.connectgold.sdk.adapters.IronSourceSdkAdapter</code></td></tr>
-          <tr><td>6</td><td>Unity Ads</td><td><code>com.connectgold.sdk.adapters.UnityAdsSdkAdapter</code></td></tr>
-          <tr><td>7</td><td>InMobi</td><td><code>com.connectgold.sdk.adapters.InMobiSdkAdapter</code></td></tr>
+          <tr><td>1</td><td>Connectgold Direct Engine</td><td><code>com.connectgold.sdk.adapters.ConnectgoldDirectSdkAdapter</code></td></tr>
+          <tr><td>2</td><td>InMobi OpenRTB (Programmatic)</td><td><code>com.connectgold.sdk.adapters.InMobiSdkAdapter</code></td></tr>
+          <tr><td>3</td><td>Yandex Ads</td><td><code>com.connectgold.sdk.adapters.YandexSdkAdapter</code></td></tr>
+          <tr><td>4</td><td>Google AdMob</td><td><code>com.connectgold.sdk.adapters.AdMobSdkAdapter</code></td></tr>
+          <tr><td>5</td><td>Meta Audience Network</td><td><code>com.connectgold.sdk.adapters.MetaAudienceSdkAdapter</code></td></tr>
+          <tr><td>6</td><td>ironSource</td><td><code>com.connectgold.sdk.adapters.IronSourceSdkAdapter</code></td></tr>
+          <tr><td>7</td><td>Unity Ads</td><td><code>com.connectgold.sdk.adapters.UnityAdsSdkAdapter</code></td></tr>
           <tr><td>8</td><td>Start.io</td><td><code>com.connectgold.sdk.adapters.StartIoSdkAdapter</code></td></tr>
           <tr><td>9</td><td>AppLovin MAX</td><td><code>com.connectgold.sdk.adapters.AppLovinSdkAdapter</code></td></tr>
           <tr><td>10</td><td>Pangle (TikTok)</td><td><code>com.connectgold.sdk.adapters.PangleSdkAdapter</code></td></tr>
@@ -522,7 +539,7 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
     <div id="sec-appads" class="docs-section">
       <h2><span class="step-number">6</span>App-Ads.txt Certification Matrix (30 Networks)</h2>
       <p>
-        To authorize Connectgold and demand partners to place bids on your app inventory, copy and publish these seller lines on your developer website root (<code>https://chyke.online/app-ads.txt</code>):
+        To authorize Connectgold, InMobi OpenRTB, and programmatic demand partners to bid on your inventory, copy and publish these seller lines on your developer domain root (e.g., <code>https://chyke.online/app-ads.txt</code>):
       </p>
 
       <div class="code-box">
@@ -532,26 +549,26 @@ public class CustomAdNetworkAdapter implements ConnectgoldAdapter {
 # Developer Domain: https://chyke.online/app-ads.txt
 # ====================================================================
 
-# 1. Connectgold Primary Engine
+# 1. Connectgold Primary Edge Engine
 royal-thunder-8246.trustconnect713.workers.dev, YOUR_PUB_ID_FROM_DASHBOARD, DIRECT, f08c47fec0942fa0
 
-# 2. Yandex Ads
+# 2. InMobi Programmatic Demand
+inmobi.com, 10000214635, RESELLER, c3c977c3dfd1c8b4
+
+# 3. Yandex Ads
 yandex.com, 18858022, DIRECT
 
-# 3. Google AdMob
+# 4. Google AdMob
 google.com, ca-app-pub-7728035806961877, DIRECT, f08c47fec0942fa0
 
-# 4. Meta Audience Network
+# 5. Meta Audience Network
 facebook.com, 1159864489514758, DIRECT
 
-# 5. ironSource
+# 6. ironSource
 ironsrc.com, 256d5e765, DIRECT
 
-# 6. Unity Ads
+# 7. Unity Ads
 unity.com, 6057927, DIRECT
-
-# 7. InMobi
-inmobi.com, 10000761098, DIRECT
 
 # 8. Start.io (StartApp)
 startapp.com, 202185423, DIRECT
@@ -631,12 +648,12 @@ appodeal.com, appodeal_app_key_here, DIRECT
       <div class="callout-gold">
         <strong>⚠️ Setup Notice:</strong>
         <p style="margin: 4px 0 0 0;">
-          Configure your credentials under the <strong>📊 Mobile Analytics</strong> menu tab inside the <a href="mobile.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard</a>.
+          Configure tracking credentials inside the <strong>📊 Analytics Settings</strong> tab on your <a href="ads.html" style="color:var(--primary); font-weight:bold;">Connectgold Dashboard</a>.
         </p>
       </div>
 
       <p>
-        Connecting third-party analytics is <strong>completely optional</strong>. If configured in your dashboard, you can append your tracking parameters (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string:
+        Connecting third-party analytics is <strong>completely optional</strong>. If configured in your dashboard, append tracking parameters (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string:
       </p>
 
       <h3>Optional Analytics Query Example (Java)</h3>
@@ -646,7 +663,7 @@ String adUrlWithAnalytics = "https://royal-thunder-8246.trustconnect713.workers.
     + "?platform=android&format=interstitial"
     + "&pub_id=YOUR_PUB_ID_FROM_DASHBOARD"
     + "&ga4_id=G-XXXXXXXXXX"
-    + "&plausible_domain=yourwebsite.com"
+    + "&plausible_domain=chyke.online"
     + "&mixpanel_token=361e...a28e";
 
 ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener() {
@@ -671,8 +688,8 @@ ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener()
       </p>
 
       <ul>
-        <li><code>&consent=1</code> : User granted consent for personalized ads.</li>
-        <li><code>&consent=0</code> : User denied consent (Serves non-personalized ads).</li>
+        <li><code>&consent=1</code> : User granted consent for personalized programmatic ads.</li>
+        <li><code>&consent=0</code> : User denied consent (Serves non-personalized fallback ads).</li>
       </ul>
     </div>
 
@@ -696,6 +713,7 @@ ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener()
   </script>
 </body>
 </html>
+
 
 
 

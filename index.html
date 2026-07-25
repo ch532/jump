@@ -102,9 +102,22 @@
     </nav>
 </header>
 
-<!-- CG: Rest -->
-<div id="plc_3l1l610x" style="width:728px;min-height:90px;margin:auto;position:relative;"></div>
-<script>(function(){function reportAd(id){fetch("https://rapid-moon-2f68.trustconnect713.workers.dev/v1/risk/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:id,reason:"user_flagged"})}).then(()=>alert("Ad reported. Thank you.")).catch(()=>{});}function l(){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=banner&plc=plc_3l1l610x&pub_id=pub_cg_5q0x1i2s&rotation_seconds=30&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{var e=document.getElementById("plc_3l1l610x");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm+'<div style="text-align:right;font-size:9px;"><a href="#" onclick="reportAd(\''+(d.id||'direct')+'\');return false;" style="color:#8b949e;text-decoration:none;">🚩 Report</a></div>'));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Rest'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"banner",pub_id:"pub_cg_5q0x1i2s",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});}).catch(err=>console.error(err))}l();setInterval(l,30000);})();</script>
+<!-- CG Direct OpenRTB Request: Rug -->
+<script>
+fetch("https://royal-thunder-8246.trustconnect713.workers.dev/openrtb2/auction", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    id: "plc_0j6l4s5v",
+    imp: [{ id: "1", banner: { w: 300, h: 250 } }],
+    site: { domain: window.location.hostname }
+  })
+}).then(r => r.json()).then(data => {
+  if(data && data.seatbid && data.seatbid[0]) {
+    document.getElementById("plc_0j6l4s5v").innerHTML = data.seatbid[0].bid[0].adm;
+  }
+});
+</script>
     
 <script async src="https://www.getchatads.com/widget.js?key=cwk_24625beca8802d7fcaad17a8762dead0a04afd51"></script>
 

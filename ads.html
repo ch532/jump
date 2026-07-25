@@ -206,6 +206,15 @@
             </div>
 
             <div class="form-group">
+              <label>Integration Type</label>
+              <select id="integration-type" onchange="toggleIntegrationOptions()">
+                <option value="hosted_tag" selected>Hosted 1-Line Tag (Recommended - Prebid Powered)</option>
+                <option value="direct_openrtb">Direct OpenRTB 2.5 Endpoint</option>
+                <option value="custom_js">Custom Async JS Loader</option>
+              </select>
+            </div>
+
+            <div class="form-group">
               <label>Select Web Ad Unit Format</label>
               <select id="plc-format" onchange="toggleFormatFields()">
                 <option value="banner">Banner Ad (Display Banner)</option>
@@ -247,8 +256,8 @@
               <div class="form-group">
                 <label>Banner Size</label>
                 <select id="banner-size">
-                  <option value="320x50">Mobile Leaderboard (320x50)</option>
                   <option value="300x250">Medium Rectangle (300x250)</option>
+                  <option value="320x50">Mobile Leaderboard (320x50)</option>
                   <option value="728x90">Leaderboard (728x90)</option>
                 </select>
               </div>
@@ -264,7 +273,7 @@
             <button class="btn" onclick="submitPlacement()">Generate Placement & Embed Code</button>
 
             <div id="code-output-container" style="display: none; margin-top: 25px;">
-              <h3>📋 Integration JavaScript Code</h3>
+              <h3>📋 Integration Code Snippet</h3>
               <div id="result-code" class="code-box"></div>
               <button class="btn btn-copy" onclick="copyCode('result-code')">Copy Code Snippet</button>
             </div>
@@ -278,7 +287,7 @@
             <div class="notice-banner">
               <div class="icon">⚠️</div>
               <div>
-                <p><strong>Note for Advertisers:</strong> All submitted campaigns pass through our Workers AI safety scanner. Prohibited categories (gambling, adult, fake claims, political ads) will be automatically flagged or suspended.</p>
+                <p><strong>Note for Advertisers:</strong> Active campaigns with positive wallet balance are directly served through our edge auction engine alongside InMobi OpenRTB 2.5 demand.</p>
               </div>
             </div>
             
@@ -566,10 +575,11 @@
         <div id="settings-tab" class="tab-content">
           <div class="card">
             <h2>⚙️ Ads.txt Certification Entry</h2>
+            <p style="color: var(--text-muted); font-size: 14px;">Publishers must add this line to their root <code>ads.txt</code> file to authorize Connectgold and InMobi programmatic demand:</p>
             <div class="form-group">
               <div id="ads-txt-output" class="code-box" style="color: #61dafb;">Loading Publisher credentials...</div>
             </div>
-            <button class="btn btn-copy" onclick="copyCode('ads-txt-output')">Copy ads.txt Line</button>
+            <button class="btn btn-copy" onclick="copyCode('ads-txt-output')">Copy ads.txt Lines</button>
           </div>
         </div>
 
@@ -619,7 +629,9 @@
     }
 
     function updateAdsTxt(p){
-      document.getElementById("ads-txt-output").innerText=`royal-thunder-8246.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0`;
+      document.getElementById("ads-txt-output").innerText=
+        `royal-thunder-8246.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0\n` +
+        `inmobi.com, 10000214635, RESELLER, c3c977c3dfd1c8b4`;
     }
 
     function saveAdvertiserContext(){
@@ -644,6 +656,16 @@
       document.querySelectorAll('.inst-tab-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       btnEl.classList.add('active');
+    }
+
+    function toggleIntegrationOptions(){
+      const mode = document.getElementById("integration-type").value;
+      const rotationEl = document.getElementById("plc-rotation").parentElement;
+      if(mode === "hosted_tag"){
+        rotationEl.style.display = "none";
+      } else {
+        rotationEl.style.display = "block";
+      }
     }
 
     async function loadPublisherBalance(){
@@ -801,6 +823,7 @@
     async function submitPlacement(){
       const pubId=document.getElementById("pub-id").value;
       const plcName=document.getElementById("plc-name").value||"Default Placement";
+      const integrationType=document.getElementById("integration-type").value;
       const fmt=document.getElementById("plc-format").value;
       const bSize=document.getElementById("banner-size").value;
       const rot=parseInt(document.getElementById("plc-rotation").value,10);
@@ -826,15 +849,21 @@
         let code="";
         const cVal=(consent==="auto")?'(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")':`"${consent}"`;
 
-        if(fmt==="banner"){
-          const dims=bSize.split("x");
-          code=`<!-- CG: ${plcName} -->\n<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;position:relative;"></div>\n<script>(function(){function l(){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&consent="+${cVal}).then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}}).catch(err=>console.error(err))}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
-        }else if(fmt==="ai_text"){
-          code=`<!-- CG AI: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){function l(){fetch("${AD_ENGINE_WORKER_URL}/ai/ad-generator?product=${encodeURIComponent(aiProd)}").then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
-        }else if(fmt==="native_display"||fmt==="infeed"){
-          code=`<!-- CG Native: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt}&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&has_posts="+hp+"&consent="+${cVal}).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
-        }else if(fmt==="rewarded_video"||fmt==="interstitial_fullscreen"){
-          code=`<!-- CG Event Unit: ${plcName} -->\n<script>function showConnectGoldAd(cb){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt==="rewarded_video"?"rewarded":"interstitial"}&plc=${plcId}&pub_id=${pubId}&consent="+${cVal}).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}<\/script>`;
+        if(integrationType === "hosted_tag"){
+          code = `<!-- CG Hosted Tag: ${plcName} -->\n<div id="connectgold-ad-slot"></div>\n<script src="${AD_ENGINE_WORKER_URL}/tag.js" async><\/script>`;
+        } else if(integrationType === "direct_openrtb"){
+          code = `<!-- CG Direct OpenRTB Request: ${plcName} -->\n<script>\nfetch("${AD_ENGINE_WORKER_URL}/openrtb2/auction", {\n  method: "POST",\n  headers: { "Content-Type": "application/json" },\n  body: JSON.stringify({\n    id: "${plcId}",\n    imp: [{ id: "1", banner: { w: 300, h: 250 } }],\n    site: { domain: window.location.hostname }\n  })\n}).then(r => r.json()).then(data => {\n  if(data && data.seatbid && data.seatbid[0]) {\n    document.getElementById("${plcId}").innerHTML = data.seatbid[0].bid[0].adm;\n  }\n});\n<\/script>`;
+        } else {
+          if(fmt==="banner"){
+            const dims=bSize.split("x");
+            code=`<!-- CG: ${plcName} -->\n<div id="${plcId}" style="width:${dims[0]}px;min-height:${dims[1]}px;margin:auto;position:relative;"></div>\n<script>(function(){function l(){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=banner&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&consent="+${cVal}).then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e||!d.adm)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}}).catch(err=>console.error(err))}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
+          }else if(fmt==="ai_text"){
+            code=`<!-- CG AI: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){function l(){fetch("${AD_ENGINE_WORKER_URL}/ai/ad-generator?product=${encodeURIComponent(aiProd)}").then(r=>r.json()).then(d=>{var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
+          }else if(fmt==="native_display"||fmt==="infeed"){
+            code=`<!-- CG Native: ${plcName} -->\n<div id="${plcId}"></div>\n<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt}&plc=${plcId}&pub_id=${pubId}&rotation_seconds=${rot}&has_posts="+hp+"&consent="+${cVal}).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("${plcId}");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}})}l();${rot>0?`setInterval(l,${rot*1000});`:''}})();<\/script>`;
+          }else if(fmt==="rewarded_video"||fmt==="interstitial_fullscreen"){
+            code=`<!-- CG Event Unit: ${plcName} -->\n<script>function showConnectGoldAd(cb){fetch("${AD_ENGINE_WORKER_URL}/?platform=web&format=${fmt==="rewarded_video"?"rewarded":"interstitial"}&plc=${plcId}&pub_id=${pubId}&consent="+${cVal}).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));${tp}${telem}if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}<\/script>`;
+          }
         }
 
         document.getElementById("code-output-container").style.display="block";
@@ -871,6 +900,7 @@
   </script>
 </body>
 </html>
+
 
 
 

@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- PRIMARY SEO META TAGS -->
-  <title>Connectgold - Mobile Ad Mediation Console</title>
-  <meta name="title" content="Connectgold - Mobile Ad Mediation Console">
-  <meta name="description" content="Manage 30+ mobile ad network SDK adapters, retrieve Publisher ID credentials, manage app-ads.txt, configure GDPR consent, and track performance.">
+  <title>Connectgold - Native Android Ad Mediation Console</title>
+  <meta name="title" content="Connectgold - Native Android Ad Mediation Console">
+  <meta name="description" content="Manage mobile ad network SDK adapters, retrieve Publisher ID credentials, manage app-ads.txt, configure GDPR consent, and track performance.">
   <meta name="robots" content="index, follow">
 
   <!-- FAVORITE ICON & APP LOGO LINKS -->
@@ -15,7 +15,6 @@
   <link rel="shortcut icon" href="https://chyke.online/connectgold_2.png" type="image/png">
   
   <!-- EXTERNAL SDKs -->
-  <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -107,7 +106,7 @@
     <div class="login-card">
       <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo">
       <h1>Connect<span class="gold">gold</span></h1>
-      <p>Mobile Mediation Console.<br>Sign in to retrieve your Publisher ID, manage app-ads.txt, configure GDPR consent, and track performance.</p>
+      <p>Android Ad Mediation Console.<br>Sign in to retrieve your Publisher ID, generate app-ads.txt entries, inspect live waterfalls, and track performance.</p>
       
       <div id="g_id_onload"
            data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
@@ -165,12 +164,12 @@
       <!-- MAIN TAB CONTENT -->
       <div class="main-content">
 
-        <!-- TAB 1: APP CREDENTIALS -->
+        <!-- TAB 1: APP CREDENTIALS & PLACEMENTS -->
         <div id="apps-tab" class="tab-content active">
           <div class="card">
-            <h2>📱 Publisher ID Credentials</h2>
+            <h2>📱 Android Publisher Credentials</h2>
             <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">
-              Use your unique Publisher ID to authenticate your app in code when making SDK requests.
+              Authenticate your Android application programmatically using your unique Publisher ID.
             </p>
             
             <div class="form-group">
@@ -180,22 +179,46 @@
 
             <button class="btn btn-copy" onclick="copyCode('pub-id')">Copy Publisher ID</button>
           </div>
+
+          <div class="card">
+            <h2>⚡ Android Java Request Configuration</h2>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Example URL for programmatically fetching JSON ad payloads directly in your Java/Android code:
+            </p>
+
+            <div class="form-group">
+              <label>Target Format</label>
+              <select id="android-req-format" onchange="generateAndroidUrl()">
+                <option value="banner">Banner (320x50)</option>
+                <option value="interstitial">Interstitial (Fullscreen)</option>
+                <option value="rewarded">Rewarded Video</option>
+                <option value="native">Native Display</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Direct Android Endpoint URL</label>
+              <div id="android-url-output" class="code-box" style="color: #61dafb;">Loading URL...</div>
+            </div>
+
+            <button class="btn btn-copy" onclick="copyCode('android-url-output')">Copy Android API Endpoint</button>
+          </div>
         </div>
 
         <!-- TAB 2: APP-ADS.TXT SETUP -->
         <div id="appads-tab" class="tab-content">
           <div class="card">
-            <h2>📄 App-Ads.txt Certification (30 Integrated Networks)</h2>
+            <h2>📄 App-Ads.txt Certification Matrix</h2>
             <p style="font-size: 14px; color: var(--text-muted);">
-              Copy and paste these authorized seller lines for all 30 supported SDK networks into the <code>app-ads.txt</code> file hosted at the root of your developer domain (e.g., <code>https://chyke.online/app-ads.txt</code>).
+              Host this entry on your developer domain (e.g., <code>https://chyke.online/app-ads.txt</code>) to pass ad authorization checks for your Play Store apps.
             </p>
 
             <div class="form-group">
-              <label>Authorized 30-Network Seller Matrix</label>
+              <label>Authorized Seller Line</label>
               <div id="app-ads-txt-output" class="code-box" style="color: #61dafb;">Loading Developer credentials...</div>
             </div>
 
-            <button class="btn btn-copy" onclick="copyCode('app-ads-txt-output')">Copy All 30 app-ads.txt Lines</button>
+            <button class="btn btn-copy" onclick="copyCode('app-ads-txt-output')">Copy app-ads.txt Entry</button>
           </div>
         </div>
 
@@ -204,7 +227,7 @@
           <div class="card">
             <h2>⚡ Live Edge Waterfall Inspection</h2>
             <p style="font-size:13px; color:var(--text-muted);">
-              Test the response from your active Mobile Worker in real-time.
+              Test the response from your active Edge Worker in real-time to inspect JSON bid responses.
             </p>
 
             <div class="form-group">
@@ -213,7 +236,7 @@
                 <option value="banner">Banner</option>
                 <option value="interstitial" selected>Interstitial</option>
                 <option value="rewarded">Rewarded Video</option>
-                <option value="native">Native</option>
+                <option value="native">Native Display</option>
               </select>
             </div>
 
@@ -265,14 +288,14 @@
         <!-- TAB 5: MOBILE ANALYTICS -->
         <div id="analytics-tab" class="tab-content">
           <div class="card">
-            <h2>📊 Mobile SDK Performance Analytics</h2>
+            <h2>📊 Android App Telemetry & Analytics</h2>
             
             <div class="analytics-filter-grid">
               <div>
                 <label>Target Platform</label>
                 <select id="analytics-platform" onchange="fetchAnalytics()">
+                  <option value="android" selected>Android Native App</option>
                   <option value="all">All Platforms</option>
-                  <option value="android" selected>Android Mobile SDK</option>
                 </select>
               </div>
               <div>
@@ -282,8 +305,6 @@
                   <option value="last_7d">Last 7 Days</option>
                   <option value="last_14d">Last 14 Days</option>
                   <option value="last_30d">Last 30 Days</option>
-                  <option value="last_60d">Last 60 Days</option>
-                  <option value="last_90d">Last 90 Days</option>
                 </select>
               </div>
               <div>
@@ -294,46 +315,26 @@
                   <option value="interstitial">Interstitial Ad</option>
                   <option value="rewarded">Rewarded Video</option>
                   <option value="native">Native Display</option>
-                  <option value="vast">VAST Video</option>
                 </select>
               </div>
             </div>
 
             <div class="analytics-filter-grid">
               <div>
-                <label>Demand Network</label>
-                <select id="analytics-network" onchange="fetchAnalytics()">
-                  <option value="all">All Networks</option>
-                  <option value="connectgold_direct">Connectgold Direct</option>
-                  <option value="yandex">Yandex Ads</option>
-                  <option value="admob">Google AdMob</option>
-                  <option value="ironsource">ironSource</option>
-                  <option value="unity">Unity Ads</option>
-                  <option value="startapp">Start.io</option>
-                  <option value="inmobi">InMobi</option>
-                </select>
-              </div>
-              <div>
                 <label>Country Code</label>
                 <input type="text" id="analytics-country" placeholder="e.g. NG, US (or 'all')" onchange="fetchAnalytics()">
               </div>
               <div>
-                <label>SDK Version</label>
-                <input type="text" id="analytics-sdk-ver" placeholder="e.g. 1.0.0 (or 'all')" onchange="fetchAnalytics()">
-              </div>
-            </div>
-
-            <div class="form-group" style="display: flex; gap: 15px; align-items: flex-end;">
-              <div style="flex: 2;">
-                <label>App Package Name</label>
+                <label>Package Name</label>
                 <input type="text" id="analytics-app-id" placeholder="e.g. com.chyke.online (or 'all')" onchange="fetchAnalytics()">
               </div>
-              <div style="flex: 1;">
+              <div>
                 <label>Specific Date</label>
                 <input type="date" id="analytics-date" onchange="fetchAnalytics()">
               </div>
-              <button class="btn" onclick="fetchAnalytics()" style="height: 44px;">Refresh Metrics</button>
             </div>
+
+            <button class="btn" onclick="fetchAnalytics()" style="width: 100%; margin-top: 10px;">Refresh Metrics</button>
 
             <div style="margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: var(--primary);" id="stat-date-display">
               Report Window: Loading live metrics...
@@ -346,7 +347,7 @@
               </div>
               <div class="stat-box">
                 <h3 id="stat-impressions">0</h3>
-                <p>SDK Impressions</p>
+                <p>App Impressions</p>
               </div>
               <div class="stat-box">
                 <h3 id="stat-clicks">0</h3>
@@ -367,24 +368,8 @@
             </div>
 
             <div style="background:#0d1117; border:1px solid var(--primary); padding:16px; border-radius:8px; margin-top:16px; text-align:center;">
-              <span style="font-size:12px; color:var(--text-muted); text-transform:uppercase;">Estimated Revenue</span>
+              <span style="font-size:12px; color:var(--text-muted); text-transform:uppercase;">Estimated Earnings</span>
               <h3 id="stat-revenue" style="font-size:24px; color:var(--primary); margin:4px 0 0 0;">$0.0000 USD</h3>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>🔌 Developer Third-Party Analytics Setup</h2>
-            <div class="form-group">
-              <label>GA4 Measurement ID</label>
-              <input type="text" id="tp-ga4-id" placeholder="e.g. G-XXXXXXXXXX" onkeyup="saveAnalyticsConfig()">
-            </div>
-            <div class="form-group">
-              <label>Plausible Domain</label>
-              <input type="text" id="tp-plausible-domain" placeholder="e.g. yourwebsite.com" onkeyup="saveAnalyticsConfig()">
-            </div>
-            <div class="form-group">
-              <label>Mixpanel Project Token</label>
-              <input type="text" id="tp-mixpanel-token" placeholder="e.g. 361e...a28e" onkeyup="saveAnalyticsConfig()">
             </div>
           </div>
         </div>
@@ -393,13 +378,13 @@
     </div>
   </div>
 
-  <!-- CLIENT LOGIC WITH DEPLOYED WORKER ENDPOINTS -->
+  <!-- CLIENT LOGIC POINTED TO LIVE WORKER ENDPOINTS -->
   <script>
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const MOBILE_WORKER_URL = "https://throbbing-frog-102d.trustconnect713.workers.dev";
-    // Mapped directly to your newly deployed web ad worker
-    const WEB_AD_WORKER_URL = "https://lingering-sea-4dad.trustconnect713.workers.dev";
-    const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
+    // Pointed directly to your live weighted-rotation worker endpoint
+    const AD_ENGINE_WORKER_URL   = "https://royal-thunder-8246.trustconnect713.workers.dev";
+    const ANALYTICS_WORKER_URL   = "https://floral-pine-5c44.trustconnect713.workers.dev";
+    const PAYMENT_WORKER_URL     = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
 
     function parseJwt(t){try{return JSON.parse(decodeURIComponent(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')))}catch(e){return null}}
     function handleCredentialResponse(r){const u=parseJwt(r.credential);if(u){localStorage.setItem("cg_user_session",JSON.stringify(u));renderUserSession(u)}}
@@ -411,7 +396,6 @@
       document.getElementById("usr-email").innerText=u.email||"";
       document.getElementById("usr-pic").src=u.picture||"https://chyke.online/connectgold_2.png";
       initPublisherId();
-      loadAnalyticsConfig();
     }
 
     function signOut(){localStorage.removeItem("cg_user_session");location.reload()}
@@ -425,148 +409,149 @@
       }catch(e){}
       document.getElementById("pub-id").value=p;
       updateAppAdsTxt(p);
+      generateAndroidUrl();
     }
 
     function updateAppAdsTxt(p){
-      document.getElementById("app-ads-txt-output").innerText=
-`# CONNECTGOLD INTEGRATED MOBILE MATRIX (30 NETWORKS)
-throbbing-frog-102d.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0
-yandex.com, 18858022, DIRECT
-google.com, ca-app-pub-7728035806961877, DIRECT, f08c47fec0942fa0
-facebook.com, 1159864489514758, DIRECT
-ironsrc.com, 256d5e765, DIRECT
-unity.com, 6057927, DIRECT
-inmobi.com, 10000761098, DIRECT
-startapp.com, 202185423, DIRECT
-applovin.com, applovin_sdk_key_here, DIRECT
-pangleglobal.com, pangle_account_id_here, DIRECT
-mintegral.com, mintegral_publisher_id_here, DIRECT, 0aeed750c80d6423
-vungle.com, vungle_publisher_id_here, DIRECT, c107d686becd2d77
-chartboost.com, chartboost_app_id_here, DIRECT
-fyber.com, dt_publisher_id_here, DIRECT
-amazon.com, amazon_app_key_here, DIRECT
-bidmachine.io, bidmachine_seller_id_here, DIRECT
-smaato.com, smaato_publisher_id_here, DIRECT
-target.my.com, mytarget_slot_id_here, DIRECT
-ogury.com, ogury_asset_key_here, DIRECT
-kidoz.net, kidoz_publisher_id_here, DIRECT
-appnext.com, appnext_placement_id_here, DIRECT
-tapjoy.com, tapjoy_sdk_key_here, DIRECT
-moloco.com, moloco_app_id_here, DIRECT
-bigo.sg, bigo_app_id_here, DIRECT
-adcolony.com, adcolony_app_id_here, DIRECT
-hyprmx.com, hyprmx_distributor_id_here, DIRECT
-mobfox.com, mobfox_hash_here, DIRECT
-pubmatic.com, pubmatic_publisher_id_here, DIRECT, 5d62403b186f2ace
-cas.ai, cas_id_here, DIRECT
-appodeal.com, appodeal_app_key_here, DIRECT`;
+      document.getElementById("app-ads-txt-output").innerText = 
+        `royal-thunder-8246.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0`;
     }
 
-    function saveAnalyticsConfig(){
-      localStorage.setItem("cg_ga4_id",document.getElementById("tp-ga4-id").value.trim());
-      localStorage.setItem("cg_plausible_domain",document.getElementById("tp-plausible-domain").value.trim());
-      localStorage.setItem("cg_mixpanel_token",document.getElementById("tp-mixpanel-token").value.trim());
-    }
-
-    function loadAnalyticsConfig(){
-      document.getElementById("tp-ga4-id").value=localStorage.getItem("cg_ga4_id")||"";
-      document.getElementById("tp-plausible-domain").value=localStorage.getItem("cg_plausible_domain")||"";
-      document.getElementById("tp-mixpanel-token").value=localStorage.getItem("cg_mixpanel_token")||"";
+    function generateAndroidUrl(){
+      const pubId = document.getElementById("pub-id").value || "pub_direct";
+      const fmt = document.getElementById("android-req-format").value;
+      const url = `${AD_ENGINE_WORKER_URL}/?platform=android&format=${fmt}&pub_id=${pubId}`;
+      document.getElementById("android-url-output").innerText = url;
     }
 
     async function runWaterfallTest(){
-      const fmt=document.getElementById("test-format").value;
-      const pubId=document.getElementById("pub-id").value||"pub_direct";
-      const box=document.getElementById("waterfall-output");
-      box.style.display="block";
-      box.innerText="Querying Mobile Edge Server...";
+      const fmt = document.getElementById("test-format").value;
+      const pubId = document.getElementById("pub-id").value || "pub_direct";
+      const box = document.getElementById("waterfall-output");
+      box.style.display = "block";
+      box.innerText = "Querying Live Edge Server...";
       try{
-        const r=await fetch(`${MOBILE_WORKER_URL}/?platform=android&format=${fmt}&pub_id=${pubId}`);
-        const d=await r.json();
-        box.innerText=JSON.stringify(d,null,2);
-      }catch(e){box.innerText="Error contacting Mobile Worker endpoint."}
+        const r = await fetch(`${AD_ENGINE_WORKER_URL}/?platform=android&format=${fmt}&pub_id=${pubId}`);
+        const d = await r.json();
+        box.innerText = JSON.stringify(d, null, 2);
+      }catch(e){ box.innerText = "Error contacting Edge Worker endpoint."; }
     }
 
     async function loadPublisherBalance(){
-      const p=document.getElementById("pub-id").value;
-      const b=document.getElementById("publisher-earned-balance");
-      if(!p){b.innerText="$0.0000 USD";return}
-      b.innerText="Loading...";
+      const p = document.getElementById("pub-id").value || "pub_direct";
+      const b = document.getElementById("publisher-earned-balance");
+      if(!p){ b.innerText="$0.0000 USD"; return; }
+      b.innerText = "Loading...";
       try{
-        const r=await fetch(`${WEB_AD_WORKER_URL}/v1/publisher/balance?pub_id=${p}`);
-        const d=await r.json();
-        b.innerText=`$${parseFloat(d.total_revenue_usd||0).toFixed(4)} USD`;
-      }catch(e){b.innerText="$0.0000 USD"}
+        const r = await fetch(`${PAYMENT_WORKER_URL}/v1/publisher/balance?pub_id=${p}`);
+        const d = await r.json();
+        b.innerText = `$${parseFloat(d.total_revenue_usd || 0).toFixed(4)} USD`;
+      }catch(e){ b.innerText = "$0.0000 USD"; }
     }
 
-    function requestPayout(){
-      if(!document.getElementById("tax-cert-check").checked||!document.getElementById("tax-id-num").value.trim()){
-        alert("Please complete Global Tax Certification before requesting payout.");return;
+    async function requestPayout(){
+      const pubId = document.getElementById("pub-id").value || "pub_direct";
+      const bankCode = document.getElementById("payout-bank").value.trim();
+      const accountNumber = document.getElementById("payout-account").value.trim();
+      const taxId = document.getElementById("tax-id-num").value.trim();
+      const taxCertified = document.getElementById("tax-cert-check").checked;
+
+      if(!bankCode || !accountNumber) {
+        alert("Please enter a Bank Code and Account Number.");
+        return;
       }
-      alert("Payout request submitted!");
+
+      if(!taxCertified || !taxId) {
+        alert("Taxpayer ID and Tax Certification checkbox are required.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${PAYMENT_WORKER_URL}/v1/publisher/request-payout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            publisher_id: pubId,
+            bank_code: bankCode,
+            account_number: accountNumber,
+            tax_id: taxId,
+            tax_certified: taxCertified
+          })
+        });
+
+        const data = await res.json();
+        if(data.success) {
+          alert(`Success! ${data.message}`);
+          loadPublisherBalance();
+        } else {
+          alert(`Payout Rejected: ${data.message}`);
+        }
+      } catch(e) {
+        alert("Failed to submit payout request. Please try again.");
+      }
     }
 
     async function fetchAnalytics(){
-      const platform=document.getElementById("analytics-platform").value;
-      const timeframe=document.getElementById("analytics-timeframe").value;
-      const format=document.getElementById("analytics-format").value;
-      const network=document.getElementById("analytics-network").value;
-      const country=document.getElementById("analytics-country").value.trim()||"all";
-      const sdkVer=document.getElementById("analytics-sdk-ver").value.trim()||"all";
-      const appId=document.getElementById("analytics-app-id").value.trim()||"all";
-      let dt=document.getElementById("analytics-date").value||new Date().toISOString().split('T')[0];
+      const pubId = document.getElementById("pub-id").value || "pub_direct";
+      const platform = document.getElementById("analytics-platform").value;
+      const timeframe = document.getElementById("analytics-timeframe").value;
+      const format = document.getElementById("analytics-format").value;
+      const country = document.getElementById("analytics-country").value.trim() || "all";
+      const appId = document.getElementById("analytics-app-id").value.trim() || "all";
+      let dt = document.getElementById("analytics-date").value || new Date().toISOString().split('T')[0];
 
-      document.getElementById("stat-date-display").innerText=`Querying telemetry window...`;
+      document.getElementById("stat-date-display").innerText = `Querying telemetry window...`;
 
       try{
-        const query=`?platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&network=${encodeURIComponent(network)}&country=${encodeURIComponent(country)}&sdk_version=${encodeURIComponent(sdkVer)}&app_id=${encodeURIComponent(appId)}&date=${encodeURIComponent(dt)}`;
-        const r=await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics${query}`);
-        const d=await r.json();
-        const m=d.metrics||d;
+        const query = `?pub_id=${encodeURIComponent(pubId)}&platform=${encodeURIComponent(platform)}&timeframe=${encodeURIComponent(timeframe)}&format=${encodeURIComponent(format)}&country=${encodeURIComponent(country)}&app_id=${encodeURIComponent(appId)}&date=${encodeURIComponent(dt)}`;
+        const r = await fetch(`${ANALYTICS_WORKER_URL}/v1/analytics${query}`);
+        const d = await r.json();
+        const m = d.metrics || d;
 
-        document.getElementById("stat-requests").innerText=Number(m.requests||0).toLocaleString();
-        document.getElementById("stat-impressions").innerText=Number(m.impressions||0).toLocaleString();
-        document.getElementById("stat-clicks").innerText=Number(m.clicks||0).toLocaleString();
-        document.getElementById("stat-fillrate").innerText=m.fill_rate||"0.00%";
-        document.getElementById("stat-ctr").innerText=m.ctr||"0.00%";
-        document.getElementById("stat-ecpm").innerText=m.avg_ecpm_usd||"$0.00";
-        document.getElementById("stat-revenue").innerText=`${m.estimated_revenue_usd||"$0.0000"} USD`;
-        document.getElementById("stat-date-display").innerText=`Timeframe: ${d.timeframe||timeframe} | Platform: ${d.platform||platform} | Date: ${d.date||dt}`;
+        document.getElementById("stat-requests").innerText = Number(m.requests || 0).toLocaleString();
+        document.getElementById("stat-impressions").innerText = Number(m.impressions || 0).toLocaleString();
+        document.getElementById("stat-clicks").innerText = Number(m.clicks || 0).toLocaleString();
+        document.getElementById("stat-fillrate").innerText = m.fill_rate || "0.00%";
+        document.getElementById("stat-ctr").innerText = m.ctr || "0.00%";
+        document.getElementById("stat-ecpm").innerText = m.avg_ecpm_usd || "$0.00";
+        document.getElementById("stat-revenue").innerText = `${m.estimated_revenue_usd || "$0.0000"} USD`;
+        document.getElementById("stat-date-display").innerText = `Timeframe: ${d.timeframe || timeframe} | Platform: ${d.platform || platform} | Date: ${d.date || dt}`;
       }catch(e){
-        document.getElementById("stat-date-display").innerText="Offline / Error querying analytics worker";
-        document.getElementById("stat-requests").innerText="0";
-        document.getElementById("stat-impressions").innerText="0";
-        document.getElementById("stat-clicks").innerText="0";
-        document.getElementById("stat-fillrate").innerText="0.00%";
-        document.getElementById("stat-ctr").innerText="0.00%";
-        document.getElementById("stat-ecpm").innerText="$0.00";
-        document.getElementById("stat-revenue").innerText="$0.0000 USD";
+        document.getElementById("stat-date-display").innerText = "Offline / Error querying analytics worker";
+        document.getElementById("stat-requests").innerText = "0";
+        document.getElementById("stat-impressions").innerText = "0";
+        document.getElementById("stat-clicks").innerText = "0";
+        document.getElementById("stat-fillrate").innerText = "0.00%";
+        document.getElementById("stat-ctr").innerText = "0.00%";
+        document.getElementById("stat-ecpm").innerText = "$0.00";
+        document.getElementById("stat-revenue").innerText = "$0.0000 USD";
       }
     }
 
     function copyCode(id){
-      const e=document.getElementById(id);
-      navigator.clipboard.writeText(e.value||e.innerText);
+      const e = document.getElementById(id);
+      navigator.clipboard.writeText(e.value || e.innerText);
       alert("Copied to clipboard!");
     }
 
-    function switchTab(tId,el){
-      document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('.sidebar-menu li').forEach(m=>m.classList.remove('active'));
+    function switchTab(tId, el){
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.sidebar-menu li').forEach(m => m.classList.remove('active'));
       document.getElementById(tId).classList.add('active');
       el.classList.add('active');
-      if(tId==='analytics-tab')fetchAnalytics();
-      if(tId==='revenue-tab')loadPublisherBalance();
+      if(tId === 'analytics-tab') fetchAnalytics();
+      if(tId === 'revenue-tab') loadPublisherBalance();
     }
 
-    window.addEventListener("DOMContentLoaded",()=>{
-      const s=localStorage.getItem("cg_user_session");
-      if(s)renderUserSession(JSON.parse(s));
-      document.getElementById("analytics-date").value=new Date().toISOString().split('T')[0];
+    window.addEventListener("DOMContentLoaded", ()=>{
+      const s = localStorage.getItem("cg_user_session");
+      if(s) renderUserSession(JSON.parse(s));
+      document.getElementById("analytics-date").value = new Date().toISOString().split('T')[0];
     });
   </script>
 </body>
 </html>
+
 
 
 

@@ -218,13 +218,14 @@
     <div id="sec-architecture" class="docs-section">
       <h1>Connectgold Mobile Mediation SDK Integration Guide</h1>
       <p>
-        Connectgold is a high-yield mobile ad mediation engine powered by Cloudflare Workers. Developers integrate Connectgold's SDK and adapters to run real-time Prebid OpenRTB 2.5 auctions, combining InMobi DSP demand, direct Paystack advertiser campaigns, and 30 integrated mobile ad networks.
+        Connectgold is a high-yield mobile ad mediation engine powered by Cloudflare Workers. Developers integrate Connectgold's SDK and adapters to run real-time Prebid OpenRTB 2.5 auctions, combining InMobi DSP demand, direct Paystack advertiser campaigns, and 30 integrated mobile ad networks optimized via Cloudflare Workers AI Gateway ("connectgold-gateway").
       </p>
 
       <div class="callout-gold">
         <strong>How Connectgold Edge Bidding Works:</strong>
         <ul>
           <li><strong>Real-Time OpenRTB 2.5 Auction:</strong> Your app sends a single request to <code>/openrtb2/auction</code>. The Cloudflare Worker fires parallel requests to third-party DSPs (InMobi, SmartyAds) and evaluates Direct Paystack Campaigns in real time.</li>
+          <li><strong>AI Yield Optimization:</strong> Mobile waterfalls are dynamically evaluated using Cloudflare Workers AI (`@cf/google/gemma-4-26b-a4b-it`) routed through the `connectgold-gateway` AI Gateway instance.</li>
           <li><strong>Dynamic Reflection Engine:</strong> For local SDK fallback, the SDK uses <code>Class.forName</code> to dynamically discover and instantiate installed network adapters from a real-time waterfall payload.</li>
           <li><strong>Zero Crashing (Graceful Failover):</strong> Unused SDK dependencies catch <code>ClassNotFoundException</code> automatically and seamlessly route to available networks or fallback tags.</li>
         </ul>
@@ -235,11 +236,11 @@
 [ Mobile App / Prebid Request ]
               │
               ▼
-[ Connectgold Cloudflare Worker ] ── (Parallel Outbound Auction < 120ms)
+[ Connectgold Cloudflare Worker ] ── (AI Optimization via Gemma 4 / Gateway)
               │
               ├──► [ InMobi OpenRTB DSP ] ── (Site ID: 10000214635)
               ├──► [ Direct KV Campaigns ] ── (Paystack Funded Balance)
-              └──► [ Fallback Tag Pool ]  ── (Adsterra / Monetag)
+              └──► [ 30 Network Waterfall ] ── (Local Reflection Adapters)
               │
               ▼
    [ Highest eCPM Bid Returned & Rendered ]
@@ -641,7 +642,7 @@ appodeal.com, appodeal_app_key_here, DIRECT
       </div>
     </div>
 
-    <!-- 8. THIRD-PARTY ANALYTICS INTEGRATION -->
+    <!-- 7. THIRD-PARTY ANALYTICS INTEGRATION -->
     <div id="sec-third-party-analytics" class="docs-section">
       <h2><span class="step-number">7</span>Third-Party Analytics Integration (Optional)</h2>
       
@@ -653,7 +654,7 @@ appodeal.com, appodeal_app_key_here, DIRECT
       </div>
 
       <p>
-        Connecting third-party analytics is <strong>completely optional</strong>. If configured in your dashboard, append tracking parameters (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string:
+        Connecting third-party analytics is <strong>completely optional</strong>. You can pass credentials dynamically via HTTP headers or append parameter query keys (<code>ga4_id</code>, <code>plausible_domain</code>, <code>mixpanel_token</code>) directly to your ad URL query string:
       </p>
 
       <h3>Optional Analytics Query Example (Java)</h3>
@@ -680,7 +681,7 @@ ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener()
       </div>
     </div>
 
-    <!-- 9. PRIVACY AND CONSENT -->
+    <!-- 8. PRIVACY AND CONSENT -->
     <div id="sec-consent" class="docs-section">
       <h2><span class="step-number">8</span>GDPR, EEA & Regional Privacy Consent</h2>
       <p>
@@ -713,6 +714,7 @@ ConnectgoldMediation.fetchAndLoad(this, adUrlWithAnalytics, new AdLoadListener()
   </script>
 </body>
 </html>
+
 
 
 

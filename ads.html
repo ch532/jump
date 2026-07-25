@@ -114,6 +114,14 @@
     .stat-box { background: #0d1117; padding: 22px; border-radius: 8px; border: 1px solid var(--border-color); border-left: 4px solid var(--primary); text-align: center; }
     .stat-box h3 { margin: 0; font-size: 28px; color: #fff; }
     .stat-box p { margin: 6px 0 0; color: var(--text-muted); font-size: 13px; }
+
+    /* INSTRUCTION TABS IN PAYMENT MODULE */
+    .instruction-tabs { display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+    .inst-tab-btn { background: #0d1117; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .inst-tab-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(212, 175, 55, 0.1); }
+    .inst-pane { display: none; font-size: 13px; color: var(--text-main); line-height: 1.6; }
+    .inst-pane.active { display: block; }
+    .inst-pane ol { padding-left: 20px; margin: 0; }
   </style>
 </head>
 <body>
@@ -350,19 +358,57 @@
             <div style="background: #0d1117; border: 1px solid var(--primary); padding: 18px; border-radius: 8px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Advertiser Wallet Balance</span>
-                <h3 id="advertiser-wallet-balance" style="font-size: 26px; color: var(--primary); margin: 4px 0 0 0;">₦0.00 NGN</h3>
+                <h3 id="advertiser-wallet-balance" style="font-size: 26px; color: var(--primary); margin: 4px 0 0 0;">₦0 NGN (~$0.00 USD)</h3>
               </div>
               <button class="btn" style="padding: 6px 14px; font-size: 12px;" onclick="loadAdvertiserBalance()">🔄 Refresh Balance</button>
             </div>
 
             <div class="form-group">
               <label>Advertiser ID</label>
-              <input type="text" id="pay-adv-id" placeholder="e.g. adv_default" onchange="localStorage.setItem('active_advertiser_id', this.value); loadAdvertiserBalance();">
+              <input type="text" id="pay-adv-id" placeholder="e.g. adv_02" value="adv_02" onchange="localStorage.setItem('active_advertiser_id', this.value); loadAdvertiserBalance();">
             </div>
 
             <a href="https://paystack.shop/pay/21ecy1w137" target="_blank" style="text-decoration:none;">
-              <button class="btn btn-green" onclick="saveAdvertiserContext()">Pay via Paystack Checkout ➔</button>
+              <button class="btn btn-green" style="width:100%; margin-bottom: 20px;" onclick="saveAdvertiserContext()">Pay via Paystack Checkout ➔</button>
             </a>
+
+            <!-- STEP-BY-STEP CHECKOUT INSTRUCTIONS -->
+            <div style="background: #0d1117; border: 1px solid var(--border-color); padding: 18px; border-radius: 8px;">
+              <h4 style="font-size: 14px; color: var(--primary); margin: 0 0 12px 0;">📌 Checkout Instructions:</h4>
+              
+              <div class="instruction-tabs">
+                <button class="inst-tab-btn active" onclick="switchInstTab('inst-bank', this)">🏦 Bank Transfer</button>
+                <button class="inst-tab-btn" onclick="switchInstTab('inst-card', this)">💳 Debit Card</button>
+                <button class="inst-tab-btn" onclick="switchInstTab('inst-ussd', this)">📱 USSD / QR</button>
+              </div>
+
+              <div id="inst-bank" class="inst-pane active">
+                <ol>
+                  <li>Click <strong>Pay via Paystack Checkout</strong> above.</li>
+                  <li>Select <strong>Transfer</strong> on the Paystack checkout screen.</li>
+                  <li>Copy the temporary account details generated (e.g. <em>Wema Bank / Titan Trust</em>).</li>
+                  <li>Transfer the exact amount via your banking app, then click <strong>"I've sent the money"</strong>.</li>
+                  <li><em>Funds are auto-credited via webhooks within 5–10 seconds!</em></li>
+                </ol>
+              </div>
+
+              <div id="inst-card" class="inst-pane">
+                <ol>
+                  <li>Select the <strong>Card</strong> payment option on Paystack.</li>
+                  <li>Enter your Card Number, Expiry Date, and 3-digit CVV.</li>
+                  <li>Complete 3D Secure OTP verification from your bank.</li>
+                  <li>Upon redirect, your wallet is credited immediately.</li>
+                </ol>
+              </div>
+
+              <div id="inst-ussd" class="inst-pane">
+                <ol>
+                  <li>Select <strong>USSD</strong> on Paystack and choose your bank (e.g., GTBank, Zenith, Access).</li>
+                  <li>Dial the generated USSD code on your mobile phone.</li>
+                  <li>Authorize payment using your transaction PIN.</li>
+                </ol>
+              </div>
+            </div>
           </div>
 
           <div class="card">
@@ -377,19 +423,21 @@
 
             <div class="form-group">
               <label>Bank Code</label>
-              <input type="text" id="payout-bank" placeholder="e.g. 058 (GTBank)">
+              <input type="text" id="payout-bank" placeholder="e.g. 058 (GTBank), 011 (First Bank), or SWIFT BIC">
+              <small style="color: var(--text-muted); font-size: 12px;">Use 3-digit CBN code for Nigerian banks or SWIFT code for international accounts.</small>
             </div>
 
             <div class="form-group">
               <label>Account Number</label>
               <input type="text" id="payout-account" placeholder="e.g. 0123456789">
+              <small style="color: var(--text-muted); font-size: 12px;">Account details are resolved live against Paystack's bank directory.</small>
             </div>
 
             <div style="border-top:1px solid var(--border-color); margin-top:20px; padding-top:18px;">
               <h3>📑 Global Publisher Tax Declaration</h3>
               <div class="form-group">
                 <label>Taxpayer ID / TIN / NIN</label>
-                <input type="text" id="tax-id-num" placeholder="e.g. 12345678901">
+                <input type="text" id="tax-id-num" placeholder="e.g. 10-digit JTB TIN, 11-digit NIN, SSN, or VAT ID">
               </div>
               <div class="form-group" style="display:flex; gap:10px; align-items:flex-start;">
                 <input type="checkbox" id="tax-cert-check" style="width:auto;">
@@ -551,7 +599,6 @@
   <script>
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
     const AD_ENGINE_WORKER_URL   = "https://lingering-sea-4dad.trustconnect713.workers.dev"; 
-    const BALANCE_WORKER_URL     = "https://quiet-rain-07f9.trustconnect713.workers.dev"; // Dedicated Wallet Worker
     const PAYMENT_WORKER_URL     = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
     const ANALYTICS_WORKER_URL   = "https://floral-pine-5c44.trustconnect713.workers.dev";
     const RISK_WORKER_URL        = "https://rapid-moon-2f68.trustconnect713.workers.dev";
@@ -566,7 +613,7 @@
       document.getElementById("usr-email").innerText=u.email||"";
       document.getElementById("usr-pic").src=u.picture||"https://chyke.online/connectgold_2.png";
       
-      const savedAdvId = localStorage.getItem("active_advertiser_id") || "adv_default";
+      const savedAdvId = localStorage.getItem("active_advertiser_id") || "adv_02";
       if(document.getElementById("pay-adv-id")) document.getElementById("pay-adv-id").value = savedAdvId;
 
       initPublisherId();
@@ -581,9 +628,11 @@
         const d=await r.json();
         const p=d.publisher_id||"pub_connectgold1234";
         document.getElementById("pub-id").value=p;
+        localStorage.setItem("active_publisher_id", p);
         updateAdsTxt(p);
       }catch(e){
         document.getElementById("pub-id").value="pub_connectgold1234";
+        localStorage.setItem("active_publisher_id", "pub_connectgold1234");
         updateAdsTxt("pub_connectgold1234");
       }
     }
@@ -592,7 +641,10 @@
       document.getElementById("ads-txt-output").innerText=`lingering-sea-4dad.trustconnect713.workers.dev, ${p}, DIRECT, f08c47fec0942fa0`;
     }
 
-    function saveAdvertiserContext(){localStorage.setItem("active_advertiser_id",document.getElementById("pay-adv-id").value||"adv_default")}
+    function saveAdvertiserContext(){
+      const advId = document.getElementById("pay-adv-id").value.trim() || "adv_02";
+      localStorage.setItem("active_advertiser_id", advId);
+    }
 
     function saveAnalyticsConfig(){
       localStorage.setItem("cg_ga4_id",document.getElementById("tp-ga4-id").value.trim());
@@ -606,31 +658,38 @@
       document.getElementById("tp-mixpanel-token").value=localStorage.getItem("cg_mixpanel_token")||"";
     }
 
+    function switchInstTab(tabId, btnEl) {
+      document.querySelectorAll('.inst-pane').forEach(pane => pane.classList.remove('active'));
+      document.querySelectorAll('.inst-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btnEl.classList.add('active');
+    }
+
     async function loadPublisherBalance(){
-      const p=document.getElementById("pub-id").value;
-      const b=document.getElementById("publisher-earned-balance");
-      if(!p){b.innerText="$0.0000 USD";return}
-      b.innerText="Loading...";
+      const p = document.getElementById("pub-id").value || localStorage.getItem("active_publisher_id") || "pub_direct";
+      const b = document.getElementById("publisher-earned-balance");
+      if(!b) return;
+      b.innerText = "Loading...";
       try{
-        const r=await fetch(`${BALANCE_WORKER_URL}/v1/publisher/balance?pub_id=${encodeURIComponent(p)}`);
-        const d=await r.json();
-        b.innerText=`$${parseFloat(d.total_revenue_usd||0).toFixed(4)} USD`;
-      }catch(e){b.innerText="$0.0000 USD"}
+        const r = await fetch(`${PAYMENT_WORKER_URL}/v1/publisher/balance?pub_id=${encodeURIComponent(p)}`);
+        const d = await r.json();
+        b.innerText = `$${parseFloat(d.total_revenue_usd || 0).toFixed(4)} USD`;
+      }catch(e){ b.innerText = "$0.0000 USD"; }
     }
 
     async function loadAdvertiserBalance() {
-      const advId = document.getElementById("pay-adv-id").value || localStorage.getItem("active_advertiser_id") || "adv_default";
+      const advId = document.getElementById("pay-adv-id").value.trim() || localStorage.getItem("active_advertiser_id") || "adv_02";
       const display = document.getElementById("advertiser-wallet-balance");
       if (!display) return;
       
       display.innerText = "Loading...";
       try {
-        const r = await fetch(`${BALANCE_WORKER_URL}/v1/advertiser/balance?adv_id=${encodeURIComponent(advId)}`);
+        const r = await fetch(`${PAYMENT_WORKER_URL}/v1/advertiser/balance?adv_id=${encodeURIComponent(advId)}`);
         const d = await r.json();
         const balanceNgn = parseFloat(d.balance_ngn || 0).toLocaleString();
         display.innerText = `₦${balanceNgn} NGN (~$${d.balance_usd || "0.00"} USD)`;
       } catch(e) {
-        display.innerText = "₦0.00 NGN";
+        display.innerText = "₦0 NGN (~$0.00 USD)";
       }
     }
 
@@ -649,7 +708,7 @@
       const p={
         id:document.getElementById("adv-ad-id").value||"ad_"+Math.random().toString(36).substring(2,8),
         campaign_id:document.getElementById("adv-camp-id").value||"camp_default",
-        advertiser_id:localStorage.getItem("active_advertiser_id")||"adv_default",
+        advertiser_id:localStorage.getItem("active_advertiser_id")||"adv_02",
         format:document.getElementById("adv-format").value,
         headline:document.getElementById("adv-title").value,
         body:document.getElementById("adv-body").value,
@@ -664,7 +723,6 @@
       };
 
       try{
-        // Step 1: Scan via Moderation Engine
         const scanRes = await fetch(`${RISK_WORKER_URL}/v1/risk/scan`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -677,9 +735,8 @@
           return;
         }
 
-        p.status = scanData.recommended_status;
+        p.status = scanData.recommended_status || "active";
 
-        // Step 2: Publish to Main Ad Engine
         const r=await fetch(`${AD_ENGINE_WORKER_URL}/v1/advertiser/add-ad`,{
           method:"POST",
           headers:{"Content-Type":"application/json"},
@@ -710,11 +767,46 @@
       }
     }
 
-    function requestPayout(){
-      if(!document.getElementById("tax-cert-check").checked||!document.getElementById("tax-id-num").value.trim()){
-        alert("Please complete Global Tax Certification before requesting payout.");return;
+    async function requestPayout(){
+      const pubId = localStorage.getItem("active_publisher_id") || "pub_direct";
+      const bankCode = document.getElementById("payout-bank").value.trim();
+      const accountNumber = document.getElementById("payout-account").value.trim();
+      const taxId = document.getElementById("tax-id-num").value.trim();
+      const taxCertified = document.getElementById("tax-cert-check").checked;
+
+      if(!bankCode || !accountNumber) {
+        alert("Please enter a Bank Code and Account Number.");
+        return;
       }
-      alert("Payout request submitted!");
+
+      if(!taxCertified || !taxId) {
+        alert("Taxpayer ID and Tax Certification checkbox are required.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${PAYMENT_WORKER_URL}/v1/publisher/request-payout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            publisher_id: pubId,
+            bank_code: bankCode,
+            account_number: accountNumber,
+            tax_id: taxId,
+            tax_certified: taxCertified
+          })
+        });
+
+        const data = await res.json();
+        if(data.success) {
+          alert(`Success! ${data.message}`);
+          loadPublisherBalance();
+        } else {
+          alert(`Payout Rejected: ${data.message}`);
+        }
+      } catch(e) {
+        alert("Failed to submit payout request. Please try again.");
+      }
     }
 
     async function fetchAnalytics(){
@@ -772,7 +864,6 @@
       if(plsb)tp+=`if(typeof plausible==='function')plausible('cg_imp',{props:{plc:'${plcName}'}});`;
       if(mixp)tp+=`if(window.mixpanel&&mixpanel.track)mixpanel.track('cg_imp',{'plc':'${plcName}'});`;
 
-      // Telemetry & Report Hooks
       const telem=`var e=parseFloat(d.ecpm)||2.50;fetch("${ANALYTICS_WORKER_URL}/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"${fmt}",pub_id:"${pubId}",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});`;
       const rptHook=`function reportAd(id){fetch("${RISK_WORKER_URL}/v1/risk/report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:id,reason:"user_flagged"})}).then(()=>alert("Ad reported. Thank you.")).catch(()=>{});}`;
 
@@ -822,13 +913,14 @@
       const p=new URLSearchParams(window.location.search);
       const ref=p.get("reference")||p.get("trxref");
       if(ref){
-        fetch(`${PAYMENT_WORKER_URL}/v1/payment/paystack-verify`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reference:ref,advertiser_id:localStorage.getItem("active_advertiser_id")||"adv_default"})})
+        fetch(`${PAYMENT_WORKER_URL}/v1/payment/paystack-verify`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reference:ref,advertiser_id:localStorage.getItem("active_advertiser_id")||"adv_02"})})
         .then(r=>r.json()).then(d=>{alert(d.message||"Payment confirmed!");window.history.replaceState({},document.title,window.location.pathname)});
       }
     });
   </script>
 </body>
 </html>
+
 
 
 

@@ -345,9 +345,19 @@
         <div id="payment-tab" class="tab-content">
           <div class="card">
             <h2>💳 Fund Advertiser Wallet</h2>
+
+            <!-- LIVE ADVERTISER BALANCE CARD -->
+            <div style="background: #0d1117; border: 1px solid var(--primary); padding: 18px; border-radius: 8px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Advertiser Wallet Balance</span>
+                <h3 id="advertiser-wallet-balance" style="font-size: 26px; color: var(--primary); margin: 4px 0 0 0;">₦0.00 NGN</h3>
+              </div>
+              <button class="btn" style="padding: 6px 14px; font-size: 12px;" onclick="loadAdvertiserBalance()">🔄 Refresh Balance</button>
+            </div>
+
             <div class="form-group">
               <label>Advertiser ID</label>
-              <input type="text" id="pay-adv-id" placeholder="e.g. adv_001" onchange="localStorage.setItem('active_advertiser_id', this.value)">
+              <input type="text" id="pay-adv-id" placeholder="e.g. adv_default" onchange="localStorage.setItem('active_advertiser_id', this.value); loadAdvertiserBalance();">
             </div>
 
             <a href="https://paystack.shop/pay/21ecy1w137" target="_blank" style="text-decoration:none;">
@@ -540,11 +550,11 @@
   <!-- CLIENT LOGIC WITH DEPLOYED WORKER ENDPOINTS -->
   <script>
     const CREDENTIALS_WORKER_URL = "https://hidden-river-56c3.trustconnect713.workers.dev";
-    const AD_ENGINE_WORKER_URL = "https://lingering-sea-4dad.trustconnect713.workers.dev"; 
-    const PAYMENT_WORKER_URL = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
-    const ANALYTICS_WORKER_URL = "https://floral-pine-5c44.trustconnect713.workers.dev";
-    // Mapped directly to your deployed moderation worker
-    const RISK_WORKER_URL = "https://rapid-moon-2f68.trustconnect713.workers.dev";
+    const AD_ENGINE_WORKER_URL   = "https://lingering-sea-4dad.trustconnect713.workers.dev"; 
+    const BALANCE_WORKER_URL     = "https://quiet-rain-07f9.trustconnect713.workers.dev"; // Dedicated Wallet Worker
+    const PAYMENT_WORKER_URL     = "https://orange-butterfly-cbf3.trustconnect713.workers.dev";
+    const ANALYTICS_WORKER_URL   = "https://floral-pine-5c44.trustconnect713.workers.dev";
+    const RISK_WORKER_URL        = "https://rapid-moon-2f68.trustconnect713.workers.dev";
 
     function parseJwt(t){try{return JSON.parse(decodeURIComponent(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')))}catch(e){return null}}
     function handleCredentialResponse(r){const u=parseJwt(r.credential);if(u){localStorage.setItem("cg_user_session",JSON.stringify(u));renderUserSession(u)}}
@@ -555,6 +565,10 @@
       document.getElementById("usr-name").innerText=u.name||"User";
       document.getElementById("usr-email").innerText=u.email||"";
       document.getElementById("usr-pic").src=u.picture||"https://chyke.online/connectgold_2.png";
+      
+      const savedAdvId = localStorage.getItem("active_advertiser_id") || "adv_default";
+      if(document.getElementById("pay-adv-id")) document.getElementById("pay-adv-id").value = savedAdvId;
+
       initPublisherId();
       loadAnalyticsConfig();
     }
@@ -598,10 +612,26 @@
       if(!p){b.innerText="$0.0000 USD";return}
       b.innerText="Loading...";
       try{
-        const r=await fetch(`${AD_ENGINE_WORKER_URL}/v1/publisher/balance?pub_id=${p}`);
+        const r=await fetch(`${BALANCE_WORKER_URL}/v1/publisher/balance?pub_id=${encodeURIComponent(p)}`);
         const d=await r.json();
         b.innerText=`$${parseFloat(d.total_revenue_usd||0).toFixed(4)} USD`;
       }catch(e){b.innerText="$0.0000 USD"}
+    }
+
+    async function loadAdvertiserBalance() {
+      const advId = document.getElementById("pay-adv-id").value || localStorage.getItem("active_advertiser_id") || "adv_default";
+      const display = document.getElementById("advertiser-wallet-balance");
+      if (!display) return;
+      
+      display.innerText = "Loading...";
+      try {
+        const r = await fetch(`${BALANCE_WORKER_URL}/v1/advertiser/balance?adv_id=${encodeURIComponent(advId)}`);
+        const d = await r.json();
+        const balanceNgn = parseFloat(d.balance_ngn || 0).toLocaleString();
+        display.innerText = `₦${balanceNgn} NGN (~$${d.balance_usd || "0.00"} USD)`;
+      } catch(e) {
+        display.innerText = "₦0.00 NGN";
+      }
     }
 
     function toggleFormatFields(){
@@ -619,6 +649,7 @@
       const p={
         id:document.getElementById("adv-ad-id").value||"ad_"+Math.random().toString(36).substring(2,8),
         campaign_id:document.getElementById("adv-camp-id").value||"camp_default",
+        advertiser_id:localStorage.getItem("active_advertiser_id")||"adv_default",
         format:document.getElementById("adv-format").value,
         headline:document.getElementById("adv-title").value,
         body:document.getElementById("adv-body").value,
@@ -777,7 +808,10 @@
       document.getElementById(tId).classList.add('active');
       el.classList.add('active');
       if(tId==='analytics-tab')fetchAnalytics();
-      if(tId==='payment-tab')loadPublisherBalance();
+      if(tId==='payment-tab'){
+        loadPublisherBalance();
+        loadAdvertiserBalance();
+      }
     }
 
     window.addEventListener("DOMContentLoaded",()=>{
@@ -795,6 +829,7 @@
   </script>
 </body>
 </html>
+
 
 
 

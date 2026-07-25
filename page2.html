@@ -70,6 +70,84 @@
 <!-- CG Hosted Tag: Trust -->
 <div id="connectgold-ad-slot"></div>
 <script src="https://royal-thunder-8246.trustconnect713.workers.dev/tag.js" async></script>
+
+<script>
+(function() {
+  if (document.readyState === "interactive" || document.readyState === "complete") {
+    init();
+  } else {
+    document.addEventListener("DOMContentLoaded", init);
+  }
+
+  function init() {
+    var feed = document.querySelector("#my-native-feed");
+    if (!feed) {
+      console.error("Ezoic Rewarded Ads: Target content not found: #my-native-feed");
+      return;
+    }
+
+    var ezoicAdSelectors = '[id^="ezoic-pub-ad-placeholder-"], .ezoic-ad, [data-ez-name], [data-ez-ph-id]';
+
+    if (feed.matches && feed.matches(ezoicAdSelectors)) {
+      console.warn("Ezoic Rewarded Ads: Target is an Ezoic ad container, skipping blur");
+      return;
+    }
+
+    var blurWrapper = document.createElement("div");
+    blurWrapper.style.cssText = "filter: blur(8px); pointer-events: none; user-select: none;";
+    feed.parentNode.insertBefore(blurWrapper, feed);
+    blurWrapper.appendChild(feed);
+
+    triggerAd();
+
+    function triggerAd() {
+      try {
+        window.ezRewardedAds = window.ezRewardedAds || {};
+        window.ezRewardedAds.cmd = window.ezRewardedAds.cmd || [];
+        window.ezRewardedAds.cmd.push(function() {
+          window.ezRewardedAds.requestWithOverlay(
+            function(result) {
+              if (result.status && result.reward) {
+                console.log("Ezoic Rewarded Ads: Ad completed, unlocking article feed");
+                unblur();
+              } else if (!result.status) {
+                console.warn("Ezoic Rewarded Ads: Ad error, unlocking content gracefully");
+                unblur();
+              } else {
+                console.log("Ezoic Rewarded Ads: User did not complete ad");
+              }
+            },
+            {
+              header: "Watch Ad to Continue?",
+              body: ["Watch a short ad to unlock this content."],
+              accept: "Watch ad",
+              cancel: "Cancel"
+            },
+            {
+              rewardName: "article_feed",
+              rewardOnNoFill: true,
+              alwaysCallback: true,
+              lockScroll: true
+            }
+          );
+        });
+      } catch (e) {
+        console.error("Ezoic Rewarded Ads: Error triggering ad:", e);
+        unblur();
+      }
+    }
+
+    function unblur() {
+      if (!blurWrapper) return;
+      while (blurWrapper.firstChild) {
+        blurWrapper.parentNode.insertBefore(blurWrapper.firstChild, blurWrapper);
+      }
+      blurWrapper.parentNode.removeChild(blurWrapper);
+      blurWrapper = null;
+    }
+  }
+})();
+    </script>
     
 <!-- CG Hosted Tag: Feel -->
 <div id="connectgold-ad-slot"></div>

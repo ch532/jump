@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectGold Mediation SDK - Non-Technical Publisher Manual</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --border-color: #334155;
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 1rem;
+            color: var(--accent-color);
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+        }
+
+        .sidebar li { margin-bottom: 8px; }
+
+        .sidebar a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            display: block;
+        }
+
+        .sidebar a:hover { color: var(--accent-color); }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 40px 60px;
+            width: calc(100% - 300px);
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            font-size: 2.2rem;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: #f1f5f9;
+            margin-top: 50px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            margin-top: 25px;
+            font-size: 1.15rem;
+        }
+
+        p, li {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+        }
+
+        ul, ol { padding-left: 20px; }
+
+        .note-box {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .note-box p { margin: 0; color: var(--text-color); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: var(--accent-color);
+        }
+
+        td { color: var(--text-muted); }
+
+        .badge {
+            background-color: #0284c7;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-active { background-color: var(--success-color); }
+
+        @media print {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; width: 100%; padding: 0; }
+            body { background-color: #fff; color: #000; }
+            h1, h2, h3 { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+    <h2>Publisher Guide</h2>
+    <ul>
+        <li><a href="#executive-summary">1. Executive Summary</a></li>
+        <li><a href="#how-it-works">2. Core Concepts & Architecture</a></li>
+        <li><a href="#ad-formats">3. Supported Ad Experience Formats</a></li>
+        <li><a href="#network-partners">4. Network Ecosystem & Partners</a></li>
+        <li><a href="#compliance">5. Privacy, GDPR & COPPA Compliance</a></li>
+        <li><a href="#app-ads-txt">6. app-ads.txt Ownership Standard</a></li>
+        <li><a href="#monetization-strategy">7. Revenue & Optimization Strategy</a></li>
+        <li><a href="#faq">8. Frequently Asked Questions</a></li>
+    </ul>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content">
+    <h1>ConnectGold Mediation SDK - Publisher Manual</h1>
+    <p>Non-Technical Operational & Business Guide to Mobile Monetization, Ad Operations, and Revenue Growth.</p>
+
+    <div class="note-box" id="executive-summary">
+        <p><strong>Platform Goal:</strong> To maximize mobile app eCPM yields and fill rates across 30 ad networks using cloud edge intelligence without degrading application speed or user experience.</p>
+    </div>
+
+    <!-- 1. EXECUTIVE SUMMARY -->
+    <h2>1. Executive Summary</h2>
+    <p>Mobile ad mediation allows mobile application publishers to connect their ad inventory to multiple advertising demand networks through a single, central integration. Instead of depending on a single ad network (which may run out of ads or offer low prices in certain geographic regions), ConnectGold acts as a smart marketplace manager. Every time an app user reaches an ad opportunity, ConnectGold contacts multiple ad buyers, evaluates their price offers in real-time, and selects the highest bidder to deliver the ad.</p>
+
+    <!-- 2. CORE CONCEPTS -->
+    <h2 id="how-it-works">2. Core Concepts & Cloud Architecture</h2>
+    
+    <h3>What is an Ad Impression?</h3>
+    <p>An <strong>impression</strong> occurs each time a user successfully views an advertisement within your mobile app. Monetization performance is measured in <strong>eCPM</strong> (Effective Cost Per Mille), which represents the revenue your application earns for every 1,000 ad impressions delivered.</p>
+
+    <h3>How Cloud Edge Mediation Works</h3>
+    <ol>
+        <li><strong>Ad Opportunity Fired:</strong> A user completes a game level, triggers a video player, or opens a new screen in your application.</li>
+        <li><strong>Cloud Auction Request:</strong> ConnectGold contacts its global Cloud Edge servers (powered by Cloudflare Workers and AI decision routing) instantly.</li>
+        <li><strong>Real-time Waterfall Evaluation:</strong> The system analyzes the user's geographic location, device type, historical performance, and current advertiser demand across 30 ad network partners.</li>
+        <li><strong>Winning Bid Selection:</strong> The highest paying ad network is selected within milliseconds and instructed to render its creative to the user.</li>
+        <li><strong>Fallback Protection (100% Fill Rate Target):</strong> If the highest bidder fails to supply an ad, ConnectGold instantly falls back to the second and third priority bidders in fractions of a second so that revenue opportunities are never lost.</li>
+    </ol>
+
+    <!-- 3. AD FORMATS -->
+    <h2 id="ad-formats">3. Supported Ad Experience Formats</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ad Experience Format</th>
+                <th>User Experience & Placement Description</th>
+                <th>Monetization Potential</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Banner Ads</strong></td>
+                <td>Lightweight rectangular ads anchored at the top or bottom of the screen. Non-intrusive while users browse app content.</td>
+                <td><span class="badge">Volume / Steady Yield</span></td>
+            </tr>
+            <tr>
+                <td><strong>Interstitial Ads</strong></td>
+                <td>Full-screen graphical or video popups that appear during natural transition points (e.g., between game levels, article changes, or task completion).</td>
+                <td><span class="badge badge-active">High eCPM Yield</span></td>
+            </tr>
+            <tr>
+                <td><strong>Rewarded Video Ads</strong></td>
+                <td>Full-screen video ads that users explicitly choose to watch in exchange for in-app benefits (such as extra game lives, virtual coins, or premium temporary access).</td>
+                <td><span class="badge badge-active">Highest eCPM & Retentive</span></td>
+            </tr>
+            <tr>
+                <td><strong>Native Ads</strong></td>
+                <td>Custom-designed ads matching the exact visual look, typography, and layout of your app content (e.g., sponsored cards inside news feeds).</td>
+                <td><span class="badge">Seamless Experience</span></td>
+            </tr>
+            <tr>
+                <td><strong>VAST Video Player Ads</strong></td>
+                <td>Video commercial breaks embedded into video streaming content, supporting <strong>Pre-roll</strong> (before content), <strong>Mid-roll</strong> (commercial breaks), and <strong>Post-roll</strong> (after video ends).</td>
+                <td><span class="badge badge-active">High Premium Yield</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 4. NETWORK PARTNERS -->
+    <h2 id="network-partners">4. Supported Network Ecosystem (30 Ad Networks)</h2>
+    <p>ConnectGold integrates direct and reseller demand across all major global advertising platforms:</p>
+
+    <ul>
+        <li><strong>Global Tier 1 Demand:</strong> Google AdMob, Meta Audience Network, Vungle (Liftoff), AppLovin MAX, IronSource, Unity Ads.</li>
+        <li><strong>Regional & Niche Demand:</strong> Yandex Ads (Eastern Europe / CIS), Pangle (TikTok for Business / Asia-Pacific), StartApp, InMobi, Mintegral.</li>
+        <li><strong>Programmatic Video & Display Exchanges:</strong> PubMatic, OpenX, Index Exchange, Teads, Rubicon Project (Magnite), SmartAdServer (Equativ), Smaato, Criteo, Fyber, BidMachine, AdColony, Chartboost, Tapjoy, Adform, Ogusto, MobFox, Aarki, Verve Group, and ConnectGold Direct Network.</li>
+    </ul>
+
+    <!-- 5. COMPLIANCE -->
+    <h2 id="compliance">5. Privacy, Consumer Protection & Legal Compliance</h2>
+    <p>To ensure your app remains compliant on Google Play Console, Apple App Store, and global regulatory bodies, ConnectGold supports built-in privacy flags:</p>
+
+    <ul>
+        <li><strong>GDPR (European Economic Area):</strong> Ensures targeted ads are only served to European users who explicitly provide consent.</li>
+        <li><strong>CCPA (California Consumer Privacy Act):</strong> Honors "Do Not Sell or Share My Personal Information" preferences for US citizens.</li>
+        <li><strong>COPPA & Google Families Policy:</strong> Provides child-directed safety flags to automatically block adult or age-inappropriate advertising in apps built for children or families.</li>
+    </ul>
+
+    <!-- 6. APP-ADS.TXT -->
+    <h2 id="app-ads-txt">6. What is app-ads.txt and Why is it Mandatory?</h2>
+    <p><strong>app-ads.txt</strong> (Authorized Digital Sellers for Mobile Apps) is an Anti-Fraud initiative created by the Interactive Advertising Bureau (IAB). It is a public text file placed on your official developer website domain that tells ad buyers, <em>"These specific ad networks are legally authorized to sell advertising space in my app."</em></p>
+
+    <div class="note-box">
+        <p><strong>Business Impact:</strong> Without a valid <code>app-ads.txt</code> file hosted on your domain, major advertisers (including Google, Meta, and Trade Desk) will automatically block or drastically reduce bids on your app, resulting in up to an 80% loss in potential revenue.</p>
+    </div>
+
+    <!-- 7. STRATEGY -->
+    <h2 id="monetization-strategy">7. Revenue Optimization Best Practices</h2>
+    <ol>
+        <li><strong>Combine Rewarded and Interstitial Ads:</strong> Rewarded video ads drive the highest user satisfaction and eCPM rates, while Interstitial ads capture revenue from non-paying active users.</li>
+        <li><strong>Avoid Ad Fatigue:</strong> Set frequency caps on full-screen interstitial ads (e.g., maximum 1 ad every 2 to 3 minutes) to maintain app retention and user store ratings.</li>
+        <li><strong>Keep Your app-ads.txt File Up to Date:</strong> Ensure your domain website remains active and accurately mirrors ConnectGold's master seller records so all 30 networks can bid at full capacity.</li>
+    </ol>
+
+    <!-- 8. FAQ -->
+    <h2 id="faq">8. Frequently Asked Questions (FAQ)</h2>
+
+    <h3>Does using 30 ad networks slow down my mobile application?</h3>
+    <p>No. ConnectGold uses Cloud Edge routing. Rather than loading 30 heavy software libraries into your app, the selection process happens in the cloud in milliseconds, keeping your app fast, lightweight, and responsive.</p>
+
+    <h3>How does ConnectGold handle users who buy a "Remove Ads" subscription?</h3>
+    <p>The SDK includes an automated user status check. When a user purchases an ad-free tier or premium subscription in your app, ConnectGold immediately stops making cloud ad requests for that user session.</p>
+
+    <h3>How often are ad network rankings updated?</h3>
+    <p>Rankings are recalculated dynamically in real time for every individual ad request based on live market pricing and network fill capabilities.</p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare Worker Feature Tester</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background: #0f172a; color: #f8fafc; }
+    h1 { color: #38bdf8; font-size: 1.5rem; }
+    .card { background: #1e293b; padding: 16px; margin-bottom: 16px; border-radius: 8px; border: 1px solid #334155; }
+    button { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #0369a1; }
+    pre { background: #090d16; padding: 12px; border-radius: 6px; overflow-x: auto; color: #4ade80; font-size: 0.85rem; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    select, input { background: #0f172a; color: white; border: 1px solid #475569; padding: 8px; border-radius: 4px; margin-bottom: 12px; width: 100%; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+  <h1>Worker Feature Tester Dashboard</h1>
+
+  <!-- 1. AUDIO ROUTING FEATURE -->
+  <div class="card">
+    <h2>1. Per-App Audio Routing</h2>
+    <label for="appSource">App Source ID:</label>
+    <select id="appSource">
+      <option value="cctv_player">cctv_player (Gain: 0.8)</option>
+      <option value="music_player">music_player (Gain: 1.2)</option>
+      <option value="default_app">default_app (Gain: 1.0)</option>
+    </select>
+
+    <label for="thermalHeader">Simulated Thermal Status:</label>
+    <select id="thermalHeader">
+      <option value="NORMAL">NORMAL</option>
+      <option value="MODERATE">MODERATE</option>
+      <option value="SEVERE">SEVERE</option>
+    </select>
+
+    <button onclick="fetchAudioConfig()">Fetch Audio Config</button>
+    <pre id="audioOutput">Result will appear here...</pre>
+  </div>
+
+  <!-- 2. THERMAL OFFLOAD FEATURE -->
+  <div class="card">
+    <h2>2. Thermal Performance Offload</h2>
+    <p>Sends heavy payload array to Worker. Worker filters out low priority items server-side when thermal state is elevated.</p>
+    <button onclick="sendThermalOffload()">Send Payload to Offload</button>
+    <pre id="thermalOutput">Result will appear here...</pre>
+  </div>
+
+  <!-- 3. AUTONOMOUS AI AGENT FEATURE -->
+  <div class="card">
+    <h2>3. Autonomous Vision AI Agent</h2>
+    <label for="aiTask">Task Instruction:</label>
+    <input type="text" id="aiTask" value="Click the submit button">
+
+    <button onclick="requestAiDecision()">Send Screen & Get Action Plan</button>
+    <pre id="agentOutput">Result will appear here...</pre>
+  </div>
+
+  <script>
+    const WORKER_BASE_URL = "https://winter-lake-cbbd.trustconnect713.workers.dev";
+    const DEVICE_UID = "web_browser_client_01";
+
+    // -----------------------------------------------------------------
+    // 1. Audio Config Bridge
+    // -----------------------------------------------------------------
+    async function fetchAudioConfig() {
+      const appSource = document.getElementById("appSource").value;
+      const thermalStatus = document.getElementById("thermalHeader").value;
+      const output = document.getElementById("audioOutput");
+
+      output.textContent = "Fetching audio parameters from worker...";
+
+      try {
+        const response = await fetch(`${WORKER_BASE_URL}/api/audio/config`, {
+          method: "GET",
+          headers: {
+            "X-Device-UID": DEVICE_UID,
+            "X-App-Source": appSource,
+            "X-Thermal-Status": thermalStatus
+          }
+        });
+
+        const data = await response.json();
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+
+    // -----------------------------------------------------------------
+    // 2. Thermal Data Offload Bridge
+    // -----------------------------------------------------------------
+    async function sendThermalOffload() {
+      const thermalStatus = document.getElementById("thermalHeader").value;
+      const output = document.getElementById("thermalOutput");
+
+      output.textContent = "Offloading data transformation to Worker...";
+
+      const heavyPayload = [
+        { id: 1, priority: "high", title: "Render Critical UI" },
+        { id: 2, priority: "low", title: "Background Analytics Stream" },
+        { id: 3, priority: "high", title: "Audio Frame Buffer" },
+        { id: 4, priority: "low", title: "Non-visible Prefetch" }
+      ];
+
+      try {
+        const response = await fetch(`${WORKER_BASE_URL}/api/thermal/offload`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Device-UID": DEVICE_UID,
+            "X-Thermal-Status": thermalStatus
+          },
+          body: JSON.stringify({ payload: heavyPayload })
+        });
+
+        const data = await response.json();
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+
+    // -----------------------------------------------------------------
+    // 3. Autonomous Vision AI Agent Bridge
+    // -----------------------------------------------------------------
+    async function requestAiDecision() {
+      const task = document.getElementById("aiTask").value;
+      const output = document.getElementById("agentOutput");
+
+      output.textContent = "Analyzing screenshot and executing Vision AI model...";
+
+      // 1x1 Pixel Transparent Base64 Image string for testing
+      const dummy1x1Base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+      try {
+        const response = await fetch(`${WORKER_BASE_URL}/api/agent/decide`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Device-UID": DEVICE_UID
+          },
+          body: JSON.stringify({
+            screenshotBase64: dummy1x1Base64,
+            userTask: task,
+            screenWidth: 1080,
+            screenHeight: 2400
+          })
+        });
+
+        const data = await response.json();
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

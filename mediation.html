@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectGold Mobile Ad Mediation SDK - Developer Documentation</title>
+    <title>ConnectGold Mobile Ad Mediation SDK - Official Developer Guide</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -133,9 +133,9 @@
             text-transform: uppercase;
         }
 
-        .badge-success { background-color: var(--success-color); }
-        .badge-warning { background-color: var(--warning-color); color: #000; }
-        .badge-danger { background-color: var(--danger-color); }
+        .badge-java { background-color: #b07219; color: #fff; }
+        .badge-kotlin { background-color: #7f52ff; color: #fff; }
+        .badge-xml { background-color: #e34c26; color: #fff; }
 
         /* Tables */
         table {
@@ -188,61 +188,105 @@
     <h2>SDK Reference</h2>
     <ul>
         <li><a href="#overview">1. Executive Overview</a></li>
-        <li><a href="#setup">2. Integration & Permissions</a></li>
-        <li><a href="#initialization">3. SDK Init & Configuration</a></li>
-        <li><a href="#privacy">4. Privacy & Compliance</a></li>
-        <li><a href="#adapters">5. Mediation Network Adapters</a></li>
-        <li><a href="#formats">6. Ad Format Implementations</a></li>
-        <li><a href="#vast">7. VAST ExoPlayer Engine</a></li>
-        <li><a href="#ilrd">8. Impression Revenue (ILRD)</a></li>
-        <li><a href="#error-codes">9. Error Codes & Diagnostics</a></li>
-        <li><a href="#app-ads">10. Dynamic app-ads.txt</a></li>
-        <li><a href="#checklist">11. Release Checklist</a></li>
+        <li><a href="#requirements">2. System Requirements</a></li>
+        <li><a href="#setup">3. Permissions & Gradle</a></li>
+        <li><a href="#initialization">4. SDK Initialization</a></li>
+        <li><a href="#adapters">5. All 30 Mediation Adapters</a></li>
+        <li><a href="#banner">6. Banner Ad Unit</a></li>
+        <li><a href="#interstitial">7. Interstitial Ad Unit</a></li>
+        <li><a href="#rewarded">8. Rewarded Ad Unit</a></li>
+        <li><a href="#native">9. Native Ad Unit</a></li>
+        <li><a href="#vast">10. VAST Video Player Unit</a></li>
+        <li><a href="#app-ads">11. Master app-ads.txt</a></li>
     </ul>
 </div>
 
 <!-- Main Content Area -->
 <div class="main-content">
-    <h1>ConnectGold Mediation SDK - Full Reference Manual</h1>
-    <p>Comprehensive technical manual for integrating and operating the ConnectGold Mobile Ad Mediation SDK on Android.</p>
+    <h1>ConnectGold Mediation SDK - Official Developer Guide</h1>
+    <p>Official integration manual for publishers implementing the ConnectGold Mobile Ad Mediation SDK into Android applications.</p>
 
     <div class="note-box" id="overview">
-        <p><strong>Edge Server Base URL:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/mediate</code><br>
-        <strong>Crawler Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/app-ads.txt</code></p>
+        <p><strong>Mediation Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/mediate</code><br>
+        <strong>app-ads.txt Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/app-ads.txt</code></p>
     </div>
 
     <!-- 1. OVERVIEW -->
     <h2>1. Executive Overview</h2>
-    <p>The ConnectGold Edge Mediation SDK routes requests through Cloudflare Workers edge nodes. It uses dynamic waterfall ordering via AI processing (`@cf/google/gemma-7b-it`) and KV configurations to select optimized ad network adapters per user request.</p>
+    <p>The ConnectGold Edge Mediation SDK dynamically evaluates ad requests through edge computing nodes. It routes requests across 30 ad networks using real-time waterfall logic to maximize fill rates and eCPM performance.</p>
 
-    <!-- 2. SETUP -->
-    <h2 id="setup">2. Integration & Permissions</h2>
-    <p>Add required network access in your <code>AndroidManifest.xml</code>:</p>
+    <!-- 2. SYSTEM REQUIREMENTS -->
+    <h2 id="requirements">2. System Requirements & ProGuard Rules</h2>
+    <ul>
+        <li><strong>Minimum SDK Version:</strong> Android 5.0 (API Level 21) or higher</li>
+        <li><strong>Target/Compile SDK Version:</strong> Android 14 (API Level 34) or higher</li>
+        <li><strong>Java Version:</strong> Java 11 or Java 17 toolchains</li>
+        <li><strong>Gradle Version:</strong> 7.0+</li>
+    </ul>
+
+    <h3>ProGuard / R8 Rules (proguard-rules.pro)</h3>
+    <p>Because ConnectGold uses Reflection to dynamically load network adapters, add these rules to preserve class paths during release builds:</p>
+    <div class="code-block">
+<pre># Preserve ConnectGold Mediation Engine & Adapters
+-keep class com.connectgold.ads.mediation.** { *; }
+-keep class com.connectgold.ads.adapters.** { *; }
+-keep interface com.connectgold.ads.mediation.MediationAdapter { *; }
+
+# Preserve Google Advertising ID & Media3 ExoPlayer
+-keep class com.google.android.gms.ads.identifier.** { *; }
+-keep class androidx.media3.** { *; }</pre>
+    </div>
+
+    <!-- 3. SETUP -->
+    <h2 id="setup">3. Permissions & Gradle Configuration</h2>
+    <p>Add required network permissions in your <code>AndroidManifest.xml</code>:</p>
     <div class="code-block">
 <pre>&lt;uses-permission android.permission.INTERNET /&gt;
 &lt;uses-permission android.permission.ACCESS_NETWORK_STATE /&gt;
-&lt;uses-permission android.permission.AD_ID /&gt; &lt;!-- Required for Android 13+ Google Advertising ID --&gt;</pre>
+&lt;uses-permission android.permission.AD_ID /&gt; &lt;!-- Required for Android 13+ Advertising ID --&gt;</pre>
     </div>
 
-    <h3>Gradle Configuration</h3>
+    <h3>All 30 Network Gradle Dependencies</h3>
+    
+    <h4>Groovy DSL (build.gradle)</h4>
     <div class="code-block">
-<pre>// Kotlin DSL (build.gradle.kts)
-dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-
-    // Media3 Engine for VAST Video
-    val media3Version = "1.3.1"
-    implementation("androidx.media3:media3-exoplayer:$media3Version")
-    implementation("androidx.media3:media3-ui:$media3Version")
-    implementation("androidx.media3:media3-exoplayer-ima:$media3Version")
-}
-
-// Groovy DSL (build.gradle)
-dependencies {
+<pre>dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
+    // ConnectGold Mobile Ad Mediation SDK - All 30 Network Adapters
+    implementation 'com.connectgold.ads:vungle-adapter:2.2.1'      // Priority 1
+    implementation 'com.connectgold.ads:admob-adapter:2.3.0'       // Priority 2
+    implementation 'com.connectgold.ads:pangle-adapter:1.8.0'      // Priority 3
+    implementation 'com.connectgold.ads:pubmatic-adapter:1.0.4'    // Priority 4
+    implementation 'com.connectgold.ads:adcolony-adapter:1.2.0'    // Priority 5
+    implementation 'com.connectgold.ads:chartboost-adapter:1.9.5'  // Priority 6
+    implementation 'com.connectgold.ads:unity-adapter:2.0.1'      // Priority 7
+    implementation 'com.connectgold.ads:adform-adapter:1.3.1'     // Priority 8
+    implementation 'com.connectgold.ads:ironsource-adapter:3.2.0' // Priority 9
+    implementation 'com.connectgold.ads:tapjoy-adapter:2.4.0'     // Priority 10
+    implementation 'com.connectgold.ads:yandex-adapter:1.1.2'     // Priority 11
+    implementation 'com.connectgold.ads:startapp-adapter:2.1.0'   // Priority 12
+    implementation 'com.connectgold.ads:openx-adapter:3.0.2'      // Priority 13
+    implementation 'com.connectgold.ads:index-adapter:2.1.1'      // Priority 14
+    implementation 'com.connectgold.ads:teads-adapter:1.4.0'      // Priority 15
+    implementation 'com.connectgold.ads:applovin-adapter:4.1.0'   // Priority 16
+    implementation 'com.connectgold.ads:ogusto-adapter:1.0.2'     // Priority 17
+    implementation 'com.connectgold.ads:bidmachine-adapter:2.0.0'  // Priority 18
+    implementation 'com.connectgold.ads:mediation-core:1.0.0'     // Priority 19
+    implementation 'com.connectgold.ads:smaato-adapter:1.7.2'     // Priority 20
+    implementation 'com.connectgold.ads:mobfox-adapter:1.1.0'     // Priority 21
+    implementation 'com.connectgold.ads:aarki-adapter:1.0.0'      // Priority 22
+    implementation 'com.connectgold.ads:inmobi-adapter:3.0.1'     // Priority 23
+    implementation 'com.connectgold.ads:smartad-adapter:2.1.0'    // Priority 24
+    implementation 'com.connectgold.ads:meta-adapter:5.0.0'       // Priority 25
+    implementation 'com.connectgold.ads:verve-adapter:2.5.0'      // Priority 26
+    implementation 'com.connectgold.ads:criteo-adapter:3.0.0'     // Priority 27
+    implementation 'com.connectgold.ads:fyber-adapter:2.0.0'      // Priority 28
+    implementation 'com.connectgold.ads:mintegral-adapter:1.5.0'  // Priority 29
+    implementation 'com.connectgold.ads:rubicon-adapter:2.4.1'    // Priority 30
+
+    // Media3 ExoPlayer Engine for VAST Video Ads
     def media3_version = "1.3.1"
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-ui:$media3_version"
@@ -250,11 +294,10 @@ dependencies {
 }</pre>
     </div>
 
-    <!-- 3. INITIALIZATION -->
-    <h2 id="initialization">3. SDK Initialization & Configuration</h2>
-    <p>Call the initialize method early during application startup (e.g. in <code>Application.onCreate</code> or primary <code>Activity.onCreate</code>).</p>
+    <!-- 4. INITIALIZATION -->
+    <h2 id="initialization">4. SDK Initialization</h2>
 
-    <h3>Java SDK Initialization (<span class="badge">Java</span>)</h3>
+    <h3>Java Initialization (<span class="badge badge-java">Java</span>)</h3>
     <div class="code-block">
 <pre>package com.connectgold.ads;
 
@@ -277,271 +320,255 @@ public class ConnectGoldSDK {
         }
 
         try {
-            Log.i(TAG, "Initializing ConnectGold Mediation Engine for App: " + appId);
-            // Pre-warm network connection & internal parameters
+            Log.i(TAG, "Initializing ConnectGold SDK with App ID: " + appId);
             isInitialized = true;
             if (callback != null) callback.onSuccess();
         } catch (Exception e) {
-            Log.e(TAG, "ConnectGold SDK Initialization Failed", e);
+            Log.e(TAG, "SDK Initialization Failed", e);
             if (callback != null) callback.onError(e.getMessage());
         }
     }
-
-    public static boolean isInitialized() { return isInitialized; }
 }</pre>
     </div>
 
-    <!-- 4. PRIVACY & COMPLIANCE -->
-    <h2 id="privacy">4. Privacy & Compliance Configurations</h2>
-    <p>Pass user consent flags before initializing or requesting ads to satisfy global privacy mandates (GDPR, CCPA, COPPA).</p>
-
-    <h3>Java Privacy Configuration (<span class="badge">Java</span>)</h3>
+    <h3>Kotlin Initialization (<span class="badge badge-kotlin">Kotlin</span>)</h3>
     <div class="code-block">
-<pre>public class ConnectGoldPrivacy {
-    private static boolean hasGDPRConsent = false;
-    private static boolean isCCPADoNotSell = false;
-    private static boolean isCOPPAChildApp = false;
+<pre>package com.connectgold.ads
 
-    public static void setHasUserConsentGDPR(boolean hasConsent) {
-        hasGDPRConsent = hasConsent;
+import android.content.Context
+import android.util.Log
+
+object ConnectGoldSDK {
+    private const val TAG = "ConnectGoldSDK"
+    var isInitialized: Boolean = false
+        private set
+
+    fun initialize(context: Context, appId: String, onComplete: ((Boolean, String?) -> Unit)? = null) {
+        if (isInitialized) {
+            onComplete?.invoke(true, null)
+            return
+        }
+
+        try {
+            Log.i(TAG, "Initializing ConnectGold SDK with App ID: $appId")
+            isInitialized = true
+            onComplete?.invoke(true, null)
+        } catch (e: Exception) {
+            Log.e(TAG, "SDK Initialization Failed", e)
+            onComplete?.invoke(false, e.message)
+        }
     }
-
-    public static void setCCPADoNotSell(boolean doNotSell) {
-        isCCPADoNotSell = doNotSell;
-    }
-
-    public static void setCOPPAAgeRestricted(boolean isChild) {
-        isCOPPAChildApp = isChild;
-    }
-
-    public static boolean getGDPR() { return hasGDPRConsent; }
-    public static boolean getCCPA() { return isCCPADoNotSell; }
-    public static boolean getCOPPA() { return isCOPPAChildApp; }
 }</pre>
     </div>
 
     <!-- 5. ADAPTERS -->
-    <h2 id="adapters">5. Mediation Network Adapters</h2>
-    <p>The Worker engine sends Java class paths dynamically. Ensure network SDK adapters are compiled into your build.</p>
-
+    <h2 id="adapters">5. Complete 30-Adapter Matrix Reference</h2>
     <table>
         <thead>
             <tr>
-                <th>Network Name</th>
+                <th>Rank</th>
+                <th>Adapter Name</th>
                 <th>Target Class Path</th>
-                <th>Gradle Dependency Signature</th>
+                <th>Dependency Signature</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td><strong>ConnectGold Core</strong></td>
-                <td><code>com.connectgold.ads.adapters.ConnectGoldAdapter</code></td>
-                <td><code>com.connectgold.ads:mediation-core:1.0.0</code></td>
-            </tr>
-            <tr>
-                <td><strong>Google AdMob</strong></td>
-                <td><code>com.connectgold.ads.adapters.AdMobAdapter</code></td>
-                <td><code>com.connectgold.ads:admob-adapter:2.3.0</code></td>
-            </tr>
-            <tr>
-                <td><strong>Meta Audience Network</strong></td>
-                <td><code>com.connectgold.ads.adapters.MetaAdapter</code></td>
-                <td><code>com.connectgold.ads:meta-adapter:5.0.0</code></td>
-            </tr>
-            <tr>
-                <td><strong>StartApp</strong></td>
-                <td><code>com.connectgold.ads.adapters.StartAppAdapter</code></td>
-                <td><code>com.connectgold.ads:startapp-adapter:2.1.0</code></td>
-            </tr>
-            <tr>
-                <td><strong>InMobi</strong></td>
-                <td><code>com.connectgold.ads.adapters.InMobiAdapter</code></td>
-                <td><code>com.connectgold.ads:inmobi-adapter:3.0.1</code></td>
-            </tr>
-            <tr>
-                <td><strong>AppLovin MAX</strong></td>
-                <td><code>com.connectgold.ads.adapters.AppLovinAdapter</code></td>
-                <td><code>com.connectgold.ads:applovin-adapter:4.1.0</code></td>
-            </tr>
-            <tr>
-                <td><strong>Unity Ads</strong></td>
-                <td><code>com.connectgold.ads.adapters.UnityAdsAdapter</code></td>
-                <td><code>com.connectgold.ads:unity-adapter:2.0.1</code></td>
-            </tr>
-            <tr>
-                <td><strong>IronSource</strong></td>
-                <td><code>com.connectgold.ads.adapters.IronSourceAdapter</code></td>
-                <td><code>com.connectgold.ads:ironsource-adapter:3.2.0</code></td>
-            </tr>
+            <tr><td>1</td><td>VungleLiftoff</td><td><code>com.connectgold.ads.adapters.VungleAdapter</code></td><td><code>com.connectgold.ads:vungle-adapter:2.2.1</code></td></tr>
+            <tr><td>2</td><td>GoogleAdMob</td><td><code>com.connectgold.ads.adapters.AdMobAdapter</code></td><td><code>com.connectgold.ads:admob-adapter:2.3.0</code></td></tr>
+            <tr><td>3</td><td>Pangle</td><td><code>com.connectgold.ads.adapters.PangleAdapter</code></td><td><code>com.connectgold.ads:pangle-adapter:1.8.0</code></td></tr>
+            <tr><td>4</td><td>PubMatic</td><td><code>com.connectgold.ads.adapters.PubMaticAdapter</code></td><td><code>com.connectgold.ads:pubmatic-adapter:1.0.4</code></td></tr>
+            <tr><td>5</td><td>AdColony</td><td><code>com.connectgold.ads.adapters.AdColonyAdapter</code></td><td><code>com.connectgold.ads:adcolony-adapter:1.2.0</code></td></tr>
+            <tr><td>6</td><td>Chartboost</td><td><code>com.connectgold.ads.adapters.ChartboostAdapter</code></td><td><code>com.connectgold.ads:chartboost-adapter:1.9.5</code></td></tr>
+            <tr><td>7</td><td>UnityAds</td><td><code>com.connectgold.ads.adapters.UnityAdsAdapter</code></td><td><code>com.connectgold.ads:unity-adapter:2.0.1</code></td></tr>
+            <tr><td>8</td><td>Adform</td><td><code>com.connectgold.ads.adapters.AdformAdapter</code></td><td><code>com.connectgold.ads:adform-adapter:1.3.1</code></td></tr>
+            <tr><td>9</td><td>IronSource</td><td><code>com.connectgold.ads.adapters.IronSourceAdapter</code></td><td><code>com.connectgold.ads:ironsource-adapter:3.2.0</code></td></tr>
+            <tr><td>10</td><td>Tapjoy</td><td><code>com.connectgold.ads.adapters.TapjoyAdapter</code></td><td><code>com.connectgold.ads:tapjoy-adapter:2.4.0</code></td></tr>
+            <tr><td>11</td><td>YandexAds</td><td><code>com.connectgold.ads.adapters.YandexAdapter</code></td><td><code>com.connectgold.ads:yandex-adapter:1.1.2</code></td></tr>
+            <tr><td>12</td><td>StartApp</td><td><code>com.connectgold.ads.adapters.StartAppAdapter</code></td><td><code>com.connectgold.ads:startapp-adapter:2.1.0</code></td></tr>
+            <tr><td>13</td><td>OpenX</td><td><code>com.connectgold.ads.adapters.OpenXAdapter</code></td><td><code>com.connectgold.ads:openx-adapter:3.0.2</code></td></tr>
+            <tr><td>14</td><td>IndexExchange</td><td><code>com.connectgold.ads.adapters.IndexAdapter</code></td><td><code>com.connectgold.ads:index-adapter:2.1.1</code></td></tr>
+            <tr><td>15</td><td>Teads</td><td><code>com.connectgold.ads.adapters.TeadsAdapter</code></td><td><code>com.connectgold.ads:teads-adapter:1.4.0</code></td></tr>
+            <tr><td>16</td><td>AppLovinMax</td><td><code>com.connectgold.ads.adapters.AppLovinAdapter</code></td><td><code>com.connectgold.ads:applovin-adapter:4.1.0</code></td></tr>
+            <tr><td>17</td><td>Ogusto</td><td><code>com.connectgold.ads.adapters.OgustoAdapter</code></td><td><code>com.connectgold.ads:ogusto-adapter:1.0.2</code></td></tr>
+            <tr><td>18</td><td>BidMachine</td><td><code>com.connectgold.ads.adapters.BidMachineAdapter</code></td><td><code>com.connectgold.ads:bidmachine-adapter:2.0.0</code></td></tr>
+            <tr><td>19</td><td>ConnectGoldOwn</td><td><code>com.connectgold.ads.adapters.ConnectGoldAdapter</code></td><td><code>com.connectgold.ads:mediation-core:1.0.0</code></td></tr>
+            <tr><td>20</td><td>Smaato</td><td><code>com.connectgold.ads.adapters.SmaatoAdapter</code></td><td><code>com.connectgold.ads:smaato-adapter:1.7.2</code></td></tr>
+            <tr><td>21</td><td>Mobfox</td><td><code>com.connectgold.ads.adapters.MobfoxAdapter</code></td><td><code>com.connectgold.ads:mobfox-adapter:1.1.0</code></td></tr>
+            <tr><td>22</td><td>Aarki</td><td><code>com.connectgold.ads.adapters.AarkiAdapter</code></td><td><code>com.connectgold.ads:aarki-adapter:1.0.0</code></td></tr>
+            <tr><td>23</td><td>InMobi</td><td><code>com.connectgold.ads.adapters.InMobiAdapter</code></td><td><code>com.connectgold.ads:inmobi-adapter:3.0.1</code></td></tr>
+            <tr><td>24</td><td>SmartAdServer</td><td><code>com.connectgold.ads.adapters.SmartAdAdapter</code></td><td><code>com.connectgold.ads:smartad-adapter:2.1.0</code></td></tr>
+            <tr><td>25</td><td>MetaAudienceNetwork</td><td><code>com.connectgold.ads.adapters.MetaAdapter</code></td><td><code>com.connectgold.ads:meta-adapter:5.0.0</code></td></tr>
+            <tr><td>26</td><td>VerveGroup</td><td><code>com.connectgold.ads.adapters.VerveAdapter</code></td><td><code>com.connectgold.ads:verve-adapter:2.5.0</code></td></tr>
+            <tr><td>27</td><td>Criteo</td><td><code>com.connectgold.ads.adapters.CriteoAdapter</code></td><td><code>com.connectgold.ads:criteo-adapter:3.0.0</code></td></tr>
+            <tr><td>28</td><td>Fyber</td><td><code>com.connectgold.ads.adapters.FyberAdapter</code></td><td><code>com.connectgold.ads:fyber-adapter:2.0.0</code></td></tr>
+            <tr><td>29</td><td>Mintegral</td><td><code>com.connectgold.ads.adapters.MintegralAdapter</code></td><td><code>com.connectgold.ads:mintegral-adapter:1.5.0</code></td></tr>
+            <tr><td>30</td><td>RubiconProject</td><td><code>com.connectgold.ads.adapters.RubiconAdapter</code></td><td><code>com.connectgold.ads:rubicon-adapter:2.4.1</code></td></tr>
         </tbody>
     </table>
 
-    <!-- 6. FORMATS -->
-    <h2 id="formats">6. Ad Format Implementations</h2>
+    <!-- 6. BANNER AD UNIT -->
+    <h2 id="banner">6. Banner Ad Unit Integration</h2>
 
-    <h3>Compact Universal Adapter Iteration Strategy</h3>
+    <h3>XML Layout Setup (<span class="badge badge-xml">XML</span>)</h3>
     <div class="code-block">
-<pre>private void runWaterfall(JSONArray sequence, int index, String format) {
-    if (index >= sequence.length()) {
-        Log.e("Mediation", "Waterfall exhausted for format: " + format);
-        return;
-    }
-
-    try {
-        JSONObject item = sequence.getJSONObject(index);
-        String classPath = item.getString("android_class_path");
-
-        Class&lt;?&gt; clazz = Class.forName(classPath);
-        Object adapter = clazz.newInstance();
-        Log.i("Mediation", "Successfully instantiated: " + item.getString("adapter_name"));
-
-    } catch (Exception e) {
-        // Skip to next ad network adapter on failure
-        runWaterfall(sequence, index + 1, format);
-    }
-}</pre>
+<pre>&lt;FrameLayout
+    android:id="@+id/banner_ad_container"
+    android:layout_width="320dp"
+    android:layout_height="50dp"
+    android:layout_gravity="center_horizontal" /&gt;</pre>
     </div>
 
-    <!-- 7. VAST -->
-    <h2 id="vast">7. VAST Video Player Integration</h2>
-
-    <h3>Java Media3 ExoPlayer VAST Player (<span class="badge">Java</span>)</h3>
+    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
     <div class="code-block">
-<pre>package com.connectgold.ads;
-
-import android.net.Uri;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.media3.common.MediaItem;
-import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.ima.ImaAdsLoader;
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
-import androidx.media3.ui.PlayerView;
-import org.json.JSONArray;
-
-public class VastPlayerActivity extends AppCompatActivity {
-
-    private PlayerView playerView;
-    private ExoPlayer player;
-    private ImaAdsLoader adsLoader;
-
+<pre>// XML Container Integration
+FrameLayout container = findViewById(R.id.banner_ad_container);
+ConnectGoldCore.fetchWaterfall("user_101", "main_banner", "BANNER", new ConnectGoldCore.WaterfallCallback() {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        playerView = new PlayerView(this);
-        setContentView(playerView);
+    public void onSuccess(JSONArray waterfall) {
+        runBannerSequence(waterfall, 0, container);
+    }
+    @Override
+    public void onError(String error) { Log.e("Banner", error); }
+});
 
-        ConnectGoldCore.fetchWaterfall("user_101", "preroll_midroll_suite", "VAST", new ConnectGoldCore.WaterfallCallback() {
-            @Override
-            public void onSuccess(JSONArray waterfall) {
-                String vastTagUri = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/12431908/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
-                initializePlayer(vastTagUri);
-            }
+// Programmatic Container Creation (No XML)
+FrameLayout programmaticContainer = new FrameLayout(this);
+programmaticContainer.setLayoutParams(new ViewGroup.LayoutParams(320, 50));
+// load banner into programmaticContainer...</pre>
+    </div>
 
-            @Override
-            public void onError(String message) {
-                initializePlayer(null);
-            }
+    <h3>Kotlin Implementation (<span class="badge badge-kotlin">Kotlin</span>)</h3>
+    <div class="code-block">
+<pre>val container = findViewById&lt;FrameLayout&gt;(R.id.banner_ad_container)
+ConnectGoldCore.fetchWaterfall("user_101", "main_banner", "BANNER", object : ConnectGoldCore.WaterfallCallback {
+    override fun onSuccess(waterfall: JSONArray) { runBannerSequence(waterfall, 0, container) }
+    override fun onError(error: String) { Log.e("Banner", error) }
+})</pre>
+    </div>
+
+    <!-- 7. INTERSTITIAL AD UNIT -->
+    <h2 id="interstitial">7. Interstitial Ad Unit Integration</h2>
+
+    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
+    <div class="code-block">
+<pre>ConnectGoldCore.fetchWaterfall("user_101", "game_over_interstitial", "INTERSTITIAL", new ConnectGoldCore.WaterfallCallback() {
+    @Override
+    public void onSuccess(JSONArray waterfall) {
+        runInterstitialSequence(waterfall, 0);
+    }
+    @Override
+    public void onError(String error) { Log.e("Interstitial", error); }
+});</pre>
+    </div>
+
+    <h3>Kotlin Implementation (<span class="badge badge-kotlin">Kotlin</span>)</h3>
+    <div class="code-block">
+<pre>ConnectGoldCore.fetchWaterfall("user_101", "game_over_interstitial", "INTERSTITIAL", object : ConnectGoldCore.WaterfallCallback {
+    override fun onSuccess(waterfall: JSONArray) { runInterstitialSequence(waterfall, 0) }
+    override fun onError(error: String) { Log.e("Interstitial", error) }
+})</pre>
+    </div>
+
+    <!-- 8. REWARDED AD UNIT -->
+    <h2 id="rewarded">8. Rewarded Ad Unit Integration</h2>
+
+    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
+    <div class="code-block">
+<pre>ConnectGoldCore.fetchWaterfall("user_101", "reward_coins_slot", "REWARDED", new ConnectGoldCore.WaterfallCallback() {
+    @Override
+    public void onSuccess(JSONArray waterfall) {
+        runRewardedSequence(waterfall, 0, (item, amount) -> {
+            Log.d("Reward", "User earned " + amount + " " + item);
         });
     }
+    @Override
+    public void onError(String error) { Log.e("Rewarded", error); }
+});</pre>
+    </div>
 
-    private void initializePlayer(String vastTagUri) {
-        ExoPlayer.Builder playerBuilder = new ExoPlayer.Builder(this);
-
-        if (vastTagUri != null) {
-            adsLoader = new ImaAdsLoader.Builder(this).build();
-            DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(this)
-                    .setLocalAdInsertionComponents(unused -> adsLoader, playerView);
-            playerBuilder.setMediaSourceFactory(mediaSourceFactory);
+    <h3>Kotlin Implementation (<span class="badge badge-kotlin">Kotlin</span>)</h3>
+    <div class="code-block">
+<pre>ConnectGoldCore.fetchWaterfall("user_101", "reward_coins_slot", "REWARDED", object : ConnectGoldCore.WaterfallCallback {
+    override fun onSuccess(waterfall: JSONArray) {
+        runRewardedSequence(waterfall, 0) { item, amount ->
+            Log.d("Reward", "User earned $amount $item")
         }
+    }
+    override fun onError(error: String) { Log.e("Rewarded", error) }
+})</pre>
+    </div>
 
-        player = playerBuilder.build();
+    <!-- 9. NATIVE AD UNIT -->
+    <h2 id="native">9. Native Ad Unit Integration</h2>
+
+    <h3>XML Layout Container (<span class="badge badge-xml">XML Layout</span>)</h3>
+    <div class="code-block">
+<pre>&lt;LinearLayout
+    android:id="@+id/native_ad_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"&gt;
+    &lt;TextView android:id="@+id/native_headline" android:layout_width="wrap_content" android:layout_height="wrap_content" /&gt;
+    &lt;Button android:id="@+id/native_cta" android:layout_width="wrap_content" android:layout_height="wrap_content" /&gt;
+&lt;/LinearLayout&gt;</pre>
+    </div>
+
+    <h3>Java Programmatic Container Creation (<span class="badge badge-java">Java Programmatic</span>)</h3>
+    <div class="code-block">
+<pre>LinearLayout nativeLayout = new LinearLayout(context);
+nativeLayout.setOrientation(LinearLayout.VERTICAL);
+
+TextView headline = new TextView(context);
+Button cta = new Button(context);
+
+nativeLayout.addView(headline);
+nativeLayout.addView(cta);
+// Bind adapter native assets directly to programmatic views...</pre>
+    </div>
+
+    <!-- 10. VAST VIDEO PLAYER -->
+    <h2 id="vast">10. VAST Video Player Integration</h2>
+
+    <h3>XML Layout (<span class="badge badge-xml">XML</span>)</h3>
+    <div class="code-block">
+<pre>&lt;androidx.media3.ui.PlayerView
+    android:id="@+id/player_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" /&gt;</pre>
+    </div>
+
+    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
+    <div class="code-block">
+<pre>PlayerView playerView = findViewById(R.id.player_view);
+
+ConnectGoldCore.fetchWaterfall("user_101", "preroll_midroll_suite", "VAST", new ConnectGoldCore.WaterfallCallback() {
+    @Override
+    public void onSuccess(JSONArray waterfall) {
+        String vastTagUri = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/12431908/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
+        
+        ExoPlayer player = new ExoPlayer.Builder(context).build();
+        ImaAdsLoader adsLoader = new ImaAdsLoader.Builder(context).build();
+        
+        adsLoader.setPlayer(player);
         playerView.setPlayer(player);
-
-        Uri videoUri = Uri.parse("https://storage.googleapis.com/gte-site-media/sample_content.mp4");
-        MediaItem.Builder mediaItemBuilder = new MediaItem.Builder().setUri(videoUri);
-
-        if (vastTagUri != null) {
-            adsLoader.setPlayer(player);
-            mediaItemBuilder.setAdsConfiguration(
-                new MediaItem.AdsConfiguration.Builder(Uri.parse(vastTagUri)).build()
-            );
-        }
-
-        player.setMediaItem(mediaItemBuilder.build());
+        
+        MediaItem mediaItem = new MediaItem.Builder()
+            .setUri("https://storage.googleapis.com/gte-site-media/sample_content.mp4")
+            .setAdsConfiguration(new MediaItem.AdsConfiguration.Builder(Uri.parse(vastTagUri)).build())
+            .build();
+            
+        player.setMediaItem(mediaItem);
         player.prepare();
         player.setPlayWhenReady(true);
     }
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (adsLoader != null) adsLoader.release();
-        if (player != null) player.release();
-    }
-}</pre>
+    public void onError(String error) { Log.e("VAST", error); }
+});</pre>
     </div>
 
-    <!-- 8. ILRD -->
-    <h2 id="ilrd">8. Impression-Level Revenue Data (ILRD)</h2>
-    <p>Track real-time ad revenue for analytics platforms (Singular, AppsFlyer, Adjust, Firebase) when an ad registers an impression.</p>
-
-    <div class="code-block">
-<pre>public interface OnImpressionRevenueDataListener {
-    void onAdImpression(String adUnitId, String networkName, double revenueUSD, String precision);
-}
-
-// Example usage inside an adapter:
-public void notifyImpression(OnImpressionRevenueDataListener listener) {
-    if (listener != null) {
-        listener.onAdImpression("reward_coins_slot", "MetaAudienceNetwork", 0.0150, "ESTIMATED");
-    }
-}</pre>
-    </div>
-
-    <!-- 9. ERROR CODES -->
-    <h2 id="error-codes">9. Error Codes & Diagnostics</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Error Code</th>
-                <th>Description</th>
-                <th>Troubleshooting Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><code>ERR_PREMIUM_USER</code></td>
-                <td>User possesses premium ad-free status.</td>
-                <td>No ads should render. Safe return state.</td>
-            </tr>
-            <tr>
-                <td><code>ERR_WATERFALL_EMPTY</code></td>
-                <td>Server returned an empty adapter list.</td>
-                <td>Verify placement ID in Cloudflare KV store.</td>
-            </tr>
-            <tr>
-                <td><code>ERR_CLASS_NOT_FOUND</code></td>
-                <td>Adapter class not compiled into APK.</td>
-                <td>Include missing dependency signature in <code>build.gradle</code>.</td>
-            </tr>
-            <tr>
-                <td><code>ERR_NO_FILL</code></td>
-                <td>All waterfall networks failed to fill ad.</td>
-                <td>Check ad placement statuses across network dashboards.</td>
-            </tr>
-            <tr>
-                <td><code>ERR_TIMEOUT</code></td>
-                <td>Network load timeout exceeded limit.</td>
-                <td>Worker automatically falls back to next adapter.</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <!-- 10. APP-ADS.TXT -->
-    <h2 id="app-ads">10. Dynamic app-ads.txt Crawler Verification</h2>
-    <p>Your Cloudflare Worker serves your official authorized seller records automatically to web crawlers visiting <code>/app-ads.txt</code>.</p>
+    <!-- 11. MASTER APP-ADS.TXT -->
+    <h2 id="app-ads">11. Dynamic app-ads.txt Master Authorization File</h2>
+    <p>This master authorized seller list contains entry lines for all 30 ad network partners. Host this file at the root of your developer domain (<code>https://yourdomain.com/app-ads.txt</code>):</p>
 
     <div class="code-block">
 <pre># ==============================================================================
@@ -580,7 +607,7 @@ vungle.com, 000000000, RESELLER, b362d2b591b689ef
 
 # 11. Pangle (TikTok for Business)
 pangle.io, 00000, DIRECT, 8b4a8e235f11a09d
-pubmatic.com, 000000, RESELLER, 5d62403b186f2ace # Required Pangle DSP path
+pubmatic.com, 000000, RESELLER, 5d62403b186f2ace
 
 # 12. AdColony
 adcolony.com, 000000, RESELLER, 41249b5c3e5388f8
@@ -640,17 +667,9 @@ openx.com, 537100000, RESELLER, 6a698e2e2a22022b
 rubiconproject.com, 9607, RESELLER, 0bfd66d529a55807</pre>
     </div>
 
-    <!-- 11. CHECKLIST -->
-    <h2 id="checklist">11. Release Pre-Flight Checklist</h2>
-    <ul>
-        <li><span class="badge badge-success">Done</span> Ensure <code>INTERNET</code> and <code>ACCESS_NETWORK_STATE</code> permissions are declared in <code>AndroidManifest.xml</code>.</li>
-        <li><span class="badge badge-success">Done</span> Test Worker routing by performing a <code>POST</code> request to <code>/v1/mediate</code>.</li>
-        <li><span class="badge badge-success">Done</span> Validate that <code>https://your-domain.com/app-ads.txt</code> redirects or proxies to your Cloudflare Worker endpoint.</li>
-        <li><span class="badge badge-success">Done</span> Confirm that ProGuard rules preserve adapter class reflection paths.</li>
-    </ul>
-
 </div>
 
 </body>
 </html>
+
 

@@ -17,12 +17,20 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- Connectgold Mobile Ad Mediation Console -->
+    <!-- Connectgold Mobile Ad Mediation Page -->
     <url>
-        <loc>https://chyke.online/mobile-ads.html</loc>
-        <lastmod>2026-07-22</lastmod>
+        <loc>https://chyke.online/mediation.html</loc>
+        <lastmod>2026-07-26</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
+    </url>
+
+    <!-- Tech Terminal Page -->
+    <url>
+        <loc>https://chyke.online/tech.html</loc>
+        <lastmod>2026-07-26</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
 
     <!-- AI Terminal Page -->
@@ -37,14 +45,6 @@
     <url>
         <loc>https://chyke.online/documentation.html</loc>
         <lastmod>2026-07-21</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-
-    <!-- Connectgold Mobile SDK Documentation -->
-    <url>
-        <loc>https://chyke.online/documentation2.html</loc>
-        <lastmod>2026-07-22</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>

@@ -190,7 +190,7 @@
         <li><a href="#overview">1. Executive Overview</a></li>
         <li><a href="#requirements">2. System Requirements</a></li>
         <li><a href="#setup">3. Permissions & Gradle</a></li>
-        <li><a href="#initialization">4. SDK Initialization</a></li>
+        <li><a href="#initialization">4. Auto Publisher ID Registration</a></li>
         <li><a href="#adapters">5. All 30 Mediation Adapters</a></li>
         <li><a href="#banner">6. Banner Ad Unit</a></li>
         <li><a href="#interstitial">7. Interstitial Ad Unit</a></li>
@@ -208,12 +208,13 @@
 
     <div class="note-box" id="overview">
         <p><strong>Mediation Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/mediate</code><br>
+        <strong>Auto-Register Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/register</code><br>
         <strong>app-ads.txt Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/app-ads.txt</code></p>
     </div>
 
     <!-- 1. OVERVIEW -->
     <h2>1. Executive Overview</h2>
-    <p>The ConnectGold Edge Mediation SDK dynamically evaluates ad requests through edge computing nodes. It routes requests across 30 ad networks using real-time waterfall logic to maximize fill rates and eCPM performance.</p>
+    <p>ConnectGold operates as a <strong>Zero-Dashboard Mobile Ad Mediation Platform</strong>. Developers do not need to register accounts, manage web portals, or set up password logins. The SDK automatically registers your application, generates a unique <code>publisher_id</code>, and attaches it to every ad request.</p>
 
     <!-- 2. SYSTEM REQUIREMENTS -->
     <h2 id="requirements">2. System Requirements & ProGuard Rules</h2>
@@ -225,7 +226,6 @@
     </ul>
 
     <h3>ProGuard / R8 Rules (proguard-rules.pro)</h3>
-    <p>Because ConnectGold uses Reflection to dynamically load network adapters, add these rules to preserve class paths during release builds:</p>
     <div class="code-block">
 <pre># Preserve ConnectGold Mediation Engine & Adapters
 -keep class com.connectgold.ads.mediation.** { *; }
@@ -243,59 +243,12 @@
     <div class="code-block">
 <pre>&lt;uses-permission android.permission.INTERNET /&gt;
 &lt;uses-permission android.permission.ACCESS_NETWORK_STATE /&gt;
-&lt;uses-permission android.permission.AD_ID /&gt; &lt;!-- Required for Android 13+ Advertising ID --&gt;</pre>
+&lt;uses-permission android.permission.AD_ID /&gt;</pre>
     </div>
 
-    <h3>All 30 Network Gradle Dependencies</h3>
-    
-    <h4>Groovy DSL (build.gradle)</h4>
-    <div class="code-block">
-<pre>dependencies {
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-
-    // ConnectGold Mobile Ad Mediation SDK - All 30 Network Adapters
-    implementation 'com.connectgold.ads:vungle-adapter:2.2.1'      // Priority 1
-    implementation 'com.connectgold.ads:admob-adapter:2.3.0'       // Priority 2
-    implementation 'com.connectgold.ads:pangle-adapter:1.8.0'      // Priority 3
-    implementation 'com.connectgold.ads:pubmatic-adapter:1.0.4'    // Priority 4
-    implementation 'com.connectgold.ads:adcolony-adapter:1.2.0'    // Priority 5
-    implementation 'com.connectgold.ads:chartboost-adapter:1.9.5'  // Priority 6
-    implementation 'com.connectgold.ads:unity-adapter:2.0.1'      // Priority 7
-    implementation 'com.connectgold.ads:adform-adapter:1.3.1'     // Priority 8
-    implementation 'com.connectgold.ads:ironsource-adapter:3.2.0' // Priority 9
-    implementation 'com.connectgold.ads:tapjoy-adapter:2.4.0'     // Priority 10
-    implementation 'com.connectgold.ads:yandex-adapter:1.1.2'     // Priority 11
-    implementation 'com.connectgold.ads:startapp-adapter:2.1.0'   // Priority 12
-    implementation 'com.connectgold.ads:openx-adapter:3.0.2'      // Priority 13
-    implementation 'com.connectgold.ads:index-adapter:2.1.1'      // Priority 14
-    implementation 'com.connectgold.ads:teads-adapter:1.4.0'      // Priority 15
-    implementation 'com.connectgold.ads:applovin-adapter:4.1.0'   // Priority 16
-    implementation 'com.connectgold.ads:ogusto-adapter:1.0.2'     // Priority 17
-    implementation 'com.connectgold.ads:bidmachine-adapter:2.0.0'  // Priority 18
-    implementation 'com.connectgold.ads:mediation-core:1.0.0'     // Priority 19
-    implementation 'com.connectgold.ads:smaato-adapter:1.7.2'     // Priority 20
-    implementation 'com.connectgold.ads:mobfox-adapter:1.1.0'     // Priority 21
-    implementation 'com.connectgold.ads:aarki-adapter:1.0.0'      // Priority 22
-    implementation 'com.connectgold.ads:inmobi-adapter:3.0.1'     // Priority 23
-    implementation 'com.connectgold.ads:smartad-adapter:2.1.0'    // Priority 24
-    implementation 'com.connectgold.ads:meta-adapter:5.0.0'       // Priority 25
-    implementation 'com.connectgold.ads:verve-adapter:2.5.0'      // Priority 26
-    implementation 'com.connectgold.ads:criteo-adapter:3.0.0'     // Priority 27
-    implementation 'com.connectgold.ads:fyber-adapter:2.0.0'      // Priority 28
-    implementation 'com.connectgold.ads:mintegral-adapter:1.5.0'  // Priority 29
-    implementation 'com.connectgold.ads:rubicon-adapter:2.4.1'    // Priority 30
-
-    // Media3 ExoPlayer Engine for VAST Video Ads
-    def media3_version = "1.3.1"
-    implementation "androidx.media3:media3-exoplayer:$media3_version"
-    implementation "androidx.media3:media3-ui:$media3_version"
-    implementation "androidx.media3:media3-exoplayer-ima:$media3_version"
-}</pre>
-    </div>
-
-    <!-- 4. INITIALIZATION -->
-    <h2 id="initialization">4. SDK Initialization</h2>
+    <!-- 4. AUTO PUBLISHER ID REGISTRATION -->
+    <h2 id="initialization">4. SDK Initialization & Zero-Dashboard Auto Publisher ID</h2>
+    <p>ConnectGold requires no web dashboard signups. When calling <code>ConnectGoldSDK.initialize(...)</code>, the SDK fires a lightweight registration call to generate a unique <code>publisher_id</code> (e.g., <code>cg_pub_a1b2c3d4</code>) and outputs your profile inspection URL directly to Logcat.</p>
 
     <h3>Java Initialization (<span class="badge badge-java">Java</span>)</h3>
     <div class="code-block">
@@ -303,30 +256,101 @@
 
 import android.content.Context;
 import android.util.Log;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
 
 public class ConnectGoldSDK {
     private static final String TAG = "ConnectGoldSDK";
+    private static final String ENDPOINT_REGISTER = "https://old-term-8a97.trustconnect713.workers.dev/v1/register";
+    private static final String ENDPOINT_MEDIATE = "https://old-term-8a97.trustconnect713.workers.dev/v1/mediate";
+
+    private static String publisherId = null;
     private static boolean isInitialized = false;
 
-    public interface InitCallback {
-        void onSuccess();
+    public interface WaterfallCallback {
+        void onSuccess(JSONArray waterfall);
         void onError(String error);
     }
 
-    public static void initialize(Context context, String appId, InitCallback callback) {
-        if (isInitialized) {
-            if (callback != null) callback.onSuccess();
-            return;
-        }
+    public static void initialize(Context context, String appId) {
+        if (isInitialized) return;
 
-        try {
-            Log.i(TAG, "Initializing ConnectGold SDK with App ID: " + appId);
-            isInitialized = true;
-            if (callback != null) callback.onSuccess();
-        } catch (Exception e) {
-            Log.e(TAG, "SDK Initialization Failed", e);
-            if (callback != null) callback.onError(e.getMessage());
-        }
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                // Auto-register publisher with zero dashboard signups
+                URL url = new URL(ENDPOINT_REGISTER);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                JSONObject payload = new JSONObject();
+                payload.put("packageName", context.getPackageName());
+                payload.put("appId", appId);
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+                }
+
+                if (conn.getResponseCode() == 200) {
+                    String response = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                    JSONObject json = new JSONObject(response);
+
+                    publisherId = json.getString("publisher_id");
+                    String profileUrl = json.getString("profile_url");
+
+                    isInitialized = true;
+                    Log.i(TAG, "ConnectGold Auto-Registered!");
+                    Log.i(TAG, "Assigned Publisher ID: " + publisherId);
+                    Log.i(TAG, "View Profile directly at URL: " + profileUrl);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Auto-registration error: " + e.getMessage());
+            }
+        });
+    }
+
+    public static String getPublisherId() { return publisherId; }
+
+    public static void fetchWaterfall(Context context, String userId, String placementId, String format, JSONObject credentials, WaterfallCallback callback) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                URL url = new URL(ENDPOINT_MEDIATE);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                JSONObject payload = new JSONObject();
+                payload.put("userId", userId != null ? userId : "anonymous");
+                payload.put("publisherId", publisherId != null ? publisherId : "anonymous_publisher"); // Attached Publisher ID
+                payload.put("placementId", placementId);
+                payload.put("adFormat", format.toUpperCase());
+                if (credentials != null) {
+                    payload.put("networkCredentials", credentials);
+                }
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(payload.toString().getBytes(StandardCharsets.UTF_8));
+                }
+
+                if (conn.getResponseCode() == 200) {
+                    String jsonStr = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                    JSONObject response = new JSONObject(jsonStr);
+                    JSONArray waterfall = response.getJSONArray("waterfall_sequence");
+                    callback.onSuccess(waterfall);
+                } else {
+                    callback.onError("Server Error: " + conn.getResponseCode());
+                }
+            } catch (Exception e) {
+                callback.onError(e.getMessage());
+            }
+        });
     }
 }</pre>
     </div>
@@ -337,25 +361,102 @@ public class ConnectGoldSDK {
 
 import android.content.Context
 import android.util.Log
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.StandardCharsets
+import java.util.concurrent.Executors
 
 object ConnectGoldSDK {
     private const val TAG = "ConnectGoldSDK"
+    private const val ENDPOINT_REGISTER = "https://old-term-8a97.trustconnect713.workers.dev/v1/register"
+    private const val ENDPOINT_MEDIATE = "https://old-term-8a97.trustconnect713.workers.dev/v1/mediate"
+
+    var publisherId: String? = null
+        private set
     var isInitialized: Boolean = false
         private set
 
-    fun initialize(context: Context, appId: String, onComplete: ((Boolean, String?) -> Unit)? = null) {
-        if (isInitialized) {
-            onComplete?.invoke(true, null)
-            return
-        }
+    fun initialize(context: Context, appId: String) {
+        if (isInitialized) return
 
-        try {
-            Log.i(TAG, "Initializing ConnectGold SDK with App ID: $appId")
-            isInitialized = true
-            onComplete?.invoke(true, null)
-        } catch (e: Exception) {
-            Log.e(TAG, "SDK Initialization Failed", e)
-            onComplete?.invoke(false, e.message)
+        Executors.newSingleThreadExecutor().execute {
+            try {
+                val conn = (URL(ENDPOINT_REGISTER).openConnection() as HttpURLConnection).apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    doOutput = true
+                }
+
+                val payload = JSONObject().apply {
+                    put("packageName", context.packageName)
+                    put("appId", appId)
+                }
+
+                conn.outputStream.use { os ->
+                    os.write(payload.toString().toByteArray(StandardCharsets.UTF_8))
+                }
+
+                if (conn.responseCode == 200) {
+                    val response = String(conn.inputStream.readAllBytes(), StandardCharsets.UTF_8)
+                    val json = JSONObject(response)
+
+                    publisherId = json.getString("publisher_id")
+                    val profileUrl = json.getString("profile_url")
+
+                    isInitialized = true
+                    Log.i(TAG, "ConnectGold Auto-Registered!")
+                    Log.i(TAG, "Assigned Publisher ID: $publisherId")
+                    Log.i(TAG, "View Profile directly at URL: $profileUrl")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Auto-registration error: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchWaterfall(
+        context: Context,
+        userId: String?,
+        placementId: String,
+        format: String,
+        credentials: JSONObject?,
+        onSuccess: (JSONArray) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        Executors.newSingleThreadExecutor().execute {
+            try {
+                val conn = (URL(ENDPOINT_MEDIATE).openConnection() as HttpURLConnection).apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    doOutput = true
+                }
+
+                val payload = JSONObject().apply {
+                    put("userId", userId ?: "anonymous")
+                    put("publisherId", publisherId ?: "anonymous_publisher") // Attached Publisher ID
+                    put("placementId", placementId)
+                    put("adFormat", format.uppercase())
+                    credentials?.let { put("networkCredentials", it) }
+                }
+
+                conn.outputStream.use { os ->
+                    os.write(payload.toString().toByteArray(StandardCharsets.UTF_8))
+                }
+
+                if (conn.responseCode == 200) {
+                    val jsonStr = String(conn.inputStream.readAllBytes(), StandardCharsets.UTF_8)
+                    val response = JSONObject(jsonStr)
+                    val waterfall = response.getJSONArray("waterfall_sequence")
+                    onSuccess(waterfall)
+                } else {
+                    onError("Server Error: ${conn.responseCode}")
+                }
+            } catch (e: Exception) {
+                onError(e.message ?: "Unknown error")
+            }
         }
     }
 }</pre>
@@ -409,261 +510,60 @@ object ConnectGoldSDK {
     <!-- 6. BANNER AD UNIT -->
     <h2 id="banner">6. Banner Ad Unit Integration</h2>
 
-    <h3>XML Layout Setup (<span class="badge badge-xml">XML</span>)</h3>
+    <h3>Java Implementation with Attached Publisher ID (<span class="badge badge-java">Java</span>)</h3>
     <div class="code-block">
-<pre>&lt;FrameLayout
-    android:id="@+id/banner_ad_container"
-    android:layout_width="320dp"
-    android:layout_height="50dp"
-    android:layout_gravity="center_horizontal" /&gt;</pre>
-    </div>
+<pre>JSONObject credentials = new JSONObject();
+credentials.put("GoogleAdMob", "ca-app-pub-3940256099942544/6300978111");
 
-    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
-    <div class="code-block">
-<pre>// XML Container Integration
-FrameLayout container = findViewById(R.id.banner_ad_container);
-ConnectGoldCore.fetchWaterfall("user_101", "main_banner", "BANNER", new ConnectGoldCore.WaterfallCallback() {
+ConnectGoldSDK.fetchWaterfall(this, "user_101", "main_banner", "BANNER", credentials, new ConnectGoldSDK.WaterfallCallback() {
     @Override
     public void onSuccess(JSONArray waterfall) {
-        runBannerSequence(waterfall, 0, container);
+        // Execute banner waterfall sequence...
     }
+
     @Override
-    public void onError(String error) { Log.e("Banner", error); }
-});
-
-// Programmatic Container Creation (No XML)
-FrameLayout programmaticContainer = new FrameLayout(this);
-programmaticContainer.setLayoutParams(new ViewGroup.LayoutParams(320, 50));
-// load banner into programmaticContainer...</pre>
-    </div>
-
-    <h3>Kotlin Implementation (<span class="badge badge-kotlin">Kotlin</span>)</h3>
-    <div class="code-block">
-<pre>val container = findViewById&lt;FrameLayout&gt;(R.id.banner_ad_container)
-ConnectGoldCore.fetchWaterfall("user_101", "main_banner", "BANNER", object : ConnectGoldCore.WaterfallCallback {
-    override fun onSuccess(waterfall: JSONArray) { runBannerSequence(waterfall, 0, container) }
-    override fun onError(error: String) { Log.e("Banner", error) }
-})</pre>
-    </div>
-
-    <!-- 7. INTERSTITIAL AD UNIT -->
-    <h2 id="interstitial">7. Interstitial Ad Unit Integration</h2>
-
-    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
-    <div class="code-block">
-<pre>ConnectGoldCore.fetchWaterfall("user_101", "game_over_interstitial", "INTERSTITIAL", new ConnectGoldCore.WaterfallCallback() {
-    @Override
-    public void onSuccess(JSONArray waterfall) {
-        runInterstitialSequence(waterfall, 0);
+    public void onError(String error) {
+        Log.e("Banner", "Waterfall error: " + error);
     }
-    @Override
-    public void onError(String error) { Log.e("Interstitial", error); }
-});</pre>
-    </div>
-
-    <h3>Kotlin Implementation (<span class="badge badge-kotlin">Kotlin</span>)</h3>
-    <div class="code-block">
-<pre>ConnectGoldCore.fetchWaterfall("user_101", "game_over_interstitial", "INTERSTITIAL", object : ConnectGoldCore.WaterfallCallback {
-    override fun onSuccess(waterfall: JSONArray) { runInterstitialSequence(waterfall, 0) }
-    override fun onError(error: String) { Log.e("Interstitial", error) }
-})</pre>
-    </div>
-
-    <!-- 8. REWARDED AD UNIT -->
-    <h2 id="rewarded">8. Rewarded Ad Unit Integration</h2>
-
-    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
-    <div class="code-block">
-<pre>ConnectGoldCore.fetchWaterfall("user_101", "reward_coins_slot", "REWARDED", new ConnectGoldCore.WaterfallCallback() {
-    @Override
-    public void onSuccess(JSONArray waterfall) {
-        runRewardedSequence(waterfall, 0, (item, amount) -> {
-            Log.d("Reward", "User earned " + amount + " " + item);
-        });
-    }
-    @Override
-    public void onError(String error) { Log.e("Rewarded", error); }
-});</pre>
-    </div>
-
-    <h3>Kotlin Implementation (<span class="badge badge-kotlin">Kotlin</span>)</h3>
-    <div class="code-block">
-<pre>ConnectGoldCore.fetchWaterfall("user_101", "reward_coins_slot", "REWARDED", object : ConnectGoldCore.WaterfallCallback {
-    override fun onSuccess(waterfall: JSONArray) {
-        runRewardedSequence(waterfall, 0) { item, amount ->
-            Log.d("Reward", "User earned $amount $item")
-        }
-    }
-    override fun onError(error: String) { Log.e("Rewarded", error) }
-})</pre>
-    </div>
-
-    <!-- 9. NATIVE AD UNIT -->
-    <h2 id="native">9. Native Ad Unit Integration</h2>
-
-    <h3>XML Layout Container (<span class="badge badge-xml">XML Layout</span>)</h3>
-    <div class="code-block">
-<pre>&lt;LinearLayout
-    android:id="@+id/native_ad_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"&gt;
-    &lt;TextView android:id="@+id/native_headline" android:layout_width="wrap_content" android:layout_height="wrap_content" /&gt;
-    &lt;Button android:id="@+id/native_cta" android:layout_width="wrap_content" android:layout_height="wrap_content" /&gt;
-&lt;/LinearLayout&gt;</pre>
-    </div>
-
-    <h3>Java Programmatic Container Creation (<span class="badge badge-java">Java Programmatic</span>)</h3>
-    <div class="code-block">
-<pre>LinearLayout nativeLayout = new LinearLayout(context);
-nativeLayout.setOrientation(LinearLayout.VERTICAL);
-
-TextView headline = new TextView(context);
-Button cta = new Button(context);
-
-nativeLayout.addView(headline);
-nativeLayout.addView(cta);
-// Bind adapter native assets directly to programmatic views...</pre>
-    </div>
-
-    <!-- 10. VAST VIDEO PLAYER -->
-    <h2 id="vast">10. VAST Video Player Integration</h2>
-
-    <h3>XML Layout (<span class="badge badge-xml">XML</span>)</h3>
-    <div class="code-block">
-<pre>&lt;androidx.media3.ui.PlayerView
-    android:id="@+id/player_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" /&gt;</pre>
-    </div>
-
-    <h3>Java Implementation (<span class="badge badge-java">Java</span>)</h3>
-    <div class="code-block">
-<pre>PlayerView playerView = findViewById(R.id.player_view);
-
-ConnectGoldCore.fetchWaterfall("user_101", "preroll_midroll_suite", "VAST", new ConnectGoldCore.WaterfallCallback() {
-    @Override
-    public void onSuccess(JSONArray waterfall) {
-        String vastTagUri = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/12431908/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
-        
-        ExoPlayer player = new ExoPlayer.Builder(context).build();
-        ImaAdsLoader adsLoader = new ImaAdsLoader.Builder(context).build();
-        
-        adsLoader.setPlayer(player);
-        playerView.setPlayer(player);
-        
-        MediaItem mediaItem = new MediaItem.Builder()
-            .setUri("https://storage.googleapis.com/gte-site-media/sample_content.mp4")
-            .setAdsConfiguration(new MediaItem.AdsConfiguration.Builder(Uri.parse(vastTagUri)).build())
-            .build();
-            
-        player.setMediaItem(mediaItem);
-        player.prepare();
-        player.setPlayWhenReady(true);
-    }
-    @Override
-    public void onError(String error) { Log.e("VAST", error); }
 });</pre>
     </div>
 
     <!-- 11. MASTER APP-ADS.TXT -->
     <h2 id="app-ads">11. Dynamic app-ads.txt Master Authorization File</h2>
-    <p>This master authorized seller list contains entry lines for all 30 ad network partners. Host this file at the root of your developer domain (<code>https://yourdomain.com/app-ads.txt</code>):</p>
-
     <div class="code-block">
 <pre># ==============================================================================
 # ConnectGold Mediation Official app-ads.txt Master Authorization File (All 30 Adapters)
 # ==============================================================================
 
-# 1. ConnectGold Direct Network
 connectgold.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
-
-# 2. Google AdMob / Google Ad Manager
 google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
-
-# 3. Meta Audience Network (Facebook)
 facebook.com, 0000000000000000, DIRECT, c3e5302f232e0e56
-
-# 4. StartApp (Start.io)
 startapp.com, 200000000, RESELLER, b25656dc4e0b53c7
-
-# 5. InMobi
 inmobi.com, 1000000000, RESELLER, dbf1de3386e1b924
-
-# 6. AppLovin MAX
 applovin.com, 0000000000000000, RESELLER, 90b1267f5f1e8281
-
-# 7. Unity Ads / Unity Grow
 unity3d.com, 0000000, RESELLER, 242b10a273295b9a
-
-# 8. Mintegral
 mintegral.com, 00000, DIRECT, 0aeed750c80d6423
-
-# 9. ironSource
 ironsrc.com, 0000, RESELLER, 100a0b2c3d4e5f6a
-
-# 10. Vungle / Liftoff
 vungle.com, 000000000, RESELLER, b362d2b591b689ef
-
-# 11. Pangle (TikTok for Business)
 pangle.io, 00000, DIRECT, 8b4a8e235f11a09d
 pubmatic.com, 000000, RESELLER, 5d62403b186f2ace
-
-# 12. AdColony
 adcolony.com, 000000, RESELLER, 41249b5c3e5388f8
-
-# 13. Fyber (Digital Turbine)
 fyber.com, 000000, RESELLER, c782c5f1190a2185
-
-# 14. Chartboost
 chartboost.com, 000000000000000000000000, RESELLER, e321033bb7a04918
-
-# 15. Tapjoy
 tapjoy.com, 00000000-0000-0000-0000-000000000000, RESELLER, a470b1349b10eb92
-
-# 16. Yandex Ads
 yandex.ru, R-A-000000-0, DIRECT, f2415d86ef8e38d4
-
-# 17. Criteo
 criteo.com, 000000, RESELLER, 48c03565b900593c
-
-# 18. PubMatic
-pubmatic.com, 000000, RESELLER, 5d62403b186f2ace
-
-# 19. SmartAdServer (Equativ)
 smartadserver.com, 0000, RESELLER, 7f20e4e5e786b89e
-
-# 20. Smaato
 smaato.com, 100000000, RESELLER, 203c9423c8a98b11
-
-# 21. Aarki
 aarki.com, 00000, RESELLER, c051833e2182efd9
-
-# 22. Adform
 adform.com, 00000, RESELLER, 47e38e12d6a59b31
-
-# 23. BidMachine
 bidmachine.io, 000000, RESELLER, 1f8b4172a39c09d2
-
-# 24. MobFox
 mobfox.com, 00000, RESELLER, e818274a1005b8ef
-
-# 25. Ogusto
 ogusto.com, 0000, RESELLER, 39b1a0e882c5f012
-
-# 26. Verve Group
 verve.com, 00000, RESELLER, f109b841a280e729
-
-# 27. Teads
 teads.tv, 00000, RESELLER, 107a68e92040b021
-
-# 28. Index Exchange
 indexexchange.com, 184900, RESELLER, 50b1c356f2c5c8fc
-
-# 29. OpenX
 openx.com, 537100000, RESELLER, 6a698e2e2a22022b
-
-# 30. Rubicon Project (Magnite)
 rubiconproject.com, 9607, RESELLER, 0bfd66d529a55807</pre>
     </div>
 
@@ -671,5 +571,6 @@ rubiconproject.com, 9607, RESELLER, 0bfd66d529a55807</pre>
 
 </body>
 </html>
+
 
 

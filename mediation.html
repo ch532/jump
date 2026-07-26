@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectGold Mobile Ad Mediation SDK - Developer Documentation</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --code-bg: #090d16;
+            --border-color: #334155;
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+            --danger-color: #ef4444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 1rem;
+            color: var(--accent-color);
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+        }
+
+        .sidebar li { margin-bottom: 8px; }
+
+        .sidebar a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            display: block;
+        }
+
+        .sidebar a:hover { color: var(--accent-color); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 300px;
+            padding: 40px 60px;
+            width: calc(100% - 300px);
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            font-size: 2.2rem;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: #f1f5f9;
+            margin-top: 50px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            margin-top: 25px;
+            font-size: 1.15rem;
+        }
+
+        p, li {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+        }
+
+        ul, ol { padding-left: 20px; }
+
+        .code-block {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        pre {
+            margin: 0;
+            font-family: "Fira Code", "Courier New", Courier, monospace;
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            white-space: pre;
+        }
+
+        .badge {
+            background-color: #0284c7;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-success { background-color: var(--success-color); }
+        .badge-warning { background-color: var(--warning-color); color: #000; }
+        .badge-danger { background-color: var(--danger-color); }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: var(--accent-color);
+        }
+
+        td { color: var(--text-muted); }
+
+        .note-box {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .note-box p { margin: 0; color: var(--text-color); }
+
+        @media print {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; width: 100%; padding: 0; }
+            body { background-color: #fff; color: #000; }
+            .code-block { background-color: #f8fafc; border: 1px solid #ccc; }
+            pre { color: #000; white-space: pre-wrap; }
+            h1, h2, h3 { color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+    <h2>SDK Reference</h2>
+    <ul>
+        <li><a href="#overview">1. Executive Overview</a></li>
+        <li><a href="#setup">2. Integration & Permissions</a></li>
+        <li><a href="#initialization">3. SDK Init & Configuration</a></li>
+        <li><a href="#privacy">4. Privacy & Compliance</a></li>
+        <li><a href="#adapters">5. Mediation Network Adapters</a></li>
+        <li><a href="#formats">6. Ad Format Implementations</a></li>
+        <li><a href="#vast">7. VAST ExoPlayer Engine</a></li>
+        <li><a href="#ilrd">8. Impression Revenue (ILRD)</a></li>
+        <li><a href="#error-codes">9. Error Codes & Diagnostics</a></li>
+        <li><a href="#app-ads">10. Dynamic app-ads.txt</a></li>
+        <li><a href="#checklist">11. Release Checklist</a></li>
+    </ul>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content">
+    <h1>ConnectGold Mediation SDK - Full Reference Manual</h1>
+    <p>Comprehensive technical manual for integrating and operating the ConnectGold Mobile Ad Mediation SDK on Android.</p>
+
+    <div class="note-box" id="overview">
+        <p><strong>Edge Server Base URL:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/mediate</code><br>
+        <strong>Crawler Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/app-ads.txt</code></p>
+    </div>
+
+    <!-- 1. OVERVIEW -->
+    <h2>1. Executive Overview</h2>
+    <p>The ConnectGold Edge Mediation SDK routes requests through Cloudflare Workers edge nodes. It uses dynamic waterfall ordering via AI processing (`@cf/google/gemma-7b-it`) and KV configurations to select optimized ad network adapters per user request.</p>
+
+    <!-- 2. SETUP -->
+    <h2 id="setup">2. Integration & Permissions</h2>
+    <p>Add required network access in your <code>AndroidManifest.xml</code>:</p>
+    <div class="code-block">
+<pre>&lt;uses-permission android.permission.INTERNET /&gt;
+&lt;uses-permission android.permission.ACCESS_NETWORK_STATE /&gt;
+&lt;uses-permission android.permission.AD_ID /&gt; &lt;!-- Required for Android 13+ Google Advertising ID --&gt;</pre>
+    </div>
+
+    <h3>Gradle Configuration</h3>
+    <div class="code-block">
+<pre>// Kotlin DSL (build.gradle.kts)
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // Media3 Engine for VAST Video
+    val media3Version = "1.3.1"
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation("androidx.media3:media3-ui:$media3Version")
+    implementation("androidx.media3:media3-exoplayer-ima:$media3Version")
+}
+
+// Groovy DSL (build.gradle)
+dependencies {
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+
+    def media3_version = "1.3.1"
+    implementation "androidx.media3:media3-exoplayer:$media3_version"
+    implementation "androidx.media3:media3-ui:$media3_version"
+    implementation "androidx.media3:media3-exoplayer-ima:$media3_version"
+}</pre>
+    </div>
+
+    <!-- 3. INITIALIZATION -->
+    <h2 id="initialization">3. SDK Initialization & Configuration</h2>
+    <p>Call the initialize method early during application startup (e.g. in <code>Application.onCreate</code> or primary <code>Activity.onCreate</code>).</p>
+
+    <h3>Java SDK Initialization (<span class="badge">Java</span>)</h3>
+    <div class="code-block">
+<pre>package com.connectgold.ads;
+
+import android.content.Context;
+import android.util.Log;
+
+public class ConnectGoldSDK {
+    private static final String TAG = "ConnectGoldSDK";
+    private static boolean isInitialized = false;
+
+    public interface InitCallback {
+        void onSuccess();
+        void onError(String error);
+    }
+
+    public static void initialize(Context context, String appId, InitCallback callback) {
+        if (isInitialized) {
+            if (callback != null) callback.onSuccess();
+            return;
+        }
+
+        try {
+            Log.i(TAG, "Initializing ConnectGold Mediation Engine for App: " + appId);
+            // Pre-warm network connection & internal parameters
+            isInitialized = true;
+            if (callback != null) callback.onSuccess();
+        } catch (Exception e) {
+            Log.e(TAG, "ConnectGold SDK Initialization Failed", e);
+            if (callback != null) callback.onError(e.getMessage());
+        }
+    }
+
+    public static boolean isInitialized() { return isInitialized; }
+}</pre>
+    </div>
+
+    <!-- 4. PRIVACY & COMPLIANCE -->
+    <h2 id="privacy">4. Privacy & Compliance Configurations</h2>
+    <p>Pass user consent flags before initializing or requesting ads to satisfy global privacy mandates (GDPR, CCPA, COPPA).</p>
+
+    <h3>Java Privacy Configuration (<span class="badge">Java</span>)</h3>
+    <div class="code-block">
+<pre>public class ConnectGoldPrivacy {
+    private static boolean hasGDPRConsent = false;
+    private static boolean isCCPADoNotSell = false;
+    private static boolean isCOPPAChildApp = false;
+
+    public static void setHasUserConsentGDPR(boolean hasConsent) {
+        hasGDPRConsent = hasConsent;
+    }
+
+    public static void setCCPADoNotSell(boolean doNotSell) {
+        isCCPADoNotSell = doNotSell;
+    }
+
+    public static void setCOPPAAgeRestricted(boolean isChild) {
+        isCOPPAChildApp = isChild;
+    }
+
+    public static boolean getGDPR() { return hasGDPRConsent; }
+    public static boolean getCCPA() { return isCCPADoNotSell; }
+    public static boolean getCOPPA() { return isCOPPAChildApp; }
+}</pre>
+    </div>
+
+    <!-- 5. ADAPTERS -->
+    <h2 id="adapters">5. Mediation Network Adapters</h2>
+    <p>The Worker engine sends Java class paths dynamically. Ensure network SDK adapters are compiled into your build.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Network Name</th>
+                <th>Target Class Path</th>
+                <th>Gradle Dependency Signature</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>ConnectGold Core</strong></td>
+                <td><code>com.connectgold.ads.adapters.ConnectGoldAdapter</code></td>
+                <td><code>com.connectgold.ads:mediation-core:1.0.0</code></td>
+            </tr>
+            <tr>
+                <td><strong>Google AdMob</strong></td>
+                <td><code>com.connectgold.ads.adapters.AdMobAdapter</code></td>
+                <td><code>com.connectgold.ads:admob-adapter:2.3.0</code></td>
+            </tr>
+            <tr>
+                <td><strong>Meta Audience Network</strong></td>
+                <td><code>com.connectgold.ads.adapters.MetaAdapter</code></td>
+                <td><code>com.connectgold.ads:meta-adapter:5.0.0</code></td>
+            </tr>
+            <tr>
+                <td><strong>StartApp</strong></td>
+                <td><code>com.connectgold.ads.adapters.StartAppAdapter</code></td>
+                <td><code>com.connectgold.ads:startapp-adapter:2.1.0</code></td>
+            </tr>
+            <tr>
+                <td><strong>InMobi</strong></td>
+                <td><code>com.connectgold.ads.adapters.InMobiAdapter</code></td>
+                <td><code>com.connectgold.ads:inmobi-adapter:3.0.1</code></td>
+            </tr>
+            <tr>
+                <td><strong>AppLovin MAX</strong></td>
+                <td><code>com.connectgold.ads.adapters.AppLovinAdapter</code></td>
+                <td><code>com.connectgold.ads:applovin-adapter:4.1.0</code></td>
+            </tr>
+            <tr>
+                <td><strong>Unity Ads</strong></td>
+                <td><code>com.connectgold.ads.adapters.UnityAdsAdapter</code></td>
+                <td><code>com.connectgold.ads:unity-adapter:2.0.1</code></td>
+            </tr>
+            <tr>
+                <td><strong>IronSource</strong></td>
+                <td><code>com.connectgold.ads.adapters.IronSourceAdapter</code></td>
+                <td><code>com.connectgold.ads:ironsource-adapter:3.2.0</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 6. FORMATS -->
+    <h2 id="formats">6. Ad Format Implementations</h2>
+
+    <h3>Compact Universal Adapter Iteration Strategy</h3>
+    <div class="code-block">
+<pre>private void runWaterfall(JSONArray sequence, int index, String format) {
+    if (index >= sequence.length()) {
+        Log.e("Mediation", "Waterfall exhausted for format: " + format);
+        return;
+    }
+
+    try {
+        JSONObject item = sequence.getJSONObject(index);
+        String classPath = item.getString("android_class_path");
+
+        Class&lt;?&gt; clazz = Class.forName(classPath);
+        Object adapter = clazz.newInstance();
+        Log.i("Mediation", "Successfully instantiated: " + item.getString("adapter_name"));
+
+    } catch (Exception e) {
+        // Skip to next ad network adapter on failure
+        runWaterfall(sequence, index + 1, format);
+    }
+}</pre>
+    </div>
+
+    <!-- 7. VAST -->
+    <h2 id="vast">7. VAST Video Player Integration</h2>
+
+    <h3>Java Media3 ExoPlayer VAST Player (<span class="badge">Java</span>)</h3>
+    <div class="code-block">
+<pre>package com.connectgold.ads;
+
+import android.net.Uri;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.ima.ImaAdsLoader;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.ui.PlayerView;
+import org.json.JSONArray;
+
+public class VastPlayerActivity extends AppCompatActivity {
+
+    private PlayerView playerView;
+    private ExoPlayer player;
+    private ImaAdsLoader adsLoader;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        playerView = new PlayerView(this);
+        setContentView(playerView);
+
+        ConnectGoldCore.fetchWaterfall("user_101", "preroll_midroll_suite", "VAST", new ConnectGoldCore.WaterfallCallback() {
+            @Override
+            public void onSuccess(JSONArray waterfall) {
+                String vastTagUri = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/12431908/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
+                initializePlayer(vastTagUri);
+            }
+
+            @Override
+            public void onError(String message) {
+                initializePlayer(null);
+            }
+        });
+    }
+
+    private void initializePlayer(String vastTagUri) {
+        ExoPlayer.Builder playerBuilder = new ExoPlayer.Builder(this);
+
+        if (vastTagUri != null) {
+            adsLoader = new ImaAdsLoader.Builder(this).build();
+            DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(this)
+                    .setLocalAdInsertionComponents(unused -> adsLoader, playerView);
+            playerBuilder.setMediaSourceFactory(mediaSourceFactory);
+        }
+
+        player = playerBuilder.build();
+        playerView.setPlayer(player);
+
+        Uri videoUri = Uri.parse("https://storage.googleapis.com/gte-site-media/sample_content.mp4");
+        MediaItem.Builder mediaItemBuilder = new MediaItem.Builder().setUri(videoUri);
+
+        if (vastTagUri != null) {
+            adsLoader.setPlayer(player);
+            mediaItemBuilder.setAdsConfiguration(
+                new MediaItem.AdsConfiguration.Builder(Uri.parse(vastTagUri)).build()
+            );
+        }
+
+        player.setMediaItem(mediaItemBuilder.build());
+        player.prepare();
+        player.setPlayWhenReady(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (adsLoader != null) adsLoader.release();
+        if (player != null) player.release();
+    }
+}</pre>
+    </div>
+
+    <!-- 8. ILRD -->
+    <h2 id="ilrd">8. Impression-Level Revenue Data (ILRD)</h2>
+    <p>Track real-time ad revenue for analytics platforms (Singular, AppsFlyer, Adjust, Firebase) when an ad registers an impression.</p>
+
+    <div class="code-block">
+<pre>public interface OnImpressionRevenueDataListener {
+    void onAdImpression(String adUnitId, String networkName, double revenueUSD, String precision);
+}
+
+// Example usage inside an adapter:
+public void notifyImpression(OnImpressionRevenueDataListener listener) {
+    if (listener != null) {
+        listener.onAdImpression("reward_coins_slot", "MetaAudienceNetwork", 0.0150, "ESTIMATED");
+    }
+}</pre>
+    </div>
+
+    <!-- 9. ERROR CODES -->
+    <h2 id="error-codes">9. Error Codes & Diagnostics</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Code</th>
+                <th>Description</th>
+                <th>Troubleshooting Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>ERR_PREMIUM_USER</code></td>
+                <td>User possesses premium ad-free status.</td>
+                <td>No ads should render. Safe return state.</td>
+            </tr>
+            <tr>
+                <td><code>ERR_WATERFALL_EMPTY</code></td>
+                <td>Server returned an empty adapter list.</td>
+                <td>Verify placement ID in Cloudflare KV store.</td>
+            </tr>
+            <tr>
+                <td><code>ERR_CLASS_NOT_FOUND</code></td>
+                <td>Adapter class not compiled into APK.</td>
+                <td>Include missing dependency signature in <code>build.gradle</code>.</td>
+            </tr>
+            <tr>
+                <td><code>ERR_NO_FILL</code></td>
+                <td>All waterfall networks failed to fill ad.</td>
+                <td>Check ad placement statuses across network dashboards.</td>
+            </tr>
+            <tr>
+                <td><code>ERR_TIMEOUT</code></td>
+                <td>Network load timeout exceeded limit.</td>
+                <td>Worker automatically falls back to next adapter.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 10. APP-ADS.TXT -->
+    <h2 id="app-ads">10. Dynamic app-ads.txt Crawler Verification</h2>
+    <p>Your Cloudflare Worker serves your official authorized seller records automatically to web crawlers visiting <code>/app-ads.txt</code>.</p>
+
+    <div class="code-block">
+<pre># ==============================================================================
+# ConnectGold Mediation Official app-ads.txt Master Authorization File (All 30 Adapters)
+# ==============================================================================
+
+# 1. ConnectGold Direct Network
+connectgold.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+
+# 2. Google AdMob / Google Ad Manager
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+
+# 3. Meta Audience Network (Facebook)
+facebook.com, 0000000000000000, DIRECT, c3e5302f232e0e56
+
+# 4. StartApp (Start.io)
+startapp.com, 200000000, RESELLER, b25656dc4e0b53c7
+
+# 5. InMobi
+inmobi.com, 1000000000, RESELLER, dbf1de3386e1b924
+
+# 6. AppLovin MAX
+applovin.com, 0000000000000000, RESELLER, 90b1267f5f1e8281
+
+# 7. Unity Ads / Unity Grow
+unity3d.com, 0000000, RESELLER, 242b10a273295b9a
+
+# 8. Mintegral
+mintegral.com, 00000, DIRECT, 0aeed750c80d6423
+
+# 9. ironSource
+ironsrc.com, 0000, RESELLER, 100a0b2c3d4e5f6a
+
+# 10. Vungle / Liftoff
+vungle.com, 000000000, RESELLER, b362d2b591b689ef
+
+# 11. Pangle (TikTok for Business)
+pangle.io, 00000, DIRECT, 8b4a8e235f11a09d
+pubmatic.com, 000000, RESELLER, 5d62403b186f2ace # Required Pangle DSP path
+
+# 12. AdColony
+adcolony.com, 000000, RESELLER, 41249b5c3e5388f8
+
+# 13. Fyber (Digital Turbine)
+fyber.com, 000000, RESELLER, c782c5f1190a2185
+
+# 14. Chartboost
+chartboost.com, 000000000000000000000000, RESELLER, e321033bb7a04918
+
+# 15. Tapjoy
+tapjoy.com, 00000000-0000-0000-0000-000000000000, RESELLER, a470b1349b10eb92
+
+# 16. Yandex Ads
+yandex.ru, R-A-000000-0, DIRECT, f2415d86ef8e38d4
+
+# 17. Criteo
+criteo.com, 000000, RESELLER, 48c03565b900593c
+
+# 18. PubMatic
+pubmatic.com, 000000, RESELLER, 5d62403b186f2ace
+
+# 19. SmartAdServer (Equativ)
+smartadserver.com, 0000, RESELLER, 7f20e4e5e786b89e
+
+# 20. Smaato
+smaato.com, 100000000, RESELLER, 203c9423c8a98b11
+
+# 21. Aarki
+aarki.com, 00000, RESELLER, c051833e2182efd9
+
+# 22. Adform
+adform.com, 00000, RESELLER, 47e38e12d6a59b31
+
+# 23. BidMachine
+bidmachine.io, 000000, RESELLER, 1f8b4172a39c09d2
+
+# 24. MobFox
+mobfox.com, 00000, RESELLER, e818274a1005b8ef
+
+# 25. Ogusto
+ogusto.com, 0000, RESELLER, 39b1a0e882c5f012
+
+# 26. Verve Group
+verve.com, 00000, RESELLER, f109b841a280e729
+
+# 27. Teads
+teads.tv, 00000, RESELLER, 107a68e92040b021
+
+# 28. Index Exchange
+indexexchange.com, 184900, RESELLER, 50b1c356f2c5c8fc
+
+# 29. OpenX
+openx.com, 537100000, RESELLER, 6a698e2e2a22022b
+
+# 30. Rubicon Project (Magnite)
+rubiconproject.com, 9607, RESELLER, 0bfd66d529a55807</pre>
+    </div>
+
+    <!-- 11. CHECKLIST -->
+    <h2 id="checklist">11. Release Pre-Flight Checklist</h2>
+    <ul>
+        <li><span class="badge badge-success">Done</span> Ensure <code>INTERNET</code> and <code>ACCESS_NETWORK_STATE</code> permissions are declared in <code>AndroidManifest.xml</code>.</li>
+        <li><span class="badge badge-success">Done</span> Test Worker routing by performing a <code>POST</code> request to <code>/v1/mediate</code>.</li>
+        <li><span class="badge badge-success">Done</span> Validate that <code>https://your-domain.com/app-ads.txt</code> redirects or proxies to your Cloudflare Worker endpoint.</li>
+        <li><span class="badge badge-success">Done</span> Confirm that ProGuard rules preserve adapter class reflection paths.</li>
+    </ul>
+
+</div>
+
+</body>
+</html>
+

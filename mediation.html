@@ -171,6 +171,9 @@
 
         .note-box p { margin: 0; color: var(--text-color); }
 
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
         @media print {
             .sidebar { display: none; }
             .main-content { margin-left: 0; width: 100%; padding: 0; }
@@ -198,6 +201,7 @@
         <li><a href="#native">9. Native Ad Unit</a></li>
         <li><a href="#vast">10. VAST Video Player Unit</a></li>
         <li><a href="#app-ads">11. Master app-ads.txt</a></li>
+        <li><a href="#privacy">12. Privacy Policy & Legal Compliance</a></li>
     </ul>
 </div>
 
@@ -209,7 +213,8 @@
     <div class="note-box" id="overview">
         <p><strong>Mediation Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/mediate</code><br>
         <strong>Auto-Register Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/v1/register</code><br>
-        <strong>app-ads.txt Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/app-ads.txt</code></p>
+        <strong>app-ads.txt Endpoint:</strong> <code>https://old-term-8a97.trustconnect713.workers.dev/app-ads.txt</code><br>
+        <strong>Privacy Policy:</strong> <a href="https://chyke.online/privacy12.html" target="_blank">https://chyke.online/privacy12.html</a></p>
     </div>
 
     <!-- 1. OVERVIEW -->
@@ -328,7 +333,7 @@ public class ConnectGoldSDK {
 
                 JSONObject payload = new JSONObject();
                 payload.put("userId", userId != null ? userId : "anonymous");
-                payload.put("publisherId", publisherId != null ? publisherId : "anonymous_publisher"); // Attached Publisher ID
+                payload.put("publisherId", publisherId != null ? publisherId : "anonymous_publisher");
                 payload.put("placementId", placementId);
                 payload.put("adFormat", format.toUpperCase());
                 if (credentials != null) {
@@ -351,113 +356,6 @@ public class ConnectGoldSDK {
                 callback.onError(e.getMessage());
             }
         });
-    }
-}</pre>
-    </div>
-
-    <h3>Kotlin Initialization (<span class="badge badge-kotlin">Kotlin</span>)</h3>
-    <div class="code-block">
-<pre>package com.connectgold.ads
-
-import android.content.Context
-import android.util.Log
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.OutputStream
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.StandardCharsets
-import java.util.concurrent.Executors
-
-object ConnectGoldSDK {
-    private const val TAG = "ConnectGoldSDK"
-    private const val ENDPOINT_REGISTER = "https://old-term-8a97.trustconnect713.workers.dev/v1/register"
-    private const val ENDPOINT_MEDIATE = "https://old-term-8a97.trustconnect713.workers.dev/v1/mediate"
-
-    var publisherId: String? = null
-        private set
-    var isInitialized: Boolean = false
-        private set
-
-    fun initialize(context: Context, appId: String) {
-        if (isInitialized) return
-
-        Executors.newSingleThreadExecutor().execute {
-            try {
-                val conn = (URL(ENDPOINT_REGISTER).openConnection() as HttpURLConnection).apply {
-                    requestMethod = "POST"
-                    setRequestProperty("Content-Type", "application/json")
-                    doOutput = true
-                }
-
-                val payload = JSONObject().apply {
-                    put("packageName", context.packageName)
-                    put("appId", appId)
-                }
-
-                conn.outputStream.use { os ->
-                    os.write(payload.toString().toByteArray(StandardCharsets.UTF_8))
-                }
-
-                if (conn.responseCode == 200) {
-                    val response = String(conn.inputStream.readAllBytes(), StandardCharsets.UTF_8)
-                    val json = JSONObject(response)
-
-                    publisherId = json.getString("publisher_id")
-                    val profileUrl = json.getString("profile_url")
-
-                    isInitialized = true
-                    Log.i(TAG, "ConnectGold Auto-Registered!")
-                    Log.i(TAG, "Assigned Publisher ID: $publisherId")
-                    Log.i(TAG, "View Profile directly at URL: $profileUrl")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Auto-registration error: ${e.message}")
-            }
-        }
-    }
-
-    fun fetchWaterfall(
-        context: Context,
-        userId: String?,
-        placementId: String,
-        format: String,
-        credentials: JSONObject?,
-        onSuccess: (JSONArray) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        Executors.newSingleThreadExecutor().execute {
-            try {
-                val conn = (URL(ENDPOINT_MEDIATE).openConnection() as HttpURLConnection).apply {
-                    requestMethod = "POST"
-                    setRequestProperty("Content-Type", "application/json")
-                    doOutput = true
-                }
-
-                val payload = JSONObject().apply {
-                    put("userId", userId ?: "anonymous")
-                    put("publisherId", publisherId ?: "anonymous_publisher") // Attached Publisher ID
-                    put("placementId", placementId)
-                    put("adFormat", format.uppercase())
-                    credentials?.let { put("networkCredentials", it) }
-                }
-
-                conn.outputStream.use { os ->
-                    os.write(payload.toString().toByteArray(StandardCharsets.UTF_8))
-                }
-
-                if (conn.responseCode == 200) {
-                    val jsonStr = String(conn.inputStream.readAllBytes(), StandardCharsets.UTF_8)
-                    val response = JSONObject(jsonStr)
-                    val waterfall = response.getJSONArray("waterfall_sequence")
-                    onSuccess(waterfall)
-                } else {
-                    onError("Server Error: ${conn.responseCode}")
-                }
-            } catch (e: Exception) {
-                onError(e.message ?: "Unknown error")
-            }
-        }
     }
 }</pre>
     </div>
@@ -509,8 +407,6 @@ object ConnectGoldSDK {
 
     <!-- 6. BANNER AD UNIT -->
     <h2 id="banner">6. Banner Ad Unit Integration</h2>
-
-    <h3>Java Implementation with Attached Publisher ID (<span class="badge badge-java">Java</span>)</h3>
     <div class="code-block">
 <pre>JSONObject credentials = new JSONObject();
 credentials.put("GoogleAdMob", "ca-app-pub-3940256099942544/6300978111");
@@ -567,10 +463,20 @@ openx.com, 537100000, RESELLER, 6a698e2e2a22022b
 rubiconproject.com, 9607, RESELLER, 0bfd66d529a55807</pre>
     </div>
 
+    <!-- 12. PRIVACY POLICY -->
+    <h2 id="privacy">12. Privacy Policy & Legal Compliance</h2>
+    <p>ConnectGold complies with global privacy regulations, including GDPR, CCPA, and COPPA. App store policies (Google Play & Apple App Store) require publishers to link to an active Privacy Policy disclosure when integrating ad mediation SDKs.</p>
+    
+    <div class="note-box">
+        <p><strong>Official Platform Privacy Policy URL:</strong><br>
+        <a href="https://chyke.online/privacy12.html" target="_blank">https://chyke.online/privacy12.html</a></p>
+    </div>
+
 </div>
 
 </body>
 </html>
+
 
 
 

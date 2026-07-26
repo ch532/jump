@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - ConnectGold Mobile Ad Mediation</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2.2rem;
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        h2 {
+            color: #f1f5f9;
+            font-size: 1.35rem;
+            margin-top: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        p, li {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+        }
+
+        ul { padding-left: 20px; }
+
+        .highlight-box {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-box p { margin: 0; color: var(--text-color); }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Privacy Policy</h1>
+    <p><strong>Effective Date:</strong> July 26, 2026<br>
+    <strong>Platform:</strong> ConnectGold Mobile Ad Mediation SDK & Edge Services (chyke.online)</p>
+
+    <div class="highlight-box">
+        <p><strong>Zero-Dashboard Principle:</strong> ConnectGold operates as a headless mobile ad mediation technology. We do not require, collect, or store personal user accounts, passwords, names, or financial payment credentials on our servers.</p>
+    </div>
+
+    <h2>1. Overview & Scope</h2>
+    <p>This Privacy Policy explains how ConnectGold ("we", "us", or "our") processes technical information when mobile application publishers integrate the ConnectGold SDK into their Android or mobile software applications. This policy covers end-user device data processed during ad mediation requests and publisher application signals used for edge routing.</p>
+
+    <h2>2. Data Collection & Processing</h2>
+    <p>When an application utilizing the ConnectGold SDK makes an ad request, our Cloud Edge servers process minimal technical parameters necessary to evaluate ad availability, perform waterfall optimization, and deliver advertisements. This information includes:</p>
+
+    <ul>
+        <li><strong>Device Identifiers:</strong> Google Advertising ID (GAID) or IDFA (for Android/iOS 13+ devices) used solely for ad capping, frequency limits, and fraud prevention.</li>
+        <li><strong>Network & Technical Signals:</strong> IP address (used only at runtime to infer general location like country or city, then discarded), connection type (WiFi vs. Cellular), and mobile network carrier.</li>
+        <li><strong>Hardware Parameters:</strong> Device manufacturer, model, operating system version, screen resolution, and system language settings.</li>
+        <li><strong>Application Information:</strong> Application package name, app version, and structural placement identification tags (e.g., banner, interstitial, or rewarded slots).</li>
+    </ul>
+
+    <h2>3. Purpose of Processing</h2>
+    <p>ConnectGold processes the above technical data strictly for the following business and operational purposes:</p>
+    <ul>
+        <li>To evaluate, rank, and route ad requests to the highest-bidding ad demand partner in real time using edge artificial intelligence logic.</li>
+        <li>To prevent fraud, bot traffic, malicious click activity, and duplicate ad rendering.</li>
+        <li>To enforce publisher-configured frequency capping and user premium/ad-free subscription states.</li>
+        <li>To comply with legal obligations and ad network security standards.</li>
+    </ul>
+
+    <h2>4. Third-Party Ad Networks & Demand Partners</h2>
+    <p>To deliver high fill rates and maximized eCPMs, ConnectGold connects requests dynamically to authorized third-party ad networks. These partners operate under their own respective privacy policies and may process device signals to serve contextual or personalized advertisements:</p>
+
+    <ul>
+        <li>Google AdMob / Google Ad Manager</li>
+        <li>Meta Audience Network (Facebook)</li>
+        <li>Unity Ads / Unity Grow</li>
+        <li>ironSource / AppLovin MAX</li>
+        <li>StartApp (Start.io) / InMobi / Vungle (Liftoff)</li>
+        <li>Pangle (TikTok for Business) / Yandex Ads</li>
+        <li>PubMatic, OpenX, Index Exchange, Teads, Criteo, Smaato, Mintegral, Rubicon Project (Magnite), and other participating programmatic demand exchanges.</li>
+    </ul>
+
+    <h2>5. Privacy Rights & Compliance Standards</h2>
+
+    <h3>A. GDPR (European Economic Area & UK)</h3>
+    <p>For users in the European Economic Area, ConnectGold processes data on the legal basis of legitimate interest (fraud prevention and operational routing) and consent (passed directly via publisher consent management platforms). Users may restrict personalized advertising directly through their device settings.</p>
+
+    <h3>B. CCPA / CPRA (California Residents)</h3>
+    <p>ConnectGold does not sell personal information. We honor system-level "Do Not Sell or Share My Personal Information" flags and opt-out preferences passed through the SDK or device system settings.</p>
+
+    <h3>C. COPPA & Children's Privacy</h3>
+    <p>ConnectGold complies with the Children’s Online Privacy Protection Act (COPPA) and Google Play Families Policies. Our SDK supports explicit child-directed flags. When enabled by the application publisher, the mediation engine automatically disables personalized advertising and restricts data processing to contextual, non-targeted ad delivery.</p>
+
+    <h2>6. How to Opt Out of Targeted Advertising</h2>
+    <p>End users can control or reset personalized advertising preferences directly on their mobile devices at any time:</p>
+    <ul>
+        <li><strong>Android Devices:</strong> Navigate to <code>Settings → Google → Ads → Reset Advertising ID</code> or <code>Delete Advertising ID</code>.</li>
+        <li><strong>iOS Devices:</strong> Navigate to <code>Settings → Privacy & Security → Tracking</code> and toggle off "Allow Apps to Request to Track".</li>
+    </ul>
+
+    <h2>7. Data Retention & Security</h2>
+    <p>ConnectGold does not maintain permanent user profiling databases. Ad request logs and edge telemetry data are automatically purged or anonymized on Cloudflare Edge nodes. Technical telemetry retained for system performance monitoring is kept strictly for the minimum time necessary to ensure service stability.</p>
+
+    <h2>8. Updates to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time to reflect technological improvements, regulatory updates, or operational changes. Any updates will be posted on this page with an updated effective date.</p>
+
+    <h2>9. Contact Us</h2>
+    <p>If you have any questions, inquiries, or privacy concerns regarding ConnectGold technology, please reach out to us:</p>
+    <p><strong>Website:</strong> <a href="https://chyke.online/support.html">https://chyke.online/support.html</a><br>
+    <strong>Domain:</strong> <a href="https://chyke.online/">chyke.online</a></p>
+
+    <div class="footer">
+        &copy; 2026 ConnectGold Mediation Engine (chyke.online). All Rights Reserved.
+    </div>
+</div>
+
+</body>
+</html>

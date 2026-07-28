@@ -84,6 +84,51 @@
       to { opacity: 1; transform: scale(1.05); }
     }
 
+    /* Center Right Media Capture Controls */
+    .controls-overlay {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .action-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:active {
+      transform: scale(0.9);
+    }
+
+    .action-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    /* Recording Active State */
+    .action-btn.recording {
+      background: rgba(220, 38, 38, 0.9);
+      border-color: #fca5a5;
+      animation: pulse 1s infinite alternate;
+    }
+
     /* Bottom Floating HUD Overlay */
     .overlay-bottom {
       position: absolute;
@@ -121,6 +166,24 @@
     <div id="sigBadge" class="status-badge sig-offline">SIG: Connecting</div>
   </div>
 
+  <!-- Right Floating Controls -->
+  <div class="controls-overlay">
+    <!-- Photo Snap Button -->
+    <button id="snapBtn" class="action-btn" title="Take Photo">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5z"/>
+        <path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+      </svg>
+    </button>
+
+    <!-- Video Record Button -->
+    <button id="recordBtn" class="action-btn" title="Record Video">
+      <svg viewBox="0 0 24 24">
+        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+      </svg>
+    </button>
+  </div>
+
   <!-- Bottom Details Overlay -->
   <div class="overlay-bottom">
     <div class="hud-item">AI: <strong>connectgold-gateway</strong></div>
@@ -134,11 +197,17 @@
     const videoElement = document.getElementById('localVideo');
     const aiBadge = document.getElementById('aiBadge');
     const sigBadge = document.getElementById('sigBadge');
+    const snapBtn = document.getElementById('snapBtn');
+    const recordBtn = document.getElementById('recordBtn');
 
     let localStream = null;
     let ws = null;
     let peerConnection = null;
     let aiInterval = null;
+
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
 
     const iceConfig = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
@@ -162,9 +231,7 @@
 
     // 2. Connect to WebSockets Signaling Server
     function connectSignaling() {
-      if (ws) {
-        ws.close();
-      }
+      if (ws) ws.close();
 
       ws = new WebSocket(SIGNALING_URL);
 
@@ -248,7 +315,64 @@
       }, 'image/jpeg', 0.8);
     }
 
-    // Interval Lifecycle Controllers
+    // 4. Photo Snap Feature
+    snapBtn.addEventListener('click', () => {
+      if (!videoElement || videoElement.readyState !== 4) return;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth || 1280;
+      canvas.height = videoElement.videoHeight || 720;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      const imageURL = canvas.toDataURL('image/jpeg', 0.95);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = imageURL;
+      downloadLink.download = `cctv_snap_${Date.now()}.jpg`;
+      downloadLink.click();
+    });
+
+    // 5. Video Record Feature
+    recordBtn.addEventListener('click', () => {
+      if (!localStream) return;
+
+      if (!isRecording) {
+        // Start Recording
+        recordedChunks = [];
+        const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+        
+        try {
+          mediaRecorder = new MediaRecorder(localStream, options);
+        } catch (e) {
+          mediaRecorder = new MediaRecorder(localStream); // Fallback options
+        }
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const videoURL = URL.createObjectURL(blob);
+          const downloadLink = document.createElement('a');
+          downloadLink.href = videoURL;
+          downloadLink.download = `cctv_record_${Date.now()}.webm`;
+          downloadLink.click();
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.classList.add('recording');
+      } else {
+        // Stop Recording
+        mediaRecorder.stop();
+        isRecording = false;
+        recordBtn.classList.remove('recording');
+      }
+    });
+
+    // Interval & Visibility Lifecycle Controllers
     function startAILoop() {
       if (aiInterval) clearInterval(aiInterval);
       aiInterval = setInterval(sendFrameToCloudflareAI, 3000);
@@ -261,16 +385,11 @@
       }
     }
 
-    // 4. Handle Android Minimize / Resume Transitions
     async function handleResume() {
       stopAILoop();
-
-      // Release dead video tracks
       if (localStream) {
         localStream.getTracks().forEach(track => track.stop());
       }
-
-      // Re-initialize media hardware and signal channel
       await startCamera();
       connectSignaling();
       startAILoop();
@@ -278,15 +397,16 @@
 
     function handleMinimize() {
       stopAILoop();
+      if (isRecording && mediaRecorder) {
+        mediaRecorder.stop();
+        isRecording = false;
+        recordBtn.classList.remove('recording');
+      }
     }
 
-    // Page Visibility API Event Listener
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        handleMinimize();
-      } else {
-        handleResume();
-      }
+      if (document.hidden) handleMinimize();
+      else handleResume();
     });
 
     // Application Entry Point
@@ -300,6 +420,7 @@
   </script>
 </body>
 </html>
+
 
 
 

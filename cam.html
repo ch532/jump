@@ -213,14 +213,38 @@
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
 
-    // Category mapping helper
-    function getGeneralCategory(label) {
-      const l = label.toLowerCase();
-      if (l === 'person') return 'HUMAN';
-      if (['car', 'truck', 'bus', 'motorcycle', 'bicycle', 'airplane', 'train', 'boat'].includes(l)) return 'VEHICLE';
-      if (['cat', 'dog', 'bird', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe'].includes(l)) return 'ANIMAL';
-      if (['backpack', 'handbag', 'suitcase'].includes(l)) return 'BAG / ACCESSORY';
-      return 'OBJECT';
+    // Filter out low-confidence detections and indoor false positives
+    function getFilteredCategories(objects) {
+      const MIN_CONFIDENCE = 0.65;
+      const categories = new Set();
+
+      objects.forEach(obj => {
+        const score = obj.score;
+        const l = obj.label.toLowerCase();
+
+        // 1. Human Detection
+        if (l === 'person' && score >= MIN_CONFIDENCE) {
+          categories.add('HUMAN');
+        } 
+        // 2. Vehicle Detection (Requires 85%+ to prevent indoor furniture false positives)
+        else if (['car', 'truck', 'bus', 'motorcycle', 'bicycle', 'airplane', 'train', 'boat'].includes(l) && score >= 0.85) {
+          categories.add('VEHICLE');
+        } 
+        // 3. Animal Detection
+        else if (['cat', 'dog', 'bird', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe'].includes(l) && score >= MIN_CONFIDENCE) {
+          categories.add('ANIMAL');
+        } 
+        // 4. Bags / Luggage
+        else if (['backpack', 'handbag', 'suitcase'].includes(l) && score >= MIN_CONFIDENCE) {
+          categories.add('BAG / ACCESSORY');
+        } 
+        // 5. Indoor / Household Objects
+        else if (score >= 0.70 && !['car', 'truck', 'bus', 'motorcycle'].includes(l)) {
+          categories.add('OBJECT');
+        }
+      });
+
+      return Array.from(categories);
     }
 
     // 1. Initialize Camera Stream
@@ -309,19 +333,23 @@
           const result = await response.json();
 
           if (result.alert && result.objects && result.objects.length > 0) {
-            // Group detected items into broad categories
-            const categories = [...new Set(result.objects.map(obj => getGeneralCategory(obj.label)))];
+            const categories = getFilteredCategories(result.objects);
 
-            aiBadge.innerText = `⚠️ TARGET DETECTED: ${categories.join(' + ')}`;
-            aiBadge.className = 'status-badge ai-alert';
+            if (categories.length > 0) {
+              aiBadge.innerText = `⚠️ TARGET DETECTED: ${categories.join(' + ')}`;
+              aiBadge.className = 'status-badge ai-alert';
 
-            if (ws && ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({ 
-                type: 'ai_alert', 
-                count: result.detected_count, 
-                categories: categories, 
-                objects: result.objects 
-              }));
+              if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ 
+                  type: 'ai_alert', 
+                  count: categories.length, 
+                  categories: categories, 
+                  objects: result.objects 
+                }));
+              }
+            } else {
+              aiBadge.innerText = 'AI Active - Clear';
+              aiBadge.className = 'status-badge ai-clear';
             }
           } else {
             aiBadge.innerText = 'AI Active - Clear';
@@ -436,6 +464,7 @@
   </script>
 </body>
 </html>
+
 
 
 

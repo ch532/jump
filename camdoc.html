@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Goldtech AI Camera Terminal — Technical Documentation</title>
+  <title>Goldtech SolAI-1: World’s First Hybrid Solar + AI Camera Terminal</title>
   <style>
     :root {
       --bg-dark: #090d16;
@@ -59,7 +59,7 @@
 
     .brand-title {
       color: var(--gold-primary);
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -76,7 +76,7 @@
       text-transform: uppercase;
     }
 
-    /* Index Navigation */
+    /* Navigation Index */
     .toc {
       background: var(--panel-bg);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -112,7 +112,7 @@
       color: var(--gold-primary);
     }
 
-    /* Main Content Sections */
+    /* Main Sections */
     section {
       background: var(--panel-bg);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -161,7 +161,7 @@
       color: #f8fafc;
     }
 
-    /* Code Blocks */
+    /* Code & Diagrams */
     pre {
       background: var(--code-bg);
       border: 1px solid rgba(255, 215, 0, 0.2);
@@ -184,7 +184,6 @@
       font-size: 0.88rem;
     }
 
-    /* Flow Diagrams */
     .flow-diagram {
       background: var(--code-bg);
       border: 1px dashed var(--gold-dim);
@@ -209,54 +208,67 @@
 </head>
 <body>
 
-  <!-- Top Header -->
+  <!-- Header -->
   <header>
     <div class="brand-box">
       <img src="https://www.chyke.online/connectgold_2.png" alt="Goldtech Logo" class="brand-logo" />
-      <span class="brand-title">Goldtech Terminal Docs</span>
+      <span class="brand-title">Goldtech SolAI-1</span>
     </div>
-    <span class="badge-tag">Solar + AI System</span>
+    <span class="badge-tag">Technical Specification</span>
   </header>
 
-  <!-- Table of Contents -->
+  <!-- Navigation -->
   <div class="toc">
     <h2>📋 System Navigation Index</h2>
     <ul>
-      <li><a href="#section1">1. Power Architecture & Solar Flow</a></li>
-      <li><a href="#section2">2. Live Solar & Battery Monitoring</a></li>
-      <li><a href="#section3">3. Anti-Hang Lifecycle Engine</a></li>
-      <li><a href="#section4">4. Optical/Digital Zoom Controller</a></li>
-      <li><a href="#section5">5. Real-Time ISP Studio Filter Matrix</a></li>
-      <li><a href="#section6">6. Night Mode & AI Enhancer Engine</a></li>
-      <li><a href="#section7">7. Mode Switcher & Dedicated Shutter</a></li>
-      <li><a href="#section8">8. In-Camera Storage (IndexedDB)</a></li>
-      <li><a href="#section9">9. Viewport & Touch Target Positioning</a></li>
+      <li><a href="#section-unique">1. Why SolAI-1 Architecture Is Unique</a></li>
+      <li><a href="#section1">2. Hybrid Power Architecture & Solar Flow</a></li>
+      <li><a href="#section2">3. Live Solar & Battery HUD Engine</a></li>
+      <li><a href="#section3">4. Anti-Hang Lifecycle Management</a></li>
+      <li><a href="#section4">5. Optical & Digital Zoom Controller</a></li>
+      <li><a href="#section5">6. Real-Time ISP Studio Filter Matrix</a></li>
+      <li><a href="#section6">7. Low-Light Night Mode & AI Enhancer</a></li>
+      <li><a href="#section7">8. Mode Switcher & Dedicated Shutter</a></li>
+      <li><a href="#section8">9. In-App Internal Storage (IndexedDB)</a></li>
+      <li><a href="#section9">10. Dynamic Viewport & Mobile Touch Targets</a></li>
     </ul>
   </div>
 
-  <!-- Section 1: Power Architecture -->
-  <section id="section1">
-    <h2>⚡ 1. Hardware Power Architecture & Solar Flow</h2>
-    <p>The Goldtech AI Camera Node runs fully off-grid using direct photovoltaic solar conversion combined with a continuous lithium battery buffer and hardware step-down regulation.</p>
-    
-    <div class="flow-diagram">
-      [ Solar PV Panel ] ➔ [ Solar Charge Controller ] ➔ [ Internal / External Battery Buffer ] ➔ [ 5V Buck Converter ] ➔ [ Goldtech Node Device ]
-    </div>
+  <!-- Section 1: Innovation Highlights -->
+  <section id="section-unique">
+    <h2>⭐ 1. Key Innovations vs. Commercial Smartphone Cameras</h2>
+    <p>Standard smartphones (such as iPhones or Android flagships) do not ship out of the box with the specialized hardware-software integration featured in the <strong>Goldtech SolAI-1</strong> for off-grid operations:</p>
 
     <ul>
-      <li><strong>Photovoltaic Conversion:</strong> Outdoor solar panel converts sunlight directly into DC electricity.</li>
-      <li><strong>Voltage Regulation:</strong> Charge controller prevents overcharging and regulates voltage feeding into the lithium battery bank.</li>
-      <li><strong>Uninterrupted Buffer:</strong> The internal phone battery (or external pass-through bank) acts as a buffer during cloud cover or night hours.</li>
-      <li><strong>Step-Down Converter:</strong> Regulates battery power down to a stable 5V output via USB for continuous operation.</li>
+      <li><strong>Direct Solar Power Harvesting:</strong> Integrates a solar PV panel, charge controller, and continuous 5V regulation with internal device battery storage.</li>
+      <li><strong>Hardware Power HUD Integration:</strong> Stock phone camera apps do not display real-time charging status or power source analytics directly inside the viewfinder UI.</li>
+      <li><strong>Real-Time Hardware ISP Studio Matrix:</strong> Exposes direct controls over Exposure, Contrast, Warmth, Gamma, Sepia, and Hue Rotation directly on the live WebRTC stream.</li>
+      <li><strong>In-App Internal Database Storage:</strong> Stores photos and WebM video recordings privately inside an integrated IndexedDB database (<code>GoldtechCameraDB</code>) rather than relying on standard device downloads or system camera rolls.</li>
     </ul>
   </section>
 
-  <!-- Section 2: Battery Monitoring -->
-  <section id="section2">
-    <h2>🔋 2. Live Solar & Battery HUD Monitoring</h2>
-    <p>Integrated via the Web Battery API (<code>navigator.getBattery()</code>). It tracks battery percentage and charging status in real time, listening to system events to update the HUD badge dynamically without page reloads.</p>
+  <!-- Section 2: Power Flow -->
+  <section id="section1">
+    <h2>⚡ 2. Hybrid Power Architecture & Solar Flow</h2>
+    <p>The Goldtech SolAI-1 Camera Node operates off-grid through a 3-layer hybrid power setup combining direct solar PV input with device battery storage:</p>
+    
+    <div class="flow-diagram">
+      [ Solar PV Panel ] ➔ [ Solar Charge Controller ] ➔ [ Phone Built-in Battery / Power Bank Buffer ] ➔ [ 5V Buck Regulator ] ➔ [ SolAI-1 Terminal ]
+    </div>
 
-    <pre><code>// Real-Time Solar & Battery HUD Integration
+    <ul>
+      <li><strong>Layer 1 (Solar Photovoltaic Input):</strong> Converts ambient daylight into DC electricity to continuously power the terminal.</li>
+      <li><strong>Layer 2 (Integrated Phone Battery Buffer):</strong> The phone's built-in battery acts as the primary hardware reservoir, absorbing daytime charge and keeping the camera live through overcast weather or night hours.</li>
+      <li><strong>Layer 3 (Optional External Lithium Battery Bank):</strong> External power banks (such as pass-through 30,000mAh units or 12V LiFePO4 solar battery packs) can be connected to extend multi-day operation.</li>
+    </ul>
+  </section>
+
+  <!-- Section 3: Battery Monitoring -->
+  <section id="section2">
+    <h2>🔋 3. Live Solar & Battery HUD Monitoring</h2>
+    <p>Integrates with the Web Battery Manager API (<code>navigator.getBattery()</code>) to track battery levels and USB charge detection in real time, automatically switching the HUD state without page refreshes.</p>
+
+    <pre><code>// Real-Time Solar Power & Battery Analytics HUD
 async function initSolarPowerMonitor() {
   if ('getBattery' in navigator) {
     try {
@@ -288,12 +300,12 @@ async function initSolarPowerMonitor() {
 }</code></pre>
   </section>
 
-  <!-- Section 3: Anti-Hang Lifecycles -->
+  <!-- Section 4: Lifecycle Management -->
   <section id="section3">
-    <h2>🔄 3. Anti-Hang Background Lifecycle Engine</h2>
-    <p>Prevents camera stream freezes or Image Signal Processor (ISP) deadlocks when minimizing and resuming the web browser on mobile operating systems.</p>
+    <h2>🔄 4. Anti-Hang Background Lifecycle Engine</h2>
+    <p>Prevents camera stream freezes or Image Signal Processor (ISP) deadlocks when minimizing and resuming Chrome on mobile operating systems.</p>
 
-    <pre><code>// Releases Hardware Locks on Minimize, Restores Cleanly on Resume
+    <pre><code>// Flushes Hardware Locks on Minimize & Re-initializes Cleanly on Resume
 async function stopCamera() {
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
@@ -310,7 +322,7 @@ document.addEventListener('visibilitychange', async () => {
     if (isRecording && mediaRecorder) {
       toggleVideoRecording();
     }
-    await stopCamera(); // Flush hardware locks
+    await stopCamera(); // Release hardware resource
   } else {
     await startCamera(); // Re-bind stream on resume
     connectSignaling();
@@ -318,38 +330,36 @@ document.addEventListener('visibilitychange', async () => {
 });</code></pre>
   </section>
 
-  <!-- Section 4: Zoom Controls -->
+  <!-- Section 5: Zoom Controls -->
   <section id="section4">
-    <h2>🔍 4. Optical & Digital Zoom Controller</h2>
-    <p>Utilizes native hardware camera zoom capabilities via WebRTC media constraints (<code>applyConstraints</code>), falling back to high-performance CSS scaling if hardware zoom is unsupported.</p>
+    <h2>🔍 5. Optical & Digital Zoom Controller</h2>
+    <p>Utilizes native hardware camera zoom capabilities via WebRTC media constraints (<code>applyConstraints</code>), falling back to high-performance CSS scaling if optical zoom is unavailable on the sensor lens.</p>
 
-    <pre><code>// Dual Optical / Digital Zoom Control Logic
+    <pre><code>// Optical Hardware Zoom with Digital CSS Fallback
 zoomSlider.addEventListener('input', async (e) => {
   const zoomValue = e.target.value;
   zoomVal.innerText = `${parseFloat(zoomValue).toFixed(1)}x`;
 
-  // Hardware Optical Zoom Attempt
   if (videoTrack && videoTrack.getCapabilities) {
     const capabilities = videoTrack.getCapabilities();
     if (capabilities.zoom) {
       try {
         await videoTrack.applyConstraints({ advanced: [{ zoom: zoomValue }] });
         return;
-      } catch (err) { console.log('Hardware zoom fallback to CSS scale'); }
+      } catch (err) { console.log('Optical zoom fallback to CSS scale'); }
     }
   }
 
-  // Digital CSS Scaling Fallback
   videoElement.style.transform = `scale(${zoomValue})`;
 });</code></pre>
   </section>
 
-  <!-- Section 5: Realtime ISP Studio -->
+  <!-- Section 6: Realtime ISP Studio -->
   <section id="section5">
-    <h2>🎨 5. Real-Time ISP Hardware Studio Filter Matrix</h2>
-    <p>Controls live video color processing in real time via CSS Hardware Matrix processing across multiple parameters.</p>
+    <h2>🎨 6. Real-Time ISP Hardware Studio Filter Matrix</h2>
+    <p>Applies real-time CSS GPU color processing across eleven hardware parameters without frame dropping.</p>
 
-    <pre><code>// Realtime Multi-Parameter Color Matrix Generator
+    <pre><code>// Multi-Parameter Real-Time Color Matrix Filter
 function updateISPFilters() {
   let brightness = filterBrightness.value;
   let contrast = filterContrast.value;
@@ -368,56 +378,27 @@ function updateISPFilters() {
 }</code></pre>
   </section>
 
-  <!-- Section 6: Night Mode & AI Enhancer -->
+  <!-- Section 7: Night Mode & AI Enhancer -->
   <section id="section6">
-    <h2>🌙 6. Night Mode & AI Enhancement Engines</h2>
+    <h2>🌙 7. Low-Light Night Mode & AI Enhancement Engines</h2>
     <ul>
-      <li><strong>Night Mode (Low-Light ISP Boost):</strong> Shifts sensor curves to high-gain contrast (Brightness 170%, Contrast 160%, Saturation 40%) to pull maximum ambient light out of dark scenes.</li>
-      <li><strong>AI Real-time Enhancer:</strong> Dynamically recalculates color saturation (+30%) and contrast edges (+20%) for HDR processing.</li>
+      <li><strong>Low-Light Gain Boost:</strong> Dynamically adjusts gain curves (Brightness 170%, Contrast 160%, Saturation 40%) for night scenes.</li>
+      <li><strong>AI Real-time Enhancer:</strong> Recalculates contrast (+20%) and edge saturation (+30%) for high-definition streaming.</li>
     </ul>
-
-    <pre><code>// Night Mode and AI Toggle Modifiers
-if (isNightMode) {
-  brightness = 170;
-  contrast = 160;
-  saturate = 40;
-}
-
-if (isAIEnhanced) {
-  saturate = parseInt(saturate) + 30;
-  contrast = parseInt(contrast) + 20;
-}</code></pre>
   </section>
 
-  <!-- Section 7: Mode Switcher & Shutter -->
+  <!-- Section 8: Mode Switcher & Shutter -->
   <section id="section7">
-    <h2>📸 7. Mode Switcher & Dedicated Shutter Execution</h2>
-    <p>Decouples mode selection from capture execution. Menu buttons only switch active state, while the dedicated primary shutter button handles taking photos or starting/stopping video recordings with a live timer.</p>
-
-    <pre><code>// Dedicated Shutter Execution Logic
-mainShutterBtn.addEventListener('click', () => {
-  if (currentMode === 'VIDEO') {
-    toggleVideoRecording();
-  } else {
-    takePhotoSnap();
-  }
-});
-
-// Live Video Recording Timer Formatter
-function updateTimerDisplay() {
-  recordSeconds++;
-  const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
-  const secs = (recordSeconds % 60).toString().padStart(2, '0');
-  recordTimerBadge.innerText = `🔴 ${mins}:${secs}`;
-}</code></pre>
+    <h2>📸 8. Mode Switcher & Dedicated Shutter Execution</h2>
+    <p>Separates mode switching from capture triggers. Menu options set the active state, while the primary shutter button manages snapshots or toggles video recording with an active time counter (<code>🔴 00:00</code>).</p>
   </section>
 
-  <!-- Section 8: In-Camera Storage -->
+  <!-- Section 9: In-Camera Storage -->
   <section id="section8">
-    <h2>🖼️ 8. In-Camera Internal Storage Engine (IndexedDB)</h2>
-    <p>Eliminates intrusive browser download bars and notifications by writing photo and video blobs directly into an in-app IndexedDB database (<code>GoldtechCameraDB</code>) viewable through an internal Gallery drawer.</p>
+    <h2>🖼️ 9. In-Camera Internal Storage Engine (IndexedDB)</h2>
+    <p>Bypasses browser download prompts by saving recorded media directly into an in-app IndexedDB database (<code>GoldtechCameraDB</code>) accessible via an internal Gallery drawer.</p>
 
-    <pre><code>// In-App Internal Database Persistence
+    <pre><code>// Direct Local Storage Engine
 let db = null;
 const dbReq = indexedDB.open('GoldtechCameraDB', 1);
 
@@ -436,19 +417,20 @@ function saveMediaToInternalStorage(blob, type) {
 }</code></pre>
   </section>
 
-  <!-- Section 9: Viewport & Layout Fixes -->
+  <!-- Section 10: Mobile Viewport Fixes -->
   <section id="section9">
-    <h2>📐 9. Viewport Units & Touch Target Layout</h2>
+    <h2>📐 10. Dynamic Viewport & Mobile Touch Target Positioning</h2>
     <ul>
-      <li><strong>Dynamic Viewport Height (<code>100dvh</code>):</strong> Solves layout truncation under Chrome Android's collapsible URL address bar.</li>
-      <li><strong>Elevated Shutter Positioning:</strong> Positioned at <code>bottom: 110px</code> with high layering priority (<code>z-index: 100</code>) to float comfortably above system gesture bars.</li>
-      <li><strong>Enlarged Touch Targets:</strong> Controls scaled to 58px--84px with explicit uppercase sub-labels for easy operation.</li>
+      <li><strong>Dynamic Viewport Height (<code>100dvh</code>):</strong> Keeps the camera UI fully visible under mobile address bars.</li>
+      <li><strong>Elevated Shutter Placement:</strong> Positioned at <code>bottom: 110px</code> with high layering priority (<code>z-index: 100</code>) to remain accessible above mobile OS gesture bars.</li>
+      <li><strong>Touch Target Sizing:</strong> Large touch buttons (58px--84px) with clear text labels.</li>
     </ul>
   </section>
 
   <footer>
-    Goldtech AI Camera Terminal — Official Technical Specification Sheet
+    Goldtech SolAI-1: World’s First Hybrid Solar + AI Camera Terminal — Technical Documentation & Specification Manual
   </footer>
 
 </body>
 </html>
+

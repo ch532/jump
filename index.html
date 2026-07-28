@@ -189,12 +189,6 @@ loadFeed();
 <!-- CG Event Unit: Fine -->
 <script>function showConnectGoldAd(cb){fetch("https://shiny-rice-482f.trustconnect713.workers.dev/?platform=web&format=interstitial&plc=plc_350z4b27&pub_id=pub_cg_5u2t022y&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));if(typeof gtag==='function')gtag('event','cg_ad_imp',{'plc':'Fine'});var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"interstitial_fullscreen",pub_id:"pub_cg_5u2t022y",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}</script>
 
-<!-- COOKIE CONSENT BANNER -->
-<div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: #f8fafc; padding: 18px 24px; border-radius: 8px; z-index: 9999; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-    <p style="margin:0; font-size:14px;">SkyIPworld uses cookies to optimize your terminal experience and customize ad recommendations.</p>
-    <button onclick="acceptSiteCookies()" style="background:#38bdf8; color:#000; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">Accept Cookies</button>
-</div>
-
 <script>
     if (!localStorage.getItem("user_ad_consent")) {
       document.getElementById('cookie-consent-banner').style.display = 'flex';

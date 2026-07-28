@@ -3,94 +3,233 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home CCTV Transmitter</title>
+  <title>Solar Thermal AI CCTV Node</title>
   <style>
-    body { background: #121212; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
-    video { width: 100%; max-width: 480px; border-radius: 12px; background: #000; margin-top: 15px; }
-    .status { padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: bold; }
-    .connected { background: #1b5e20; color: #81c784; }
-    .disconnected { background: #b71c1c; color: #e57373; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      color: #38bdf8;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+    .status-badge.connecting {
+      background-color: #854d0e;
+      color: #fef08a;
+    }
+    .status-badge.online {
+      background-color: #166534;
+      color: #4ade80;
+    }
+    .status-badge.alert {
+      background-color: #991b1b;
+      color: #fca5a5;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.8; }
+      to { opacity: 1; transform: scale(1.03); }
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .info-panel {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #334155;
+      padding-top: 12px;
+    }
   </style>
 </head>
 <body>
 
-  <h2>Home CCTV Node</h2>
-  <div id="status" class="status disconnected">Disconnected</div>
-  <br />
-  <video id="localVideo" autoplay playsinline muted></video>
+  <div class="card">
+    <h2>Solar AI Camera Node</h2>
+    <div id="statusBadge" class="status-badge connecting">Initializing System...</div>
+
+    <div class="video-wrapper">
+      <video id="localVideo" autoplay playsinline muted></video>
+    </div>
+
+    <div class="info-panel">
+      <span>AI: <strong style="color: #38bdf8;">connectgold-gateway</strong></span>
+      <span>Signal: <strong style="color: #38bdf8;">signal.chyke.online</strong></span>
+    </div>
+  </div>
 
   <script>
-    // 1. Connect using your live Cloudflare Tunnel WSS endpoint
+    const WORKER_GATEWAY_URL = 'https://orange-field-e94b.trustconnect713.workers.dev/';
     const SIGNALING_URL = 'wss://signal.chyke.online';
-    const ws = new WebSocket(SIGNALING_URL);
-    
-    let peerConnection = null;
+
+    const videoElement = document.getElementById('localVideo');
+    const statusBadge = document.getElementById('statusBadge');
+
     let localStream = null;
+    let ws = null;
+    let peerConnection = null;
 
     const iceConfig = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
 
-    async function initCamera() {
+    // 1. Initialize Camera Hardware Stream
+    async function startCamera() {
       try {
-        // Capture back camera
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: "environment" } },
+          video: { facingMode: { exact: 'environment' }, width: 640, height: 480 },
           audio: true
-        }).catch(() => {
-          // Fallback if environment camera isn't available
-          return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         });
-
-        document.getElementById('localVideo').srcObject = localStream;
       } catch (err) {
-        console.error('Error capturing media:', err);
+        // Fallback to default front/available camera if rear camera is not specified
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480 },
+          audio: true
+        });
       }
+      videoElement.srcObject = localStream;
     }
 
-    ws.onopen = async () => {
-      document.getElementById('status').innerText = 'Camera Ready & Registered';
-      document.getElementById('status').className = 'status connected';
-      
-      await initCamera();
-      
-      // Register as camera with the signaling server
-      ws.send(JSON.stringify({ type: 'register_camera' }));
-    };
+    // 2. Connect to WebSockets Signaling Server (cctv-signaling)
+    function connectSignaling() {
+      ws = new WebSocket(SIGNALING_URL);
 
-    ws.onmessage = async (event) => {
-      const data = JSON.parse(event.data);
+      ws.onopen = () => {
+        statusBadge.innerText = 'Camera Ready & Registered';
+        statusBadge.className = 'status-badge online';
+        ws.send(JSON.stringify({ type: 'register_camera' }));
+      };
 
-      if (data.type === 'offer') {
-        peerConnection = new RTCPeerConnection(iceConfig);
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
 
-        // Add stream tracks to WebRTC
-        if (localStream) {
-          localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-        }
+        if (data.type === 'offer') {
+          peerConnection = new RTCPeerConnection(iceConfig);
 
-        // Send ICE Candidates back to viewer
-        peerConnection.onicecandidate = (e) => {
-          if (e.candidate) {
-            ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate }));
+          if (localStream) {
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
           }
-        };
 
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
+          peerConnection.onicecandidate = (e) => {
+            if (e.candidate) {
+              ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate }));
+            }
+          };
 
-        ws.send(JSON.stringify({ type: 'answer', answer: answer }));
-      } 
-      else if (data.type === 'ice-candidate' && peerConnection) {
-        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-      }
-    };
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
 
-    ws.onclose = () => {
-      document.getElementById('status').innerText = 'Server Disconnected';
-      document.getElementById('status').className = 'status disconnected';
-    };
+          ws.send(JSON.stringify({ type: 'answer', answer: answer }));
+        } else if (data.type === 'ice-candidate' && peerConnection) {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+        }
+      };
+
+      ws.onclose = () => {
+        statusBadge.innerText = 'Signaling Disconnected - Reconnecting...';
+        statusBadge.className = 'status-badge connecting';
+        setTimeout(connectSignaling, 3000);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    // 3. Capture Frame and Post to Cloudflare AI Gateway
+    async function sendFrameToCloudflareAI() {
+      if (!videoElement || videoElement.readyState !== 4) return;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+
+        try {
+          const response = await fetch(WORKER_GATEWAY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'image/jpeg' },
+            body: blob
+          });
+
+          const result = await response.json();
+
+          if (result.alert) {
+            statusBadge.innerText = `⚠️ TARGET DETECTED (${result.detected_count})`;
+            statusBadge.className = 'status-badge alert';
+
+            // Send notification signal over WebSocket if connected
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: 'ai_alert', count: result.detected_count, objects: result.objects }));
+            }
+          } else {
+            statusBadge.innerText = 'AI Active - Environment Clear';
+            statusBadge.className = 'status-badge online';
+          }
+        } catch (err) {
+          console.error('Cloudflare Gateway Inference Error:', err);
+        }
+      }, 'image/jpeg', 0.8);
+    }
+
+    // Main App Initialization
+    async function init() {
+      await startCamera();
+      connectSignaling();
+
+      // Trigger Cloudflare AI inference frame capture every 3 seconds
+      setInterval(sendFrameToCloudflareAI, 3000);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

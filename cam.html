@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home CCTV Transmitter</title>
+  <style>
+    body { background: #121212; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+    video { width: 100%; max-width: 480px; border-radius: 12px; background: #000; margin-top: 15px; }
+    .status { padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: bold; }
+    .connected { background: #1b5e20; color: #81c784; }
+    .disconnected { background: #b71c1c; color: #e57373; }
+  </style>
+</head>
+<body>
+
+  <h2>Home CCTV Node</h2>
+  <div id="status" class="status disconnected">Disconnected</div>
+  <br />
+  <video id="localVideo" autoplay playsinline muted></video>
+
+  <script>
+    // 1. Connect using your live Cloudflare Tunnel WSS endpoint
+    const SIGNALING_URL = 'wss://interactions-alliance-lime-wiki.trycloudflare.com';
+    const ws = new WebSocket(SIGNALING_URL);
+    
+    let peerConnection = null;
+    let localStream = null;
+
+    const iceConfig = {
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    };
+
+    async function initCamera() {
+      try {
+        // Capture back camera
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { exact: "environment" } },
+          audio: true
+        }).catch(() => {
+          // Fallback if environment camera isn't available
+          return navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        });
+
+        document.getElementById('localVideo').srcObject = localStream;
+      } catch (err) {
+        console.error('Error capturing media:', err);
+      }
+    }
+
+    ws.onopen = async () => {
+      document.getElementById('status').innerText = 'Camera Ready & Registered';
+      document.getElementById('status').className = 'status connected';
+      
+      await initCamera();
+      
+      // Register as camera with the signaling server
+      ws.send(JSON.stringify({ type: 'register_camera' }));
+    };
+
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'offer') {
+        peerConnection = new RTCPeerConnection(iceConfig);
+
+        // Add stream tracks to WebRTC
+        if (localStream) {
+          localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+        }
+
+        // Send ICE Candidates back to viewer
+        peerConnection.onicecandidate = (e) => {
+          if (e.candidate) {
+            ws.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate }));
+          }
+        };
+
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        ws.send(JSON.stringify({ type: 'answer', answer: answer }));
+      } 
+      else if (data.type === 'ice-candidate' && peerConnection) {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+      }
+    };
+
+    ws.onclose = () => {
+      document.getElementById('status').innerText = 'Server Disconnected';
+      document.getElementById('status').className = 'status disconnected';
+    };
+  </script>
+</body>
+</html>

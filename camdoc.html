@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goldtech AI Camera Terminal — Technical Documentation</title>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --panel-bg: #0f172a;
+      --gold-primary: #ffd700;
+      --gold-dim: #d97706;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-gold: rgba(255, 215, 0, 0.3);
+      --code-bg: #020617;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Top Branding Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel-bg);
+      border: 2px solid var(--border-gold);
+      padding: 16px 24px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      color: var(--gold-primary);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .badge-tag {
+      background: rgba(217, 119, 6, 0.2);
+      color: #fef3c7;
+      border: 1px solid var(--gold-primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* Index Navigation */
+    .toc {
+      background: var(--panel-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .toc h2 {
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toc ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .toc a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--gold-primary);
+    }
+
+    /* Main Content Sections */
+    section {
+      background: var(--panel-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 30px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      color: var(--gold-primary);
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      color: #e2e8f0;
+      font-size: 1.05rem;
+      margin: 18px 0 10px 0;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    ul {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    strong {
+      color: #f8fafc;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.88rem;
+      color: #38bdf8;
+      margin: 14px 0;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: "Courier New", Courier, monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+
+    /* Flow Diagrams */
+    .flow-diagram {
+      background: var(--code-bg);
+      border: 1px dashed var(--gold-dim);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      color: var(--gold-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin: 16px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand-box">
+      <img src="https://www.chyke.online/connectgold_2.png" alt="Goldtech Logo" class="brand-logo" />
+      <span class="brand-title">Goldtech Terminal Docs</span>
+    </div>
+    <span class="badge-tag">Solar + AI System</span>
+  </header>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <h2>📋 System Navigation Index</h2>
+    <ul>
+      <li><a href="#section1">1. Power Architecture & Solar Flow</a></li>
+      <li><a href="#section2">2. Live Solar & Battery Monitoring</a></li>
+      <li><a href="#section3">3. Anti-Hang Lifecycle Engine</a></li>
+      <li><a href="#section4">4. Optical/Digital Zoom Controller</a></li>
+      <li><a href="#section5">5. Real-Time ISP Studio Filter Matrix</a></li>
+      <li><a href="#section6">6. Night Mode & AI Enhancer Engine</a></li>
+      <li><a href="#section7">7. Mode Switcher & Dedicated Shutter</a></li>
+      <li><a href="#section8">8. In-Camera Storage (IndexedDB)</a></li>
+      <li><a href="#section9">9. Viewport & Touch Target Positioning</a></li>
+    </ul>
+  </div>
+
+  <!-- Section 1: Power Architecture -->
+  <section id="section1">
+    <h2>⚡ 1. Hardware Power Architecture & Solar Flow</h2>
+    <p>The Goldtech AI Camera Node runs fully off-grid using direct photovoltaic solar conversion combined with a continuous lithium battery buffer and hardware step-down regulation.</p>
+    
+    <div class="flow-diagram">
+      [ Solar PV Panel ] ➔ [ Solar Charge Controller ] ➔ [ Internal / External Battery Buffer ] ➔ [ 5V Buck Converter ] ➔ [ Goldtech Node Device ]
+    </div>
+
+    <ul>
+      <li><strong>Photovoltaic Conversion:</strong> Outdoor solar panel converts sunlight directly into DC electricity.</li>
+      <li><strong>Voltage Regulation:</strong> Charge controller prevents overcharging and regulates voltage feeding into the lithium battery bank.</li>
+      <li><strong>Uninterrupted Buffer:</strong> The internal phone battery (or external pass-through bank) acts as a buffer during cloud cover or night hours.</li>
+      <li><strong>Step-Down Converter:</strong> Regulates battery power down to a stable 5V output via USB for continuous operation.</li>
+    </ul>
+  </section>
+
+  <!-- Section 2: Battery Monitoring -->
+  <section id="section2">
+    <h2>🔋 2. Live Solar & Battery HUD Monitoring</h2>
+    <p>Integrated via the Web Battery API (<code>navigator.getBattery()</code>). It tracks battery percentage and charging status in real time, listening to system events to update the HUD badge dynamically without page reloads.</p>
+
+    <pre><code>// Real-Time Solar & Battery HUD Integration
+async function initSolarPowerMonitor() {
+  if ('getBattery' in navigator) {
+    try {
+      const battery = await navigator.getBattery();
+
+      function updatePowerUI() {
+        const level = Math.round(battery.level * 100);
+        const isSolarCharging = battery.charging;
+
+        if (isSolarCharging) {
+          solarPowerBadge.innerText = `⚡ ${level}% (SOLAR)`;
+          solarPowerBadge.className = 'status-badge solar-charging';
+        } else if (level <= 20) {
+          solarPowerBadge.innerText = `⚠️ ${level}% (LOW POWER)`;
+          solarPowerBadge.className = 'status-badge solar-low';
+        } else {
+          solarPowerBadge.innerText = `🔋 ${level}% (BATTERY)`;
+          solarPowerBadge.className = 'status-badge solar-battery';
+        }
+      }
+
+      updatePowerUI();
+      battery.addEventListener('chargingchange', updatePowerUI);
+      battery.addEventListener('levelchange', updatePowerUI);
+    } catch (e) {
+      solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
+    }
+  }
+}</code></pre>
+  </section>
+
+  <!-- Section 3: Anti-Hang Lifecycles -->
+  <section id="section3">
+    <h2>🔄 3. Anti-Hang Background Lifecycle Engine</h2>
+    <p>Prevents camera stream freezes or Image Signal Processor (ISP) deadlocks when minimizing and resuming the web browser on mobile operating systems.</p>
+
+    <pre><code>// Releases Hardware Locks on Minimize, Restores Cleanly on Resume
+async function stopCamera() {
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  videoTrack = null;
+  if (videoElement) {
+    videoElement.srcObject = null;
+  }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if (document.hidden) {
+    if (isRecording && mediaRecorder) {
+      toggleVideoRecording();
+    }
+    await stopCamera(); // Flush hardware locks
+  } else {
+    await startCamera(); // Re-bind stream on resume
+    connectSignaling();
+  }
+});</code></pre>
+  </section>
+
+  <!-- Section 4: Zoom Controls -->
+  <section id="section4">
+    <h2>🔍 4. Optical & Digital Zoom Controller</h2>
+    <p>Utilizes native hardware camera zoom capabilities via WebRTC media constraints (<code>applyConstraints</code>), falling back to high-performance CSS scaling if hardware zoom is unsupported.</p>
+
+    <pre><code>// Dual Optical / Digital Zoom Control Logic
+zoomSlider.addEventListener('input', async (e) => {
+  const zoomValue = e.target.value;
+  zoomVal.innerText = `${parseFloat(zoomValue).toFixed(1)}x`;
+
+  // Hardware Optical Zoom Attempt
+  if (videoTrack && videoTrack.getCapabilities) {
+    const capabilities = videoTrack.getCapabilities();
+    if (capabilities.zoom) {
+      try {
+        await videoTrack.applyConstraints({ advanced: [{ zoom: zoomValue }] });
+        return;
+      } catch (err) { console.log('Hardware zoom fallback to CSS scale'); }
+    }
+  }
+
+  // Digital CSS Scaling Fallback
+  videoElement.style.transform = `scale(${zoomValue})`;
+});</code></pre>
+  </section>
+
+  <!-- Section 5: Realtime ISP Studio -->
+  <section id="section5">
+    <h2>🎨 5. Real-Time ISP Hardware Studio Filter Matrix</h2>
+    <p>Controls live video color processing in real time via CSS Hardware Matrix processing across multiple parameters.</p>
+
+    <pre><code>// Realtime Multi-Parameter Color Matrix Generator
+function updateISPFilters() {
+  let brightness = filterBrightness.value;
+  let contrast = filterContrast.value;
+  let saturate = filterSaturate.value;
+  let hue = filterHue.value;
+  let warmth = filterWarmth.value;
+  let sepia = filterSepia.value;
+  let invert = filterInvert.value;
+  let gray = filterGray.value;
+  let blur = filterBlur.value;
+  let opacity = filterOpacity.value;
+
+  const computedSepia = Math.max(sepia, warmth > 0 ? warmth : 0);
+
+  videoElement.style.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) hue-rotate(${hue}deg) sepia(${computedSepia}%) invert(${invert}%) grayscale(${gray}%) blur(${blur}px) opacity(${opacity}%)`;
+}</code></pre>
+  </section>
+
+  <!-- Section 6: Night Mode & AI Enhancer -->
+  <section id="section6">
+    <h2>🌙 6. Night Mode & AI Enhancement Engines</h2>
+    <ul>
+      <li><strong>Night Mode (Low-Light ISP Boost):</strong> Shifts sensor curves to high-gain contrast (Brightness 170%, Contrast 160%, Saturation 40%) to pull maximum ambient light out of dark scenes.</li>
+      <li><strong>AI Real-time Enhancer:</strong> Dynamically recalculates color saturation (+30%) and contrast edges (+20%) for HDR processing.</li>
+    </ul>
+
+    <pre><code>// Night Mode and AI Toggle Modifiers
+if (isNightMode) {
+  brightness = 170;
+  contrast = 160;
+  saturate = 40;
+}
+
+if (isAIEnhanced) {
+  saturate = parseInt(saturate) + 30;
+  contrast = parseInt(contrast) + 20;
+}</code></pre>
+  </section>
+
+  <!-- Section 7: Mode Switcher & Shutter -->
+  <section id="section7">
+    <h2>📸 7. Mode Switcher & Dedicated Shutter Execution</h2>
+    <p>Decouples mode selection from capture execution. Menu buttons only switch active state, while the dedicated primary shutter button handles taking photos or starting/stopping video recordings with a live timer.</p>
+
+    <pre><code>// Dedicated Shutter Execution Logic
+mainShutterBtn.addEventListener('click', () => {
+  if (currentMode === 'VIDEO') {
+    toggleVideoRecording();
+  } else {
+    takePhotoSnap();
+  }
+});
+
+// Live Video Recording Timer Formatter
+function updateTimerDisplay() {
+  recordSeconds++;
+  const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
+  const secs = (recordSeconds % 60).toString().padStart(2, '0');
+  recordTimerBadge.innerText = `🔴 ${mins}:${secs}`;
+}</code></pre>
+  </section>
+
+  <!-- Section 8: In-Camera Storage -->
+  <section id="section8">
+    <h2>🖼️ 8. In-Camera Internal Storage Engine (IndexedDB)</h2>
+    <p>Eliminates intrusive browser download bars and notifications by writing photo and video blobs directly into an in-app IndexedDB database (<code>GoldtechCameraDB</code>) viewable through an internal Gallery drawer.</p>
+
+    <pre><code>// In-App Internal Database Persistence
+let db = null;
+const dbReq = indexedDB.open('GoldtechCameraDB', 1);
+
+dbReq.onupgradeneeded = (e) => {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains('mediaStorage')) {
+    db.createObjectStore('mediaStorage', { keyPath: 'id', autoIncrement: true });
+  }
+};
+
+function saveMediaToInternalStorage(blob, type) {
+  if (!db) return;
+  const transaction = db.transaction(['mediaStorage'], 'readwrite');
+  const store = transaction.objectStore('mediaStorage');
+  store.add({ blob: blob, type: type, timestamp: Date.now() });
+}</code></pre>
+  </section>
+
+  <!-- Section 9: Viewport & Layout Fixes -->
+  <section id="section9">
+    <h2>📐 9. Viewport Units & Touch Target Layout</h2>
+    <ul>
+      <li><strong>Dynamic Viewport Height (<code>100dvh</code>):</strong> Solves layout truncation under Chrome Android's collapsible URL address bar.</li>
+      <li><strong>Elevated Shutter Positioning:</strong> Positioned at <code>bottom: 110px</code> with high layering priority (<code>z-index: 100</code>) to float comfortably above system gesture bars.</li>
+      <li><strong>Enlarged Touch Targets:</strong> Controls scaled to 58px--84px with explicit uppercase sub-labels for easy operation.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Goldtech AI Camera Terminal — Official Technical Specification Sheet
+  </footer>
+
+</body>
+</html>

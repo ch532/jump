@@ -41,9 +41,9 @@
     /* Top Branding & Status Bar Overlay */
     .overlay-top {
       position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
+      top: 20px;
+      left: 20px;
+      right: 20px;
       z-index: 10;
       display: flex;
       justify-content: space-between;
@@ -55,157 +55,159 @@
     .brand-container {
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: rgba(15, 23, 42, 0.8);
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      padding: 6px 14px;
-      border-radius: 30px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 215, 0, 0.4);
+      padding: 10px 20px;
+      border-radius: 40px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      pointer-events: auto;
     }
 
     .brand-logo {
-      width: 26px;
-      height: 26px;
+      width: 36px;
+      height: 36px;
       object-fit: contain;
     }
 
     .brand-title {
       color: #ffd700;
       font-weight: 800;
-      font-size: 0.9rem;
-      letter-spacing: 1px;
+      font-size: 1.25rem;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
     }
 
     /* Status Badges Wrapper */
     .badges-wrapper {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      align-items: center;
     }
 
     .status-badge {
       display: inline-block;
-      padding: 6px 12px;
-      border-radius: 30px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       text-transform: uppercase;
       white-space: nowrap;
     }
 
     .status-badge.solar-ai {
-      background-color: rgba(217, 119, 6, 0.85);
-      color: #fef3c7;
-      border: 1px solid rgba(252, 211, 77, 0.4);
+      background-color: rgba(217, 119, 6, 0.9);
+      color: #fffbeb;
+      border: 2px solid rgba(252, 211, 77, 0.6);
     }
 
     .status-badge.sig-online {
-      background-color: rgba(15, 23, 42, 0.8);
+      background-color: rgba(15, 23, 42, 0.85);
       color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      border: 2px solid rgba(56, 189, 248, 0.4);
     }
 
     .status-badge.sig-offline {
-      background-color: rgba(133, 77, 14, 0.85);
+      background-color: rgba(133, 77, 14, 0.9);
       color: #fef08a;
-      border: 1px solid rgba(254, 240, 138, 0.3);
+      border: 2px solid rgba(254, 240, 138, 0.4);
     }
 
     .status-badge.active-mode {
-      background-color: rgba(124, 58, 237, 0.85);
-      color: #e9d5ff;
-      border: 1px solid rgba(192, 132, 252, 0.4);
+      background-color: rgba(124, 58, 237, 0.9);
+      color: #f3e8ff;
+      border: 2px solid rgba(192, 132, 252, 0.5);
     }
 
-    /* Left Vertical Controls (Zoom Slider & Quick Actions) */
+    /* Left Vertical Controls (Zoom Slider) */
     .zoom-overlay {
       position: absolute;
-      left: 16px;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
       z-index: 20;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 16px 8px;
-      border-radius: 30px;
+      gap: 16px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 215, 0, 0.25);
+      padding: 20px 12px;
+      border-radius: 40px;
     }
 
     .zoom-slider {
       writing-mode: bt-lr;
       appearance: slider-vertical;
-      width: 8px;
-      height: 140px;
+      width: 14px;
+      height: 180px;
       accent-color: #ffd700;
     }
 
     .zoom-label {
       color: #ffd700;
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.9rem;
+      font-weight: 800;
     }
 
     /* Right Floating Controls Overlay */
     .controls-overlay {
       position: absolute;
-      right: 16px;
+      right: 20px;
       top: 50%;
       transform: translateY(-50%);
       z-index: 20;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 18px;
     }
 
     .action-btn {
-      width: 52px;
-      height: 52px;
+      width: 68px;
+      height: 68px;
       border-radius: 50%;
-      border: 1.5px solid rgba(255, 215, 0, 0.3);
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(10px);
+      border: 2.5px solid rgba(255, 215, 0, 0.4);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
       transition: all 0.2s ease;
     }
 
     .action-btn:active {
-      transform: scale(0.92);
+      transform: scale(0.9);
     }
 
     .action-btn.active {
       border-color: #ffd700;
-      background: rgba(255, 215, 0, 0.25);
+      background: rgba(255, 215, 0, 0.35);
       color: #ffd700;
     }
 
     .action-btn.recording {
-      background: rgba(220, 38, 38, 0.9);
+      background: rgba(220, 38, 38, 0.95);
       border-color: #fca5a5;
       animation: pulse 1s infinite alternate;
     }
 
     .action-btn svg {
-      width: 22px;
-      height: 22px;
+      width: 30px;
+      height: 30px;
       fill: currentColor;
     }
 
     @keyframes pulse {
       from { opacity: 0.85; transform: scale(1); }
-      to { opacity: 1; transform: scale(1.05); }
+      to { opacity: 1; transform: scale(1.08); }
     }
 
     /* Modal Drawers (Settings & Editor) */
@@ -214,12 +216,12 @@
       bottom: 0;
       left: 0;
       right: 0;
-      max-height: 75vh;
-      background: rgba(15, 23, 42, 0.94);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid rgba(255, 215, 0, 0.3);
-      border-radius: 20px 20px 0 0;
-      padding: 20px;
+      max-height: 80vh;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(20px);
+      border-top: 2px solid rgba(255, 215, 0, 0.4);
+      border-radius: 28px 28px 0 0;
+      padding: 24px;
       z-index: 30;
       color: #f8fafc;
       transform: translateY(100%);
@@ -235,54 +237,58 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .modal-title {
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.25rem;
+      font-weight: 800;
       color: #ffd700;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .close-btn {
       background: none;
       border: none;
       color: #94a3b8;
-      font-size: 1.2rem;
+      font-size: 1.6rem;
+      font-weight: 700;
       cursor: pointer;
+      padding: 4px 10px;
     }
 
     .setting-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      font-size: 0.85rem;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      font-weight: 600;
     }
 
     .setting-label {
-      color: #cbd5e1;
+      color: #e2e8f0;
     }
 
     .setting-control select, .setting-control input[type="range"] {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: #f8fafc;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.8rem;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
     }
 
     .switch {
       position: relative;
       display: inline-block;
-      width: 44px;
-      height: 24px;
+      width: 52px;
+      height: 28px;
     }
 
     .switch input {
@@ -297,14 +303,14 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: #334155;
       transition: .3s;
-      border-radius: 24px;
+      border-radius: 28px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 18px;
-      width: 18px;
+      height: 22px;
+      width: 22px;
       left: 3px;
       bottom: 3px;
       background-color: white;
@@ -317,32 +323,32 @@
     }
 
     input:checked + .slider:before {
-      transform: translateX(20px);
+      transform: translateX(24px);
     }
 
     /* Bottom HUD Bar */
     .overlay-bottom {
       position: absolute;
-      bottom: 16px;
-      left: 16px;
-      right: 16px;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
       z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 215, 0, 0.2);
-      border-radius: 12px;
-      padding: 10px 16px;
-      font-size: 0.75rem;
-      color: #94a3b8;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255, 215, 0, 0.3);
+      border-radius: 16px;
+      padding: 12px 20px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
       pointer-events: none;
     }
 
     .hud-item strong {
       color: #ffd700;
-      font-weight: 600;
+      font-weight: 700;
     }
   </style>
 </head>
@@ -453,9 +459,9 @@
       </div>
 
       <div class="setting-row">
-        <span class="setting-label">Direct Storage Folder (Device Storage)</span>
+        <span class="setting-label">Direct Storage Folder</span>
         <div class="setting-control">
-          <button id="setDirectoryBtn" style="padding:4px 8px; border-radius:6px; background:#d97706; color:#fff; border:none; font-size:0.75rem;">Set Storage Folder</button>
+          <button id="setDirectoryBtn" style="padding:8px 14px; border-radius:8px; background:#d97706; color:#fff; border:none; font-size:0.9rem; font-weight:700;">Set Folder</button>
         </div>
       </div>
 
@@ -471,7 +477,7 @@
       </div>
 
       <div class="setting-row">
-        <span class="setting-label">Hardware Continuous Auto-Focus</span>
+        <span class="setting-label">Hardware Auto-Focus</span>
         <label class="switch">
           <input type="checkbox" id="autofocusToggle" checked>
           <span class="slider"></span>
@@ -732,6 +738,7 @@
   </script>
 </body>
 </html>
+
 
 
 

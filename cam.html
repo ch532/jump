@@ -18,11 +18,12 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Video Viewport */
+    /* Dynamic Mobile Viewport */
     .viewport-container {
       position: relative;
       width: 100vw;
       height: 100vh;
+      height: 100dvh; /* Dynamic height for mobile Chrome */
       overflow: hidden;
     }
 
@@ -251,31 +252,32 @@
       white-space: nowrap;
     }
 
-    /* Fixed Bottom Visible Shutter Bar */
+    /* Fixed Prominent Bottom Shutter Bar */
     .shutter-bar {
       position: absolute;
-      bottom: 30px;
+      bottom: 110px; /* Elevated significantly to prevent clipping */
       left: 50%;
       transform: translateX(-50%);
-      z-index: 25;
+      z-index: 100; /* High priority layering */
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
+      pointer-events: auto;
     }
 
     .shutter-btn {
-      width: 80px;
-      height: 80px;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
       border: 4px solid #ffd700;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
       transition: all 0.2s ease;
     }
 
@@ -284,27 +286,32 @@
     }
 
     .shutter-inner {
-      width: 64px;
-      height: 64px;
+      width: 66px;
+      height: 66px;
       border-radius: 50%;
       background: #ffffff;
       transition: all 0.2s ease;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .shutter-btn.is-recording .shutter-inner {
       background: #ef4444;
       border-radius: 12px;
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
     }
 
     .shutter-mode-text {
       color: #ffd700;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       font-weight: 800;
       letter-spacing: 1px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
       text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 4px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
     }
 
     @keyframes pulse {
@@ -324,7 +331,7 @@
       border-top: 3px solid rgba(255, 215, 0, 0.5);
       border-radius: 32px 32px 0 0;
       padding: 28px;
-      z-index: 30;
+      z-index: 200;
       color: #f8fafc;
       transform: translateY(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -480,6 +487,31 @@
       font-size: 0.65rem;
       font-weight: 800;
     }
+
+    /* Bottom HUD Bar */
+    .overlay-bottom {
+      position: absolute;
+      bottom: 12px;
+      left: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255, 215, 0, 0.3);
+      border-radius: 18px;
+      padding: 10px 22px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      pointer-events: none;
+    }
+
+    .hud-item strong {
+      color: #ffd700;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -547,7 +579,7 @@
       <!-- Night Mode -->
       <div class="btn-wrapper">
         <button id="nightModeBtn" class="action-btn" title="Toggle Night Vision Mode">
-          <svg viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 00-1.9 20 10 10 0 01-8.6-9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 00-1.9 20 10 10 0 0010.5-11 8.5 8.5 0 01-8.6-9z"/></svg>
         </button>
         <span class="btn-label">NIGHT</span>
       </div>
@@ -577,7 +609,7 @@
       </div>
     </div>
 
-    <!-- Dedicated Bottom Shutter Button -->
+    <!-- Dedicated Bottom Shutter Execution Button -->
     <div class="shutter-bar">
       <div id="mainShutterBtn" class="shutter-btn" title="Capture / Shutter">
         <div class="shutter-inner"></div>
@@ -1118,6 +1150,7 @@
   </script>
 </body>
 </html>
+
 
 
 

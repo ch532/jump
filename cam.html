@@ -2,104 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solar Thermal AI CCTV Node</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Solar AI Camera Node</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    body {
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 20px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-      text-align: center;
-    }
-    h2 {
-      font-size: 1.25rem;
-      margin-bottom: 12px;
-      color: #38bdf8;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-      transition: all 0.3s ease;
-    }
-    .status-badge.connecting {
-      background-color: #854d0e;
-      color: #fef08a;
-    }
-    .status-badge.online {
-      background-color: #166534;
-      color: #4ade80;
-    }
-    .status-badge.alert {
-      background-color: #991b1b;
-      color: #fca5a5;
-      animation: pulse 1s infinite alternate;
-    }
-    @keyframes pulse {
-      from { opacity: 0.8; }
-      to { opacity: 1; transform: scale(1.03); }
-    }
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      aspect-ratio: 4 / 3;
-    }
-    video {
+    html, body {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      overflow: hidden;
+      background-color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    .info-panel {
-      margin-top: 16px;
-      font-size: 0.8rem;
-      color: #94a3b8;
+
+    /* Full-Screen Video Background */
+    #localVideo {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Top Floating Status Overlay */
+    .overlay-top {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .status-badge.connecting {
+      background-color: rgba(133, 77, 14, 0.85);
+      color: #fef08a;
+      border: 1px solid rgba(254, 240, 138, 0.3);
+    }
+
+    .status-badge.online {
+      background-color: rgba(22, 101, 52, 0.85);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .status-badge.alert {
+      background-color: rgba(153, 27, 27, 0.9);
+      color: #fca5a5;
+      border: 1px solid rgba(252, 165, 165, 0.4);
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.85; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Bottom Floating HUD Overlay */
+    .overlay-bottom {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 10;
       display: flex;
       justify-content: space-between;
-      border-top: 1px solid #334155;
-      padding-top: 12px;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+
+    .hud-item strong {
+      color: #38bdf8;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Solar AI Camera Node</h2>
+  <!-- Fullscreen Video Element -->
+  <video id="localVideo" autoplay playsinline muted></video>
+
+  <!-- Top Status Badge Overlay -->
+  <div class="overlay-top">
     <div id="statusBadge" class="status-badge connecting">Initializing System...</div>
+  </div>
 
-    <div class="video-wrapper">
-      <video id="localVideo" autoplay playsinline muted></video>
-    </div>
-
-    <div class="info-panel">
-      <span>AI: <strong style="color: #38bdf8;">connectgold-gateway</strong></span>
-      <span>Signal: <strong style="color: #38bdf8;">signal.chyke.online</strong></span>
-    </div>
+  <!-- Bottom Details Overlay -->
+  <div class="overlay-bottom">
+    <div class="hud-item">AI: <strong>connectgold-gateway</strong></div>
+    <div class="hud-item">SIGNAL: <strong>signal.chyke.online</strong></div>
   </div>
 
   <script>
@@ -121,20 +134,20 @@
     async function startCamera() {
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: 'environment' }, width: 640, height: 480 },
+          video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: true
         });
       } catch (err) {
-        // Fallback to default front/available camera if rear camera is not specified
+        // Fallback to standard/front camera
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 640, height: 480 },
+          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: true
         });
       }
       videoElement.srcObject = localStream;
     }
 
-    // 2. Connect to WebSockets Signaling Server (cctv-signaling)
+    // 2. Connect to WebSockets Signaling Server
     function connectSignaling() {
       ws = new WebSocket(SIGNALING_URL);
 
@@ -171,7 +184,7 @@
       };
 
       ws.onclose = () => {
-        statusBadge.innerText = 'Signaling Disconnected - Reconnecting...';
+        statusBadge.innerText = 'Signaling Disconnected';
         statusBadge.className = 'status-badge connecting';
         setTimeout(connectSignaling, 3000);
       };
@@ -179,7 +192,7 @@
       ws.onerror = () => ws.close();
     }
 
-    // 3. Capture Frame and Post to Cloudflare AI Gateway
+    // 3. Capture Frame and Send to Cloudflare AI Gateway
     async function sendFrameToCloudflareAI() {
       if (!videoElement || videoElement.readyState !== 4) return;
 
@@ -206,26 +219,23 @@
             statusBadge.innerText = `⚠️ TARGET DETECTED (${result.detected_count})`;
             statusBadge.className = 'status-badge alert';
 
-            // Send notification signal over WebSocket if connected
             if (ws && ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({ type: 'ai_alert', count: result.detected_count, objects: result.objects }));
             }
           } else {
-            statusBadge.innerText = 'AI Active - Environment Clear';
+            statusBadge.innerText = 'AI Active - Clear';
             statusBadge.className = 'status-badge online';
           }
         } catch (err) {
-          console.error('Cloudflare Gateway Inference Error:', err);
+          console.error('Cloudflare AI Inference Error:', err);
         }
       }, 'image/jpeg', 0.8);
     }
 
-    // Main App Initialization
+    // Application Entry Point
     async function init() {
       await startCamera();
       connectSignaling();
-
-      // Trigger Cloudflare AI inference frame capture every 3 seconds
       setInterval(sendFrameToCloudflareAI, 3000);
     }
 
@@ -233,3 +243,4 @@
   </script>
 </body>
 </html>
+

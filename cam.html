@@ -23,7 +23,7 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      height: 100dvh; /* Dynamic height for mobile Chrome */
+      height: 100dvh;
       overflow: hidden;
     }
 
@@ -117,12 +117,28 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       text-transform: uppercase;
       white-space: nowrap;
+      transition: all 0.3s ease;
     }
 
-    .status-badge.solar-ai {
-      background-color: rgba(217, 119, 6, 0.9);
-      color: #fffbeb;
-      border: 2px solid rgba(252, 211, 77, 0.6);
+    /* Solar & Power States */
+    .status-badge.solar-charging {
+      background-color: rgba(22, 101, 52, 0.9);
+      color: #4ade80;
+      border: 2px solid rgba(74, 222, 128, 0.5);
+      box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+    }
+
+    .status-badge.solar-battery {
+      background-color: rgba(15, 23, 42, 0.85);
+      color: #fef08a;
+      border: 2px solid rgba(254, 240, 138, 0.4);
+    }
+
+    .status-badge.solar-low {
+      background-color: rgba(153, 27, 27, 0.9);
+      color: #fca5a5;
+      border: 2px solid rgba(252, 165, 165, 0.5);
+      animation: pulse 1s infinite alternate;
     }
 
     .status-badge.sig-online {
@@ -252,13 +268,13 @@
       white-space: nowrap;
     }
 
-    /* Fixed Prominent Bottom Shutter Bar */
+    /* Fixed Bottom Shutter Bar */
     .shutter-bar {
       position: absolute;
-      bottom: 110px; /* Elevated significantly to prevent clipping */
+      bottom: 110px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 100; /* High priority layering */
+      z-index: 100;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -537,7 +553,8 @@
 
       <div class="badges-wrapper">
         <div id="recordTimerBadge" class="status-badge">🔴 00:00</div>
-        <div class="status-badge solar-ai">Solar + AI</div>
+        <!-- Live Solar Power / Battery Badge -->
+        <div id="solarPowerBadge" class="status-badge solar-charging">⚡ --% (SOLAR)</div>
         <div id="sigBadge" class="status-badge sig-offline">SIG: Connecting</div>
         <div id="modeBadge" class="status-badge active-mode" style="display: none;">AI ENHANCED</div>
       </div>
@@ -609,7 +626,7 @@
       </div>
     </div>
 
-    <!-- Dedicated Bottom Shutter Execution Button -->
+    <!-- Dedicated Bottom Shutter Button -->
     <div class="shutter-bar">
       <div id="mainShutterBtn" class="shutter-btn" title="Capture / Shutter">
         <div class="shutter-inner"></div>
@@ -776,6 +793,7 @@
     const videoElement = document.getElementById('localVideo');
     const sigBadge = document.getElementById('sigBadge');
     const modeBadge = document.getElementById('modeBadge');
+    const solarPowerBadge = document.getElementById('solarPowerBadge');
     const recordTimerBadge = document.getElementById('recordTimerBadge');
     const gridOverlay = document.getElementById('gridOverlay');
     
@@ -817,6 +835,39 @@
     let currentMode = 'PHOTO';
     let isNightMode = false;
     let isAIEnhanced = false;
+
+    // --- Live Solar & Battery Monitor Engine ---
+    async function initSolarPowerMonitor() {
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+
+          function updatePowerUI() {
+            const level = Math.round(battery.level * 100);
+            const isSolarCharging = battery.charging;
+
+            if (isSolarCharging) {
+              solarPowerBadge.innerText = `⚡ ${level}% (SOLAR)`;
+              solarPowerBadge.className = 'status-badge solar-charging';
+            } else if (level <= 20) {
+              solarPowerBadge.innerText = `⚠️ ${level}% (LOW POWER)`;
+              solarPowerBadge.className = 'status-badge solar-low';
+            } else {
+              solarPowerBadge.innerText = `🔋 ${level}% (BATTERY)`;
+              solarPowerBadge.className = 'status-badge solar-battery';
+            }
+          }
+
+          updatePowerUI();
+          battery.addEventListener('chargingchange', updatePowerUI);
+          battery.addEventListener('levelchange', updatePowerUI);
+        } catch (e) {
+          solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
+        }
+      } else {
+        solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
+      }
+    }
 
     // --- In-Camera Internal Storage (IndexedDB) ---
     let db = null;
@@ -889,9 +940,7 @@
     // --- Hardware Camera Engine with Anti-Hang Lifecycles ---
     async function stopCamera() {
       if (localStream) {
-        localStream.getTracks().forEach(track => {
-          track.stop();
-        });
+        localStream.getTracks().forEach(track => track.stop());
         localStream = null;
       }
       videoTrack = null;
@@ -1122,7 +1171,7 @@
       ws.onerror = () => ws.close();
     }
 
-    // --- Lifecycle Event Handler (Prevents Freeze on Minimize/Resume) ---
+    // Lifecycle Event Handler
     document.addEventListener('visibilitychange', async () => {
       if (document.hidden) {
         if (isRecording && mediaRecorder) {
@@ -1144,21 +1193,10 @@
     async function init() {
       await startCamera();
       connectSignaling();
+      initSolarPowerMonitor();
     }
 
     window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-

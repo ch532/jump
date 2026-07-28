@@ -192,7 +192,7 @@
       z-index: 20;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     .btn-wrapper {
@@ -203,8 +203,8 @@
     }
 
     .action-btn {
-      width: 62px;
-      height: 62px;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
       border: 2.5px solid rgba(255, 215, 0, 0.4);
       background: rgba(15, 23, 42, 0.85);
@@ -222,10 +222,11 @@
       transform: scale(0.9);
     }
 
-    .action-btn.active {
+    .action-btn.active-mode-btn {
       border-color: #ffd700;
       background: rgba(255, 215, 0, 0.35);
       color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
     }
 
     .action-btn.recording {
@@ -235,14 +236,14 @@
     }
 
     .action-btn svg {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       fill: currentColor;
     }
 
     .btn-label {
       color: #ffd700;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -250,21 +251,22 @@
       white-space: nowrap;
     }
 
-    /* Dedicated Bottom Shutter Bar */
+    /* Fixed Bottom Visible Shutter Bar */
     .shutter-bar {
       position: absolute;
-      bottom: 75px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 25;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
     }
 
     .shutter-btn {
-      width: 82px;
-      height: 82px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       border: 4px solid #ffd700;
       background: rgba(255, 255, 255, 0.2);
@@ -273,7 +275,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
       transition: all 0.2s ease;
     }
 
@@ -282,18 +284,27 @@
     }
 
     .shutter-inner {
-      width: 66px;
-      height: 66px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: #ffffff;
-      transition: background-color 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .shutter-btn.is-recording .shutter-inner {
       background: #ef4444;
       border-radius: 12px;
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
+    }
+
+    .shutter-mode-text {
+      color: #ffd700;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+      text-transform: uppercase;
     }
 
     @keyframes pulse {
@@ -434,29 +445,40 @@
       transform: translateX(26px);
     }
 
-    /* Bottom HUD Bar */
-    .overlay-bottom {
-      position: absolute;
-      bottom: 16px;
-      left: 20px;
-      right: 20px;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(14px);
-      border: 1.5px solid rgba(255, 215, 0, 0.3);
-      border-radius: 18px;
-      padding: 10px 22px;
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      pointer-events: none;
+    /* In-Camera Gallery Container */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
     }
 
-    .hud-item strong {
+    .gallery-item {
+      position: relative;
+      width: 100%;
+      height: 130px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      background: #0f172a;
+    }
+
+    .gallery-item img, .gallery-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-item .item-type {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(0, 0, 0, 0.7);
       color: #ffd700;
-      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 800;
     }
   </style>
 </head>
@@ -498,26 +520,34 @@
 
     <!-- Right Floating Control Panel -->
     <div class="controls-overlay">
-      <!-- Snap Photo Button -->
+      <!-- Select Photo Mode -->
       <div class="btn-wrapper">
-        <button id="snapBtn" class="action-btn" title="Snap Photo">
+        <button id="photoModeSelectBtn" class="action-btn active-mode-btn" title="Select Photo Mode">
           <svg viewBox="0 0 24 24"><path d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5z"/><path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
         </button>
         <span class="btn-label">PHOTO</span>
       </div>
 
-      <!-- Record Video Toggle Button -->
+      <!-- Select Video Mode -->
       <div class="btn-wrapper">
-        <button id="recordBtn" class="action-btn" title="Record Video">
+        <button id="videoModeSelectBtn" class="action-btn" title="Select Video Mode">
           <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         </button>
         <span class="btn-label">VIDEO</span>
       </div>
 
+      <!-- In-Camera Gallery -->
+      <div class="btn-wrapper">
+        <button id="galleryToggleBtn" class="action-btn" title="View In-Camera Storage">
+          <svg viewBox="0 0 24 24"><path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H9l2-3zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"/></svg>
+        </button>
+        <span class="btn-label">GALLERY</span>
+      </div>
+
       <!-- Night Mode -->
       <div class="btn-wrapper">
         <button id="nightModeBtn" class="action-btn" title="Toggle Night Vision Mode">
-          <svg viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 00-1.9 20 10 10 0 0010.5-11 8.5 8.5 0 01-8.6-9z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 00-1.9 20 10 10 0 01-8.6-9z"/></svg>
         </button>
         <span class="btn-label">NIGHT</span>
       </div>
@@ -547,14 +577,27 @@
       </div>
     </div>
 
-    <!-- Dedicated Large Shutter Button -->
+    <!-- Dedicated Bottom Shutter Button -->
     <div class="shutter-bar">
       <div id="mainShutterBtn" class="shutter-btn" title="Capture / Shutter">
         <div class="shutter-inner"></div>
       </div>
+      <span id="shutterModeText" class="shutter-mode-text">SNAP PHOTO</span>
     </div>
 
-    <!-- Modal Drawer: Expanded Image & Video Editor Studio -->
+    <!-- Modal Drawer: In-Camera Gallery Storage -->
+    <div id="galleryPanel" class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-title">🖼️ Goldtech Camera Storage</div>
+          <div class="modal-subtitle">Internal Saved Media (In-App Database)</div>
+        </div>
+        <button class="close-btn" onclick="toggleModal('galleryPanel')">✕</button>
+      </div>
+      <div id="galleryContainer" class="gallery-grid"></div>
+    </div>
+
+    <!-- Modal Drawer: Image & Video Editor Studio -->
     <div id="editorPanel" class="modal-panel">
       <div class="modal-header">
         <div class="modal-title-box">
@@ -610,21 +653,14 @@
       </div>
     </div>
 
-    <!-- Modal Drawer: Expanded Camera Settings Menu -->
+    <!-- Modal Drawer: Camera Settings Menu -->
     <div id="settingsPanel" class="modal-panel">
       <div class="modal-header">
         <div class="modal-title-box">
           <div class="modal-title">⚙️ Goldtech Terminal Settings</div>
-          <div class="modal-subtitle">System Configuration, Storage & Stream Quality</div>
+          <div class="modal-subtitle">System Configuration, Codecs & Quality</div>
         </div>
         <button class="close-btn" onclick="toggleModal('settingsPanel')">✕</button>
-      </div>
-
-      <div class="setting-row">
-        <span class="setting-label">Direct Storage Directory</span>
-        <div class="setting-control">
-          <button id="setFolderBtn" style="padding:10px 16px; border-radius:10px; background:#d97706; color:#fff; border:none; font-size:0.95rem; font-weight:700; cursor:pointer;">Select Storage Folder</button>
-        </div>
       </div>
 
       <div class="setting-row">
@@ -711,15 +747,17 @@
     const recordTimerBadge = document.getElementById('recordTimerBadge');
     const gridOverlay = document.getElementById('gridOverlay');
     
-    // Controls
-    const snapBtn = document.getElementById('snapBtn');
-    const recordBtn = document.getElementById('recordBtn');
+    // Mode Select Buttons
+    const photoModeSelectBtn = document.getElementById('photoModeSelectBtn');
+    const videoModeSelectBtn = document.getElementById('videoModeSelectBtn');
+    const shutterModeText = document.getElementById('shutterModeText');
     const mainShutterBtn = document.getElementById('mainShutterBtn');
+
+    // Controls
     const nightModeBtn = document.getElementById('nightModeBtn');
     const aiEnhanceBtn = document.getElementById('aiEnhanceBtn');
     const zoomSlider = document.getElementById('zoomSlider');
     const zoomVal = document.getElementById('zoomVal');
-    const setFolderBtn = document.getElementById('setFolderBtn');
 
     // Studio Sliders
     const filterBrightness = document.getElementById('filterBrightness');
@@ -744,65 +782,94 @@
     let recordTimerInterval = null;
     let recordSeconds = 0;
 
+    let currentMode = 'PHOTO';
     let isNightMode = false;
     let isAIEnhanced = false;
 
-    // Direct Native File System Handle
-    let storageDirHandle = null;
+    // --- In-Camera Internal Storage (IndexedDB) ---
+    let db = null;
+    const dbReq = indexedDB.open('GoldtechCameraDB', 1);
 
-    // Folder Picker Initialization
-    async function initStorageFolder() {
-      if ('showDirectoryPicker' in window) {
-        try {
-          storageDirHandle = await window.showDirectoryPicker();
-          alert('Storage location set! Pictures and videos will save directly to your phone storage folder.');
-        } catch (e) {
-          console.log('Folder selection dismissed');
-        }
-      } else {
-        alert('Your mobile browser requires manual folder permissions for direct write.');
+    dbReq.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains('mediaStorage')) {
+        db.createObjectStore('mediaStorage', { keyPath: 'id', autoIncrement: true });
       }
+    };
+
+    dbReq.onsuccess = (e) => {
+      db = e.target.result;
+    };
+
+    function saveMediaToInternalStorage(blob, type) {
+      if (!db) return;
+      const transaction = db.transaction(['mediaStorage'], 'readwrite');
+      const store = transaction.objectStore('mediaStorage');
+      store.add({ blob: blob, type: type, timestamp: Date.now() });
     }
 
-    setFolderBtn.addEventListener('click', initStorageFolder);
+    function loadInCameraGallery() {
+      if (!db) return;
+      const container = document.getElementById('galleryContainer');
+      container.innerHTML = '';
 
-    // Write File Directly to Phone Storage Handle
-    async function saveDirectToPhoneStorage(blob, filename) {
-      if (!storageDirHandle && 'showDirectoryPicker' in window) {
-        try {
-          storageDirHandle = await window.showDirectoryPicker();
-        } catch (e) {
-          console.log('Storage handle request cancelled.');
+      const transaction = db.transaction(['mediaStorage'], 'readonly');
+      const store = transaction.objectStore('mediaStorage');
+      const cursorReq = store.openCursor(null, 'prev');
+
+      cursorReq.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          const item = cursor.value;
+          const url = URL.createObjectURL(item.blob);
+          const wrapper = document.createElement('div');
+          wrapper.className = 'gallery-item';
+
+          if (item.type === 'photo') {
+            wrapper.innerHTML = `<span class="item-type">PHOTO</span><img src="${url}">`;
+          } else {
+            wrapper.innerHTML = `<span class="item-type">VIDEO</span><video src="${url}" controls></video>`;
+          }
+
+          container.appendChild(wrapper);
+          cursor.continue();
         }
-      }
-
-      if (storageDirHandle) {
-        try {
-          const newFileHandle = await storageDirHandle.getFileHandle(filename, { create: true });
-          const writableStream = await newFileHandle.createWritable();
-          await writableStream.write(blob);
-          await writableStream.close();
-          console.log(`Saved directly to device folder: ${filename}`);
-          return;
-        } catch (err) {
-          console.error('Direct storage write failed:', err);
-        }
-      }
-
-      // Fallback
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
     }
 
-    // Initialize Camera Stream
-    async function startCamera() {
+    // --- Mode Selection Switcher ---
+    photoModeSelectBtn.addEventListener('click', () => {
+      if (isRecording) return;
+      currentMode = 'PHOTO';
+      photoModeSelectBtn.classList.add('active-mode-btn');
+      videoModeSelectBtn.classList.remove('active-mode-btn');
+      shutterModeText.innerText = 'SNAP PHOTO';
+    });
+
+    videoModeSelectBtn.addEventListener('click', () => {
+      if (isRecording) return;
+      currentMode = 'VIDEO';
+      videoModeSelectBtn.classList.add('active-mode-btn');
+      photoModeSelectBtn.classList.remove('active-mode-btn');
+      shutterModeText.innerText = 'START VIDEO';
+    });
+
+    // --- Hardware Camera Engine with Anti-Hang Lifecycles ---
+    async function stopCamera() {
       if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+        localStream.getTracks().forEach(track => {
+          track.stop();
+        });
+        localStream = null;
       }
+      videoTrack = null;
+      if (videoElement) {
+        videoElement.srcObject = null;
+      }
+    }
+
+    async function startCamera() {
+      await stopCamera();
 
       const facing = document.getElementById('cameraFacingSelect').value;
       const targetRes = document.getElementById('resSelect').value;
@@ -821,20 +888,20 @@
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (err) {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: recordAudio });
-      }
+        videoElement.srcObject = localStream;
+        await videoElement.play();
+        videoTrack = localStream.getVideoTracks()[0];
 
-      videoElement.srcObject = localStream;
-      videoTrack = localStream.getVideoTracks()[0];
-
-      if (videoTrack && videoTrack.getCapabilities) {
-        const capabilities = videoTrack.getCapabilities();
-        if (capabilities.zoom) {
-          zoomSlider.min = capabilities.zoom.min;
-          zoomSlider.max = capabilities.zoom.max;
-          zoomSlider.step = capabilities.zoom.step;
+        if (videoTrack && videoTrack.getCapabilities) {
+          const capabilities = videoTrack.getCapabilities();
+          if (capabilities.zoom) {
+            zoomSlider.min = capabilities.zoom.min;
+            zoomSlider.max = capabilities.zoom.max;
+            zoomSlider.step = capabilities.zoom.step;
+          }
         }
+      } catch (err) {
+        console.error("Camera Init Error:", err);
       }
     }
 
@@ -856,7 +923,7 @@
       videoElement.style.transform = `scale(${zoomValue})`;
     });
 
-    // ISP Studio Matrix Processing Logic
+    // ISP Studio Processing Logic
     function updateISPFilters() {
       let brightness = filterBrightness.value;
       let contrast = filterContrast.value;
@@ -908,8 +975,8 @@
       gridOverlay.classList.toggle('active', e.target.checked);
     });
 
-    // Photo Snap Handler
-    async function takePhotoSnap() {
+    // Photo Snap Execution
+    function takePhotoSnap() {
       if (!videoElement || videoElement.readyState !== 4) return;
 
       const canvas = document.getElementById('editorCanvas');
@@ -920,12 +987,12 @@
       ctx.filter = videoElement.style.filter || 'none';
       ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-      canvas.toBlob(async (blob) => {
-        if (blob) await saveDirectToPhoneStorage(blob, `goldtech_snap_${Date.now()}.jpg`);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          saveMediaToInternalStorage(blob, 'photo');
+        }
       }, 'image/jpeg', 0.95);
     }
-
-    snapBtn.addEventListener('click', takePhotoSnap);
 
     // Video Timer Formatter
     function updateTimerDisplay() {
@@ -935,7 +1002,7 @@
       recordTimerBadge.innerText = `🔴 ${mins}:${secs}`;
     }
 
-    // Video Recording Toggle Handler
+    // Video Recording Execution
     function toggleVideoRecording() {
       if (!localStream) return;
 
@@ -951,19 +1018,18 @@
 
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
 
-        mediaRecorder.onstop = async () => {
+        mediaRecorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: 'video/webm' });
-          await saveDirectToPhoneStorage(blob, `goldtech_record_${Date.now()}.webm`);
+          saveMediaToInternalStorage(blob, 'video');
         };
 
         mediaRecorder.start();
         isRecording = true;
         
-        // UI Recording State Updates
-        recordBtn.classList.add('recording');
         mainShutterBtn.classList.add('is-recording');
+        videoModeSelectBtn.classList.add('recording');
+        shutterModeText.innerText = 'STOP RECORDING';
         
-        // Timer Initialization
         recordSeconds = 0;
         recordTimerBadge.innerText = '🔴 00:00';
         recordTimerBadge.style.display = 'inline-block';
@@ -972,20 +1038,18 @@
         mediaRecorder.stop();
         isRecording = false;
 
-        // Reset UI States
-        recordBtn.classList.remove('recording');
         mainShutterBtn.classList.remove('is-recording');
+        videoModeSelectBtn.classList.remove('recording');
+        shutterModeText.innerText = 'START VIDEO';
         
         clearInterval(recordTimerInterval);
         recordTimerBadge.style.display = 'none';
       }
     }
 
-    recordBtn.addEventListener('click', toggleVideoRecording);
-
-    // Main Shutter Button Action Handler
+    // Main Dedicated Shutter Execution Button
     mainShutterBtn.addEventListener('click', () => {
-      if (isRecording) {
+      if (currentMode === 'VIDEO') {
         toggleVideoRecording();
       } else {
         takePhotoSnap();
@@ -995,6 +1059,10 @@
     // Modal Drawer Controls
     document.getElementById('editorToggleBtn').addEventListener('click', () => toggleModal('editorPanel'));
     document.getElementById('settingsToggleBtn').addEventListener('click', () => toggleModal('settingsPanel'));
+    document.getElementById('galleryToggleBtn').addEventListener('click', () => {
+      loadInCameraGallery();
+      toggleModal('galleryPanel');
+    });
 
     function toggleModal(id) {
       const panel = document.getElementById(id);
@@ -1022,6 +1090,19 @@
       ws.onerror = () => ws.close();
     }
 
+    // --- Lifecycle Event Handler (Prevents Freeze on Minimize/Resume) ---
+    document.addEventListener('visibilitychange', async () => {
+      if (document.hidden) {
+        if (isRecording && mediaRecorder) {
+          toggleVideoRecording();
+        }
+        await stopCamera();
+      } else {
+        await startCamera();
+        connectSignaling();
+      }
+    });
+
     // Camera Parameter Change Listeners
     document.getElementById('cameraFacingSelect').addEventListener('change', startCamera);
     document.getElementById('resSelect').addEventListener('change', startCamera);
@@ -1037,6 +1118,7 @@
   </script>
 </body>
 </html>
+
 
 
 

@@ -26,46 +26,57 @@
       display: block;
     }
 
-    /* Top Floating Status Overlay */
+    /* Top Floating Status Bar */
     .overlay-top {
       position: absolute;
       top: 16px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
+      display: flex;
+      gap: 8px;
       pointer-events: none;
     }
 
     .status-badge {
       display: inline-block;
-      padding: 8px 18px;
+      padding: 8px 16px;
       border-radius: 30px;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 0.5px;
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       transition: all 0.3s ease;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
-    .status-badge.connecting {
-      background-color: rgba(133, 77, 14, 0.85);
-      color: #fef08a;
-      border: 1px solid rgba(254, 240, 138, 0.3);
-    }
-
-    .status-badge.online {
+    /* AI Badge States */
+    .status-badge.ai-clear {
       background-color: rgba(22, 101, 52, 0.85);
       color: #4ade80;
       border: 1px solid rgba(74, 222, 128, 0.3);
     }
 
-    .status-badge.alert {
+    .status-badge.ai-alert {
       background-color: rgba(153, 27, 27, 0.9);
       color: #fca5a5;
       border: 1px solid rgba(252, 165, 165, 0.4);
       animation: pulse 1s infinite alternate;
+    }
+
+    /* Signaling Badge States */
+    .status-badge.sig-online {
+      background-color: rgba(15, 23, 42, 0.75);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .status-badge.sig-offline {
+      background-color: rgba(133, 77, 14, 0.85);
+      color: #fef08a;
+      border: 1px solid rgba(254, 240, 138, 0.3);
     }
 
     @keyframes pulse {
@@ -104,9 +115,10 @@
   <!-- Fullscreen Video Element -->
   <video id="localVideo" autoplay playsinline muted></video>
 
-  <!-- Top Status Badge Overlay -->
+  <!-- Top Dual Status Badge Overlay -->
   <div class="overlay-top">
-    <div id="statusBadge" class="status-badge connecting">Initializing System...</div>
+    <div id="aiBadge" class="status-badge ai-clear">AI Active - Clear</div>
+    <div id="sigBadge" class="status-badge sig-offline">SIG: Connecting</div>
   </div>
 
   <!-- Bottom Details Overlay -->
@@ -120,7 +132,8 @@
     const SIGNALING_URL = 'wss://signal.chyke.online';
 
     const videoElement = document.getElementById('localVideo');
-    const statusBadge = document.getElementById('statusBadge');
+    const aiBadge = document.getElementById('aiBadge');
+    const sigBadge = document.getElementById('sigBadge');
 
     let localStream = null;
     let ws = null;
@@ -130,7 +143,7 @@
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
 
-    // 1. Initialize Camera Hardware Stream
+    // 1. Initialize Camera Stream
     async function startCamera() {
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
@@ -138,7 +151,6 @@
           audio: true
         });
       } catch (err) {
-        // Fallback to standard/front camera
         localStream = await navigator.mediaDevices.getUserMedia({
           video: { width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: true
@@ -152,8 +164,8 @@
       ws = new WebSocket(SIGNALING_URL);
 
       ws.onopen = () => {
-        statusBadge.innerText = 'Camera Ready & Registered';
-        statusBadge.className = 'status-badge online';
+        sigBadge.innerText = 'SIG: Online';
+        sigBadge.className = 'status-badge sig-online';
         ws.send(JSON.stringify({ type: 'register_camera' }));
       };
 
@@ -184,8 +196,8 @@
       };
 
       ws.onclose = () => {
-        statusBadge.innerText = 'Signaling Disconnected';
-        statusBadge.className = 'status-badge connecting';
+        sigBadge.innerText = 'SIG: Reconnecting';
+        sigBadge.className = 'status-badge sig-offline';
         setTimeout(connectSignaling, 3000);
       };
 
@@ -216,15 +228,15 @@
           const result = await response.json();
 
           if (result.alert) {
-            statusBadge.innerText = `⚠️ TARGET DETECTED (${result.detected_count})`;
-            statusBadge.className = 'status-badge alert';
+            aiBadge.innerText = `⚠️ TARGET DETECTED (${result.detected_count})`;
+            aiBadge.className = 'status-badge ai-alert';
 
             if (ws && ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({ type: 'ai_alert', count: result.detected_count, objects: result.objects }));
             }
           } else {
-            statusBadge.innerText = 'AI Active - Clear';
-            statusBadge.className = 'status-badge online';
+            aiBadge.innerText = 'AI Active - Clear';
+            aiBadge.className = 'status-badge ai-clear';
           }
         } catch (err) {
           console.error('Cloudflare AI Inference Error:', err);
@@ -243,4 +255,5 @@
   </script>
 </body>
 </html>
+
 

@@ -138,6 +138,7 @@
     let localStream = null;
     let ws = null;
     let peerConnection = null;
+    let aiInterval = null;
 
     const iceConfig = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
@@ -161,6 +162,10 @@
 
     // 2. Connect to WebSockets Signaling Server
     function connectSignaling() {
+      if (ws) {
+        ws.close();
+      }
+
       ws = new WebSocket(SIGNALING_URL);
 
       ws.onopen = () => {
@@ -198,7 +203,6 @@
       ws.onclose = () => {
         sigBadge.innerText = 'SIG: Reconnecting';
         sigBadge.className = 'status-badge sig-offline';
-        setTimeout(connectSignaling, 3000);
       };
 
       ws.onerror = () => ws.close();
@@ -244,16 +248,58 @@
       }, 'image/jpeg', 0.8);
     }
 
+    // Interval Lifecycle Controllers
+    function startAILoop() {
+      if (aiInterval) clearInterval(aiInterval);
+      aiInterval = setInterval(sendFrameToCloudflareAI, 3000);
+    }
+
+    function stopAILoop() {
+      if (aiInterval) {
+        clearInterval(aiInterval);
+        aiInterval = null;
+      }
+    }
+
+    // 4. Handle Android Minimize / Resume Transitions
+    async function handleResume() {
+      stopAILoop();
+
+      // Release dead video tracks
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+
+      // Re-initialize media hardware and signal channel
+      await startCamera();
+      connectSignaling();
+      startAILoop();
+    }
+
+    function handleMinimize() {
+      stopAILoop();
+    }
+
+    // Page Visibility API Event Listener
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        handleMinimize();
+      } else {
+        handleResume();
+      }
+    });
+
     // Application Entry Point
     async function init() {
       await startCamera();
       connectSignaling();
-      setInterval(sendFrameToCloudflareAI, 3000);
+      startAILoop();
     }
 
     window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
+
 
 

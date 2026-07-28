@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Goldtech AI Camera Terminal</title>
+  <title>Goldtech SolAI-1 AI Camera Terminal</title>
   <style>
     * {
       box-sizing: border-box;
@@ -159,6 +159,13 @@
       border: 2px solid rgba(192, 132, 252, 0.5);
     }
 
+    .status-badge.timelapse-active {
+      background-color: rgba(217, 119, 6, 0.9);
+      color: #fef3c7;
+      border: 2px solid #fde047;
+      animation: pulse 1s infinite alternate;
+    }
+
     /* Live Video Recording Timer Badge */
     #recordTimerBadge {
       display: none;
@@ -250,6 +257,12 @@
       background: rgba(220, 38, 38, 0.95);
       border-color: #fca5a5;
       animation: pulse 1s infinite alternate;
+    }
+
+    .action-btn.timelapse-on {
+      background: rgba(217, 119, 6, 0.95);
+      border-color: #fde047;
+      color: #fde047;
     }
 
     .action-btn svg {
@@ -412,7 +425,7 @@
       color: #e2e8f0;
     }
 
-    .setting-control select, .setting-control input[type="range"] {
+    .setting-control select, .setting-control input[type="range"], .setting-btn {
       background: rgba(30, 41, 59, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #f8fafc;
@@ -420,6 +433,18 @@
       border-radius: 12px;
       font-size: 1rem;
       font-weight: 600;
+    }
+
+    .setting-btn {
+      background: #d97706;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .setting-btn:active {
+      background: #b45309;
     }
 
     .setting-control input[type="range"] {
@@ -479,11 +504,21 @@
     .gallery-item {
       position: relative;
       width: 100%;
-      height: 130px;
+      height: 140px;
       border-radius: 12px;
       overflow: hidden;
       border: 2px solid rgba(255, 215, 0, 0.3);
       background: #0f172a;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gallery-media-wrapper {
+      width: 100%;
+      height: 105px;
+      overflow: hidden;
+      position: relative;
     }
 
     .gallery-item img, .gallery-item video {
@@ -502,6 +537,129 @@
       border-radius: 6px;
       font-size: 0.65rem;
       font-weight: 800;
+      z-index: 2;
+    }
+
+    /* Share Button inside Gallery Card */
+    .gallery-share-btn {
+      width: 100%;
+      height: 35px;
+      background: rgba(30, 41, 59, 0.95);
+      border: none;
+      border-top: 1px solid rgba(255, 215, 0, 0.2);
+      color: #ffd700;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .gallery-share-btn:active {
+      background: #d97706;
+      color: #fff;
+    }
+
+    /* Fullscreen In-Camera Media Preview Modal */
+    .preview-modal {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 300;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .preview-modal.active {
+      display: flex;
+    }
+
+    .preview-header {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .preview-title {
+      color: #ffd700;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .preview-content {
+      width: 100%;
+      max-width: 900px;
+      max-height: 75vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 2px solid rgba(255, 215, 0, 0.4);
+      background: #000;
+    }
+
+    .preview-content img, .preview-content video {
+      max-width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+    }
+
+    .preview-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .preview-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid #ffd700;
+      color: #ffd700;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-btn:active {
+      background: #ffd700;
+      color: #000;
+    }
+
+    /* Toast Notification Overlay */
+    #toastNotification {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 150;
+      background: rgba(15, 23, 42, 0.95);
+      color: #ffd700;
+      border: 1.5px solid rgba(255, 215, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+      display: none;
     }
 
     /* Bottom HUD Bar */
@@ -544,15 +702,31 @@
     <video id="localVideo" autoplay playsinline muted></video>
     <canvas id="editorCanvas"></canvas>
 
+    <!-- Toast Notification Overlay -->
+    <div id="toastNotification">⚠️ Notification</div>
+
+    <!-- Fullscreen In-Camera Preview Modal -->
+    <div id="previewModal" class="preview-modal">
+      <div class="preview-header">
+        <span id="previewTitle" class="preview-title">MEDIA PREVIEW</span>
+        <button class="close-btn" onclick="closePreviewModal()">✕</button>
+      </div>
+      <div id="previewContent" class="preview-content"></div>
+      <div class="preview-actions">
+        <button id="previewShareBtn" class="preview-btn">🔗 Share to External Source</button>
+      </div>
+    </div>
+
     <!-- Top Branding & Status Overlay -->
     <div class="overlay-top">
       <div class="brand-container">
         <img src="https://www.chyke.online/connectgold_2.png" alt="Goldtech Logo" class="brand-logo" />
-        <span class="brand-title">Goldtech</span>
+        <span class="brand-title">SolAI-1</span>
       </div>
 
       <div class="badges-wrapper">
         <div id="recordTimerBadge" class="status-badge">🔴 00:00</div>
+        <div id="timelapseBadge" class="status-badge timelapse-active" style="display: none;">⏳ LAPSE: 0</div>
         <!-- Live Solar Power / Battery Badge -->
         <div id="solarPowerBadge" class="status-badge solar-charging">⚡ --% (SOLAR)</div>
         <div id="sigBadge" class="status-badge sig-offline">SIG: Connecting</div>
@@ -583,6 +757,14 @@
           <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
         </button>
         <span class="btn-label">VIDEO</span>
+      </div>
+
+      <!-- Solar Time-Lapse Trigger -->
+      <div class="btn-wrapper">
+        <button id="timelapseToggleBtn" class="action-btn" title="Toggle Solar Time-Lapse Mode">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        </button>
+        <span class="btn-label">LAPSE</span>
       </div>
 
       <!-- In-Camera Gallery -->
@@ -638,8 +820,8 @@
     <div id="galleryPanel" class="modal-panel">
       <div class="modal-header">
         <div class="modal-title-box">
-          <div class="modal-title">🖼️ Goldtech Camera Storage</div>
-          <div class="modal-subtitle">Internal Saved Media (In-App Database)</div>
+          <div class="modal-title">🖼️ SolAI-1 Internal Storage</div>
+          <div class="modal-subtitle">In-Device IndexedDB Persistence Engine</div>
         </div>
         <button class="close-btn" onclick="toggleModal('galleryPanel')">✕</button>
       </div>
@@ -650,7 +832,7 @@
     <div id="editorPanel" class="modal-panel">
       <div class="modal-header">
         <div class="modal-title-box">
-          <div class="modal-title">🎨 Goldtech Image & Video Studio</div>
+          <div class="modal-title">🎨 Realtime ISP Studio</div>
           <div class="modal-subtitle">Realtime ISP Hardware Filters & Color Matrix Controls</div>
         </div>
         <button class="close-btn" onclick="toggleModal('editorPanel')">✕</button>
@@ -706,10 +888,17 @@
     <div id="settingsPanel" class="modal-panel">
       <div class="modal-header">
         <div class="modal-title-box">
-          <div class="modal-title">⚙️ Goldtech Terminal Settings</div>
-          <div class="modal-subtitle">System Configuration, Codecs & Quality</div>
+          <div class="modal-title">⚙️ SolAI-1 Terminal Settings</div>
+          <div class="modal-subtitle">System Configuration, Codecs & Power Governors</div>
         </div>
         <button class="close-btn" onclick="toggleModal('settingsPanel')">✕</button>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Export Solar Telemetry CSV</span>
+        <div class="setting-control">
+          <button class="setting-btn" onclick="exportTimelapseCSV()">📊 Download Log</button>
+        </div>
       </div>
 
       <div class="setting-row">
@@ -782,7 +971,7 @@
 
     <!-- Bottom HUD Overlay -->
     <div class="overlay-bottom">
-      <div class="hud-item">SYSTEM: <strong>Goldtech Terminal</strong></div>
+      <div class="hud-item">SYSTEM: <strong>Goldtech SolAI-1</strong></div>
       <div class="hud-item">SIGNAL: <strong>signal.chyke.online</strong></div>
     </div>
   </div>
@@ -795,11 +984,20 @@
     const modeBadge = document.getElementById('modeBadge');
     const solarPowerBadge = document.getElementById('solarPowerBadge');
     const recordTimerBadge = document.getElementById('recordTimerBadge');
+    const timelapseBadge = document.getElementById('timelapseBadge');
+    const toastNotification = document.getElementById('toastNotification');
     const gridOverlay = document.getElementById('gridOverlay');
     
+    // Preview Modal Elements
+    const previewModal = document.getElementById('previewModal');
+    const previewContent = document.getElementById('previewContent');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewShareBtn = document.getElementById('previewShareBtn');
+
     // Mode Select Buttons
     const photoModeSelectBtn = document.getElementById('photoModeSelectBtn');
     const videoModeSelectBtn = document.getElementById('videoModeSelectBtn');
+    const timelapseToggleBtn = document.getElementById('timelapseToggleBtn');
     const shutterModeText = document.getElementById('shutterModeText');
     const mainShutterBtn = document.getElementById('mainShutterBtn');
 
@@ -836,6 +1034,128 @@
     let isNightMode = false;
     let isAIEnhanced = false;
 
+    // Time-lapse & Autonomous Governor Variables
+    let timelapseInterval = null;
+    let timelapseLog = [];
+    let activePreviewBlob = null;
+    let activePreviewType = null;
+
+    function showToast(msg) {
+      toastNotification.innerText = msg;
+      toastNotification.style.display = 'block';
+      setTimeout(() => { toastNotification.style.display = 'none'; }, 3500);
+    }
+
+    // --- Native External Share Engine ---
+    async function shareMediaFile(blob, type) {
+      if (!blob) return;
+
+      const extension = type === 'video' ? 'webm' : 'jpg';
+      const mimeType = type === 'video' ? 'video/webm' : 'image/jpeg';
+      const filename = `solai1_${type}_${Date.now()}.${extension}`;
+      const file = new File([blob], filename, { type: mimeType });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: 'Goldtech SolAI-1 Media',
+            text: `Captured via Goldtech SolAI-1 Terminal (${type.toUpperCase()})`,
+            files: [file]
+          });
+          showToast("📤 Shared successfully");
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error("Share failed:", err);
+            fallbackDownload(blob, filename);
+          }
+        }
+      } else {
+        fallbackDownload(blob, filename);
+      }
+    }
+
+    function fallbackDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("💾 Saved to Device Downloads");
+    }
+
+    // --- Fullscreen In-Camera Preview Engine ---
+    function openPreviewModal(blob, type) {
+      activePreviewBlob = blob;
+      activePreviewType = type;
+      const url = URL.createObjectURL(blob);
+      previewContent.innerHTML = '';
+
+      if (type === 'video') {
+        previewTitle.innerText = "📹 SolAI-1 Video Preview";
+        const video = document.createElement('video');
+        video.src = url;
+        video.controls = true;
+        video.autoplay = true;
+        previewContent.appendChild(video);
+      } else {
+        previewTitle.innerText = "📸 SolAI-1 Snapshot Preview";
+        const img = document.createElement('img');
+        img.src = url;
+        previewContent.appendChild(img);
+      }
+
+      previewModal.classList.add('active');
+    }
+
+    function closePreviewModal() {
+      previewModal.classList.remove('active');
+      previewContent.innerHTML = '';
+      activePreviewBlob = null;
+      activePreviewType = null;
+    }
+
+    previewShareBtn.addEventListener('click', () => {
+      if (activePreviewBlob && activePreviewType) {
+        shareMediaFile(activePreviewBlob, activePreviewType);
+      }
+    });
+
+    // --- Autonomous Power Governor ---
+    async function checkPowerGovernor() {
+      if (!('getBattery' in navigator)) return;
+      const battery = await navigator.getBattery();
+      const isSolar = battery.charging;
+      const pct = Math.round(battery.level * 100);
+
+      const resSelect = document.getElementById('resSelect');
+      const fpsSelect = document.getElementById('fpsSelect');
+
+      if (pct < 20 && !isSolar) {
+        if (resSelect.value !== '720' || fpsSelect.value !== '15') {
+          resSelect.value = '720';
+          fpsSelect.value = '15';
+          isAIEnhanced = false;
+          aiEnhanceBtn.classList.remove('active');
+          modeBadge.style.display = 'none';
+          updateISPFilters();
+          await startCamera();
+          showToast("⚠️ Power Save: 720p 15FPS Activated");
+        }
+      } else if (isSolar || pct > 40) {
+        if (resSelect.value === '720' && fpsSelect.value === '15') {
+          resSelect.value = '1080';
+          fpsSelect.value = '30';
+          isAIEnhanced = true;
+          aiEnhanceBtn.classList.add('active');
+          modeBadge.style.display = 'inline-block';
+          updateISPFilters();
+          await startCamera();
+          showToast("⚡ Full Power Mode Restored (1080p 30FPS)");
+        }
+      }
+    }
+
     // --- Live Solar & Battery Monitor Engine ---
     async function initSolarPowerMonitor() {
       if ('getBattery' in navigator) {
@@ -856,6 +1176,8 @@
               solarPowerBadge.innerText = `🔋 ${level}% (BATTERY)`;
               solarPowerBadge.className = 'status-badge solar-battery';
             }
+
+            checkPowerGovernor();
           }
 
           updatePowerUI();
@@ -868,6 +1190,73 @@
         solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
       }
     }
+
+    // --- Solar Time-Lapse Engine ---
+    async function toggleTimelapse(intervalMs = 60000) {
+      if (timelapseInterval) {
+        clearInterval(timelapseInterval);
+        timelapseInterval = null;
+        timelapseToggleBtn.classList.remove('timelapse-on');
+        timelapseBadge.style.display = 'none';
+        showToast("⏹️ Solar Time-Lapse Stopped");
+        return;
+      }
+
+      timelapseToggleBtn.classList.add('timelapse-on');
+      timelapseBadge.style.display = 'inline-block';
+      showToast("⏳ Solar Time-Lapse Started (60s Interval)");
+
+      timelapseInterval = setInterval(async () => {
+        let batteryPct = 100;
+        let powerSource = "BATTERY";
+
+        if ('getBattery' in navigator) {
+          const battery = await navigator.getBattery();
+          batteryPct = Math.round(battery.level * 100);
+          powerSource = battery.charging ? "SOLAR" : "BATTERY";
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth || 1280;
+        canvas.height = videoElement.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = videoElement.style.filter || 'none';
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const entry = {
+              time: new Date().toISOString(),
+              battery: batteryPct,
+              source: powerSource,
+              blob: blob
+            };
+            timelapseLog.push(entry);
+            saveMediaToInternalStorage(blob, 'timelapse', entry);
+            timelapseBadge.innerText = `⏳ LAPSE: ${timelapseLog.length}`;
+          }
+        }, 'image/jpeg', 0.92);
+      }, intervalMs);
+    }
+
+    function exportTimelapseCSV() {
+      if (timelapseLog.length === 0) {
+        showToast("ℹ️ No Telemetry Logs Recorded Yet");
+        return;
+      }
+      const csv = "Time,Battery%,PowerSource\n" + 
+        timelapseLog.map(e => `${e.time},${e.battery},${e.source}`).join("\n");
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `solai1_telemetry_${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    timelapseToggleBtn.addEventListener('click', () => toggleTimelapse(60000));
 
     // --- In-Camera Internal Storage (IndexedDB) ---
     let db = null;
@@ -884,11 +1273,11 @@
       db = e.target.result;
     };
 
-    function saveMediaToInternalStorage(blob, type) {
+    function saveMediaToInternalStorage(blob, type, meta = null) {
       if (!db) return;
       const transaction = db.transaction(['mediaStorage'], 'readwrite');
       const store = transaction.objectStore('mediaStorage');
-      store.add({ blob: blob, type: type, timestamp: Date.now() });
+      store.add({ blob: blob, type: type, meta: meta, timestamp: Date.now() });
     }
 
     function loadInCameraGallery() {
@@ -905,16 +1294,36 @@
         if (cursor) {
           const item = cursor.value;
           const url = URL.createObjectURL(item.blob);
-          const wrapper = document.createElement('div');
-          wrapper.className = 'gallery-item';
+          const card = document.createElement('div');
+          card.className = 'gallery-item';
 
-          if (item.type === 'photo') {
-            wrapper.innerHTML = `<span class="item-type">PHOTO</span><img src="${url}">`;
+          const mediaWrapper = document.createElement('div');
+          mediaWrapper.className = 'gallery-media-wrapper';
+
+          if (item.type === 'photo' || item.type === 'timelapse') {
+            mediaWrapper.innerHTML = `<span class="item-type">${item.type.toUpperCase()}</span><img src="${url}">`;
           } else {
-            wrapper.innerHTML = `<span class="item-type">VIDEO</span><video src="${url}" controls></video>`;
+            mediaWrapper.innerHTML = `<span class="item-type">VIDEO</span><video src="${url}"></video>`;
           }
 
-          container.appendChild(wrapper);
+          // In-Camera Fullscreen Preview Trigger
+          mediaWrapper.addEventListener('click', () => {
+            openPreviewModal(item.blob, item.type);
+          });
+
+          // Dedicated Share Button
+          const shareBtn = document.createElement('button');
+          shareBtn.className = 'gallery-share-btn';
+          shareBtn.innerHTML = '🔗 SHARE';
+          shareBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            shareMediaFile(item.blob, item.type);
+          });
+
+          card.appendChild(mediaWrapper);
+          card.appendChild(shareBtn);
+          container.appendChild(card);
+
           cursor.continue();
         }
       };
@@ -1071,6 +1480,7 @@
       canvas.toBlob((blob) => {
         if (blob) {
           saveMediaToInternalStorage(blob, 'photo');
+          showToast("📸 Photo Saved to SolAI-1 Storage");
         }
       }, 'image/jpeg', 0.95);
     }
@@ -1102,6 +1512,7 @@
         mediaRecorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: 'video/webm' });
           saveMediaToInternalStorage(blob, 'video');
+          showToast("🎥 Video Saved to SolAI-1 Storage");
         };
 
         mediaRecorder.start();
@@ -1200,3 +1611,4 @@
   </script>
 </body>
 </html>
+

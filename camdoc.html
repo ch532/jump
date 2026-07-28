@@ -2,435 +2,1385 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Goldtech SolAI-1: World’s First Hybrid Solar + AI Camera Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Goldtech SolAI-1 AI Camera Terminal</title>
   <style>
-    :root {
-      --bg-dark: #090d16;
-      --panel-bg: #0f172a;
-      --gold-primary: #ffd700;
-      --gold-dim: #d97706;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-gold: rgba(255, 215, 0, 0.3);
-      --code-bg: #020617;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      padding: 20px;
-      max-width: 1100px;
-      margin: 0 auto;
     }
 
-    /* Top Branding Header */
-    header {
+    /* Dynamic Mobile Viewport */
+    .viewport-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    #localVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: filter 0.3s ease, transform 0.1s ease-out;
+    }
+
+    #editorCanvas {
+      display: none;
+    }
+
+    /* Rule of Thirds Grid Overlay */
+    .grid-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      display: none;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      z-index: 5;
+    }
+
+    .grid-overlay div {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .grid-overlay.active {
+      display: grid;
+    }
+
+    /* Top Branding & Status Bar Overlay */
+    .overlay-top {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      z-index: 10;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      background: var(--panel-bg);
-      border: 2px solid var(--border-gold);
-      padding: 16px 24px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      align-items: center;
+      pointer-events: none;
     }
 
-    .brand-box {
+    /* Brand Header with Logo */
+    .brand-container {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 215, 0, 0.4);
+      padding: 10px 20px;
+      border-radius: 40px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      pointer-events: auto;
     }
 
     .brand-logo {
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       object-fit: contain;
     }
 
     .brand-title {
-      color: var(--gold-primary);
-      font-size: 1.35rem;
+      color: #ffd700;
       font-weight: 800;
-      letter-spacing: 1px;
+      font-size: 1.25rem;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
     }
 
-    .badge-tag {
-      background: rgba(217, 119, 6, 0.2);
-      color: #fef3c7;
-      border: 1px solid var(--gold-primary);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    /* Navigation Index */
-    .toc {
-      background: var(--panel-bg);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-
-    .toc h2 {
-      color: var(--gold-primary);
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .toc ul {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* Status Badges Wrapper */
+    .badges-wrapper {
+      display: flex;
       gap: 10px;
+      align-items: center;
     }
 
-    .toc a {
-      color: #38bdf8;
-      text-decoration: none;
+    .status-badge {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 40px;
       font-size: 0.95rem;
-      font-weight: 600;
-      transition: color 0.2s;
-    }
-
-    .toc a:hover {
-      color: var(--gold-primary);
-    }
-
-    /* Main Sections */
-    section {
-      background: var(--panel-bg);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 28px;
-      margin-bottom: 30px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    h2 {
-      color: var(--gold-primary);
-      font-size: 1.35rem;
       font-weight: 800;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      letter-spacing: 0.8px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+
+    /* Solar & Power States */
+    .status-badge.solar-charging {
+      background-color: rgba(22, 101, 52, 0.9);
+      color: #4ade80;
+      border: 2px solid rgba(74, 222, 128, 0.5);
+      box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+    }
+
+    .status-badge.solar-battery {
+      background-color: rgba(15, 23, 42, 0.85);
+      color: #fef08a;
+      border: 2px solid rgba(254, 240, 138, 0.4);
+    }
+
+    .status-badge.solar-low {
+      background-color: rgba(153, 27, 27, 0.9);
+      color: #fca5a5;
+      border: 2px solid rgba(252, 165, 165, 0.5);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .status-badge.sig-online {
+      background-color: rgba(15, 23, 42, 0.85);
+      color: #38bdf8;
+      border: 2px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .status-badge.sig-offline {
+      background-color: rgba(133, 77, 14, 0.9);
+      color: #fef08a;
+      border: 2px solid rgba(254, 240, 138, 0.4);
+    }
+
+    .status-badge.active-mode {
+      background-color: rgba(124, 58, 237, 0.9);
+      color: #f3e8ff;
+      border: 2px solid rgba(192, 132, 252, 0.5);
+    }
+
+    .status-badge.timelapse-active {
+      background-color: rgba(217, 119, 6, 0.9);
+      color: #fef3c7;
+      border: 2px solid #fde047;
+      animation: pulse 1s infinite alternate;
+    }
+
+    /* Live Video Recording Timer Badge */
+    #recordTimerBadge {
+      display: none;
+      background-color: rgba(220, 38, 38, 0.9);
+      color: #ffffff;
+      border: 2px solid #fca5a5;
+      animation: pulse 1s infinite alternate;
+    }
+
+    /* Left Zoom Controls */
+    .zoom-overlay {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(14px);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      padding: 24px 16px;
+      border-radius: 40px;
+    }
+
+    .zoom-slider {
+      writing-mode: bt-lr;
+      appearance: slider-vertical;
+      width: 18px;
+      height: 210px;
+      accent-color: #ffd700;
+    }
+
+    .zoom-label {
+      color: #ffd700;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    /* Right Floating Controls Overlay with Labels */
+    .controls-overlay {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .action-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255, 215, 0, 0.4);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      color: #fff;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
     }
 
-    h3 {
-      color: #e2e8f0;
-      font-size: 1.05rem;
-      margin: 18px 0 10px 0;
+    .action-btn:active {
+      transform: scale(0.9);
     }
 
-    p {
-      color: var(--text-muted);
-      margin-bottom: 14px;
-      font-size: 0.95rem;
+    .action-btn.active-mode-btn {
+      border-color: #ffd700;
+      background: rgba(255, 215, 0, 0.35);
+      color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
     }
 
-    ul {
-      margin-left: 20px;
-      margin-bottom: 16px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
+    .action-btn.recording {
+      background: rgba(220, 38, 38, 0.95);
+      border-color: #fca5a5;
+      animation: pulse 1s infinite alternate;
     }
 
-    li {
-      margin-bottom: 8px;
+    .action-btn.timelapse-on {
+      background: rgba(217, 119, 6, 0.95);
+      border-color: #fde047;
+      color: #fde047;
     }
 
-    strong {
-      color: #f8fafc;
+    .action-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
     }
 
-    /* Code & Diagrams */
-    pre {
-      background: var(--code-bg);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+    .btn-label {
+      color: #ffd700;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+    }
+
+    /* Fixed Bottom Shutter Bar */
+    .shutter-bar {
+      position: absolute;
+      bottom: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .shutter-btn {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 4px solid #ffd700;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+      transition: all 0.2s ease;
+    }
+
+    .shutter-btn:active {
+      transform: scale(0.92);
+    }
+
+    .shutter-inner {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .shutter-btn.is-recording .shutter-inner {
+      background: #ef4444;
       border-radius: 12px;
-      padding: 16px;
-      overflow-x: auto;
-      font-family: "Courier New", Courier, monospace;
-      font-size: 0.88rem;
-      color: #38bdf8;
-      margin: 14px 0;
-      line-height: 1.5;
+      width: 40px;
+      height: 40px;
     }
 
-    code {
-      font-family: "Courier New", Courier, monospace;
-      background: rgba(255, 255, 255, 0.08);
-      color: #38bdf8;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.88rem;
-    }
-
-    .flow-diagram {
-      background: var(--code-bg);
-      border: 1px dashed var(--gold-dim);
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      color: var(--gold-primary);
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin: 16px 0;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
+    .shutter-mode-text {
+      color: #ffd700;
       font-size: 0.85rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      margin-top: 40px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 4px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.85; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.08); }
+    }
+
+    /* Modal Drawer Base */
+    .modal-panel {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 85vh;
+      background: rgba(15, 23, 42, 0.97);
+      backdrop-filter: blur(24px);
+      border-top: 3px solid rgba(255, 215, 0, 0.5);
+      border-radius: 32px 32px 0 0;
+      padding: 28px;
+      z-index: 200;
+      color: #f8fafc;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .modal-panel.open {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .modal-title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffd700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 6px 12px;
+    }
+
+    /* Setting Option Rows */
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .setting-label {
+      color: #e2e8f0;
+    }
+
+    .setting-control select, .setting-control input[type="range"], .setting-btn {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #f8fafc;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .setting-btn {
+      background: #d97706;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .setting-btn:active {
+      background: #b45309;
+    }
+
+    .setting-control input[type="range"] {
+      width: 180px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 58px;
+      height: 32px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 32px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #d97706;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    /* In-Camera Gallery Container */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .gallery-item {
+      position: relative;
+      width: 100%;
+      height: 130px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      background: #0f172a;
+    }
+
+    .gallery-item img, .gallery-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-item .item-type {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #ffd700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+
+    /* Toast Notification Overlay */
+    #toastNotification {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 150;
+      background: rgba(15, 23, 42, 0.95);
+      color: #ffd700;
+      border: 1.5px solid rgba(255, 215, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+      display: none;
+    }
+
+    /* Bottom HUD Bar */
+    .overlay-bottom {
+      position: absolute;
+      bottom: 12px;
+      left: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255, 215, 0, 0.3);
+      border-radius: 18px;
+      padding: 10px 22px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      pointer-events: none;
+    }
+
+    .hud-item strong {
+      color: #ffd700;
+      font-weight: 700;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="brand-box">
-      <img src="https://www.chyke.online/connectgold_2.png" alt="Goldtech Logo" class="brand-logo" />
-      <span class="brand-title">Goldtech SolAI-1</span>
+  <div class="viewport-container">
+    <!-- Rule of Thirds Grid -->
+    <div id="gridOverlay" class="grid-overlay">
+      <div></div><div></div><div></div>
+      <div></div><div></div><div></div>
+      <div></div><div></div><div></div>
     </div>
-    <span class="badge-tag">Technical Specification</span>
-  </header>
 
-  <!-- Navigation -->
-  <div class="toc">
-    <h2>📋 System Navigation Index</h2>
-    <ul>
-      <li><a href="#section-unique">1. Why SolAI-1 Architecture Is Unique</a></li>
-      <li><a href="#section1">2. Hybrid Power Architecture & Solar Flow</a></li>
-      <li><a href="#section2">3. Live Solar & Battery HUD Engine</a></li>
-      <li><a href="#section3">4. Anti-Hang Lifecycle Management</a></li>
-      <li><a href="#section4">5. Optical & Digital Zoom Controller</a></li>
-      <li><a href="#section5">6. Real-Time ISP Studio Filter Matrix</a></li>
-      <li><a href="#section6">7. Low-Light Night Mode & AI Enhancer</a></li>
-      <li><a href="#section7">8. Mode Switcher & Dedicated Shutter</a></li>
-      <li><a href="#section8">9. In-App Internal Storage (IndexedDB)</a></li>
-      <li><a href="#section9">10. Dynamic Viewport & Mobile Touch Targets</a></li>
-    </ul>
+    <!-- Main Video Feed -->
+    <video id="localVideo" autoplay playsinline muted></video>
+    <canvas id="editorCanvas"></canvas>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toastNotification">⚠️ Notification</div>
+
+    <!-- Top Branding & Status Overlay -->
+    <div class="overlay-top">
+      <div class="brand-container">
+        <img src="https://www.chyke.online/connectgold_2.png" alt="Goldtech Logo" class="brand-logo" />
+        <span class="brand-title">SolAI-1</span>
+      </div>
+
+      <div class="badges-wrapper">
+        <div id="recordTimerBadge" class="status-badge">🔴 00:00</div>
+        <div id="timelapseBadge" class="status-badge timelapse-active" style="display: none;">⏳ LAPSE: 0</div>
+        <!-- Live Solar Power / Battery Badge -->
+        <div id="solarPowerBadge" class="status-badge solar-charging">⚡ --% (SOLAR)</div>
+        <div id="sigBadge" class="status-badge sig-offline">SIG: Connecting</div>
+        <div id="modeBadge" class="status-badge active-mode" style="display: none;">AI ENHANCED</div>
+      </div>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div class="zoom-overlay">
+      <span class="zoom-label" id="zoomVal">1.0x</span>
+      <input type="range" id="zoomSlider" class="zoom-slider" min="1" max="5" step="0.1" value="1">
+      <span class="zoom-label">ZOOM</span>
+    </div>
+
+    <!-- Right Floating Control Panel -->
+    <div class="controls-overlay">
+      <!-- Select Photo Mode -->
+      <div class="btn-wrapper">
+        <button id="photoModeSelectBtn" class="action-btn active-mode-btn" title="Select Photo Mode">
+          <svg viewBox="0 0 24 24"><path d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5z"/><path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+        </button>
+        <span class="btn-label">PHOTO</span>
+      </div>
+
+      <!-- Select Video Mode -->
+      <div class="btn-wrapper">
+        <button id="videoModeSelectBtn" class="action-btn" title="Select Video Mode">
+          <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </button>
+        <span class="btn-label">VIDEO</span>
+      </div>
+
+      <!-- Solar Time-Lapse Trigger -->
+      <div class="btn-wrapper">
+        <button id="timelapseToggleBtn" class="action-btn" title="Toggle Solar Time-Lapse Mode">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        </button>
+        <span class="btn-label">LAPSE</span>
+      </div>
+
+      <!-- In-Camera Gallery -->
+      <div class="btn-wrapper">
+        <button id="galleryToggleBtn" class="action-btn" title="View In-Camera Storage">
+          <svg viewBox="0 0 24 24"><path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H9l2-3zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"/></svg>
+        </button>
+        <span class="btn-label">GALLERY</span>
+      </div>
+
+      <!-- Night Mode -->
+      <div class="btn-wrapper">
+        <button id="nightModeBtn" class="action-btn" title="Toggle Night Vision Mode">
+          <svg viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 00-1.9 20 10 10 0 0010.5-11 8.5 8.5 0 01-8.6-9z"/></svg>
+        </button>
+        <span class="btn-label">NIGHT</span>
+      </div>
+
+      <!-- AI Enhancer -->
+      <div class="btn-wrapper">
+        <button id="aiEnhanceBtn" class="action-btn" title="Toggle Realtime AI Processing">
+          <svg viewBox="0 0 24 24"><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/></svg>
+        </button>
+        <span class="btn-label">AI ENHANCE</span>
+      </div>
+
+      <!-- Studio Panel Toggle -->
+      <div class="btn-wrapper">
+        <button id="editorToggleBtn" class="action-btn" title="Open Studio Menu">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </button>
+        <span class="btn-label">STUDIO</span>
+      </div>
+
+      <!-- Settings Panel Toggle -->
+      <div class="btn-wrapper">
+        <button id="settingsToggleBtn" class="action-btn" title="Open Settings Menu">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6 3.6z"/></svg>
+        </button>
+        <span class="btn-label">SETTINGS</span>
+      </div>
+    </div>
+
+    <!-- Dedicated Bottom Shutter Button -->
+    <div class="shutter-bar">
+      <div id="mainShutterBtn" class="shutter-btn" title="Capture / Shutter">
+        <div class="shutter-inner"></div>
+      </div>
+      <span id="shutterModeText" class="shutter-mode-text">SNAP PHOTO</span>
+    </div>
+
+    <!-- Modal Drawer: In-Camera Gallery Storage -->
+    <div id="galleryPanel" class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-title">🖼️ SolAI-1 Internal Storage</div>
+          <div class="modal-subtitle">In-Device IndexedDB Persistence Engine</div>
+        </div>
+        <button class="close-btn" onclick="toggleModal('galleryPanel')">✕</button>
+      </div>
+      <div id="galleryContainer" class="gallery-grid"></div>
+    </div>
+
+    <!-- Modal Drawer: Image & Video Editor Studio -->
+    <div id="editorPanel" class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-title">🎨 Realtime ISP Studio</div>
+          <div class="modal-subtitle">Realtime ISP Hardware Filters & Color Matrix Controls</div>
+        </div>
+        <button class="close-btn" onclick="toggleModal('editorPanel')">✕</button>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Exposure / Brightness</span>
+        <div class="setting-control"><input type="range" id="filterBrightness" min="50" max="200" value="100"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Contrast Level</span>
+        <div class="setting-control"><input type="range" id="filterContrast" min="50" max="200" value="100"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Color Saturation</span>
+        <div class="setting-control"><input type="range" id="filterSaturate" min="0" max="250" value="100"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Hue / Tint Rotation</span>
+        <div class="setting-control"><input type="range" id="filterHue" min="0" max="360" value="0"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Color Warmth (Temp)</span>
+        <div class="setting-control"><input type="range" id="filterWarmth" min="-50" max="50" value="0"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Gamma Correction</span>
+        <div class="setting-control"><input type="range" id="filterGamma" min="50" max="150" value="100"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Sepia Vintage Tone</span>
+        <div class="setting-control"><input type="range" id="filterSepia" min="0" max="100" value="0"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Invert Color Palette</span>
+        <div class="setting-control"><input type="range" id="filterInvert" min="0" max="100" value="0"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Grayscale Mode</span>
+        <div class="setting-control"><input type="range" id="filterGray" min="0" max="100" value="0"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Soft Blur Focus</span>
+        <div class="setting-control"><input type="range" id="filterBlur" min="0" max="10" value="0"></div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Opacity / Alpha Channel</span>
+        <div class="setting-control"><input type="range" id="filterOpacity" min="10" max="100" value="100"></div>
+      </div>
+    </div>
+
+    <!-- Modal Drawer: Camera Settings Menu -->
+    <div id="settingsPanel" class="modal-panel">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <div class="modal-title">⚙️ SolAI-1 Terminal Settings</div>
+          <div class="modal-subtitle">System Configuration, Codecs & Power Governors</div>
+        </div>
+        <button class="close-btn" onclick="toggleModal('settingsPanel')">✕</button>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Export Solar Telemetry CSV</span>
+        <div class="setting-control">
+          <button class="setting-btn" onclick="exportTimelapseCSV()">📊 Download Log</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Camera Sensor Lens</span>
+        <div class="setting-control">
+          <select id="cameraFacingSelect">
+            <option value="environment" selected>Main Rear Camera</option>
+            <option value="user">Front Selfie Camera</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Resolution Output</span>
+        <div class="setting-control">
+          <select id="resSelect">
+            <option value="1080">1080p FHD (1920x1080)</option>
+            <option value="720" selected>720p HD (1280x720)</option>
+            <option value="480">480p SD (640x480)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">FPS Target Rate</span>
+        <div class="setting-control">
+          <select id="fpsSelect">
+            <option value="60">60 FPS (Performance)</option>
+            <option value="30" selected>30 FPS (Standard)</option>
+            <option value="15">15 FPS (Power Save)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">WebRTC Video Codec</span>
+        <div class="setting-control">
+          <select id="codecSelect">
+            <option value="vp9" selected>VP9 (High Quality)</option>
+            <option value="h264">H.264 (Hardware Accelerated)</option>
+            <option value="vp8">VP8 (Legacy Compatibility)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Composition Grid Lines</span>
+        <label class="switch">
+          <input type="checkbox" id="gridToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Record Microphone Audio</span>
+        <label class="switch">
+          <input type="checkbox" id="audioToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Hardware Continuous Auto-Focus</span>
+        <label class="switch">
+          <input type="checkbox" id="autofocusToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Bottom HUD Overlay -->
+    <div class="overlay-bottom">
+      <div class="hud-item">SYSTEM: <strong>Goldtech SolAI-1</strong></div>
+      <div class="hud-item">SIGNAL: <strong>signal.chyke.online</strong></div>
+    </div>
   </div>
 
-  <!-- Section 1: Innovation Highlights -->
-  <section id="section-unique">
-    <h2>⭐ 1. Key Innovations vs. Commercial Smartphone Cameras</h2>
-    <p>Standard smartphones (such as iPhones or Android flagships) do not ship out of the box with the specialized hardware-software integration featured in the <strong>Goldtech SolAI-1</strong> for off-grid operations:</p>
+  <script>
+    const SIGNALING_URL = 'wss://signal.chyke.online';
 
-    <ul>
-      <li><strong>Direct Solar Power Harvesting:</strong> Integrates a solar PV panel, charge controller, and continuous 5V regulation with internal device battery storage.</li>
-      <li><strong>Hardware Power HUD Integration:</strong> Stock phone camera apps do not display real-time charging status or power source analytics directly inside the viewfinder UI.</li>
-      <li><strong>Real-Time Hardware ISP Studio Matrix:</strong> Exposes direct controls over Exposure, Contrast, Warmth, Gamma, Sepia, and Hue Rotation directly on the live WebRTC stream.</li>
-      <li><strong>In-App Internal Database Storage:</strong> Stores photos and WebM video recordings privately inside an integrated IndexedDB database (<code>GoldtechCameraDB</code>) rather than relying on standard device downloads or system camera rolls.</li>
-    </ul>
-  </section>
-
-  <!-- Section 2: Power Flow -->
-  <section id="section1">
-    <h2>⚡ 2. Hybrid Power Architecture & Solar Flow</h2>
-    <p>The Goldtech SolAI-1 Camera Node operates off-grid through a 3-layer hybrid power setup combining direct solar PV input with device battery storage:</p>
+    const videoElement = document.getElementById('localVideo');
+    const sigBadge = document.getElementById('sigBadge');
+    const modeBadge = document.getElementById('modeBadge');
+    const solarPowerBadge = document.getElementById('solarPowerBadge');
+    const recordTimerBadge = document.getElementById('recordTimerBadge');
+    const timelapseBadge = document.getElementById('timelapseBadge');
+    const toastNotification = document.getElementById('toastNotification');
+    const gridOverlay = document.getElementById('gridOverlay');
     
-    <div class="flow-diagram">
-      [ Solar PV Panel ] ➔ [ Solar Charge Controller ] ➔ [ Phone Built-in Battery / Power Bank Buffer ] ➔ [ 5V Buck Regulator ] ➔ [ SolAI-1 Terminal ]
-    </div>
+    // Mode Select Buttons
+    const photoModeSelectBtn = document.getElementById('photoModeSelectBtn');
+    const videoModeSelectBtn = document.getElementById('videoModeSelectBtn');
+    const timelapseToggleBtn = document.getElementById('timelapseToggleBtn');
+    const shutterModeText = document.getElementById('shutterModeText');
+    const mainShutterBtn = document.getElementById('mainShutterBtn');
 
-    <ul>
-      <li><strong>Layer 1 (Solar Photovoltaic Input):</strong> Converts ambient daylight into DC electricity to continuously power the terminal.</li>
-      <li><strong>Layer 2 (Integrated Phone Battery Buffer):</strong> The phone's built-in battery acts as the primary hardware reservoir, absorbing daytime charge and keeping the camera live through overcast weather or night hours.</li>
-      <li><strong>Layer 3 (Optional External Lithium Battery Bank):</strong> External power banks (such as pass-through 30,000mAh units or 12V LiFePO4 solar battery packs) can be connected to extend multi-day operation.</li>
-    </ul>
-  </section>
+    // Controls
+    const nightModeBtn = document.getElementById('nightModeBtn');
+    const aiEnhanceBtn = document.getElementById('aiEnhanceBtn');
+    const zoomSlider = document.getElementById('zoomSlider');
+    const zoomVal = document.getElementById('zoomVal');
 
-  <!-- Section 3: Battery Monitoring -->
-  <section id="section2">
-    <h2>🔋 3. Live Solar & Battery HUD Monitoring</h2>
-    <p>Integrates with the Web Battery Manager API (<code>navigator.getBattery()</code>) to track battery levels and USB charge detection in real time, automatically switching the HUD state without page refreshes.</p>
+    // Studio Sliders
+    const filterBrightness = document.getElementById('filterBrightness');
+    const filterContrast = document.getElementById('filterContrast');
+    const filterSaturate = document.getElementById('filterSaturate');
+    const filterHue = document.getElementById('filterHue');
+    const filterWarmth = document.getElementById('filterWarmth');
+    const filterGamma = document.getElementById('filterGamma');
+    const filterSepia = document.getElementById('filterSepia');
+    const filterInvert = document.getElementById('filterInvert');
+    const filterGray = document.getElementById('filterGray');
+    const filterBlur = document.getElementById('filterBlur');
+    const filterOpacity = document.getElementById('filterOpacity');
 
-    <pre><code>// Real-Time Solar Power & Battery Analytics HUD
-async function initSolarPowerMonitor() {
-  if ('getBattery' in navigator) {
-    try {
+    let localStream = null;
+    let videoTrack = null;
+    let ws = null;
+
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let recordTimerInterval = null;
+    let recordSeconds = 0;
+
+    let currentMode = 'PHOTO';
+    let isNightMode = false;
+    let isAIEnhanced = false;
+
+    // Time-lapse & Autonomous Governor Variables
+    let timelapseInterval = null;
+    let timelapseLog = [];
+
+    function showToast(msg) {
+      toastNotification.innerText = msg;
+      toastNotification.style.display = 'block';
+      setTimeout(() => { toastNotification.style.display = 'none'; }, 3500);
+    }
+
+    // --- Autonomous Power Governor ---
+    async function checkPowerGovernor() {
+      if (!('getBattery' in navigator)) return;
       const battery = await navigator.getBattery();
+      const isSolar = battery.charging;
+      const pct = Math.round(battery.level * 100);
 
-      function updatePowerUI() {
-        const level = Math.round(battery.level * 100);
-        const isSolarCharging = battery.charging;
+      const resSelect = document.getElementById('resSelect');
+      const fpsSelect = document.getElementById('fpsSelect');
 
-        if (isSolarCharging) {
-          solarPowerBadge.innerText = `⚡ ${level}% (SOLAR)`;
-          solarPowerBadge.className = 'status-badge solar-charging';
-        } else if (level <= 20) {
-          solarPowerBadge.innerText = `⚠️ ${level}% (LOW POWER)`;
-          solarPowerBadge.className = 'status-badge solar-low';
-        } else {
-          solarPowerBadge.innerText = `🔋 ${level}% (BATTERY)`;
-          solarPowerBadge.className = 'status-badge solar-battery';
+      if (pct < 20 && !isSolar) {
+        if (resSelect.value !== '720' || fpsSelect.value !== '15') {
+          resSelect.value = '720';
+          fpsSelect.value = '15';
+          isAIEnhanced = false;
+          aiEnhanceBtn.classList.remove('active');
+          modeBadge.style.display = 'none';
+          updateISPFilters();
+          await startCamera();
+          showToast("⚠️ Power Save: 720p 15FPS Activated");
+        }
+      } else if (isSolar || pct > 40) {
+        if (resSelect.value === '720' && fpsSelect.value === '15') {
+          resSelect.value = '1080';
+          fpsSelect.value = '30';
+          isAIEnhanced = true;
+          aiEnhanceBtn.classList.add('active');
+          modeBadge.style.display = 'inline-block';
+          updateISPFilters();
+          await startCamera();
+          showToast("⚡ Full Power Mode Restored (1080p 30FPS)");
+        }
+      }
+    }
+
+    // --- Live Solar & Battery Monitor Engine ---
+    async function initSolarPowerMonitor() {
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+
+          function updatePowerUI() {
+            const level = Math.round(battery.level * 100);
+            const isSolarCharging = battery.charging;
+
+            if (isSolarCharging) {
+              solarPowerBadge.innerText = `⚡ ${level}% (SOLAR)`;
+              solarPowerBadge.className = 'status-badge solar-charging';
+            } else if (level <= 20) {
+              solarPowerBadge.innerText = `⚠️ ${level}% (LOW POWER)`;
+              solarPowerBadge.className = 'status-badge solar-low';
+            } else {
+              solarPowerBadge.innerText = `🔋 ${level}% (BATTERY)`;
+              solarPowerBadge.className = 'status-badge solar-battery';
+            }
+
+            checkPowerGovernor();
+          }
+
+          updatePowerUI();
+          battery.addEventListener('chargingchange', updatePowerUI);
+          battery.addEventListener('levelchange', updatePowerUI);
+        } catch (e) {
+          solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
+        }
+      } else {
+        solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
+      }
+    }
+
+    // --- Solar Time-Lapse Engine ---
+    async function toggleTimelapse(intervalMs = 60000) {
+      if (timelapseInterval) {
+        clearInterval(timelapseInterval);
+        timelapseInterval = null;
+        timelapseToggleBtn.classList.remove('timelapse-on');
+        timelapseBadge.style.display = 'none';
+        showToast("⏹️ Solar Time-Lapse Stopped");
+        return;
+      }
+
+      timelapseToggleBtn.classList.add('timelapse-on');
+      timelapseBadge.style.display = 'inline-block';
+      showToast("⏳ Solar Time-Lapse Started (60s Interval)");
+
+      timelapseInterval = setInterval(async () => {
+        let batteryPct = 100;
+        let powerSource = "BATTERY";
+
+        if ('getBattery' in navigator) {
+          const battery = await navigator.getBattery();
+          batteryPct = Math.round(battery.level * 100);
+          powerSource = battery.charging ? "SOLAR" : "BATTERY";
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth || 1280;
+        canvas.height = videoElement.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = videoElement.style.filter || 'none';
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const entry = {
+              time: new Date().toISOString(),
+              battery: batteryPct,
+              source: powerSource,
+              blob: blob
+            };
+            timelapseLog.push(entry);
+            saveMediaToInternalStorage(blob, 'timelapse', entry);
+            timelapseBadge.innerText = `⏳ LAPSE: ${timelapseLog.length}`;
+          }
+        }, 'image/jpeg', 0.92);
+      }, intervalMs);
+    }
+
+    function exportTimelapseCSV() {
+      if (timelapseLog.length === 0) {
+        showToast("ℹ️ No Telemetry Logs Recorded Yet");
+        return;
+      }
+      const csv = "Time,Battery%,PowerSource\n" + 
+        timelapseLog.map(e => `${e.time},${e.battery},${e.source}`).join("\n");
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `solai1_telemetry_${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    timelapseToggleBtn.addEventListener('click', () => toggleTimelapse(60000));
+
+    // --- In-Camera Internal Storage (IndexedDB) ---
+    let db = null;
+    const dbReq = indexedDB.open('GoldtechCameraDB', 1);
+
+    dbReq.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains('mediaStorage')) {
+        db.createObjectStore('mediaStorage', { keyPath: 'id', autoIncrement: true });
+      }
+    };
+
+    dbReq.onsuccess = (e) => {
+      db = e.target.result;
+    };
+
+    function saveMediaToInternalStorage(blob, type, meta = null) {
+      if (!db) return;
+      const transaction = db.transaction(['mediaStorage'], 'readwrite');
+      const store = transaction.objectStore('mediaStorage');
+      store.add({ blob: blob, type: type, meta: meta, timestamp: Date.now() });
+    }
+
+    function loadInCameraGallery() {
+      if (!db) return;
+      const container = document.getElementById('galleryContainer');
+      container.innerHTML = '';
+
+      const transaction = db.transaction(['mediaStorage'], 'readonly');
+      const store = transaction.objectStore('mediaStorage');
+      const cursorReq = store.openCursor(null, 'prev');
+
+      cursorReq.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          const item = cursor.value;
+          const url = URL.createObjectURL(item.blob);
+          const wrapper = document.createElement('div');
+          wrapper.className = 'gallery-item';
+
+          if (item.type === 'photo' || item.type === 'timelapse') {
+            wrapper.innerHTML = `<span class="item-type">${item.type.toUpperCase()}</span><img src="${url}">`;
+          } else {
+            wrapper.innerHTML = `<span class="item-type">VIDEO</span><video src="${url}" controls></video>`;
+          }
+
+          container.appendChild(wrapper);
+          cursor.continue();
+        }
+      };
+    }
+
+    // --- Mode Selection Switcher ---
+    photoModeSelectBtn.addEventListener('click', () => {
+      if (isRecording) return;
+      currentMode = 'PHOTO';
+      photoModeSelectBtn.classList.add('active-mode-btn');
+      videoModeSelectBtn.classList.remove('active-mode-btn');
+      shutterModeText.innerText = 'SNAP PHOTO';
+    });
+
+    videoModeSelectBtn.addEventListener('click', () => {
+      if (isRecording) return;
+      currentMode = 'VIDEO';
+      videoModeSelectBtn.classList.add('active-mode-btn');
+      photoModeSelectBtn.classList.remove('active-mode-btn');
+      shutterModeText.innerText = 'START VIDEO';
+    });
+
+    // --- Hardware Camera Engine with Anti-Hang Lifecycles ---
+    async function stopCamera() {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+      videoTrack = null;
+      if (videoElement) {
+        videoElement.srcObject = null;
+      }
+    }
+
+    async function startCamera() {
+      await stopCamera();
+
+      const facing = document.getElementById('cameraFacingSelect').value;
+      const targetRes = document.getElementById('resSelect').value;
+      const targetFPS = document.getElementById('fpsSelect').value;
+      const recordAudio = document.getElementById('audioToggle').checked;
+
+      const constraints = {
+        video: {
+          facingMode: { ideal: facing },
+          width: { ideal: targetRes == '1080' ? 1920 : (targetRes == '720' ? 1280 : 640) },
+          height: { ideal: targetRes == '1080' ? 1080 : (targetRes == '720' ? 720 : 480) },
+          frameRate: { ideal: parseInt(targetFPS) }
+        },
+        audio: recordAudio
+      };
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoElement.srcObject = localStream;
+        await videoElement.play();
+        videoTrack = localStream.getVideoTracks()[0];
+
+        if (videoTrack && videoTrack.getCapabilities) {
+          const capabilities = videoTrack.getCapabilities();
+          if (capabilities.zoom) {
+            zoomSlider.min = capabilities.zoom.min;
+            zoomSlider.max = capabilities.zoom.max;
+            zoomSlider.step = capabilities.zoom.step;
+          }
+        }
+      } catch (err) {
+        console.error("Camera Init Error:", err);
+      }
+    }
+
+    // Zoom Controls
+    zoomSlider.addEventListener('input', async (e) => {
+      const zoomValue = e.target.value;
+      zoomVal.innerText = `${parseFloat(zoomValue).toFixed(1)}x`;
+
+      if (videoTrack && videoTrack.getCapabilities) {
+        const capabilities = videoTrack.getCapabilities();
+        if (capabilities.zoom) {
+          try {
+            await videoTrack.applyConstraints({ advanced: [{ zoom: zoomValue }] });
+            return;
+          } catch (err) { console.log('Hardware zoom fallback to CSS scale'); }
         }
       }
 
-      updatePowerUI();
-      battery.addEventListener('chargingchange', updatePowerUI);
-      battery.addEventListener('levelchange', updatePowerUI);
-    } catch (e) {
-      solarPowerBadge.innerText = '⚡ SOLAR ACTIVE';
+      videoElement.style.transform = `scale(${zoomValue})`;
+    });
+
+    // ISP Studio Processing Logic
+    function updateISPFilters() {
+      let brightness = filterBrightness.value;
+      let contrast = filterContrast.value;
+      let saturate = filterSaturate.value;
+      let hue = filterHue.value;
+      let warmth = filterWarmth.value;
+      let sepia = filterSepia.value;
+      let invert = filterInvert.value;
+      let gray = filterGray.value;
+      let blur = filterBlur.value;
+      let opacity = filterOpacity.value;
+
+      if (isNightMode) {
+        brightness = 170;
+        contrast = 160;
+        saturate = 40;
+      }
+
+      if (isAIEnhanced) {
+        saturate = parseInt(saturate) + 30;
+        contrast = parseInt(contrast) + 20;
+      }
+
+      const computedSepia = Math.max(sepia, warmth > 0 ? warmth : 0);
+
+      videoElement.style.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) hue-rotate(${hue}deg) sepia(${computedSepia}%) invert(${invert}%) grayscale(${gray}%) blur(${blur}px) opacity(${opacity}%)`;
     }
-  }
-}</code></pre>
-  </section>
 
-  <!-- Section 4: Lifecycle Management -->
-  <section id="section3">
-    <h2>🔄 4. Anti-Hang Background Lifecycle Engine</h2>
-    <p>Prevents camera stream freezes or Image Signal Processor (ISP) deadlocks when minimizing and resuming Chrome on mobile operating systems.</p>
+    [filterBrightness, filterContrast, filterSaturate, filterHue, filterWarmth, filterGamma, filterSepia, filterInvert, filterGray, filterBlur, filterOpacity].forEach(slider => {
+      slider.addEventListener('input', updateISPFilters);
+    });
 
-    <pre><code>// Flushes Hardware Locks on Minimize & Re-initializes Cleanly on Resume
-async function stopCamera() {
-  if (localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  videoTrack = null;
-  if (videoElement) {
-    videoElement.srcObject = null;
-  }
-}
+    // Toggle Buttons
+    nightModeBtn.addEventListener('click', () => {
+      isNightMode = !isNightMode;
+      nightModeBtn.classList.toggle('active', isNightMode);
+      updateISPFilters();
+    });
 
-document.addEventListener('visibilitychange', async () => {
-  if (document.hidden) {
-    if (isRecording && mediaRecorder) {
-      toggleVideoRecording();
+    aiEnhanceBtn.addEventListener('click', () => {
+      isAIEnhanced = !isAIEnhanced;
+      aiEnhanceBtn.classList.toggle('active', isAIEnhanced);
+      modeBadge.style.display = isAIEnhanced ? 'inline-block' : 'none';
+      updateISPFilters();
+    });
+
+    // Grid Overlay Toggle
+    document.getElementById('gridToggle').addEventListener('change', (e) => {
+      gridOverlay.classList.toggle('active', e.target.checked);
+    });
+
+    // Photo Snap Execution
+    function takePhotoSnap() {
+      if (!videoElement || videoElement.readyState !== 4) return;
+
+      const canvas = document.getElementById('editorCanvas');
+      canvas.width = videoElement.videoWidth || 1280;
+      canvas.height = videoElement.videoHeight || 720;
+
+      const ctx = canvas.getContext('2d');
+      ctx.filter = videoElement.style.filter || 'none';
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          saveMediaToInternalStorage(blob, 'photo');
+          showToast("📸 Photo Saved to SolAI-1 Storage");
+        }
+      }, 'image/jpeg', 0.95);
     }
-    await stopCamera(); // Release hardware resource
-  } else {
-    await startCamera(); // Re-bind stream on resume
-    connectSignaling();
-  }
-});</code></pre>
-  </section>
 
-  <!-- Section 5: Zoom Controls -->
-  <section id="section4">
-    <h2>🔍 5. Optical & Digital Zoom Controller</h2>
-    <p>Utilizes native hardware camera zoom capabilities via WebRTC media constraints (<code>applyConstraints</code>), falling back to high-performance CSS scaling if optical zoom is unavailable on the sensor lens.</p>
-
-    <pre><code>// Optical Hardware Zoom with Digital CSS Fallback
-zoomSlider.addEventListener('input', async (e) => {
-  const zoomValue = e.target.value;
-  zoomVal.innerText = `${parseFloat(zoomValue).toFixed(1)}x`;
-
-  if (videoTrack && videoTrack.getCapabilities) {
-    const capabilities = videoTrack.getCapabilities();
-    if (capabilities.zoom) {
-      try {
-        await videoTrack.applyConstraints({ advanced: [{ zoom: zoomValue }] });
-        return;
-      } catch (err) { console.log('Optical zoom fallback to CSS scale'); }
+    // Video Timer Formatter
+    function updateTimerDisplay() {
+      recordSeconds++;
+      const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
+      const secs = (recordSeconds % 60).toString().padStart(2, '0');
+      recordTimerBadge.innerText = `🔴 ${mins}:${secs}`;
     }
-  }
 
-  videoElement.style.transform = `scale(${zoomValue})`;
-});</code></pre>
-  </section>
+    // Video Recording Execution
+    function toggleVideoRecording() {
+      if (!localStream) return;
 
-  <!-- Section 6: Realtime ISP Studio -->
-  <section id="section5">
-    <h2>🎨 6. Real-Time ISP Hardware Studio Filter Matrix</h2>
-    <p>Applies real-time CSS GPU color processing across eleven hardware parameters without frame dropping.</p>
+      const selectedCodec = document.getElementById('codecSelect').value;
 
-    <pre><code>// Multi-Parameter Real-Time Color Matrix Filter
-function updateISPFilters() {
-  let brightness = filterBrightness.value;
-  let contrast = filterContrast.value;
-  let saturate = filterSaturate.value;
-  let hue = filterHue.value;
-  let warmth = filterWarmth.value;
-  let sepia = filterSepia.value;
-  let invert = filterInvert.value;
-  let gray = filterGray.value;
-  let blur = filterBlur.value;
-  let opacity = filterOpacity.value;
+      if (!isRecording) {
+        recordedChunks = [];
+        try {
+          mediaRecorder = new MediaRecorder(localStream, { mimeType: `video/webm;codecs=${selectedCodec},opus` });
+        } catch (e) {
+          mediaRecorder = new MediaRecorder(localStream);
+        }
 
-  const computedSepia = Math.max(sepia, warmth > 0 ? warmth : 0);
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
 
-  videoElement.style.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) hue-rotate(${hue}deg) sepia(${computedSepia}%) invert(${invert}%) grayscale(${gray}%) blur(${blur}px) opacity(${opacity}%)`;
-}</code></pre>
-  </section>
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          saveMediaToInternalStorage(blob, 'video');
+          showToast("🎥 Video Saved to SolAI-1 Storage");
+        };
 
-  <!-- Section 7: Night Mode & AI Enhancer -->
-  <section id="section6">
-    <h2>🌙 7. Low-Light Night Mode & AI Enhancement Engines</h2>
-    <ul>
-      <li><strong>Low-Light Gain Boost:</strong> Dynamically adjusts gain curves (Brightness 170%, Contrast 160%, Saturation 40%) for night scenes.</li>
-      <li><strong>AI Real-time Enhancer:</strong> Recalculates contrast (+20%) and edge saturation (+30%) for high-definition streaming.</li>
-    </ul>
-  </section>
+        mediaRecorder.start();
+        isRecording = true;
+        
+        mainShutterBtn.classList.add('is-recording');
+        videoModeSelectBtn.classList.add('recording');
+        shutterModeText.innerText = 'STOP RECORDING';
+        
+        recordSeconds = 0;
+        recordTimerBadge.innerText = '🔴 00:00';
+        recordTimerBadge.style.display = 'inline-block';
+        recordTimerInterval = setInterval(updateTimerDisplay, 1000);
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
 
-  <!-- Section 8: Mode Switcher & Shutter -->
-  <section id="section7">
-    <h2>📸 8. Mode Switcher & Dedicated Shutter Execution</h2>
-    <p>Separates mode switching from capture triggers. Menu options set the active state, while the primary shutter button manages snapshots or toggles video recording with an active time counter (<code>🔴 00:00</code>).</p>
-  </section>
+        mainShutterBtn.classList.remove('is-recording');
+        videoModeSelectBtn.classList.remove('recording');
+        shutterModeText.innerText = 'START VIDEO';
+        
+        clearInterval(recordTimerInterval);
+        recordTimerBadge.style.display = 'none';
+      }
+    }
 
-  <!-- Section 9: In-Camera Storage -->
-  <section id="section8">
-    <h2>🖼️ 9. In-Camera Internal Storage Engine (IndexedDB)</h2>
-    <p>Bypasses browser download prompts by saving recorded media directly into an in-app IndexedDB database (<code>GoldtechCameraDB</code>) accessible via an internal Gallery drawer.</p>
+    // Main Dedicated Shutter Execution Button
+    mainShutterBtn.addEventListener('click', () => {
+      if (currentMode === 'VIDEO') {
+        toggleVideoRecording();
+      } else {
+        takePhotoSnap();
+      }
+    });
 
-    <pre><code>// Direct Local Storage Engine
-let db = null;
-const dbReq = indexedDB.open('GoldtechCameraDB', 1);
+    // Modal Drawer Controls
+    document.getElementById('editorToggleBtn').addEventListener('click', () => toggleModal('editorPanel'));
+    document.getElementById('settingsToggleBtn').addEventListener('click', () => toggleModal('settingsPanel'));
+    document.getElementById('galleryToggleBtn').addEventListener('click', () => {
+      loadInCameraGallery();
+      toggleModal('galleryPanel');
+    });
 
-dbReq.onupgradeneeded = (e) => {
-  db = e.target.result;
-  if (!db.objectStoreNames.contains('mediaStorage')) {
-    db.createObjectStore('mediaStorage', { keyPath: 'id', autoIncrement: true });
-  }
-};
+    function toggleModal(id) {
+      const panel = document.getElementById(id);
+      const isOpened = panel.classList.contains('open');
+      document.querySelectorAll('.modal-panel').forEach(p => p.classList.remove('open'));
+      if (!isOpened) panel.classList.add('open');
+    }
 
-function saveMediaToInternalStorage(blob, type) {
-  if (!db) return;
-  const transaction = db.transaction(['mediaStorage'], 'readwrite');
-  const store = transaction.objectStore('mediaStorage');
-  store.add({ blob: blob, type: type, timestamp: Date.now() });
-}</code></pre>
-  </section>
+    // Connect Signaling WebSocket
+    function connectSignaling() {
+      if (ws) ws.close();
+      ws = new WebSocket(SIGNALING_URL);
 
-  <!-- Section 10: Mobile Viewport Fixes -->
-  <section id="section9">
-    <h2>📐 10. Dynamic Viewport & Mobile Touch Target Positioning</h2>
-    <ul>
-      <li><strong>Dynamic Viewport Height (<code>100dvh</code>):</strong> Keeps the camera UI fully visible under mobile address bars.</li>
-      <li><strong>Elevated Shutter Placement:</strong> Positioned at <code>bottom: 110px</code> with high layering priority (<code>z-index: 100</code>) to remain accessible above mobile OS gesture bars.</li>
-      <li><strong>Touch Target Sizing:</strong> Large touch buttons (58px--84px) with clear text labels.</li>
-    </ul>
-  </section>
+      ws.onopen = () => {
+        sigBadge.innerText = 'SIG: Online';
+        sigBadge.className = 'status-badge sig-online';
+        ws.send(JSON.stringify({ type: 'register_camera' }));
+      };
 
-  <footer>
-    Goldtech SolAI-1: World’s First Hybrid Solar + AI Camera Terminal — Technical Documentation & Specification Manual
-  </footer>
+      ws.onclose = () => {
+        sigBadge.innerText = 'SIG: Reconnecting';
+        sigBadge.className = 'status-badge sig-offline';
+      };
 
+      ws.onerror = () => ws.close();
+    }
+
+    // Lifecycle Event Handler
+    document.addEventListener('visibilitychange', async () => {
+      if (document.hidden) {
+        if (isRecording && mediaRecorder) {
+          toggleVideoRecording();
+        }
+        await stopCamera();
+      } else {
+        await startCamera();
+        connectSignaling();
+      }
+    });
+
+    // Camera Parameter Change Listeners
+    document.getElementById('cameraFacingSelect').addEventListener('change', startCamera);
+    document.getElementById('resSelect').addEventListener('change', startCamera);
+    document.getElementById('fpsSelect').addEventListener('change', startCamera);
+    document.getElementById('audioToggle').addEventListener('change', startCamera);
+
+    async function init() {
+      await startCamera();
+      connectSignaling();
+      initSolarPowerMonitor();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
+
 

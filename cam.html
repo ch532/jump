@@ -941,30 +941,6 @@
         <button class="close-btn" onclick="toggleModal('settingsPanel')">✕</button>
       </div>
 
-      <!-- Video Stream Source Selection -->
-      <div class="setting-row">
-        <span class="setting-label">Video Stream Source</span>
-        <div class="setting-control">
-          <select id="videoSourceSelect" onchange="changeVideoSource()">
-            <option value="local" selected>📷 Onboard Device Camera</option>
-            <option value="cctv">📹 CCTV IP Camera (RTSP Gateway)</option>
-            <option value="hls">🌐 External HLS Stream (.m3u8)</option>
-            <option value="webrtc">⚡ External WebRTC Stream</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Dynamic External Stream URL Input Bar -->
-      <div class="setting-row" id="externalUrlRow" style="display: none; flex-direction: column; align-items: stretch; gap: 8px;">
-        <span class="setting-label">External Stream URL</span>
-        <div class="setting-control" style="display: flex; gap: 6px; flex-wrap: wrap;">
-          <input type="text" id="streamUrlInput" placeholder="http://127.0.0.1:1984/api/stream.m3u8?src=cctv_main">
-          <button class="setting-btn" onclick="loadExternalStream()">Connect</button>
-          <button class="setting-btn" style="background: #7c3aed;" onclick="openQrScannerModal()">📷 Scan QR</button>
-          <button class="setting-btn" style="background: #2563eb;" onclick="generateCurrentStreamQr()">⚡ Gen QR</button>
-        </div>
-      </div>
-
       <div class="setting-row">
         <span class="setting-label">Export Solar Telemetry CSV</span>
         <div class="setting-control">
@@ -1140,12 +1116,8 @@
     }
 
     function onQrCodeScanned(decodedText) {
-      const urlInput = document.getElementById('streamUrlInput');
-      urlInput.value = decodedText.trim();
-      
       showToast("✅ Stream QR Code Scanned!");
       closeQrScannerModal();
-      loadExternalStream();
     }
 
     function closeQrScannerModal() {
@@ -1159,31 +1131,6 @@
     }
 
     // --- Online QR Code Generator Engine ---
-    function generateCurrentStreamQr() {
-      const streamUrl = document.getElementById('streamUrlInput').value.trim();
-      if (!streamUrl) {
-        showToast("⚠️ Please enter a stream URL first!");
-        return;
-      }
-
-      const qrContainer = document.getElementById('qrCodeDisplayContainer');
-      const label = document.getElementById('qrGenUrlLabel');
-      
-      qrContainer.innerHTML = '';
-      label.innerText = streamUrl;
-
-      qrGeneratorInstance = new QRCode(qrContainer, {
-        text: streamUrl,
-        width: 180,
-        height: 180,
-        colorDark: "#090d16",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-
-      document.getElementById('qrGenModal').classList.add('active');
-    }
-
     function closeQrGenModal() {
       document.getElementById('qrGenModal').classList.remove('active');
     }
@@ -1206,57 +1153,6 @@
       a.download = `solai1_stream_qr_${Date.now()}.png`;
       a.click();
       showToast("💾 Saved QR Card to Device");
-    }
-
-    // --- Video Stream Source Switcher ---
-    function changeVideoSource() {
-      const sourceType = document.getElementById('videoSourceSelect').value;
-      const externalUrlRow = document.getElementById('externalUrlRow');
-      const streamInput = document.getElementById('streamUrlInput');
-
-      if (sourceType === 'local') {
-        externalUrlRow.style.display = 'none';
-        startCamera();
-        showToast("📷 Switched to Onboard Camera");
-      } else if (sourceType === 'cctv') {
-        externalUrlRow.style.display = 'flex';
-        streamInput.placeholder = "http://127.0.0.1:1984/api/stream.m3u8?src=cctv_main";
-        showToast("📹 Enter CCTV Gateway URL");
-      } else {
-        externalUrlRow.style.display = 'flex';
-        streamInput.placeholder = "https://domain.com/live/stream.m3u8";
-        showToast("🌐 Enter External Stream URL");
-      }
-    }
-
-    function loadExternalStream() {
-      const streamUrl = document.getElementById('streamUrlInput').value.trim();
-      if (!streamUrl) {
-        showToast("⚠️ Please enter a valid stream URL");
-        return;
-      }
-
-      stopCamera();
-
-      if (streamUrl.includes('.m3u8') || (window.Hls && Hls.isSupported())) {
-        if (Hls.isSupported()) {
-          hlsInstance = new Hls();
-          hlsInstance.loadSource(streamUrl);
-          hlsInstance.attachMedia(videoElement);
-          hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            videoElement.play().catch(e => console.log("HLS play error:", e));
-            showToast("⚡ HLS / CCTV Stream Connected");
-          });
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-          videoElement.src = streamUrl;
-          videoElement.play().catch(e => console.log("Native HLS play error:", e));
-          showToast("⚡ Native Stream Connected");
-        }
-      } else {
-        videoElement.src = streamUrl;
-        videoElement.play().catch(e => console.log("WebRTC play error:", e));
-        showToast("⚡ WebRTC Stream Connected");
-      }
     }
 
     // --- Native External Share Engine ---
@@ -1343,7 +1239,6 @@
 
       const resSelect = document.getElementById('resSelect');
       const fpsSelect = document.getElementById('fpsSelect');
-      const sourceType = document.getElementById('videoSourceSelect').value;
 
       if (pct < 20 && !isSolar) {
         if (resSelect.value !== '720' || fpsSelect.value !== '15') {
@@ -1353,7 +1248,7 @@
           aiEnhanceBtn.classList.remove('active');
           modeBadge.style.display = 'none';
           updateISPFilters();
-          if (sourceType === 'local') await startCamera();
+          await startCamera();
           showToast("⚠️ Power Save: 720p 15FPS Activated");
         }
       } else if (isSolar || pct > 40) {
@@ -1364,7 +1259,7 @@
           aiEnhanceBtn.classList.add('active');
           modeBadge.style.display = 'inline-block';
           updateISPFilters();
-          if (sourceType === 'local') await startCamera();
+          await startCamera();
           showToast("⚡ Full Power Mode Restored (1080p 30FPS)");
         }
       }
@@ -1821,15 +1716,8 @@
       if (isResuming) return;
       isResuming = true;
 
-      const sourceType = document.getElementById('videoSourceSelect').value;
-
       await stopCamera();
-
-      if (sourceType === 'local') {
-        await startCamera();
-      } else {
-        loadExternalStream();
-      }
+      await startCamera();
 
       connectSignaling();
       setTimeout(() => { isResuming = false; }, 500);
@@ -1855,18 +1743,10 @@
     window.addEventListener('focus', handleResume);
 
     // Camera Parameter Change Listeners
-    document.getElementById('cameraFacingSelect').addEventListener('change', () => {
-      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
-    });
-    document.getElementById('resSelect').addEventListener('change', () => {
-      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
-    });
-    document.getElementById('fpsSelect').addEventListener('change', () => {
-      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
-    });
-    document.getElementById('audioToggle').addEventListener('change', () => {
-      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
-    });
+    document.getElementById('cameraFacingSelect').addEventListener('change', () => startCamera());
+    document.getElementById('resSelect').addEventListener('change', () => startCamera());
+    document.getElementById('fpsSelect').addEventListener('change', () => startCamera());
+    document.getElementById('audioToggle').addEventListener('change', () => startCamera());
 
     async function init() {
       await startCamera();
@@ -1878,6 +1758,7 @@
   </script>
 </body>
 </html>
+
 
 
 

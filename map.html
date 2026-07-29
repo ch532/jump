@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SolAI-1 Spatial Terminal</title>
+  <title>SolAI-1 Spatial Terminal (Yandex Maps)</title>
 
   <!-- Leaflet Core CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -36,7 +36,7 @@
       padding: 16px;
     }
 
-    /* APP WRAPPER - Boxed view instead of edge-to-edge fullscreen */
+    /* APP WRAPPER - Boxed view */
     .app-container {
       position: relative;
       width: 100%;
@@ -286,7 +286,6 @@
   </div>
 
   <script>
-    // UPDATED: Linked directly to your Cloudflare Worker endpoint
     const WORKER_URL = 'https://restless-lab-5821.trustconnect713.workers.dev/';
     const userLocale = navigator.language || 'en-US';
 
@@ -359,9 +358,10 @@
       zoomControl: false
     });
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // UPDATED: YANDEX MAPS TILE LAYER
+    L.tileLayer('https://core-renderer-tiles.maps.yandex.net/tiles?l=map&x={x}&y={y}&z={z}&scale=1&lang=en_US', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '&copy; <a href="https://yandex.com/maps">Yandex Maps</a>'
     }).addTo(map);
 
     function fixMapBounds() {
@@ -517,4 +517,5 @@
   </script>
 </body>
 </html>
+
 

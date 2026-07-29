@@ -227,7 +227,7 @@
   </style>
 </head>
 
-  <body>
+<body>
 
   <div class="app-container">
 
@@ -278,7 +278,7 @@
 
   </div>
 
-    <script>
+  <script>
     const WORKER_URL = 'https://workers.dev';
     const userLocale = navigator.language || 'en-US';
 
@@ -351,9 +351,10 @@
       zoomControl: false
     });
 
-    L.tileLayer('https://openstreetmap.org{z}/{x}/{y}.png', {
+    // FIXED: Correct OpenStreetMap tile URL syntax
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '© OpenStreetMap'
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     // Ensure Leaflet fills the wrapper without white gaps
@@ -395,11 +396,10 @@
         addChatMessage('system', `📍 Located GPS: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
       });
     }
-      
-function simulateNavigationRoute() {
+
+    function simulateNavigationRoute() {
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
-      // FIXED: Added [40, 40] padding array values safely here
       map.flyToBounds(activeRoutePolyline.getBounds(), { duration: 2.0, padding: [40, 40] }); 
       addChatMessage('system', '🛣️ Route calculated.');
       sendSpatialQuery("Analyze active navigation route.");
@@ -430,7 +430,7 @@ function simulateNavigationRoute() {
     }
 
     function handleFileUpload(event) {
-      const file = event.target.files[0]; // FIXED: Targeted the correct file index array index
+      const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -494,6 +494,7 @@ function simulateNavigationRoute() {
   </script>
 </body>
 </html>
+
 
 
 

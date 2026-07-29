@@ -444,10 +444,6 @@
       font-weight: 600;
     }
 
-    .setting-control input[type="text"] {
-      width: 100%;
-    }
-
     .setting-btn {
       background: #d97706;
       color: #fff;
@@ -698,16 +694,6 @@
       color: #ffd700;
       font-weight: 700;
     }
-
-    #qrCodeDisplayContainer {
-      background: #ffffff;
-      padding: 12px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
-    }
   </style>
 </head>
 <body>
@@ -739,32 +725,6 @@
       </div>
     </div>
 
-    <!-- QR Code Scanner Modal -->
-    <div id="qrModal" class="preview-modal" style="z-index: 400;">
-      <div class="preview-header">
-        <span class="preview-title">📷 SCAN STREAM QR CODE</span>
-        <button class="close-btn" onclick="closeQrScannerModal()">✕</button>
-      </div>
-      <div style="width: 100%; max-width: 320px; padding: 10px;">
-        <div id="qrReader" style="width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid #ffd700;"></div>
-      </div>
-    </div>
-
-    <!-- Generated QR Code Viewer Modal -->
-    <div id="qrGenModal" class="preview-modal" style="z-index: 400;">
-      <div class="preview-header">
-        <span class="preview-title">⚡ STREAM QR CODE CARD</span>
-        <button class="close-btn" onclick="closeQrGenModal()">✕</button>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 14px;">
-        <div id="qrCodeDisplayContainer"></div>
-        <div style="color: #cbd5e1; font-size: 0.75rem; word-break: break-all; text-align: center; max-width: 260px;" id="qrGenUrlLabel"></div>
-        <div class="preview-actions">
-          <button class="preview-btn" onclick="downloadGeneratedQr()">💾 Save QR PNG</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Top Branding & Status Overlay -->
     <div class="overlay-top">
       <div class="brand-container">
@@ -793,7 +753,7 @@
       <!-- Select Photo Mode -->
       <div class="btn-wrapper">
         <button id="photoModeSelectBtn" class="action-btn active-mode-btn" title="Select Photo Mode">
-          <svg viewBox="0 0 24 24"><path d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5z"/><path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 15.25a3.25 3.25 0 100-6.5 3.25 3.25 0 000 6.5z"/><path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5 5z"/></svg>
         </button>
         <span class="btn-label">PHOTO</span>
       </div>
@@ -1070,9 +1030,6 @@
     let localStream = null;
     let videoTrack = null;
     let ws = null;
-    let hlsInstance = null;
-    let html5QrCodeScanner = null;
-    let qrGeneratorInstance = null;
 
     let mediaRecorder = null;
     let recordedChunks = [];
@@ -1094,65 +1051,6 @@
       toastNotification.innerText = msg;
       toastNotification.style.display = 'block';
       setTimeout(() => { toastNotification.style.display = 'none'; }, 3500);
-    }
-
-    // --- QR Code Scanner Engine ---
-    function openQrScannerModal() {
-      document.getElementById('qrModal').classList.add('active');
-      stopCamera();
-
-      html5QrCodeScanner = new Html5Qrcode("qrReader");
-      const config = { fps: 10, qrbox: { width: 200, height: 200 } };
-
-      html5QrCodeScanner.start(
-        { facingMode: "environment" },
-        config,
-        onQrCodeScanned,
-        () => {}
-      ).catch(err => {
-        console.error("QR Camera error:", err);
-        showToast("⚠️ Scanner camera access error");
-      });
-    }
-
-    function onQrCodeScanned(decodedText) {
-      showToast("✅ Stream QR Code Scanned!");
-      closeQrScannerModal();
-    }
-
-    function closeQrScannerModal() {
-      if (html5QrCodeScanner) {
-        html5QrCodeScanner.stop().then(() => {
-          html5QrCodeScanner.clear();
-          html5QrCodeScanner = null;
-        }).catch(err => console.error("QR stop error:", err));
-      }
-      document.getElementById('qrModal').classList.remove('active');
-    }
-
-    // --- Online QR Code Generator Engine ---
-    function closeQrGenModal() {
-      document.getElementById('qrGenModal').classList.remove('active');
-    }
-
-    function downloadGeneratedQr() {
-      const qrImg = document.querySelector('#qrCodeDisplayContainer img');
-      const qrCanvas = document.querySelector('#qrCodeDisplayContainer canvas');
-
-      let dataUrl = '';
-      if (qrImg && qrImg.src) {
-        dataUrl = qrImg.src;
-      } else if (qrCanvas) {
-        dataUrl = qrCanvas.toDataURL("image/png");
-      }
-
-      if (!dataUrl) return showToast("⚠️ Unable to export QR image");
-
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `solai1_stream_qr_${Date.now()}.png`;
-      a.click();
-      showToast("💾 Saved QR Card to Device");
     }
 
     // --- Native External Share Engine ---
@@ -1367,40 +1265,74 @@
 
     timelapseToggleBtn.addEventListener('click', () => toggleTimelapse(60000));
 
-    // --- In-Camera Internal Storage (IndexedDB) ---
+    // --- Fixed In-Camera Internal Storage (IndexedDB) ---
     let db = null;
-    const dbReq = indexedDB.open('GoldtechCameraDB', 1);
+    const dbReq = indexedDB.open('GoldtechCameraDB', 2);
 
     dbReq.onupgradeneeded = (e) => {
       db = e.target.result;
-      if (!db.objectStoreNames.contains('mediaStorage')) {
-        db.createObjectStore('mediaStorage', { keyPath: 'id', autoIncrement: true });
+      if (db.objectStoreNames.contains('mediaStorage')) {
+        db.deleteObjectStore('mediaStorage');
       }
+      db.createObjectStore('mediaStorage', { keyPath: 'id', autoIncrement: true });
     };
 
     dbReq.onsuccess = (e) => {
       db = e.target.result;
     };
 
+    dbReq.onerror = (e) => {
+      console.error("IndexedDB Error:", e);
+      showToast("⚠️ Local Storage Error");
+    };
+
     function saveMediaToInternalStorage(blob, type, meta = null) {
-      if (!db) return;
+      if (!db) {
+        showToast("⚠️ Storage database initializing...");
+        return;
+      }
       const transaction = db.transaction(['mediaStorage'], 'readwrite');
       const store = transaction.objectStore('mediaStorage');
-      store.add({ blob: blob, type: type, meta: meta, timestamp: Date.now() });
+      
+      const record = { 
+        blob: blob, 
+        type: type, 
+        meta: meta, 
+        timestamp: Date.now() 
+      };
+
+      const addReq = store.add(record);
+
+      addReq.onsuccess = () => {
+        if (document.getElementById('galleryPanel').classList.contains('open')) {
+          loadInCameraGallery();
+        }
+      };
+
+      addReq.onerror = (err) => {
+        console.error("Save error:", err);
+        showToast("⚠️ Storage Save Failed");
+      };
     }
 
     function loadInCameraGallery() {
-      if (!db) return;
       const container = document.getElementById('galleryContainer');
       container.innerHTML = '';
+
+      if (!db) {
+        container.innerHTML = '<div style="color:#94a3b8; font-size:0.75rem; grid-column:1/-1; text-align:center; padding:20px;">Initializing storage...</div>';
+        return;
+      }
 
       const transaction = db.transaction(['mediaStorage'], 'readonly');
       const store = transaction.objectStore('mediaStorage');
       const cursorReq = store.openCursor(null, 'prev');
+      let itemCount = 0;
 
       cursorReq.onsuccess = (e) => {
         const cursor = e.target.result;
         if (cursor) {
+          itemCount++;
           const item = cursor.value;
           const url = URL.createObjectURL(item.blob);
           const card = document.createElement('div');
@@ -1412,7 +1344,7 @@
           if (item.type === 'photo' || item.type === 'timelapse') {
             mediaWrapper.innerHTML = `<span class="item-type">${item.type.toUpperCase()}</span><img src="${url}">`;
           } else {
-            mediaWrapper.innerHTML = `<span class="item-type">VIDEO</span><video src="${url}"></video>`;
+            mediaWrapper.innerHTML = `<span class="item-type">VIDEO</span><video src="${url}#t=0.5" preload="metadata"></video>`;
           }
 
           mediaWrapper.addEventListener('click', () => {
@@ -1432,6 +1364,8 @@
           container.appendChild(card);
 
           cursor.continue();
+        } else if (itemCount === 0) {
+          container.innerHTML = '<div style="color:#94a3b8; font-size:0.75rem; grid-column:1/-1; text-align:center; padding:30px;">No captures stored yet. Take a photo or video!</div>';
         }
       };
     }
@@ -1455,14 +1389,6 @@
 
     // --- Complete Anti-Hang Tear-Down Engine ---
     async function stopCamera() {
-      if (hlsInstance) {
-        try {
-          hlsInstance.detachMedia();
-          hlsInstance.destroy();
-        } catch(e) {}
-        hlsInstance = null;
-      }
-      
       if (localStream) {
         localStream.getTracks().forEach(track => {
           try { track.stop(); } catch(e) {}
@@ -1591,9 +1517,12 @@
       gridOverlay.classList.toggle('active', e.target.checked);
     });
 
-    // Photo Snap Execution
+    // Fixed Photo Snap Execution
     function takePhotoSnap() {
-      if (!videoElement || videoElement.readyState !== 4) return;
+      if (!videoElement || videoElement.readyState < 2) {
+        showToast("⚠️ Video stream not ready");
+        return;
+      }
 
       const canvas = document.getElementById('editorCanvas');
       canvas.width = videoElement.videoWidth || 1280;
@@ -1607,6 +1536,8 @@
         if (blob) {
           saveMediaToInternalStorage(blob, 'photo');
           showToast("📸 Photo Saved to SolAI-1 Storage");
+        } else {
+          showToast("⚠️ Failed to capture image blob");
         }
       }, 'image/jpeg', 0.95);
     }
@@ -1758,6 +1689,7 @@
   </script>
 </body>
 </html>
+
 
 
 

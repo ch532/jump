@@ -48,12 +48,41 @@
   <!-- Main Container -->
   <main id="mainContainer" class="flex-1 max-w-5xl w-full mx-auto p-4 flex flex-col md:flex-row gap-4 overflow-y-auto min-h-0">
 
-    <!-- Left Panel: Telemetry Controls -->
+    <!-- Left Panel: Location Selector & Telemetry Controls -->
     <div class="w-full md:w-1/2 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shrink-0 shadow-xl">
-      <h2 class="text-xs font-semibold text-teal-400 font-mono uppercase tracking-wider border-b border-slate-800 pb-2">
-        📡 Sensor Telemetry Controls
-      </h2>
+      
+      <!-- Location Selector Bar -->
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col gap-2">
+        <div class="flex justify-between items-center">
+          <label class="text-xs font-semibold text-teal-400 font-mono uppercase tracking-wider">📍 Target Location</label>
+          <span id="locationBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">GeoIP Active</span>
+        </div>
 
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <select id="locationPresets" onchange="handlePresetChange()" class="bg-slate-800 border border-slate-700 rounded-lg p-2 text-white focus:border-emerald-500 focus:outline-none">
+            <option value="auto">Auto (GPS / GeoIP)</option>
+            <option value="9.0765,7.3986">Abuja, Nigeria</option>
+            <option value="6.5244,3.3792">Lagos, Nigeria</option>
+            <option value="51.5074,-0.1278">London, UK</option>
+            <option value="40.7128,-74.0060">New York, USA</option>
+            <option value="35.6762,139.6503">Tokyo, Japan</option>
+            <option value="-1.2921,36.8219">Nairobi, Kenya</option>
+            <option value="custom">Custom Lat/Lon...</option>
+          </select>
+
+          <button onclick="requestDeviceGPS()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-lg p-2 flex items-center justify-center gap-1 font-mono transition">
+            <span>🎯 Use Device GPS</span>
+          </button>
+        </div>
+
+        <!-- Custom Coordinates Row (Hidden by default) -->
+        <div id="customCoordRow" class="hidden grid-cols-2 gap-2 pt-1">
+          <input type="number" step="0.0001" id="customLat" placeholder="Latitude (e.g. 9.07)" class="bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white" />
+          <input type="number" step="0.0001" id="customLon" placeholder="Longitude (e.g. 7.39)" class="bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white" />
+        </div>
+      </div>
+
+      <!-- Telemetry Controls -->
       <div class="grid grid-cols-2 gap-3 text-xs flex-1">
         <div>
           <label class="text-slate-400 font-mono">Atmosphere: Rain (mm/h)</label>
@@ -81,9 +110,14 @@
         </div>
       </div>
 
-      <div class="pt-2 flex gap-2">
+      <!-- Live Weather Data Readout -->
+      <div id="liveStreamCard" class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-400">
+        <span class="text-emerald-400 font-bold">● LIVE STREAM:</span> Open-Meteo Real-Time Data Ready
+      </div>
+
+      <div class="pt-1 flex gap-2">
         <button onclick="evaluateEnvironment()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-emerald-600/20 text-xs">
-          Run Live Worker Inference
+          Run Live Location Inference
         </button>
         <button onclick="triggerSimulatedDisaster()" class="bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30 px-3 py-3 rounded-xl transition text-xs">
           Simulate Hazard
@@ -91,12 +125,11 @@
       </div>
     </div>
 
-    <!-- Right Panel: AI Reasoning & Voice Output -->
+    <!-- Right Panel: AI Diagnostics & Spoken Output -->
     <div class="w-full md:w-1/2 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col relative overflow-hidden shadow-xl min-h-[250px]">
-      
       <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
         <h2 class="text-xs font-semibold text-teal-400 font-mono uppercase tracking-wider">
-          ⚡ AI Diagnostic Output
+          ⚡ AI Cascade Diagnostic Output
         </h2>
         <span id="gatewayBadge" class="text-[10px] bg-slate-800 border border-slate-700 text-slate-400 px-2 py-0.5 rounded font-mono">
           connectgold-gateway
@@ -104,7 +137,7 @@
       </div>
 
       <div id="responseArea" class="prose text-xs text-slate-200 flex-1 overflow-y-auto pr-1">
-        <p class="text-slate-500 italic">Adjust telemetry inputs on the left and trigger inference...</p>
+        <p class="text-slate-500 italic">Select a target location and run real-time inference...</p>
       </div>
 
       <button onclick="speakLastResponse()" class="mt-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition shrink-0">
@@ -114,9 +147,8 @@
       <!-- Loading Overlay -->
       <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
         <div class="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs text-slate-400 font-mono animate-pulse">Running Cascade AI Inference via Gateway...</p>
+        <p class="text-xs text-slate-400 font-mono animate-pulse">Fetching Real-Time Feeds & Gateway Inference...</p>
       </div>
-
     </div>
 
   </main>
@@ -125,32 +157,70 @@
     const WORKER_URL = "https://blue-snowflake-3fb9.trustconnect713.workers.dev/";
     let isSpeechEnabled = true;
     let lastAiResponse = "System is ready for environmental diagnostic inference.";
+    let selectedCoords = null;
+
+    function handlePresetChange() {
+      const val = document.getElementById('locationPresets').value;
+      const customRow = document.getElementById('customCoordRow');
+      const badge = document.getElementById('locationBadge');
+
+      if (val === 'custom') {
+        customRow.classList.remove('hidden');
+        customRow.classList.add('grid');
+        badge.innerText = "Custom Lat/Lon";
+      } else {
+        customRow.classList.add('hidden');
+        customRow.classList.remove('grid');
+
+        if (val === 'auto') {
+          selectedCoords = null;
+          badge.innerText = "GeoIP Active";
+        } else {
+          const [lat, lon] = val.split(',').map(Number);
+          selectedCoords = { lat, lon };
+          badge.innerText = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+        }
+      }
+    }
+
+    function requestDeviceGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            selectedCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            document.getElementById('locationPresets').value = 'auto';
+            document.getElementById('customCoordRow').classList.add('hidden');
+            document.getElementById('locationBadge').innerText = `GPS: ${selectedCoords.lat.toFixed(2)}, ${selectedCoords.lon.toFixed(2)}`;
+          },
+          () => {
+            alert("Could not retrieve GPS location. Using default GeoIP.");
+          }
+        );
+      }
+    }
+
+    function getActiveLocation() {
+      const preset = document.getElementById('locationPresets').value;
+      if (preset === 'custom') {
+        const lat = parseFloat(document.getElementById('customLat').value);
+        const lon = parseFloat(document.getElementById('customLon').value);
+        if (!isNaN(lat) && !isNaN(lon)) return { lat, lon };
+      }
+      return selectedCoords;
+    }
 
     function toggleSpeech() {
       isSpeechEnabled = !isSpeechEnabled;
-      const statusIcon = document.getElementById('speechStatusIcon');
-      const statusText = document.getElementById('speechStatusText');
-
-      if (isSpeechEnabled) {
-        statusIcon.innerText = '🔊';
-        statusText.innerText = 'Voice Output: ON';
-      } else {
-        statusIcon.innerText = '🔇';
-        statusText.innerText = 'Voice Output: OFF';
-        window.speechSynthesis.cancel();
-      }
+      document.getElementById('speechStatusIcon').innerText = isSpeechEnabled ? '🔊' : '🔇';
+      document.getElementById('speechStatusText').innerText = isSpeechEnabled ? 'Voice Output: ON' : 'Voice Output: OFF';
+      if (!isSpeechEnabled) window.speechSynthesis.cancel();
     }
 
     function speakText(text) {
       if (!isSpeechEnabled || !('speechSynthesis' in window)) return;
-
       window.speechSynthesis.cancel();
 
-      let cleanText = text
-        .replace(/```[\s\S]*?```/g, '')
-        .replace(/`([^`]+)`/g, '$1')
-        .replace(/[*#_~]/g, '');
-
+      let cleanText = text.replace(/```[\s\S]*?```/g, '').replace(/`([^`]+)`/g, '$1').replace(/[*#_~]/g, '');
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
@@ -166,8 +236,10 @@
     async function evaluateEnvironment() {
       const responseArea = document.getElementById('responseArea');
       const loadingOverlay = document.getElementById('loadingOverlay');
+      const liveStreamCard = document.getElementById('liveStreamCard');
 
       const payload = {
+        location: getActiveLocation(),
         atmospheric: {
           rainfall_rate_mm_hr: parseFloat(document.getElementById('rainRate').value),
           aqi: parseFloat(document.getElementById('aqiLevel').value)
@@ -201,6 +273,12 @@
         } else {
           lastAiResponse = data.aiAnalysis;
           responseArea.innerHTML = marked.parse(data.aiAnalysis);
+
+          if (data.telemetryIngested?.live_realtime_feed) {
+            const feed = data.telemetryIngested.live_realtime_feed;
+            const loc = data.telemetryIngested.location;
+            liveStreamCard.innerHTML = `<span class="text-emerald-400 font-bold">● LIVE [${loc.lat.toFixed(2)}, ${loc.lon.toFixed(2)}]:</span> Rain: ${feed.live_rain_rate_mm}mm/h | Pressure: ${feed.live_surface_pressure_hpa}hPa | Soil Temp: ${feed.live_soil_temp_c}°C`;
+          }
 
           speakText(data.aiAnalysis);
         }

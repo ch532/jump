@@ -903,23 +903,24 @@
         <button class="close-btn" onclick="toggleModal('settingsPanel')">✕</button>
       </div>
 
-      <!-- NEW: Video Stream Source Engine Selection -->
+      <!-- Video Stream Source Selection -->
       <div class="setting-row">
         <span class="setting-label">Video Stream Source</span>
         <div class="setting-control">
           <select id="videoSourceSelect" onchange="changeVideoSource()">
             <option value="local" selected>📷 Onboard Device Camera</option>
-            <option value="hls">🌐 External HLS / IP Camera (.m3u8)</option>
+            <option value="cctv">📹 CCTV IP Camera (RTSP Gateway)</option>
+            <option value="hls">🌐 External HLS Stream (.m3u8)</option>
             <option value="webrtc">⚡ External WebRTC Stream</option>
           </select>
         </div>
       </div>
 
-      <!-- NEW: Dynamic External Stream URL Input Bar -->
+      <!-- Dynamic External Stream URL Input Bar -->
       <div class="setting-row" id="externalUrlRow" style="display: none; flex-direction: column; align-items: stretch; gap: 8px;">
         <span class="setting-label">External Stream URL</span>
         <div class="setting-control" style="display: flex; gap: 8px;">
-          <input type="text" id="streamUrlInput" placeholder="https://domain.com/live/stream.m3u8">
+          <input type="text" id="streamUrlInput" placeholder="http://127.0.0.1:1984/api/stream.m3u8?src=cctv_main">
           <button class="setting-btn" onclick="loadExternalStream()">Connect</button>
         </div>
       </div>
@@ -1077,17 +1078,23 @@
       setTimeout(() => { toastNotification.style.display = 'none'; }, 3500);
     }
 
-    // --- External Video Stream Source Switching Engine ---
+    // --- Video Stream Source Switcher ---
     function changeVideoSource() {
       const sourceType = document.getElementById('videoSourceSelect').value;
       const externalUrlRow = document.getElementById('externalUrlRow');
+      const streamInput = document.getElementById('streamUrlInput');
 
       if (sourceType === 'local') {
         externalUrlRow.style.display = 'none';
         startCamera();
         showToast("📷 Switched to Onboard Camera");
+      } else if (sourceType === 'cctv') {
+        externalUrlRow.style.display = 'flex';
+        streamInput.placeholder = "http://127.0.0.1:1984/api/stream.m3u8?src=cctv_main";
+        showToast("📹 Enter CCTV Gateway URL");
       } else {
         externalUrlRow.style.display = 'flex';
+        streamInput.placeholder = "https://domain.com/live/stream.m3u8";
         showToast("🌐 Enter External Stream URL");
       }
     }
@@ -1108,17 +1115,17 @@
           hlsInstance.attachMedia(videoElement);
           hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
             videoElement.play();
-            showToast("⚡ HLS Stream Connected");
+            showToast("⚡ HLS / CCTV Stream Connected");
           });
         } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
           videoElement.src = streamUrl;
           videoElement.play();
-          showToast("⚡ Native HLS Stream Connected");
+          showToast("⚡ Native Stream Connected");
         }
       } else {
         videoElement.src = streamUrl;
         videoElement.play();
-        showToast("⚡ WebRTC Feed Connected");
+        showToast("⚡ WebRTC Stream Connected");
       }
     }
 
@@ -1423,7 +1430,7 @@
       shutterModeText.innerText = 'START VIDEO';
     });
 
-    // --- Hardware Camera Engine with Anti-Hang Lifecycles ---
+    // --- Hardware Camera Engine ---
     async function stopCamera() {
       if (hlsInstance) {
         hlsInstance.destroy();
@@ -1703,5 +1710,6 @@
   </script>
 </body>
 </html>
+
 
 

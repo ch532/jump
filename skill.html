@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Cloudflare AI Multi-Persona Terminal</title>
   
   <!-- Tailwind CSS for Styling -->
@@ -37,7 +37,7 @@
     .prose code { font-family: monospace; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-900 text-slate-100 min-h-[100dvh] flex flex-col font-sans">
 
   <!-- Header -->
   <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur p-4 sticky top-0 z-50">
@@ -52,31 +52,31 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col gap-6">
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col gap-4 pb-20">
 
     <!-- Persona Selection Tabs -->
-    <div class="grid grid-cols-3 gap-3 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+    <div class="grid grid-cols-3 gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
       <button onclick="selectPersona('math_science')" id="btn-math_science"
-        class="persona-btn flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md">
-        <span class="font-bold text-sm">Newton-AI</span>
-        <span class="text-xs opacity-75">Math & Science</span>
+        class="persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md">
+        <span class="font-bold text-xs sm:text-sm">Newton-AI</span>
+        <span class="text-[10px] sm:text-xs opacity-75">Math & Science</span>
       </button>
 
       <button onclick="selectPersona('problem_solver')" id="btn-problem_solver"
-        class="persona-btn flex flex-col items-center justify-center p-3 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900">
-        <span class="font-bold text-sm">Nexus-AI</span>
-        <span class="text-xs opacity-75">Systems Architect</span>
+        class="persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+        <span class="font-bold text-xs sm:text-sm">Nexus-AI</span>
+        <span class="text-[10px] sm:text-xs opacity-75">Systems Architect</span>
       </button>
 
       <button onclick="selectPersona('software_dev')" id="btn-software_dev"
-        class="persona-btn flex flex-col items-center justify-center p-3 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900">
-        <span class="font-bold text-sm">Turing-AI</span>
-        <span class="text-xs opacity-75">Senior Developer</span>
+        class="persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+        <span class="font-bold text-xs sm:text-sm">Turing-AI</span>
+        <span class="text-[10px] sm:text-xs opacity-75">Senior Developer</span>
       </button>
     </div>
 
     <!-- Response Display Card -->
-    <div class="flex-1 bg-slate-950/60 border border-slate-800 rounded-2xl p-6 min-h-[300px] flex flex-col relative overflow-hidden shadow-2xl">
+    <div class="flex-1 bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-6 min-h-[250px] flex flex-col relative overflow-hidden shadow-2xl">
       
       <!-- Video Player (Hidden by default, shown automatically when videoUrl exists) -->
       <div id="videoContainer" class="hidden mb-6 rounded-xl overflow-hidden border border-slate-700/60 bg-black shadow-lg">
@@ -96,30 +96,30 @@
       </div>
 
       <!-- Loading Overlay -->
-      <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+      <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
         <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-sm text-slate-400 font-mono animate-pulse">Running Cloudflare Workers AI Inference...</p>
       </div>
     </div>
-
-    <!-- Input Form -->
-    <form id="aiForm" onsubmit="handleSubmit(event)" class="flex gap-3">
-      <input
-        type="text"
-        id="promptInput"
-        placeholder="Ask a question or request code..."
-        required
-        class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/80 transition-all duration-200"
-      />
-      <button
-        type="submit"
-        id="submitBtn"
-        class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 flex items-center gap-2"
-      >
-        <span>Send</span>
-      </button>
-    </form>
   </main>
+
+  <!-- Input Form (Fixed Sticky Bottom Layout for Mobile Keyboard Visibility) -->
+  <form id="aiForm" onsubmit="handleSubmit(event)" class="sticky bottom-0 bg-slate-950/95 backdrop-blur border-t border-slate-800 p-3 flex gap-2 z-50">
+    <input
+      type="text"
+      id="promptInput"
+      placeholder="Ask a question or request code..."
+      required
+      class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-base"
+    />
+    <button
+      type="submit"
+      id="submitBtn"
+      class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-medium px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 flex items-center justify-center min-w-[75px]"
+    >
+      <span>Send</span>
+    </button>
+  </form>
 
   <!-- JavaScript Client Logic -->
   <script>
@@ -131,11 +131,11 @@
       
       // Update Tab Styles
       document.querySelectorAll('.persona-btn').forEach(btn => {
-        btn.className = "persona-btn flex flex-col items-center justify-center p-3 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900";
+        btn.className = "persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900";
       });
 
       const activeBtn = document.getElementById(`btn-${persona}`);
-      activeBtn.className = "persona-btn flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md";
+      activeBtn.className = "persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md";
     }
 
     async function handleSubmit(e) {
@@ -193,6 +193,9 @@
             videoContainer.classList.remove('hidden');
             videoPlayer.play();
           }
+
+          // Auto-scroll response into view
+          responseArea.scrollIntoView({ behavior: 'smooth' });
         }
       } catch (err) {
         responseArea.innerHTML = `<p class="text-rose-400 font-mono">Network Error: ${err.message}</p>`;
@@ -205,6 +208,7 @@
   </script>
 </body>
 </html>
+
 
 
 

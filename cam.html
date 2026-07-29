@@ -7,6 +7,12 @@
   
   <!-- HLS.js Library for External IP/CCTV & HLS Stream Decoding -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  
+  <!-- HTML5 QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- Online QR Code Generator Engine Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <style>
     * {
@@ -695,6 +701,17 @@
       color: #ffd700;
       font-weight: 700;
     }
+
+    /* Generated QR Card Container Styling */
+    #qrCodeDisplayContainer {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
   </style>
 </head>
 <body>
@@ -723,6 +740,32 @@
       <div id="previewContent" class="preview-content"></div>
       <div class="preview-actions">
         <button id="previewShareBtn" class="preview-btn">🔗 Share to External Source</button>
+      </div>
+    </div>
+
+    <!-- QR Code Scanner Modal -->
+    <div id="qrModal" class="preview-modal" style="z-index: 400;">
+      <div class="preview-header">
+        <span class="preview-title">📷 SCAN STREAM QR CODE</span>
+        <button class="close-btn" onclick="closeQrScannerModal()">✕</button>
+      </div>
+      <div style="width: 100%; max-width: 400px; padding: 10px;">
+        <div id="qrReader" style="width: 100%; border-radius: 16px; overflow: hidden; border: 2px solid #ffd700;"></div>
+      </div>
+    </div>
+
+    <!-- Generated QR Code Viewer Modal -->
+    <div id="qrGenModal" class="preview-modal" style="z-index: 400;">
+      <div class="preview-header">
+        <span class="preview-title">⚡ STREAM QR CODE CARD</span>
+        <button class="close-btn" onclick="closeQrGenModal()">✕</button>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 20px;">
+        <div id="qrCodeDisplayContainer"></div>
+        <div style="color: #cbd5e1; font-size: 0.85rem; word-break: break-all; text-align: center; max-width: 300px;" id="qrGenUrlLabel"></div>
+        <div class="preview-actions">
+          <button class="preview-btn" onclick="downloadGeneratedQr()">💾 Save QR PNG</button>
+        </div>
       </div>
     </div>
 
@@ -817,7 +860,7 @@
       </div>
     </div>
 
-    <!-- Dedicated Bottom Shutter Button -->
+    <!-- Dedicated Bottom Shutter Bar -->
     <div class="shutter-bar">
       <div id="mainShutterBtn" class="shutter-btn" title="Capture / Shutter">
         <div class="shutter-inner"></div>
@@ -916,12 +959,14 @@
         </div>
       </div>
 
-      <!-- Dynamic External Stream URL Input Bar -->
+      <!-- Dynamic External Stream URL Input Bar with Scan & Gen Buttons -->
       <div class="setting-row" id="externalUrlRow" style="display: none; flex-direction: column; align-items: stretch; gap: 8px;">
         <span class="setting-label">External Stream URL</span>
-        <div class="setting-control" style="display: flex; gap: 8px;">
+        <div class="setting-control" style="display: flex; gap: 6px; flex-wrap: wrap;">
           <input type="text" id="streamUrlInput" placeholder="http://127.0.0.1:1984/api/stream.m3u8?src=cctv_main">
           <button class="setting-btn" onclick="loadExternalStream()">Connect</button>
+          <button class="setting-btn" style="background: #7c3aed;" onclick="openQrScannerModal()">📷 Scan QR</button>
+          <button class="setting-btn" style="background: #2563eb;" onclick="generateCurrentStreamQr()">⚡ Gen QR</button>
         </div>
       </div>
 
@@ -1055,6 +1100,8 @@
     let videoTrack = null;
     let ws = null;
     let hlsInstance = null;
+    let html5QrCodeScanner = null;
+    let qrGeneratorInstance = null;
 
     let mediaRecorder = null;
     let recordedChunks = [];
@@ -1076,6 +1123,94 @@
       toastNotification.innerText = msg;
       toastNotification.style.display = 'block';
       setTimeout(() => { toastNotification.style.display = 'none'; }, 3500);
+    }
+
+    // --- QR Code Scanner Engine ---
+    function openQrScannerModal() {
+      document.getElementById('qrModal').classList.add('active');
+      stopCamera();
+
+      html5QrCodeScanner = new Html5Qrcode("qrReader");
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+      html5QrCodeScanner.start(
+        { facingMode: "environment" },
+        config,
+        onQrCodeScanned,
+        () => {}
+      ).catch(err => {
+        console.error("QR Camera error:", err);
+        showToast("⚠️ Scanner camera access error");
+      });
+    }
+
+    function onQrCodeScanned(decodedText) {
+      const urlInput = document.getElementById('streamUrlInput');
+      urlInput.value = decodedText.trim();
+      
+      showToast("✅ Stream QR Code Scanned!");
+      closeQrScannerModal();
+      loadExternalStream();
+    }
+
+    function closeQrScannerModal() {
+      if (html5QrCodeScanner) {
+        html5QrCodeScanner.stop().then(() => {
+          html5QrCodeScanner.clear();
+          html5QrCodeScanner = null;
+        }).catch(err => console.error("QR stop error:", err));
+      }
+      document.getElementById('qrModal').classList.remove('active');
+    }
+
+    // --- Online QR Code Generator Engine ---
+    function generateCurrentStreamQr() {
+      const streamUrl = document.getElementById('streamUrlInput').value.trim();
+      if (!streamUrl) {
+        showToast("⚠️ Please enter a stream URL first!");
+        return;
+      }
+
+      const qrContainer = document.getElementById('qrCodeDisplayContainer');
+      const label = document.getElementById('qrGenUrlLabel');
+      
+      qrContainer.innerHTML = '';
+      label.innerText = streamUrl;
+
+      qrGeneratorInstance = new QRCode(qrContainer, {
+        text: streamUrl,
+        width: 220,
+        height: 220,
+        colorDark: "#090d16",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      document.getElementById('qrGenModal').classList.add('active');
+    }
+
+    function closeQrGenModal() {
+      document.getElementById('qrGenModal').classList.remove('active');
+    }
+
+    function downloadGeneratedQr() {
+      const qrImg = document.querySelector('#qrCodeDisplayContainer img');
+      const qrCanvas = document.querySelector('#qrCodeDisplayContainer canvas');
+
+      let dataUrl = '';
+      if (qrImg && qrImg.src) {
+        dataUrl = qrImg.src;
+      } else if (qrCanvas) {
+        dataUrl = qrCanvas.toDataURL("image/png");
+      }
+
+      if (!dataUrl) return showToast("⚠️ Unable to export QR image");
+
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `solai1_stream_qr_${Date.now()}.png`;
+      a.click();
+      showToast("💾 Saved QR Card to Device");
     }
 
     // --- Video Stream Source Switcher ---
@@ -1439,7 +1574,7 @@
       
       if (localStream) {
         localStream.getTracks().forEach(track => {
-          track.stop(); // Hardware release at OS level
+          track.stop();
         });
         localStream = null;
       }
@@ -1450,7 +1585,7 @@
         videoElement.pause();
         videoElement.srcObject = null;
         videoElement.removeAttribute('src');
-        videoElement.load(); // Flush hardware buffers
+        videoElement.load();
       }
     }
 
@@ -1736,6 +1871,7 @@
   </script>
 </body>
 </html>
+
 
 
 

@@ -5,17 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Cloudflare AI Multi-Persona Terminal</title>
   
-  <!-- Tailwind CSS for Styling -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Marked.js for Markdown Parsing -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   
-  <!-- Highlight.js for Syntax Highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   
-  <!-- MathJax for Rendering LaTeX Math & Science Equations -->
   <script>
     window.MathJax = {
       tex: {
@@ -28,7 +23,6 @@
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
-    /* Styling for rendered Markdown output */
     .prose p { margin-bottom: 0.75rem; }
     .prose h1, .prose h2, .prose h3 { font-weight: 700; color: #f3f4f6; margin-top: 1rem; margin-bottom: 0.5rem; }
     .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
@@ -46,7 +40,7 @@
         Multi-Persona AI System
       </h1>
       <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-mono">
-        Worker Active
+        Zero-API Canvas Mode Active
       </span>
     </div>
   </header>
@@ -78,32 +72,29 @@
     <!-- Response Display Card -->
     <div class="flex-1 bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-6 min-h-[250px] flex flex-col relative overflow-hidden shadow-2xl">
       
-      <!-- Video Player (Hidden by default, shown automatically when videoUrl exists) -->
-      <div id="videoContainer" class="hidden mb-6 rounded-xl overflow-hidden border border-slate-700/60 bg-black shadow-lg">
-        <div class="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-indigo-400 flex items-center justify-between">
-          <span>🎬 SCIENTIFIC ANIMATION RENDER</span>
-          <span class="text-slate-500">Auto-Generated</span>
+      <!-- Interactive HTML5 Canvas Container -->
+      <div id="canvasContainer" class="hidden mb-6 rounded-xl overflow-hidden border border-slate-700/60 bg-black shadow-lg">
+        <div class="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-teal-400 flex items-center justify-between">
+          <span>⚡ REAL-TIME INTERACTIVE CANVAS SIMULATION</span>
+          <span class="text-slate-500">60 FPS Client Render</span>
         </div>
-        <video id="videoPlayer" class="w-full max-h-[360px] object-contain" controls autoplay loop muted>
-          <source id="videoSource" src="" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <canvas id="animationCanvas" class="w-full h-[280px] sm:h-[350px] bg-slate-950"></canvas>
       </div>
 
       <!-- Markdown / AI Answer Area -->
       <div id="responseArea" class="prose text-slate-200 flex-1 overflow-y-auto">
-        <p class="text-slate-500 italic">Select a persona, type your prompt below, and press send to initiate inference...</p>
+        <p class="text-slate-500 italic">Select a persona, type your prompt below, and press send...</p>
       </div>
 
       <!-- Loading Overlay -->
       <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
         <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-sm text-slate-400 font-mono animate-pulse">Running Cloudflare Workers AI Inference...</p>
+        <p class="text-sm text-slate-400 font-mono animate-pulse">Running Workers AI Inference...</p>
       </div>
     </div>
   </main>
 
-  <!-- Input Form (Fixed Sticky Bottom Layout for Mobile Keyboard Visibility) -->
+  <!-- Input Form -->
   <form id="aiForm" onsubmit="handleSubmit(event)" class="sticky bottom-0 bg-slate-950/95 backdrop-blur border-t border-slate-800 p-3 flex gap-2 z-50">
     <input
       type="text"
@@ -121,19 +112,16 @@
     </button>
   </form>
 
-  <!-- JavaScript Client Logic -->
   <script>
     const WORKER_URL = "https://restless-lab-5821.trustconnect713.workers.dev/";
     let currentPersona = "math_science";
+    let activeAnimationFrame = null;
 
     function selectPersona(persona) {
       currentPersona = persona;
-      
-      // Update Tab Styles
       document.querySelectorAll('.persona-btn').forEach(btn => {
         btn.className = "persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900";
       });
-
       const activeBtn = document.getElementById(`btn-${persona}`);
       activeBtn.className = "persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md";
     }
@@ -144,28 +132,27 @@
       const promptInput = document.getElementById('promptInput');
       const responseArea = document.getElementById('responseArea');
       const loadingOverlay = document.getElementById('loadingOverlay');
-      const videoContainer = document.getElementById('videoContainer');
-      const videoPlayer = document.getElementById('videoPlayer');
-      const videoSource = document.getElementById('videoSource');
+      const canvasContainer = document.getElementById('canvasContainer');
       const submitBtn = document.getElementById('submitBtn');
 
       const promptText = promptInput.value.trim();
       if (!promptText) return;
 
-      // UI State Updates
       loadingOverlay.classList.remove('hidden');
       submitBtn.disabled = true;
-      videoContainer.classList.add('hidden');
-      videoPlayer.pause();
+      canvasContainer.classList.add('hidden');
+
+      // Cancel previous animation loop if running
+      if (activeAnimationFrame) {
+        cancelAnimationFrame(activeAnimationFrame);
+        activeAnimationFrame = null;
+      }
 
       try {
         const response = await fetch(WORKER_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: promptText,
-            persona: currentPersona
-          })
+          body: JSON.stringify({ prompt: promptText, persona: currentPersona })
         });
 
         const data = await response.json();
@@ -173,29 +160,15 @@
         if (data.error) {
           responseArea.innerHTML = `<p class="text-rose-400 font-mono">Error: ${data.error}</p>`;
         } else {
-          // Parse Markdown text
+          // Render Markdown text
           responseArea.innerHTML = marked.parse(data.answer);
+          responseArea.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+          if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([responseArea]);
 
-          // Trigger Highlight.js on code blocks
-          responseArea.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightElement(block);
-          });
-
-          // Trigger MathJax re-render for LaTeX formulas
-          if (window.MathJax && MathJax.typesetPromise) {
-            MathJax.typesetPromise([responseArea]);
+          // Execute Canvas Animation safely
+          if (data.canvasScript && data.canvasScript.length > 10) {
+            runCanvasAnimation(data.canvasScript);
           }
-
-          // Handle Video Auto-Render
-          if (data.videoUrl) {
-            videoSource.src = data.videoUrl;
-            videoPlayer.load();
-            videoContainer.classList.remove('hidden');
-            videoPlayer.play();
-          }
-
-          // Auto-scroll response into view
-          responseArea.scrollIntoView({ behavior: 'smooth' });
         }
       } catch (err) {
         responseArea.innerHTML = `<p class="text-rose-400 font-mono">Network Error: ${err.message}</p>`;
@@ -205,9 +178,39 @@
         promptInput.value = "";
       }
     }
+
+    function runCanvasAnimation(scriptCode) {
+      const canvasContainer = document.getElementById('canvasContainer');
+      const canvas = document.getElementById('animationCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set intrinsic canvas dimensions based on client container
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+
+      canvasContainer.classList.remove('hidden');
+
+      try {
+        // Strip dynamic DOM manipulation calls from model output to fit target canvas
+        let cleanCode = scriptCode
+          .replace(/const canvas = document\.createElement\('canvas'\);?/g, '')
+          .replace(/document\.body\.appendChild\(canvas\);?/g, '')
+          .replace(/canvas\.width = \d+;?/g, '')
+          .replace(/canvas\.height = \d+;?/g, '');
+
+        // Safely evaluate standard animation loop
+        const animateFn = new Function('canvas', 'ctx', 'requestAnimationFrame', cleanCode);
+        animateFn(canvas, ctx, (fn) => {
+          activeAnimationFrame = requestAnimationFrame(fn);
+        });
+      } catch (e) {
+        console.error("Canvas Execution Error:", e);
+      }
+    }
   </script>
 </body>
 </html>
+
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>SolAI-1 Spatial Terminal</title>
 
   <!-- Leaflet Core CSS & JS -->
@@ -10,49 +10,47 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body, html {
+    html, body {
       width: 100%;
       height: 100%;
-      height: 100dvh; /* Dynamic Viewport Height prevents white bars on mobile */
+      margin: 0;
+      padding: 0;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* MAP CONTAINER - Full bleed without white borders */
+    /* MAP CONTAINER - Pin to absolute viewport edges to kill blank grey spaces */
     #map {
-      width: 100vw;
-      height: 100dvh;
       position: absolute;
       top: 0;
+      bottom: 0;
       left: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
       z-index: 1;
     }
 
-    /* TOP ACTION MENU - High Z-Index & Horizontal Scrollable */
+    /* TOP ACTION BAR - Force fixed floating position at top */
     .top-action-bar {
       position: fixed;
-      top: 10px;
+      top: 12px;
       left: 10px;
       right: 10px;
-      z-index: 10000; /* Stays above map canvas */
+      z-index: 99999; /* Higher than leaflet layer controls */
       display: flex;
       flex-direction: row;
       gap: 8px;
       overflow-x: auto;
       white-space: nowrap;
-      padding: 8px;
-      background: rgba(15, 23, 42, 0.92);
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(12px);
       border-radius: 14px;
-      border: 1px solid rgba(255, 215, 0, 0.4);
+      border: 1.5px solid #ffd700;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
       -webkit-overflow-scrolling: touch;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
     }
 
     .top-action-bar::-webkit-scrollbar { display: none; }
@@ -61,29 +59,25 @@
     .action-btn {
       background: #1e293b;
       color: #ffd700;
-      border: 1px solid rgba(255, 215, 0, 0.5);
+      border: 1px solid rgba(255, 215, 0, 0.6);
       padding: 8px 14px;
       border-radius: 10px;
       font-size: 0.82rem;
       font-weight: 800;
       cursor: pointer;
       flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
     }
 
-    .action-btn:active { transform: scale(0.95); background: #d97706; color: #fff; }
+    .action-btn:active { background: #d97706; color: #fff; }
 
-    /* REALTIME COORDINATES HUD */
+    /* REALTIME HUD */
     .spatial-hud {
       position: fixed;
-      top: 65px;
+      top: 68px;
       left: 10px;
-      z-index: 10000;
+      z-index: 99999;
       background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 215, 0, 0.3);
+      border: 1px solid rgba(255, 215, 0, 0.4);
       padding: 4px 10px;
       border-radius: 8px;
       font-size: 0.7rem;
@@ -92,20 +86,19 @@
       pointer-events: none;
     }
 
-    /* AI ASSISTANT PANEL - Anchored Bottom-Left, Larger Visibility */
+    /* AI PANEL - Bottom-Left Anchored */
     .ai-chat-panel {
       position: fixed;
       bottom: 12px;
-      left: 10px; /* Anchored to bottom left */
-      right: auto;
+      left: 10px;
       width: calc(100vw - 20px);
-      max-width: 440px; /* Increased width for higher visibility */
-      max-height: 440px;
+      max-width: 440px;
+      max-height: 420px;
       background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(16px);
       border: 1.5px solid rgba(255, 215, 0, 0.6);
       border-radius: 16px;
-      z-index: 10000;
+      z-index: 99999;
       display: flex;
       flex-direction: column;
       color: #f8fafc;
@@ -125,20 +118,9 @@
       align-items: center;
     }
 
-    .speaker-toggle-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 215, 0, 0.4);
-      color: #ffd700;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
     .chat-box {
       padding: 12px;
-      height: 240px;
+      height: 220px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -169,21 +151,6 @@
       cursor: pointer;
       font-weight: bold;
       font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .icon-action-btn.recording {
-      background: #dc2626;
-      color: #ffffff;
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-      100% { transform: scale(1); }
     }
 
     .chat-controls input[type="text"] {
@@ -210,38 +177,34 @@
 </head>
 <body>
 
-  <!-- VISIBLE TOP MENU BAR -->
+  <!-- FIXED TOP ACTION BAR -->
   <div class="top-action-bar">
     <button class="action-btn" onclick="zoomToLocalFeatures()">🎯 Zoom Features</button>
     <button class="action-btn" onclick="simulateNavigationRoute()">🛣️ Route Navigation</button>
     <button class="action-btn" onclick="locateUserGPS()">📍 Locate GPS</button>
-    <button class="action-btn" id="heatBtn" onclick="toggleHeatmap()">🔥 Heatmap</button>
   </div>
 
   <!-- REALTIME HUD -->
   <div class="spatial-hud" id="spatialHud">LAT: 20.0000 | LNG: 0.0000 | ZOOM: 2</div>
 
-  <!-- MAP CANVAS -->
+  <!-- FULLSCREEN MAP CANVAS -->
   <div id="map"></div>
 
-  <!-- AI PANEL ANCHORED BOTTOM-LEFT -->
+  <!-- AI PANEL -->
   <div class="ai-chat-panel">
     <div class="panel-header">
       <span>🤖 SolAI-1 Spatial Terminal</span>
-      <button class="speaker-toggle-btn" id="speakerToggleBtn" onclick="toggleVoiceSpeaker()">🔊 Voice: ON</button>
+      <button onclick="toggleVoiceSpeaker()" id="speakerToggleBtn" style="background:none; border:none; color:#ffd700; font-weight:bold; cursor:pointer;">🔊 Voice: ON</button>
     </div>
     <div class="chat-box" id="chatBox">
-      <div class="msg ai">Terminal initialized. Tap the 🎙️ mic button to speak or swipe the top menu for spatial tools!</div>
+      <div class="msg ai">Terminal Ready. Use the top menu or type/speak spatial queries!</div>
     </div>
     <div class="chat-controls">
-      <label class="icon-action-btn" title="Upload GeoJSON File">
+      <label class="icon-action-btn" title="Upload GeoJSON">
         📁
         <input type="file" id="fileInput" accept=".json,.geojson" style="display: none;" onchange="handleFileUpload(event)" />
       </label>
-
-      <!-- Microphone Voice Input Button -->
-      <button class="icon-action-btn" id="micBtn" onclick="startVoiceRecognition()" title="Speak to AI">🎙️</button>
-
+      <button class="icon-action-btn" id="micBtn" onclick="startVoiceRecognition()">🎙️</button>
       <input type="text" id="userInput" placeholder="Ask AI about map..." onkeydown="if(event.key==='Enter') sendSpatialQuery()" />
       <button class="send-btn" onclick="sendSpatialQuery()">Ask</button>
     </div>
@@ -251,81 +214,7 @@
     const WORKER_URL = 'https://restless-lab-5821.trustconnect713.workers.dev/';
     const userLocale = navigator.language || 'en-US';
 
-    // Text-To-Speech (Speaker) State
-    let isSpeakerEnabled = true;
-    const synth = window.speechSynthesis;
-
-    // Mobile Web Speech Unlocking
-    function toggleVoiceSpeaker() {
-      isSpeakerEnabled = !isSpeakerEnabled;
-      const btn = document.getElementById('speakerToggleBtn');
-      if (isSpeakerEnabled) {
-        btn.innerText = '🔊 Voice: ON';
-        btn.style.opacity = '1.0';
-        // Unlock audio context on mobile tap
-        const unlock = new SpeechSynthesisUtterance('');
-        synth.speak(unlock);
-      } else {
-        btn.innerText = '🔇 Voice: OFF';
-        btn.style.opacity = '0.5';
-        synth.cancel();
-      }
-    }
-
-    function speakText(text) {
-      if (!isSpeakerEnabled || !('speechSynthesis' in window)) return;
-      synth.cancel();
-      const plainText = text.replace(/[*#\-_`]/g, '');
-      const utterance = new SpeechSynthesisUtterance(plainText);
-      utterance.lang = userLocale;
-      synth.speak(utterance);
-    }
-
-    // Speech Recognition (Microphone Speech-To-Text)
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = userLocale;
-
-      recognition.onstart = function () {
-        document.getElementById('micBtn').classList.add('recording');
-        addChatMessage('system', '🎙️ Listening to your voice...');
-      };
-
-      recognition.onresult = function (event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('userInput').value = transcript;
-        document.getElementById('micBtn').classList.remove('recording');
-        sendSpatialQuery(); // Auto-send transcript
-      };
-
-      recognition.onerror = function (event) {
-        document.getElementById('micBtn').classList.remove('recording');
-        addChatMessage('system', '⚠️ Mic access denied or not supported on this browser.');
-      };
-
-      recognition.onend = function () {
-        document.getElementById('micBtn').classList.remove('recording');
-      };
-    }
-
-    function startVoiceRecognition() {
-      if (!recognition) {
-        alert("Speech Recognition is restricted or unsupported by this mobile browser. Ensure location/mic permissions are granted.");
-        return;
-      }
-      try {
-        recognition.start();
-      } catch (e) {
-        recognition.stop();
-      }
-    }
-
-    // Initialize Map
+    // 1. Initialize Leaflet Map
     const map = L.map('map', {
       center: [20.0, 0.0],
       zoom: 2,
@@ -337,10 +226,15 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Fix map viewport calculations
-    setTimeout(() => { map.invalidateSize(); }, 300);
+    // 2. Force Map Canvas to re-fill container bounds on load & window resize
+    function resizeMap() {
+      map.invalidateSize();
+    }
+    window.addEventListener('resize', resizeMap);
+    window.addEventListener('orientationchange', resizeMap);
+    setTimeout(resizeMap, 300);
 
-    // Default GeoJSON Data
+    // Default Features
     const mapGeoData = {
       "type": "FeatureCollection",
       "features": [
@@ -353,7 +247,7 @@
 
     function zoomToLocalFeatures() {
       map.flyToBounds(geoJsonLayer.getBounds(), { duration: 2.0, maxZoom: 14 });
-      addChatMessage('system', '🌍 Zoomed to local infrastructure features.');
+      addChatMessage('system', '🌍 Zoomed to local infrastructure.');
     }
 
     function locateUserGPS() {
@@ -372,7 +266,7 @@
       activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
       map.flyToBounds(activeRoutePolyline.getBounds(), { duration: 2.0, padding: [40, 40] });
       addChatMessage('system', '🛣️ Route calculated.');
-      sendSpatialQuery("Analyze active navigation route and features.");
+      sendSpatialQuery("Analyze active navigation route.");
     }
 
     map.on('mousemove touchmove', (e) => {
@@ -386,8 +280,6 @@
       msg.innerText = text;
       box.appendChild(msg);
       box.scrollTop = box.scrollHeight;
-
-      if (sender === 'ai') speakText(text);
     }
 
     async function sendSpatialQuery(overridePrompt = null) {
@@ -415,12 +307,13 @@
         const data = await res.json();
         if (data.answer) addChatMessage('ai', data.answer);
       } catch (err) {
-        addChatMessage('ai', '⚠️ Error reaching Cloudflare AI worker.');
+        addChatMessage('ai', '⚠️ Error contacting Cloudflare AI worker.');
       }
     }
   </script>
 </body>
 </html>
+
 
 
 

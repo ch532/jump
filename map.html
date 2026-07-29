@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SolAI-1 Spatial Terminal</title>
 
   <!-- Leaflet Core CSS & JS -->
@@ -25,18 +25,27 @@
       margin: 0;
       padding: 0;
     }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+    body {
+      width: 100vw;
+      height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: #0b1528;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
     }
 
+    /* APP WRAPPER - Boxed view instead of edge-to-edge fullscreen */
     .app-container {
       position: relative;
       width: 100%;
-      height: 100%;
+      max-width: 1200px;
+      height: 90vh;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
     }
 
     /* 1. MAP CANVAS */
@@ -125,7 +134,7 @@
     .ai-terminal {
       pointer-events: auto;
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       background-color: rgba(11, 21, 40, 0.96);
       backdrop-filter: blur(14px);
       border: 1.5px solid rgba(250, 204, 21, 0.6);
@@ -161,7 +170,7 @@
       background-color: rgba(17, 24, 39, 0.9);
       border-radius: 10px;
       padding: 10px;
-      height: 200px;
+      height: 180px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -230,7 +239,7 @@
 
   <div class="app-container">
 
-    <!-- 1. FULLSCREEN MAP CANVAS -->
+    <!-- 1. MAP CANVAS -->
     <div class="map-container">
       <div id="map"></div>
     </div>
@@ -246,7 +255,7 @@
     </header>
 
     <!-- REALTIME COORDINATES HUD -->
-    <div class="spatial-hud" id="spatialHud">LAT: 9.0765 | LNG: 7.3986 | ZOOM: 12</div>
+    <div class="spatial-hud" id="spatialHud">LAT: 20.0000 | LNG: 0.0000 | ZOOM: 2</div>
 
     <!-- 3. BOTTOM RIGHT AI TERMINAL -->
     <div class="bottom-container">
@@ -277,6 +286,7 @@
   </div>
 
   <script>
+    // UPDATED: Linked directly to your Cloudflare Worker endpoint
     const WORKER_URL = 'https://restless-lab-5821.trustconnect713.workers.dev/';
     const userLocale = navigator.language || 'en-US';
 
@@ -342,10 +352,10 @@
       try { recognition.start(); } catch (e) { recognition.stop(); }
     }
 
-    // Initialize Map Instance
+    // INITIALIZE MAP TO WORLD VIEW
     const map = L.map('map', {
-      center: [9.0765, 7.3986],
-      zoom: 12,
+      center: [20.0, 0.0],
+      zoom: 2,
       zoomControl: false
     });
 
@@ -378,7 +388,7 @@
 
     const geoJsonLayer = L.geoJSON(mapGeoData).addTo(map);
 
-    // --- MANUAL ZOOM FUNCTIONS ONLY ---
+    // --- MANUAL ZOOM FUNCTIONS ---
     function zoomInMap() {
       map.zoomIn();
       addChatMessage('system', '🔍 Zoomed In');
@@ -389,15 +399,13 @@
       addChatMessage('system', '🔍 Zoomed Out');
     }
 
-    // --- ACTION FUNCTIONS (NO AUTOMATIC ZOOM) ---
+    // --- ACTIONS (NO AUTO-ZOOM) ---
     function locateUserGPS() {
       if (!navigator.geolocation) return alert("GPS unavailable");
       navigator.geolocation.getCurrentPosition((pos) => {
         const lat = pos.coords.latitude, lng = pos.coords.longitude;
         if (userMarker) map.removeLayer(userMarker);
         userMarker = L.marker([lat, lng]).addTo(map).bindPopup("📍 GPS Position").openPopup();
-        
-        // Pans center without changing current zoom level
         map.panTo([lat, lng]); 
         addChatMessage('system', `📍 Located GPS: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
       });
@@ -406,7 +414,6 @@
     function simulateNavigationRoute() {
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
-      
       addChatMessage('system', '🛣️ Route calculated.');
       sendSpatialQuery("Analyze active navigation route.");
     }
@@ -415,7 +422,6 @@
       if (bufferLayer) map.removeLayer(bufferLayer);
       const buffered = turf.buffer(turf.point([7.3986, 9.0765]), 1, { units: 'kilometers' });
       bufferLayer = L.geoJSON(buffered, { style: { color: '#d97706', fillColor: '#fde047', fillOpacity: 0.35, weight: 2 } }).addTo(map);
-      
       addChatMessage('system', '⭕ 1km Buffer Zone generated.');
       sendSpatialQuery("What assets exist within this 1km buffer zone?");
     }
@@ -442,7 +448,6 @@
         try {
           const parsedGeoJSON = JSON.parse(e.target.result);
           L.geoJSON(parsedGeoJSON, { style: { color: '#22c55e', weight: 3 } }).addTo(map);
-          
           uploadedFileContext = { fileName: file.name, fileData: parsedGeoJSON };
           addChatMessage('system', `📁 File Rendered: ${file.name}`);
           sendSpatialQuery(`Analyze uploaded spatial file: ${file.name}`);
@@ -512,3 +517,4 @@
   </script>
 </body>
 </html>
+

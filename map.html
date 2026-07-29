@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>SolAI-1 Interactive GIS Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>SolAI-1 Spatial Terminal</title>
 
   <!-- Leaflet Core CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -18,41 +18,41 @@
     body, html {
       width: 100%;
       height: 100%;
+      height: 100dvh; /* Dynamic Viewport Height prevents white bars on mobile */
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #000;
+      background-color: #0f172a;
     }
 
-    /* MAP CONTAINER - Ensured gesture capture */
+    /* MAP CONTAINER - Full bleed without white borders */
     #map {
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
       position: absolute;
       top: 0;
       left: 0;
       z-index: 1;
-      touch-action: auto !important;
     }
 
-    /* TOP SCROLLABLE MENU - Fixed Z-index & Horizontal Touch Swiping */
+    /* TOP ACTION MENU - High Z-Index & Horizontal Scrollable */
     .top-action-bar {
       position: fixed;
-      top: 12px;
+      top: 10px;
       left: 10px;
       right: 10px;
-      z-index: 9999; /* Higher than Leaflet controls */
+      z-index: 10000; /* Stays above map canvas */
       display: flex;
       flex-direction: row;
       gap: 8px;
       overflow-x: auto;
       white-space: nowrap;
-      padding: 6px 4px;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 8px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 215, 0, 0.4);
       -webkit-overflow-scrolling: touch;
-      touch-action: pan-x;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
     }
 
     .top-action-bar::-webkit-scrollbar { display: none; }
@@ -63,9 +63,9 @@
       color: #ffd700;
       border: 1px solid rgba(255, 215, 0, 0.5);
       padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 800;
       cursor: pointer;
       flex-shrink: 0;
       display: inline-flex;
@@ -75,12 +75,12 @@
 
     .action-btn:active { transform: scale(0.95); background: #d97706; color: #fff; }
 
-    /* REALTIME HUD */
+    /* REALTIME COORDINATES HUD */
     .spatial-hud {
       position: fixed;
-      top: 66px;
+      top: 65px;
       left: 10px;
-      z-index: 9999;
+      z-index: 10000;
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 215, 0, 0.3);
@@ -92,85 +92,116 @@
       pointer-events: none;
     }
 
-    /* AI PANEL OVERLAY */
+    /* AI ASSISTANT PANEL - Anchored Bottom-Left, Larger Visibility */
     .ai-chat-panel {
       position: fixed;
       bottom: 12px;
-      left: 10px;
-      right: 10px;
-      max-width: 420px;
-      margin: 0 auto;
-      max-height: 420px;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      border: 1.5px solid rgba(255, 215, 0, 0.5);
+      left: 10px; /* Anchored to bottom left */
+      right: auto;
+      width: calc(100vw - 20px);
+      max-width: 440px; /* Increased width for higher visibility */
+      max-height: 440px;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(255, 215, 0, 0.6);
       border-radius: 16px;
-      z-index: 9999;
+      z-index: 10000;
       display: flex;
       flex-direction: column;
       color: #f8fafc;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85);
     }
 
     .panel-header {
-      background: rgba(30, 41, 59, 0.9);
+      background: rgba(30, 41, 59, 0.95);
       padding: 10px 14px;
       font-weight: 800;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #ffd700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
+    .speaker-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      color: #ffd700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     .chat-box {
-      padding: 10px;
-      height: 220px;
+      padding: 12px;
+      height: 240px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 0.82rem;
+      gap: 10px;
+      font-size: 0.85rem;
     }
 
-    .msg { padding: 8px 12px; border-radius: 10px; max-width: 90%; line-height: 1.4; white-space: pre-wrap; }
+    .msg { padding: 10px 14px; border-radius: 12px; max-width: 90%; line-height: 1.45; white-space: pre-wrap; }
     .msg.user { background: #2563eb; color: #fff; align-self: flex-end; }
     .msg.ai { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid rgba(255, 215, 0, 0.25); }
-    .msg.system { background: rgba(217, 119, 6, 0.2); color: #fef3c7; align-self: center; font-size: 0.74rem; text-align: center; }
+    .msg.system { background: rgba(217, 119, 6, 0.2); color: #fef3c7; border: 1px solid rgba(253, 224, 71, 0.4); align-self: center; font-size: 0.76rem; text-align: center; }
 
     .chat-controls {
       display: flex;
-      padding: 8px;
+      padding: 10px;
       gap: 6px;
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       align-items: center;
     }
 
-    .icon-btn {
+    .icon-action-btn {
       background: #334155;
       color: #ffd700;
       border: 1px solid rgba(255, 215, 0, 0.4);
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
       cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-action-btn.recording {
+      background: #dc2626;
+      color: #ffffff;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
     }
 
     .chat-controls input[type="text"] {
       flex: 1;
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
       border: 1px solid #475569;
       background: #0f172a;
       color: #fff;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
+      outline: none;
     }
 
     .send-btn {
-      padding: 8px 14px;
+      padding: 10px 16px;
       background: #d97706;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       color: #fff;
       font-weight: 800;
       cursor: pointer;
@@ -179,13 +210,12 @@
 </head>
 <body>
 
-  <!-- FIXED TOP MENU TOOLBAR -->
+  <!-- VISIBLE TOP MENU BAR -->
   <div class="top-action-bar">
-    <button class="action-btn" onclick="zoomToLocalFeatures()">🎯 Features</button>
-    <button class="action-btn" onclick="simulateNavigationRoute()">🛣️ Route</button>
-    <button class="action-btn" onclick="fetchRealtimeWeather()">🌦️ Weather</button>
-    <button class="action-btn" onclick="fetchNearbyPOIs()">🏢 POIs</button>
-    <button class="action-btn" onclick="locateUserGPS()">📍 GPS</button>
+    <button class="action-btn" onclick="zoomToLocalFeatures()">🎯 Zoom Features</button>
+    <button class="action-btn" onclick="simulateNavigationRoute()">🛣️ Route Navigation</button>
+    <button class="action-btn" onclick="locateUserGPS()">📍 Locate GPS</button>
+    <button class="action-btn" id="heatBtn" onclick="toggleHeatmap()">🔥 Heatmap</button>
   </div>
 
   <!-- REALTIME HUD -->
@@ -194,21 +224,24 @@
   <!-- MAP CANVAS -->
   <div id="map"></div>
 
-  <!-- AI PANEL -->
+  <!-- AI PANEL ANCHORED BOTTOM-LEFT -->
   <div class="ai-chat-panel">
     <div class="panel-header">
       <span>🤖 SolAI-1 Spatial Terminal</span>
-      <button onclick="toggleVoiceSpeaker()" id="speakerBtn" style="background:none; border:none; color:#ffd700; cursor:pointer;">🔊 Voice: ON</button>
+      <button class="speaker-toggle-btn" id="speakerToggleBtn" onclick="toggleVoiceSpeaker()">🔊 Voice: ON</button>
     </div>
     <div class="chat-box" id="chatBox">
-      <div class="msg ai">Map initialized. Swipe top bar for actions, or ask spatial queries!</div>
+      <div class="msg ai">Terminal initialized. Tap the 🎙️ mic button to speak or swipe the top menu for spatial tools!</div>
     </div>
     <div class="chat-controls">
-      <label class="icon-btn" title="Upload GeoJSON">
+      <label class="icon-action-btn" title="Upload GeoJSON File">
         📁
         <input type="file" id="fileInput" accept=".json,.geojson" style="display: none;" onchange="handleFileUpload(event)" />
       </label>
-      <button class="icon-btn" onclick="startVoiceRecognition()" title="Voice Prompt">🎙️</button>
+
+      <!-- Microphone Voice Input Button -->
+      <button class="icon-action-btn" id="micBtn" onclick="startVoiceRecognition()" title="Speak to AI">🎙️</button>
+
       <input type="text" id="userInput" placeholder="Ask AI about map..." onkeydown="if(event.key==='Enter') sendSpatialQuery()" />
       <button class="send-btn" onclick="sendSpatialQuery()">Ask</button>
     </div>
@@ -218,12 +251,85 @@
     const WORKER_URL = 'https://restless-lab-5821.trustconnect713.workers.dev/';
     const userLocale = navigator.language || 'en-US';
 
-    // 1. Initialize Map Instance
+    // Text-To-Speech (Speaker) State
+    let isSpeakerEnabled = true;
+    const synth = window.speechSynthesis;
+
+    // Mobile Web Speech Unlocking
+    function toggleVoiceSpeaker() {
+      isSpeakerEnabled = !isSpeakerEnabled;
+      const btn = document.getElementById('speakerToggleBtn');
+      if (isSpeakerEnabled) {
+        btn.innerText = '🔊 Voice: ON';
+        btn.style.opacity = '1.0';
+        // Unlock audio context on mobile tap
+        const unlock = new SpeechSynthesisUtterance('');
+        synth.speak(unlock);
+      } else {
+        btn.innerText = '🔇 Voice: OFF';
+        btn.style.opacity = '0.5';
+        synth.cancel();
+      }
+    }
+
+    function speakText(text) {
+      if (!isSpeakerEnabled || !('speechSynthesis' in window)) return;
+      synth.cancel();
+      const plainText = text.replace(/[*#\-_`]/g, '');
+      const utterance = new SpeechSynthesisUtterance(plainText);
+      utterance.lang = userLocale;
+      synth.speak(utterance);
+    }
+
+    // Speech Recognition (Microphone Speech-To-Text)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = userLocale;
+
+      recognition.onstart = function () {
+        document.getElementById('micBtn').classList.add('recording');
+        addChatMessage('system', '🎙️ Listening to your voice...');
+      };
+
+      recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('userInput').value = transcript;
+        document.getElementById('micBtn').classList.remove('recording');
+        sendSpatialQuery(); // Auto-send transcript
+      };
+
+      recognition.onerror = function (event) {
+        document.getElementById('micBtn').classList.remove('recording');
+        addChatMessage('system', '⚠️ Mic access denied or not supported on this browser.');
+      };
+
+      recognition.onend = function () {
+        document.getElementById('micBtn').classList.remove('recording');
+      };
+    }
+
+    function startVoiceRecognition() {
+      if (!recognition) {
+        alert("Speech Recognition is restricted or unsupported by this mobile browser. Ensure location/mic permissions are granted.");
+        return;
+      }
+      try {
+        recognition.start();
+      } catch (e) {
+        recognition.stop();
+      }
+    }
+
+    // Initialize Map
     const map = L.map('map', {
       center: [20.0, 0.0],
       zoom: 2,
-      zoomControl: true,
-      tap: true // Ensure touch gestures work on mobile browsers
+      zoomControl: false
     });
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -231,12 +337,10 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Force Leaflet to re-calculate container dimensions after render
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 400);
+    // Fix map viewport calculations
+    setTimeout(() => { map.invalidateSize(); }, 300);
 
-    // Feature Data
+    // Default GeoJSON Data
     const mapGeoData = {
       "type": "FeatureCollection",
       "features": [
@@ -249,7 +353,7 @@
 
     function zoomToLocalFeatures() {
       map.flyToBounds(geoJsonLayer.getBounds(), { duration: 2.0, maxZoom: 14 });
-      addChatMessage('system', '🌍 Zoomed to local features.');
+      addChatMessage('system', '🌍 Zoomed to local infrastructure features.');
     }
 
     function locateUserGPS() {
@@ -258,8 +362,17 @@
         const lat = pos.coords.latitude, lng = pos.coords.longitude;
         map.flyTo([lat, lng], 15, { duration: 2.0 });
         L.marker([lat, lng]).addTo(map).bindPopup("📍 GPS Position").openPopup();
-        addChatMessage('system', `📍 Located GPS: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+        addChatMessage('system', `📍 GPS Centered: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
       });
+    }
+
+    let activeRoutePolyline = null;
+    function simulateNavigationRoute() {
+      if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
+      activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
+      map.flyToBounds(activeRoutePolyline.getBounds(), { duration: 2.0, padding: [40, 40] });
+      addChatMessage('system', '🛣️ Route calculated.');
+      sendSpatialQuery("Analyze active navigation route and features.");
     }
 
     map.on('mousemove touchmove', (e) => {
@@ -273,6 +386,8 @@
       msg.innerText = text;
       box.appendChild(msg);
       box.scrollTop = box.scrollHeight;
+
+      if (sender === 'ai') speakText(text);
     }
 
     async function sendSpatialQuery(overridePrompt = null) {
@@ -296,15 +411,17 @@
             }
           })
         });
+
         const data = await res.json();
         if (data.answer) addChatMessage('ai', data.answer);
       } catch (err) {
-        addChatMessage('ai', '⚠️ Error contacting Cloudflare AI worker.');
+        addChatMessage('ai', '⚠️ Error reaching Cloudflare AI worker.');
       }
     }
   </script>
 </body>
 </html>
+
 
 
 

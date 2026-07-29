@@ -1,270 +1,377 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Okoye Chibuike Maptech - Secured Portal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <style>
-        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
-        
-        /* Lock Screen Styling */
-        #lock-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #1a73e8;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        }
-        .lock-box {
-            background: rgba(255,255,255,0.15);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
-            max-width: 500px;
-        }
-        #pass-field {
-            padding: 12px;
-            border-radius: 4px;
-            border: none;
-            width: 280px;
-            margin-bottom: 20px;
-            color: #333;
-            background: white;
-            font-size: 16px;
-            text-align: center;
-        }
-        .contact-info {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.3);
-            font-size: 14px;
-            text-align: left;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SolAI-1 Geospatial GIS & AI Navigation Terminal</title>
 
-        /* Main Content Styling */
-        #main-content-wrapper { display: none; padding: 20px; }
-        .feature-section { background: #fff; margin-bottom: 40px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h2 { color: #1a73e8; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; font-size: 24px; }
-        .map-frame { height: 450px; width: 100%; border: 1px solid #ddd; border-radius: 8px; position: relative; overflow: hidden; }
-        .split-flex { display: flex; height: 450px; }
-        .sidebar-panel { flex: 0 0 300px; padding: 10px; overflow-y: auto; background: #fafafa; border-left: 1px solid #ddd; font-size: 12px; }
-        .main-panel { flex-grow: 1; position: relative; }
-        #floating-panel { position: absolute; top: 10px; left: 10px; z-index: 5; background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-        .custom-btn { background: #fff; border: 1px solid #ccc; padding: 8px; margin: 5px; cursor: pointer; border-radius: 2px; }
-        .auto-form { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .full-width { grid-column: span 2; }
-    </style>
+  <!-- Leaflet Core CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet Draw Plugin -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+  <!-- Leaflet Heatmap Plugin -->
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+  <!-- Turf.js for Spatial Geoprocessing -->
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, system-ui, sans-serif; background-color: #000; }
+
+    #map { width: 100vw; height: 100vh; z-index: 1; }
+
+    /* Top GIS Toolbar */
+    .top-action-bar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 1000;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+      color: #ffd700;
+      border: 1.5px solid rgba(255, 215, 0, 0.5);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:active { transform: scale(0.95); }
+    .action-btn.active { background: #d97706; color: #fff; border-color: #fde047; }
+
+    /* Spatial Coordinates HUD */
+    .spatial-hud {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      color: #ffd700;
+      font-family: monospace;
+      pointer-events: none;
+    }
+
+    /* AI Assistant Panel */
+    .ai-chat-panel {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 390px;
+      max-width: calc(100vw - 40px);
+      max-height: 520px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255, 215, 0, 0.5);
+      border-radius: 18px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      color: #f8fafc;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: rgba(30, 41, 59, 0.9);
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: #ffd700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .chat-box {
+      padding: 14px;
+      height: 310px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.85rem;
+    }
+
+    .msg { padding: 10px 14px; border-radius: 12px; max-width: 90%; line-height: 1.45; white-space: pre-wrap; }
+    .msg.user { background: #2563eb; color: #fff; align-self: flex-end; }
+    .msg.ai { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid rgba(255, 215, 0, 0.25); }
+    .msg.system { background: rgba(217, 119, 6, 0.2); color: #fef3c7; border: 1px solid rgba(253, 224, 71, 0.4); align-self: center; font-size: 0.76rem; text-align: center; }
+
+    .chat-controls {
+      display: flex;
+      padding: 10px;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-controls input {
+      flex: 1; padding: 10px 14px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: #fff; outline: none; font-size: 0.85rem;
+    }
+
+    .chat-controls button {
+      padding: 10px 16px; background: #d97706; border: none; border-radius: 10px; color: #fff; font-weight: 800; cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="lock-screen">
-        <div class="lock-box">
-            <img src="https://connectgold.sbs/gold-2.png" alt="Logo" style="height: 70px; margin-bottom: 20px;">
-            <h4>Okoye Chibuike Maptech </h4>
-            <p>Access to maps require verification</p>
-            
-            <input type="password" id="pass-field" placeholder="Enter Access Code">
-            <br>
-            <button class="btn black waves-effect waves-light" onclick="checkAccess()">Unlock Maptech Portal</button>
-            
-            <div class="contact-info">
-                <strong>For Payment & Verification, Contact:</strong><br>
-                <span>📧 Email: <b>chyke33@skyl.name.ng</b></span><br>
-                <span>📞 Phone: <b>+234 706 174 0924</b></span><br>
-                <p style="font-size: 11px; margin-top: 10px; font-style: italic;">Provide proof of payment to receive your instant access code.</p>
-            </div>
-        </div>
+  <!-- Floating GIS Toolbar -->
+  <div class="top-action-bar">
+    <button class="action-btn" onclick="zoomToLocalFeatures()">🎯 Zoom to Features</button>
+    <button class="action-btn" onclick="simulateNavigationRoute()">🛣️ Route Navigation</button>
+    <button class="action-btn" onclick="createBufferZone()">⭕ 1km Buffer Zone</button>
+    <button class="action-btn" id="heatBtn" onclick="toggleHeatmap()">🔥 Heatmap Layer</button>
+    <button class="action-btn" onclick="locateUserGPS()">📍 Locate GPS</button>
+  </div>
+
+  <!-- Realtime Coordinates Display -->
+  <div class="spatial-hud" id="spatialHud">LAT: 20.0000 | LNG: 0.0000 | ZOOM: 2</div>
+
+  <!-- Leaflet Canvas -->
+  <div id="map"></div>
+
+  <!-- AI Assistant Panel -->
+  <div class="ai-chat-panel">
+    <div class="panel-header">
+      <span>🤖 SolAI-1 Spatial Assistant</span>
+      <span style="font-size: 0.7rem; color: #94a3b8;">connectgold-gateway</span>
     </div>
-
-    <div id="main-content-wrapper">
-        <div style="background: #fff; padding: 15px 40px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border-radius: 12px;">
-          <img src="https://connectgold.sbs/gold-2.png" alt="Logo" style="height: 50px; width: auto; margin-right: 20px;">
-          <h1 style="font-size: 22px; margin: 0; color: #333; font-weight: 500;">Okoye Chibuike maptech</h1>
-        </div>
-
-        <div class="feature-section">
-            <h2>1. Earthquake Data Layer</h2>
-            <div id="quake-map" class="map-frame"></div>
-        </div>
-
-        <div class="feature-section">
-            <h2>2. Distance Matrix Service</h2>
-            <div class="split-flex">
-                <div id="dist-map" class="main-panel"></div>
-                <div class="sidebar-panel"><pre id="dm-res">Results will appear here...</pre></div>
-            </div>
-        </div>
-
-        <div class="feature-section">
-            <h2>3. Commute Solution (Iframe)</h2>
-            <div class="map-frame">
-                <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/commutes/lcjm/commutes.html" width="100%" height="100%" style="border:0;"></iframe>
-            </div>
-        </div>
-
-        <div class="feature-section">
-            <h2>4. Geolocation (Browser GPS)</h2>
-            <div id="geo-map" class="map-frame"></div>
-        </div>
-
-        <div class="feature-section">
-            <h2>5. Advanced Markers: Uluru</h2>
-            <div id="uluru-map" class="map-frame"></div>
-        </div>
-
-        <div class="feature-section">
-            <h2>6. Place Details Service</h2>
-            <div id="place-map" class="map-frame"></div>
-        </div>
-
-        <div class="feature-section">
-            <h2>7. Directions Service with Text Panel</h2>
-            <div class="split-flex">
-                <div class="main-panel">
-                    <div id="floating-panel">
-                        <select id="start-dir" style="display:block"><option value="chicago, il">Chicago</option><option value="st louis, mo">St Louis</option></select>
-                        <select id="end-dir" style="display:block"><option value="los angeles, ca">Los Angeles</option><option value="joplin, mo">Joplin</option></select>
-                    </div>
-                    <div id="dir-map" style="height:100%"></div>
-                </div>
-                <div id="dir-panel" class="sidebar-panel"></div>
-            </div>
-        </div>
-
-        <div class="feature-section">
-            <h2>8. Neighborhood Discovery (Iframe)</h2>
-            <div class="map-frame">
-                <iframe src="https://storage.googleapis.com/maps-solutions-bpr0vp0kdx/neighborhood-discovery/pmrz/neighborhood-discovery.html" width="100%" height="100%" style="border:0;"></iframe>
-            </div>
-        </div>
-
-        <div class="feature-section">
-            <h2>10. Place Autocomplete Address Form</h2>
-            <div class="map-frame">
-                <div class="auto-form">
-                    <input id="ship-addr" class="full-width" placeholder="Enter address">
-                    <input id="city-f" placeholder="City">
-                    <input id="state-f" placeholder="State">
-                    <input id="zip-f" placeholder="Zip">
-                    <input id="country-f" placeholder="Country">
-                </div>
-            </div>
-        </div>
-
-        <div class="feature-section">
-            <h2>11. Custom Controls & KML Layer</h2>
-            <div id="kml-map" class="map-frame"></div>
-        </div>
+    <div class="chat-box" id="chatBox">
+      <div class="msg ai">World Map Loaded. Click "Zoom to Features" or any action button to smoothly fly into active map coordinates!</div>
     </div>
+    <div class="chat-controls">
+      <input type="text" id="userInput" placeholder="Ask about shapes, routes, spatial features..." onkeydown="if(event.key==='Enter') sendSpatialQuery()" />
+      <button onclick="sendSpatialQuery()">Ask</button>
+    </div>
+  </div>
 
-    <script>
-        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-            key: "AIzaSyCmtNyxm8kMrXWQ-bZofYnILUs_8_LP5aw", 
-            v: "beta"
+  <script>
+    const WORKER_URL = 'https://restless-lab-5821.trustconnect713.workers.dev/';
+
+    // 1. Basemap Layers
+    const osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' });
+    const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' });
+
+    // Initialize Map Instance - Starts showing the full World by default
+    const map = L.map('map', {
+      center: [20.0, 0.0],
+      zoom: 2,
+      layers: [osmLayer]
+    });
+
+    // Layer Control Switcher
+    const baseMaps = { "OpenStreetMap": osmLayer, "Satellite Imagery": satLayer };
+    L.control.layers(baseMaps).addTo(map);
+
+    // Global Spatial State Tracking
+    let activeRouteData = null;
+    let selectedMapFeature = null;
+    let routePolyline = null;
+    let bufferLayer = null;
+    let heatLayer = null;
+    let userDrawnGeometries = [];
+
+    // Feature Node Dataset
+    const mapGeoData = {
+      "type": "FeatureCollection",
+      "features": [
+        { "type": "Feature", "properties": { "id": "SUB_01", "name": "Central Power Substation", "type": "Utility", "status": "Operational", "voltage": "33kV" }, "geometry": { "type": "Point", "coordinates": [7.3986, 9.0765] } },
+        { "type": "Feature", "properties": { "id": "SOLAR_NODE", "name": "SolAI-1 Array Station", "type": "Solar Telemetry Node", "status": "Active", "output": "120kW" }, "geometry": { "type": "Point", "coordinates": [7.4100, 9.0850] } }
+      ]
+    };
+
+    // Render Markers on Map
+    const geoJsonLayer = L.geoJSON(mapGeoData, {
+      onEachFeature: function (feature, layer) {
+        layer.on('click', function () {
+          selectedMapFeature = feature.properties;
+          const popup = `<b>${feature.properties.name}</b><br/>Type: ${feature.properties.type}<br/><button onclick="sendSpatialQuery('Analyze feature ${feature.properties.name}')" style="margin-top:4px; padding:4px 8px; background:#d97706; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Analyze with AI</button>`;
+          layer.bindPopup(popup).openPopup();
+          addChatMessage('system', `📍 Highlighted: ${feature.properties.name}`);
         });
-    </script>
+      }
+    }).addTo(map);
 
-    <script>
-        // GATEKEEPER LOGIC
-        function checkAccess() {
-            const code = document.getElementById('pass-field').value;
-            // SECURE CODE: Abuja2026
-            if (code === 'Abuja2026') { 
-                document.getElementById('lock-screen').style.display = 'none';
-                document.getElementById('main-content-wrapper').style.display = 'block';
-                initAll(); 
-            } else {
-                alert("Invalid Access Code.\n\nPlease contact Okoye Chibuike at +2347061740924 or chyke33@skyl.name.ng for verification.");
-            }
-        }
+    // Smoothly Fly from World View to Local Feature Cluster
+    function zoomToLocalFeatures() {
+      map.flyToBounds(geoJsonLayer.getBounds(), {
+        duration: 2.5, // 2.5 second cinematic zoom animation
+        maxZoom: 14
+      });
+      addChatMessage('system', '🌍 Zooming in from World View to Local Infrastructure.');
+    }
 
-        // MAP ENGINE
-        async function initAll() {
-            const { Map, KmlLayer } = await google.maps.importLibrary("maps");
-            const { Autocomplete, PlacesService } = await google.maps.importLibrary("places");
-            const { DirectionsService, DirectionsRenderer, DistanceMatrixService } = await google.maps.importLibrary("routes");
-            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+    // 2. Leaflet.Draw Geometry Creation Tools
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+    const drawControl = new L.Control.Draw({
+      edit: { featureGroup: drawnItems },
+      draw: { polygon: true, polyline: true, rectangle: true, circle: true, marker: true }
+    });
+    map.addControl(drawControl);
 
-            // 1. Quakes
-            const qMap = new Map(document.getElementById("quake-map"), { center: {lat: 20, lng: -160}, zoom: 2 });
-            window.eqfeed_callback = (data) => qMap.data.addGeoJson(data);
-            const script = document.createElement("script");
-            script.src = "https://storage.googleapis.com/mapsdevsite/json/quakes.geo.json";
-            document.head.appendChild(script);
+    map.on(L.Draw.Event.CREATED, function (e) {
+      const layer = e.layer;
+      drawnItems.addLayer(layer);
+      const geojson = layer.toGeoJSON();
 
-            // 2. Distance Matrix
-            const dmMap = new Map(document.getElementById("dist-map"), { center: {lat: 55, lng: 10}, zoom: 4 });
-            const dmSvc = new DistanceMatrixService();
-            dmSvc.getDistanceMatrix({ origins: ['London'], destinations: ['Paris'], travelMode: 'DRIVING' })
-                 .then(res => document.getElementById("dm-res").innerText = JSON.stringify(res, null, 2));
+      if (e.layerType === 'polygon' || e.layerType === 'rectangle') {
+        const areaSqM = turf.area(geojson);
+        geojson.properties.calculatedAreaKm2 = (areaSqM / 1000000).toFixed(3);
+        addChatMessage('system', `📐 Drawn Polygon Area: ${geojson.properties.calculatedAreaKm2} km²`);
+      } else if (e.layerType === 'polyline') {
+        const lengthKm = turf.length(geojson, { units: 'kilometers' });
+        geojson.properties.calculatedLengthKm = lengthKm.toFixed(2);
+        addChatMessage('system', `📏 Drawn Path Length: ${geojson.properties.calculatedLengthKm} km`);
+      }
 
-            // 4. Geolocation
-            const geoMap = new Map(document.getElementById("geo-map"), { center: {lat: 0, lng: 0}, zoom: 2 });
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(p => {
-                    const pos = {lat: p.coords.latitude, lng: p.coords.longitude};
-                    geoMap.setCenter(pos); geoMap.setZoom(14);
-                    new google.maps.Marker({position: pos, map: geoMap, title: "You are here"});
-                });
-            }
+      userDrawnGeometries.push(geojson);
+      sendSpatialQuery("Analyze this newly drawn spatial shape and its boundary coverage.");
+    });
 
-            // 5. Uluru
-            const uMap = new Map(document.getElementById("uluru-map"), { center: {lat: -25.344, lng: 131.031}, zoom: 4, mapId: "DEMO_MAP_ID" });
-            new AdvancedMarkerElement({ map: uMap, position: {lat: -25.344, lng: 131.031}, title: "Uluru" });
+    // 3. Geoprocessing Buffer Zone Engine
+    function createBufferZone() {
+      zoomToLocalFeatures();
+      if (bufferLayer) map.removeLayer(bufferLayer);
 
-            // 6. Place Details
-            const pMap = new Map(document.getElementById("place-map"), { center: {lat: -33.866, lng: 151.196}, zoom: 15 });
-            const pSvc = new PlacesService(pMap);
-            pSvc.getDetails({ placeId: 'ChIJN1t_tDeuEmsRUsoyG83frY4' }, (p) => {
-                if(p) new google.maps.Marker({map: pMap, position: p.geometry.location});
-            });
+      const point = turf.point([7.3986, 9.0765]);
+      const buffered = turf.buffer(point, 1, { units: 'kilometers' });
 
-            // 7. Directions
-            const drSvc = new DirectionsService();
-            const drRend = new DirectionsRenderer({ 
-                map: new Map(document.getElementById("dir-map"), {zoom: 4, center: {lat: 41, lng: -87}}), 
-                panel: document.getElementById("dir-panel") 
-            });
-            const route = () => drSvc.route({ 
-                origin: document.getElementById("start-dir").value, 
-                destination: document.getElementById("end-dir").value, 
-                travelMode: 'DRIVING' 
-            }).then(r => drRend.setDirections(r));
-            document.getElementById("start-dir").addEventListener("change", route);
-            document.getElementById("end-dir").addEventListener("change", route);
-            route();
+      bufferLayer = L.geoJSON(buffered, {
+        style: { color: '#d97706', fillColor: '#fde047', fillOpacity: 0.35, weight: 2 }
+      }).addTo(map);
 
-            // 10. Address Form
-            const ac = new Autocomplete(document.getElementById("ship-addr"), { types: ["address"] });
-            ac.addListener("place_changed", () => {
-                const p = ac.getPlace();
-                if (p.address_components) {
-                    p.address_components.forEach(c => {
-                        if(c.types.includes("locality")) document.getElementById("city-f").value = c.long_name;
-                        if(c.types.includes("postal_code")) document.getElementById("zip-f").value = c.long_name;
-                    });
-                }
-            });
+      addChatMessage('system', '⭕ 1km Proximity Buffer Zone generated around Central Substation.');
+      sendSpatialQuery("What assets or features exist within this 1km buffer zone?");
+    }
 
-            // 11. Custom Controls & KML Layer
-            const kMap = new Map(document.getElementById("kml-map"), { center: {lat: 9.001, lng: 7.585}, zoom: 12 });
-            new KmlLayer({ 
-                url: "https://skyl.name.ng/Okoye-Chibuike.kml", 
-                map: kMap 
-            });
+    // 4. Heatmap Data Density Layer
+    function toggleHeatmap() {
+      const btn = document.getElementById('heatBtn');
+      if (heatLayer) {
+        map.removeLayer(heatLayer);
+        heatLayer = null;
+        btn.classList.remove('active');
+        addChatMessage('system', '🔥 Heatmap Layer Disabled.');
+      } else {
+        zoomToLocalFeatures();
+        const heatPoints = [
+          [9.0765, 7.3986, 0.9],
+          [9.0800, 7.4020, 0.6],
+          [9.0850, 7.4100, 1.0],
+          [9.0720, 7.3900, 0.4]
+        ];
+        heatLayer = L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 17 }).addTo(map);
+        btn.classList.add('active');
+        addChatMessage('system', '🔥 Infra Density Heatmap Layer Activated.');
+      }
+    }
 
-            const btn = document.createElement("button"); 
-            btn.className = "custom-btn"; 
-            btn.innerText = "Center Abuja";
-            btn.onclick = () => kMap.setCenter({lat: 9.001, lng: 7.585});
-            kMap.controls[google.maps.ControlPosition.TOP_CENTER].push(btn);
-        }
-    </script>
+    // Realtime Coordinates Cursor Tracking
+    map.on('mousemove', (e) => {
+      document.getElementById('spatialHud').innerText = `LAT: ${e.latlng.lat.toFixed(4)} | LNG: ${e.latlng.lng.toFixed(4)} | ZOOM: ${map.getZoom()}`;
+    });
+
+    // Route Navigation Calculation
+    function simulateNavigationRoute() {
+      if (routePolyline) map.removeLayer(routePolyline);
+
+      const start = [9.0765, 7.3986];
+      const end = [9.0850, 7.4100];
+      routePolyline = L.polyline([start, [9.0800, 7.4020], end], { color: '#2563eb', weight: 5 }).addTo(map);
+
+      // Smoothly fly into the active route bounding area
+      map.flyToBounds(routePolyline.getBounds(), { duration: 2.0, padding: [50, 50] });
+
+      activeRouteData = {
+        origin: "Central Substation (9.0765, 7.3986)",
+        destination: "SolAI-1 Array Station (9.0850, 7.4100)",
+        distanceKm: "3.2 km",
+        estimatedTimeMin: "7 mins",
+        navigationSteps: ["Head North towards Independence Avenue", "Turn right onto Solar Expressway", "Arrive at SolAI-1 Array Station"]
+      };
+
+      addChatMessage('system', '🛣️ Navigation Route calculated.');
+      sendSpatialQuery("Analyze active route navigation, turns, and features.");
+    }
+
+    // Device GPS Positioning
+    function locateUserGPS() {
+      if (!navigator.geolocation) return alert("GPS unavailable");
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        
+        // Fly directly to user GPS coordinates
+        map.flyTo([lat, lng], 15, { duration: 2.5 });
+
+        L.marker([lat, lng]).addTo(map).bindPopup("📍 GPS Position").openPopup();
+        addChatMessage('system', `📍 Located GPS: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+      });
+    }
+
+    function addChatMessage(sender, text) {
+      const box = document.getElementById('chatBox');
+      const msg = document.createElement('div');
+      msg.className = `msg ${sender}`;
+      msg.innerText = text;
+      box.appendChild(msg);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // Send Context Payload to Workers AI
+    async function sendSpatialQuery(overridePrompt = null) {
+      const input = document.getElementById('userInput');
+      const text = overridePrompt || input.value.trim();
+      if (!text) return;
+
+      addChatMessage('user', text);
+      if (!overridePrompt) input.value = '';
+
+      const fullMapState = {
+        viewCenter: map.getCenter(),
+        zoomLevel: map.getZoom(),
+        mapBounds: map.getBounds(),
+        activeRoute: activeRouteData,
+        selectedFeature: selectedMapFeature,
+        allMapFeatures: mapGeoData.features.map(f => f.properties),
+        userDrawnGeometries: userDrawnGeometries
+      };
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: text, context: fullMapState })
+        });
+
+        const data = await res.json();
+        if (data.answer) addChatMessage('ai', data.answer);
+        else if (data.error) addChatMessage('ai', `⚠️ Worker Error: ${data.error}`);
+      } catch (err) {
+        addChatMessage('ai', '⚠️ Failed to connect to Cloudflare AI Worker.');
+      }
+    }
+  </script>
 </body>
 </html>
+

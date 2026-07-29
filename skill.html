@@ -45,7 +45,7 @@
     </div>
   </header>
 
-  <!-- Main Container (Scrollable Content Area) -->
+  <!-- Main Container -->
   <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col gap-4 overflow-y-auto min-h-0">
 
     <!-- Persona Selection Tabs -->
@@ -94,7 +94,7 @@
     </div>
   </main>
 
-  <!-- Input Form (Pinned to Bottom) -->
+  <!-- Input Form -->
   <form id="aiForm" onsubmit="handleSubmit(event)" class="bg-slate-950/95 backdrop-blur border-t border-slate-800 p-3 flex gap-2 z-50 shrink-0">
     <input
       type="text"
@@ -119,7 +119,6 @@
     let activeAnimationFrame = null;
     let globalAudioCtx = null;
 
-    // Handle mobile soft keyboard viewport resize
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
         document.body.style.height = `${window.visualViewport.height}px`;
@@ -203,30 +202,42 @@
       const canvasContainer = document.getElementById('canvasContainer');
       const canvas = document.getElementById('animationCanvas');
       const ctx = canvas.getContext('2d');
-      
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
 
+      // Unhide container first so DOM width/height become measurable
       canvasContainer.classList.remove('hidden');
 
-      try {
-        let cleanCode = scriptCode
-          .replace(/const canvas = document\.createElement\('canvas'\);?/g, '')
-          .replace(/document\.body\.appendChild\(canvas\);?/g, '')
-          .replace(/canvas\.width = \d+;?/g, '')
-          .replace(/canvas\.height = \d+;?/g, '');
+      // Defer execution until the next animation frame to guarantee layout dimensions are non-zero
+      requestAnimationFrame(() => {
+        const width = canvas.clientWidth || 360;
+        const height = canvas.clientHeight || 240;
+        canvas.width = width;
+        canvas.height = height;
 
-        const animateFn = new Function('canvas', 'ctx', 'audioCtx', 'requestAnimationFrame', cleanCode);
-        animateFn(canvas, ctx, globalAudioCtx, (fn) => {
-          activeAnimationFrame = requestAnimationFrame(fn);
-        });
-      } catch (e) {
-        console.error("Canvas & Audio Execution Error:", e);
-      }
+        // Set bright fallback colors for dark mode visibility
+        ctx.fillStyle = '#38bdf8';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+
+        try {
+          let cleanCode = scriptCode
+            .replace(/const canvas = document\.createElement\('canvas'\);?/g, '')
+            .replace(/document\.body\.appendChild\(canvas\);?/g, '')
+            .replace(/canvas\.width = \d+;?/g, '')
+            .replace(/canvas\.height = \d+;?/g, '');
+
+          const animateFn = new Function('canvas', 'ctx', 'audioCtx', 'requestAnimationFrame', cleanCode);
+          animateFn(canvas, ctx, globalAudioCtx, (fn) => {
+            activeAnimationFrame = requestAnimationFrame(fn);
+          });
+        } catch (e) {
+          console.error("Canvas Execution Error:", e);
+        }
+      });
     }
   </script>
 </body>
 </html>
+
 
 
 

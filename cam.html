@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Goldtech SolAI-1 AI Camera Terminal</title>
+  
+  <!-- HLS.js Library for External IP/CCTV & HLS Stream Decoding -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -419,13 +423,14 @@
       margin-bottom: 22px;
       font-size: 1.05rem;
       font-weight: 600;
+      gap: 12px;
     }
 
     .setting-label {
       color: #e2e8f0;
     }
 
-    .setting-control select, .setting-control input[type="range"], .setting-btn {
+    .setting-control select, .setting-control input[type="range"], .setting-control input[type="text"], .setting-btn {
       background: rgba(30, 41, 59, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #f8fafc;
@@ -433,6 +438,10 @@
       border-radius: 12px;
       font-size: 1rem;
       font-weight: 600;
+    }
+
+    .setting-control input[type="text"] {
+      width: 100%;
     }
 
     .setting-btn {
@@ -894,6 +903,27 @@
         <button class="close-btn" onclick="toggleModal('settingsPanel')">✕</button>
       </div>
 
+      <!-- NEW: Video Stream Source Engine Selection -->
+      <div class="setting-row">
+        <span class="setting-label">Video Stream Source</span>
+        <div class="setting-control">
+          <select id="videoSourceSelect" onchange="changeVideoSource()">
+            <option value="local" selected>📷 Onboard Device Camera</option>
+            <option value="hls">🌐 External HLS / IP Camera (.m3u8)</option>
+            <option value="webrtc">⚡ External WebRTC Stream</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- NEW: Dynamic External Stream URL Input Bar -->
+      <div class="setting-row" id="externalUrlRow" style="display: none; flex-direction: column; align-items: stretch; gap: 8px;">
+        <span class="setting-label">External Stream URL</span>
+        <div class="setting-control" style="display: flex; gap: 8px;">
+          <input type="text" id="streamUrlInput" placeholder="https://domain.com/live/stream.m3u8">
+          <button class="setting-btn" onclick="loadExternalStream()">Connect</button>
+        </div>
+      </div>
+
       <div class="setting-row">
         <span class="setting-label">Export Solar Telemetry CSV</span>
         <div class="setting-control">
@@ -1023,6 +1053,7 @@
     let localStream = null;
     let videoTrack = null;
     let ws = null;
+    let hlsInstance = null;
 
     let mediaRecorder = null;
     let recordedChunks = [];
@@ -1044,6 +1075,51 @@
       toastNotification.innerText = msg;
       toastNotification.style.display = 'block';
       setTimeout(() => { toastNotification.style.display = 'none'; }, 3500);
+    }
+
+    // --- External Video Stream Source Switching Engine ---
+    function changeVideoSource() {
+      const sourceType = document.getElementById('videoSourceSelect').value;
+      const externalUrlRow = document.getElementById('externalUrlRow');
+
+      if (sourceType === 'local') {
+        externalUrlRow.style.display = 'none';
+        startCamera();
+        showToast("📷 Switched to Onboard Camera");
+      } else {
+        externalUrlRow.style.display = 'flex';
+        showToast("🌐 Enter External Stream URL");
+      }
+    }
+
+    function loadExternalStream() {
+      const streamUrl = document.getElementById('streamUrlInput').value.trim();
+      if (!streamUrl) {
+        showToast("⚠️ Please enter a valid stream URL");
+        return;
+      }
+
+      stopCamera();
+
+      if (streamUrl.includes('.m3u8') || (window.Hls && Hls.isSupported())) {
+        if (Hls.isSupported()) {
+          hlsInstance = new Hls();
+          hlsInstance.loadSource(streamUrl);
+          hlsInstance.attachMedia(videoElement);
+          hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoElement.play();
+            showToast("⚡ HLS Stream Connected");
+          });
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+          videoElement.src = streamUrl;
+          videoElement.play();
+          showToast("⚡ Native HLS Stream Connected");
+        }
+      } else {
+        videoElement.src = streamUrl;
+        videoElement.play();
+        showToast("⚡ WebRTC Feed Connected");
+      }
     }
 
     // --- Native External Share Engine ---
@@ -1130,6 +1206,7 @@
 
       const resSelect = document.getElementById('resSelect');
       const fpsSelect = document.getElementById('fpsSelect');
+      const sourceType = document.getElementById('videoSourceSelect').value;
 
       if (pct < 20 && !isSolar) {
         if (resSelect.value !== '720' || fpsSelect.value !== '15') {
@@ -1139,7 +1216,7 @@
           aiEnhanceBtn.classList.remove('active');
           modeBadge.style.display = 'none';
           updateISPFilters();
-          await startCamera();
+          if (sourceType === 'local') await startCamera();
           showToast("⚠️ Power Save: 720p 15FPS Activated");
         }
       } else if (isSolar || pct > 40) {
@@ -1150,7 +1227,7 @@
           aiEnhanceBtn.classList.add('active');
           modeBadge.style.display = 'inline-block';
           updateISPFilters();
-          await startCamera();
+          if (sourceType === 'local') await startCamera();
           showToast("⚡ Full Power Mode Restored (1080p 30FPS)");
         }
       }
@@ -1348,6 +1425,10 @@
 
     // --- Hardware Camera Engine with Anti-Hang Lifecycles ---
     async function stopCamera() {
+      if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+      }
       if (localStream) {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
@@ -1355,6 +1436,7 @@
       videoTrack = null;
       if (videoElement) {
         videoElement.srcObject = null;
+        videoElement.src = '';
       }
     }
 
@@ -1495,16 +1577,17 @@
 
     // Video Recording Execution
     function toggleVideoRecording() {
-      if (!localStream) return;
+      if (!videoElement.srcObject && !localStream) return;
 
       const selectedCodec = document.getElementById('codecSelect').value;
+      const recordStream = localStream || videoElement.srcObject;
 
       if (!isRecording) {
         recordedChunks = [];
         try {
-          mediaRecorder = new MediaRecorder(localStream, { mimeType: `video/webm;codecs=${selectedCodec},opus` });
+          mediaRecorder = new MediaRecorder(recordStream, { mimeType: `video/webm;codecs=${selectedCodec},opus` });
         } catch (e) {
-          mediaRecorder = new MediaRecorder(localStream);
+          mediaRecorder = new MediaRecorder(recordStream);
         }
 
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
@@ -1584,22 +1667,31 @@
 
     // Lifecycle Event Handler
     document.addEventListener('visibilitychange', async () => {
+      const sourceType = document.getElementById('videoSourceSelect').value;
       if (document.hidden) {
         if (isRecording && mediaRecorder) {
           toggleVideoRecording();
         }
         await stopCamera();
       } else {
-        await startCamera();
+        if (sourceType === 'local') await startCamera();
         connectSignaling();
       }
     });
 
     // Camera Parameter Change Listeners
-    document.getElementById('cameraFacingSelect').addEventListener('change', startCamera);
-    document.getElementById('resSelect').addEventListener('change', startCamera);
-    document.getElementById('fpsSelect').addEventListener('change', startCamera);
-    document.getElementById('audioToggle').addEventListener('change', startCamera);
+    document.getElementById('cameraFacingSelect').addEventListener('change', () => {
+      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
+    });
+    document.getElementById('resSelect').addEventListener('change', () => {
+      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
+    });
+    document.getElementById('fpsSelect').addEventListener('change', () => {
+      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
+    });
+    document.getElementById('audioToggle').addEventListener('change', () => {
+      if (document.getElementById('videoSourceSelect').value === 'local') startCamera();
+    });
 
     async function init() {
       await startCamera();
@@ -1611,4 +1703,5 @@
   </script>
 </body>
 </html>
+
 

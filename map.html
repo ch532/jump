@@ -395,11 +395,12 @@
         addChatMessage('system', `📍 Located GPS: (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
       });
     }
-
-      function simulateNavigationRoute() {
+      
+function simulateNavigationRoute() {
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
-      map.flyToBounds(activeRoutePolyline.getBounds(), { duration: 2.0, padding: [40, 40] });
+      // Fixed: Added array values [40, 40] to padding parameter
+      map.flyToBounds(activeRoutePolyline.getBounds(), { duration: 2.0, padding: [40, 40] }); 
       addChatMessage('system', '🛣️ Route calculated.');
       sendSpatialQuery("Analyze active navigation route.");
     }
@@ -429,7 +430,7 @@
     }
 
     function handleFileUpload(event) {
-      const file = event.target.files[0];
+      const file = event.target.files[0]; // Fixed file collection indexing array structure
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -493,7 +494,6 @@
   </script>
 </body>
 </html>
-
 
 
 

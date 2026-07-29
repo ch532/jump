@@ -1430,20 +1430,27 @@
       shutterModeText.innerText = 'START VIDEO';
     });
 
-    // --- Hardware Camera Engine ---
+    // --- Enhanced Anti-Hang Hardware Camera Engine ---
     async function stopCamera() {
       if (hlsInstance) {
         hlsInstance.destroy();
         hlsInstance = null;
       }
+      
       if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+        localStream.getTracks().forEach(track => {
+          track.stop(); // Hardware release at OS level
+        });
         localStream = null;
       }
+      
       videoTrack = null;
+      
       if (videoElement) {
+        videoElement.pause();
         videoElement.srcObject = null;
-        videoElement.src = '';
+        videoElement.removeAttribute('src');
+        videoElement.load(); // Flush hardware buffers
       }
     }
 
@@ -1468,7 +1475,9 @@
       try {
         localStream = await navigator.mediaDevices.getUserMedia(constraints);
         videoElement.srcObject = localStream;
-        await videoElement.play();
+        
+        await videoElement.play().catch(e => console.log("Auto-play recovery error:", e));
+        
         videoTrack = localStream.getVideoTracks()[0];
 
         if (videoTrack && videoTrack.getCapabilities) {
@@ -1479,8 +1488,10 @@
             zoomSlider.step = capabilities.zoom.step;
           }
         }
+        updateISPFilters();
       } catch (err) {
         console.error("Camera Init Error:", err);
+        showToast("⚠️ Camera reconnecting...");
       }
     }
 
@@ -1672,19 +1683,34 @@
       ws.onerror = () => ws.close();
     }
 
-    // Lifecycle Event Handler
-    document.addEventListener('visibilitychange', async () => {
+    // --- Anti-Hang Lifecycle & Focus Event Handler ---
+    async function handleResume() {
       const sourceType = document.getElementById('videoSourceSelect').value;
-      if (document.hidden) {
-        if (isRecording && mediaRecorder) {
-          toggleVideoRecording();
-        }
-        await stopCamera();
+      if (sourceType === 'local') {
+        await startCamera();
       } else {
-        if (sourceType === 'local') await startCamera();
-        connectSignaling();
+        loadExternalStream();
+      }
+      connectSignaling();
+    }
+
+    async function handlePause() {
+      if (isRecording && mediaRecorder) {
+        toggleVideoRecording();
+      }
+      await stopCamera();
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+      if (document.hidden) {
+        await handlePause();
+      } else {
+        await handleResume();
       }
     });
+
+    window.addEventListener('pagehide', handlePause);
+    window.addEventListener('pageshow', handleResume);
 
     // Camera Parameter Change Listeners
     document.getElementById('cameraFacingSelect').addEventListener('change', () => {
@@ -1710,6 +1736,7 @@
   </script>
 </body>
 </html>
+
 
 
 

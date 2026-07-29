@@ -6,18 +6,18 @@
   <title>SolAI-1 Spatial Terminal</title>
 
   <!-- Leaflet Core CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com" />
+  <script src="https://unpkg.com"></script>
 
   <!-- Leaflet Draw Plugin -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <link rel="stylesheet" href="https://cloudflare.com" />
+  <script src="https://cloudflare.com"></script>
 
   <!-- Leaflet Heatmap Plugin -->
-  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script src="https://unpkg.com"></script>
 
   <!-- Turf.js for Spatial Geoprocessing -->
-  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+  <script src="https://jsdelivr.net"></script>
 
   <style>
     /* Reset margins and force full screen without grey/white borders */
@@ -109,14 +109,14 @@
       pointer-events: none;
     }
 
-    /* 3. BOTTOM CONTAINER - Anchored Bottom Left for High Visibility */
+    /* 3. BOTTOM CONTAINER - Fixed to Flex-End to push the AI Interface to the Right Side */
     .bottom-container {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       display: flex;
-      justify-content: flex-start; /* Positioned at bottom-left */
+      justify-content: flex-end; /* FIXED: Positioned safely at the bottom-right */
       padding: 14px;
       z-index: 1000;
       pointer-events: none;
@@ -226,7 +226,8 @@
     }
   </style>
 </head>
-<body>
+
+  <body>
 
   <div class="app-container">
 
@@ -247,7 +248,7 @@
     <!-- REALTIME COORDINATES HUD -->
     <div class="spatial-hud" id="spatialHud">LAT: 20.0000 | LNG: 0.0000 | ZOOM: 2</div>
 
-    <!-- 3. BOTTOM LEFT AI TERMINAL -->
+    <!-- 3. BOTTOM RIGHT AI TERMINAL -->
     <div class="bottom-container">
       <div class="ai-terminal">
         <div class="terminal-header">
@@ -277,8 +278,8 @@
 
   </div>
 
-  <script>
-    const WORKER_URL = 'https://restless-lab-5821.trustconnect713.workers.dev/';
+    <script>
+    const WORKER_URL = 'https://workers.dev';
     const userLocale = navigator.language || 'en-US';
 
     let isSpeakerEnabled = true;
@@ -350,7 +351,7 @@
       zoomControl: false
     });
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://openstreetmap.org{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(map);
@@ -395,7 +396,7 @@
       });
     }
 
-    function simulateNavigationRoute() {
+      function simulateNavigationRoute() {
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
       map.flyToBounds(activeRoutePolyline.getBounds(), { duration: 2.0, padding: [40, 40] });

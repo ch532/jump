@@ -36,16 +36,16 @@
       padding: 16px;
     }
 
-    /* APP WRAPPER - Boxed view */
+    /* APP WRAPPER */
     .app-container {
       position: relative;
       width: 100%;
-      max-width: 1200px;
-      height: 90vh;
+      max-width: 1300px;
+      height: 92vh;
       border-radius: 16px;
       overflow: hidden;
-      border: 1px solid rgba(250, 204, 21, 0.3);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
+      border: 1.5px solid rgba(250, 204, 21, 0.4);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85);
     }
 
     /* 1. MAP CANVAS */
@@ -89,9 +89,9 @@
       backdrop-filter: blur(10px);
       color: #facc15;
       border: 1px solid rgba(250, 204, 21, 0.5);
-      padding: 8px 14px;
+      padding: 10px 16px;
       border-radius: 20px;
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       font-weight: 800;
       cursor: pointer;
       flex-shrink: 0;
@@ -103,101 +103,100 @@
     /* REALTIME COORDINATES HUD */
     .spatial-hud {
       position: absolute;
-      top: 60px;
+      top: 65px;
       left: 14px;
       z-index: 1000;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.88);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(250, 204, 21, 0.3);
-      padding: 4px 10px;
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      padding: 6px 12px;
       border-radius: 8px;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       color: #facc15;
       font-family: monospace;
       pointer-events: none;
     }
 
-    /* 3. BOTTOM CONTAINER */
-    .bottom-container {
+    /* 3. TOP PROMINENT AI TERMINAL CONTAINER */
+    .top-ai-container {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      padding: 14px;
+      top: 65px;
+      right: 14px;
       z-index: 1000;
       pointer-events: none;
+      width: calc(100% - 28px);
+      max-width: 540px; /* ENLARGED: Made substantially larger and clearer */
     }
 
-    /* AI TERMINAL */
+    /* THE AI TERMINAL BOX */
     .ai-terminal {
       pointer-events: auto;
       width: 100%;
-      max-width: 420px;
-      background-color: rgba(11, 21, 40, 0.96);
-      backdrop-filter: blur(14px);
-      border: 1.5px solid rgba(250, 204, 21, 0.6);
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7);
+      background-color: rgba(11, 21, 40, 0.97);
+      backdrop-filter: blur(16px);
+      border: 2px solid rgba(250, 204, 21, 0.8);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
       color: #ffffff;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .terminal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.85rem;
+      font-size: 1.05rem; /* ENLARGED */
       font-weight: bold;
       color: #facc15;
     }
 
     .speaker-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(250, 204, 21, 0.4);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.5);
       color: #facc15;
-      padding: 4px 8px;
+      padding: 6px 12px;
       border-radius: 10px;
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       cursor: pointer;
+      font-weight: 600;
     }
 
     .chat-box {
-      background-color: rgba(17, 24, 39, 0.9);
-      border-radius: 10px;
-      padding: 10px;
-      height: 180px;
+      background-color: rgba(17, 24, 39, 0.95);
+      border-radius: 12px;
+      padding: 12px;
+      height: 240px; /* ENLARGED: Taller viewport for reading insights */
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 0.82rem;
+      gap: 10px;
+      font-size: 0.92rem; /* ENLARGED */
       border: 1px solid #374151;
     }
 
-    .msg { padding: 8px 12px; border-radius: 10px; max-width: 90%; line-height: 1.4; white-space: pre-wrap; }
+    .msg { padding: 10px 14px; border-radius: 12px; max-width: 92%; line-height: 1.45; white-space: pre-wrap; }
     .msg.user { background: #2563eb; color: #fff; align-self: flex-end; }
-    .msg.ai { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid rgba(250, 204, 21, 0.25); }
-    .msg.system { background: rgba(217, 119, 6, 0.2); color: #fef3c7; align-self: center; font-size: 0.74rem; text-align: center; }
+    .msg.ai { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid rgba(250, 204, 21, 0.35); }
+    .msg.system { background: rgba(217, 119, 6, 0.25); color: #fef3c7; align-self: center; font-size: 0.8rem; text-align: center; }
 
     .chat-controls {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
     }
 
     .icon-btn {
       background: #374151;
       color: #facc15;
-      border: 1px solid rgba(250, 204, 21, 0.4);
-      padding: 8px 10px;
-      border-radius: 8px;
+      border: 1px solid rgba(250, 204, 21, 0.5);
+      padding: 10px 12px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 1rem;
     }
 
     .icon-btn.recording {
@@ -214,23 +213,38 @@
 
     .chat-controls input[type="text"] {
       flex: 1;
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
       border: 1px solid #4b5563;
       background: #111827;
       color: #fff;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       outline: none;
     }
 
     .send-btn {
-      padding: 8px 14px;
+      padding: 10px 18px;
       background: #d97706;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       color: #fff;
+      font-size: 0.9rem;
       font-weight: 800;
       cursor: pointer;
+    }
+
+    /* Mobile responsiveness logic */
+    @media (max-width: 600px) {
+      .top-ai-container {
+        right: 50%;
+        transform: translateX(50%);
+        width: calc(100% - 20px);
+      }
+      .spatial-hud {
+        top: auto;
+        bottom: 14px;
+        left: 14px;
+      }
     }
   </style>
 </head>
@@ -257,8 +271,8 @@
     <!-- REALTIME COORDINATES HUD -->
     <div class="spatial-hud" id="spatialHud">LAT: 20.0000 | LNG: 0.0000 | ZOOM: 2</div>
 
-    <!-- 3. BOTTOM RIGHT AI TERMINAL -->
-    <div class="bottom-container">
+    <!-- 3. TOP PROMINENT AI TERMINAL -->
+    <div class="top-ai-container">
       <div class="ai-terminal">
         <div class="terminal-header">
           <span>🤖 SolAI-1 Spatial Terminal</span>
@@ -266,7 +280,7 @@
         </div>
 
         <div class="chat-box" id="chatBox">
-          <div class="msg ai">Terminal Ready. Use the top menu or type/speak spatial queries!</div>
+          <div class="msg ai">Terminal Ready. Use the top menu or type/speak spatial queries for real-time analysis!</div>
         </div>
 
         <div class="chat-controls">
@@ -277,7 +291,7 @@
 
           <button class="icon-btn" id="micBtn" onclick="startVoiceRecognition()" title="Speak to AI">🎙️</button>
 
-          <input type="text" id="userInput" placeholder="Type or speak prompt..." onkeydown="if(event.key==='Enter') sendSpatialQuery()" />
+          <input type="text" id="userInput" placeholder="Ask for real-time guidance..." onkeydown="if(event.key==='Enter') sendSpatialQuery()" />
           <button class="send-btn" onclick="sendSpatialQuery()">Ask</button>
         </div>
       </div>
@@ -358,7 +372,7 @@
       zoomControl: false
     });
 
-    // UPDATED: YANDEX MAPS TILE LAYER
+    // YANDEX MAPS TILE LAYER
     L.tileLayer('https://core-renderer-tiles.maps.yandex.net/tiles?l=map&x={x}&y={y}&z={z}&scale=1&lang=en_US', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://yandex.com/maps">Yandex Maps</a>'
@@ -399,7 +413,7 @@
       addChatMessage('system', '🔍 Zoomed Out');
     }
 
-    // --- ACTIONS (NO AUTO-ZOOM) ---
+    // --- ACTIONS ---
     function locateUserGPS() {
       if (!navigator.geolocation) return alert("GPS unavailable");
       navigator.geolocation.getCurrentPosition((pos) => {
@@ -415,7 +429,7 @@
       if (activeRoutePolyline) map.removeLayer(activeRoutePolyline);
       activeRoutePolyline = L.polyline([[9.0765, 7.3986], [9.0800, 7.4020], [9.0850, 7.4100]], { color: '#2563eb', weight: 5 }).addTo(map);
       addChatMessage('system', '🛣️ Route calculated.');
-      sendSpatialQuery("Analyze active navigation route.");
+      sendSpatialQuery("Analyze active navigation route and provide guidance.");
     }
 
     function createBufferZone() {
@@ -423,7 +437,7 @@
       const buffered = turf.buffer(turf.point([7.3986, 9.0765]), 1, { units: 'kilometers' });
       bufferLayer = L.geoJSON(buffered, { style: { color: '#d97706', fillColor: '#fde047', fillOpacity: 0.35, weight: 2 } }).addTo(map);
       addChatMessage('system', '⭕ 1km Buffer Zone generated.');
-      sendSpatialQuery("What assets exist within this 1km buffer zone?");
+      sendSpatialQuery("What assets exist within this 1km buffer zone and what is your recommendation?");
     }
 
     function toggleHeatmap() {
@@ -517,5 +531,6 @@
   </script>
 </body>
 </html>
+
 
 

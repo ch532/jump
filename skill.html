@@ -3,24 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
-  <title>Cloudflare Voice AI Terminal</title>
+  <title>Autonomous Environmental Cascade Engine</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     html, body {
@@ -39,17 +25,20 @@
     .prose code { font-family: monospace; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 flex flex-col font-sans">
+<body class="bg-slate-950 text-slate-100 flex flex-col font-sans">
 
   <!-- Header -->
-  <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur p-4 shrink-0 z-50">
-    <div class="max-w-4xl mx-auto flex items-center justify-between">
-      <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-teal-400 bg-clip-text text-transparent">
-        Voice AI Terminal
-      </h1>
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur p-4 shrink-0 z-50">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-bold bg-gradient-to-r from-teal-400 via-emerald-400 to-indigo-400 bg-clip-text text-transparent">
+          Cross-Domain Cascade AI Engine
+        </h1>
+        <p class="text-xs text-slate-400 font-mono">Agriculture • Land • Water • Atmosphere</p>
+      </div>
       
-      <!-- Audio Mute/Unmute Toggle -->
-      <button onclick="toggleSpeech()" id="speechToggleBtn" class="flex items-center gap-2 text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1.5 rounded-full font-mono hover:bg-indigo-500/20 transition">
+      <!-- Speech Status Toggle -->
+      <button onclick="toggleSpeech()" id="speechToggleBtn" class="flex items-center gap-2 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-full font-mono hover:bg-emerald-500/20 transition">
         <span id="speechStatusIcon">🔊</span>
         <span id="speechStatusText">Voice Output: ON</span>
       </button>
@@ -57,159 +46,86 @@
   </header>
 
   <!-- Main Container -->
-  <main id="mainContainer" class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col gap-4 overflow-y-auto min-h-0">
+  <main id="mainContainer" class="flex-1 max-w-5xl w-full mx-auto p-4 flex flex-col md:flex-row gap-4 overflow-y-auto min-h-0">
 
-    <!-- Persona Tabs -->
-    <div class="grid grid-cols-3 gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800 shrink-0">
-      <button onclick="selectPersona('math_science')" id="btn-math_science"
-        class="persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md">
-        <span class="font-bold text-xs sm:text-sm">Newton-AI</span>
-        <span class="text-[10px] sm:text-xs opacity-75">Science & Math</span>
-      </button>
+    <!-- Left Panel: Telemetry Controls -->
+    <div class="w-full md:w-1/2 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shrink-0 shadow-xl">
+      <h2 class="text-xs font-semibold text-teal-400 font-mono uppercase tracking-wider border-b border-slate-800 pb-2">
+        📡 Sensor Telemetry Controls
+      </h2>
 
-      <button onclick="selectPersona('problem_solver')" id="btn-problem_solver"
-        class="persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900">
-        <span class="font-bold text-xs sm:text-sm">Nexus-AI</span>
-        <span class="text-[10px] sm:text-xs opacity-75">Technology & Systems</span>
-      </button>
+      <div class="grid grid-cols-2 gap-3 text-xs flex-1">
+        <div>
+          <label class="text-slate-400 font-mono">Atmosphere: Rain (mm/h)</label>
+          <input type="number" id="rainRate" value="15" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 font-mono">Agriculture: Soil Sat (%)</label>
+          <input type="number" id="soilSat" value="40" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 font-mono">Land: Slope Angle (°)</label>
+          <input type="number" id="slopeTilt" value="12" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 font-mono">Water: Stream Depth (m)</label>
+          <input type="number" id="waterLevel" value="1.8" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 font-mono">AQI Level (PPM)</label>
+          <input type="number" id="aqiLevel" value="55" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:border-emerald-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 font-mono">Ground Vibration (Hz)</label>
+          <input type="number" id="vibration" value="1.2" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:border-emerald-500 focus:outline-none" />
+        </div>
+      </div>
 
-      <button onclick="selectPersona('software_dev')" id="btn-software_dev"
-        class="persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900">
-        <span class="font-bold text-xs sm:text-sm">Turing-AI</span>
-        <span class="text-[10px] sm:text-xs opacity-75">Software Development</span>
-      </button>
+      <div class="pt-2 flex gap-2">
+        <button onclick="evaluateEnvironment()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-emerald-600/20 text-xs">
+          Run Live Worker Inference
+        </button>
+        <button onclick="triggerSimulatedDisaster()" class="bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30 px-3 py-3 rounded-xl transition text-xs">
+          Simulate Hazard
+        </button>
+      </div>
     </div>
 
-    <!-- Response Display Card -->
-    <div class="flex-1 bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col relative overflow-hidden shadow-2xl">
+    <!-- Right Panel: AI Reasoning & Voice Output -->
+    <div class="w-full md:w-1/2 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col relative overflow-hidden shadow-xl min-h-[250px]">
       
-      <!-- AI Answer Area -->
-      <div id="responseArea" class="prose text-slate-200 flex-1 overflow-y-auto">
-        <p class="text-slate-500 italic">Tap the mic button to speak or type your prompt below...</p>
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+        <h2 class="text-xs font-semibold text-teal-400 font-mono uppercase tracking-wider">
+          ⚡ AI Diagnostic Output
+        </h2>
+        <span id="gatewayBadge" class="text-[10px] bg-slate-800 border border-slate-700 text-slate-400 px-2 py-0.5 rounded font-mono">
+          connectgold-gateway
+        </span>
       </div>
 
-      <!-- Loading / Listening Overlay -->
-      <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
-        <div id="loadingSpinner" class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-        <p id="loadingText" class="text-sm text-slate-400 font-mono animate-pulse">Processing Inference...</p>
+      <div id="responseArea" class="prose text-xs text-slate-200 flex-1 overflow-y-auto pr-1">
+        <p class="text-slate-500 italic">Adjust telemetry inputs on the left and trigger inference...</p>
       </div>
+
+      <button onclick="speakLastResponse()" class="mt-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition shrink-0">
+        <span>🔊 Re-broadcast Voice Diagnostic</span>
+      </button>
+
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
+        <div class="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-xs text-slate-400 font-mono animate-pulse">Running Cascade AI Inference via Gateway...</p>
+      </div>
+
     </div>
+
   </main>
 
-  <!-- Pinned Input Form with Voice Button -->
-  <form id="aiForm" onsubmit="handleSubmit(event)" class="bg-slate-950 border-t border-slate-800 p-3 shrink-0 z-50">
-    <div class="max-w-4xl w-full mx-auto flex gap-2 items-center">
-      
-      <!-- Mic Input Button -->
-      <button
-        type="button"
-        id="micBtn"
-        onclick="toggleMic()"
-        title="Speak to AI"
-        class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 border border-slate-700 p-3 rounded-xl transition-all duration-200 flex items-center justify-center min-w-[48px] h-[48px]"
-      >
-        <span id="micIcon" class="text-lg">🎙️</span>
-      </button>
-
-      <!-- Text Input -->
-      <input
-        type="text"
-        id="promptInput"
-        placeholder="Type or speak a question..."
-        required
-        autocomplete="off"
-        class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-base h-[48px]"
-      />
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        id="submitBtn"
-        class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-medium px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 flex items-center justify-center min-w-[75px] h-[48px]"
-      >
-        <span>Send</span>
-      </button>
-    </div>
-  </form>
-
   <script>
-    const WORKER_URL = "https://restless-lab-5821.trustconnect713.workers.dev/";
-    let currentPersona = "math_science";
+    const WORKER_URL = "https://blue-snowflake-3fb9.trustconnect713.workers.dev/";
     let isSpeechEnabled = true;
-    let recognition = null;
-    let isListening = false;
+    let lastAiResponse = "System is ready for environmental diagnostic inference.";
 
-    // Mobile viewport adjustment
-    function adjustMobileViewport() {
-      if (window.visualViewport) {
-        document.body.style.height = `${window.visualViewport.height}px`;
-        window.scrollTo(0, 0);
-      } else {
-        document.body.style.height = `${window.innerHeight}px`;
-      }
-    }
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', adjustMobileViewport);
-      window.visualViewport.addEventListener('scroll', adjustMobileViewport);
-    } else {
-      window.addEventListener('resize', adjustMobileViewport);
-    }
-    adjustMobileViewport();
-
-    // Initialize Web Speech Recognition (Voice Input)
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = navigator.language || 'en-US';
-
-      recognition.onstart = () => {
-        isListening = true;
-        document.getElementById('micIcon').innerText = '🔴';
-        document.getElementById('micBtn').classList.add('border-rose-500', 'bg-rose-500/20');
-        document.getElementById('promptInput').placeholder = 'Listening... Speak now!';
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('promptInput').value = transcript;
-        stopMic();
-        // Automatically submit spoken prompt
-        document.getElementById('aiForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-      };
-
-      recognition.onerror = (e) => {
-        console.error("Speech Recognition Error:", e.error);
-        stopMic();
-      };
-
-      recognition.onend = () => {
-        stopMic();
-      };
-    } else {
-      document.getElementById('micBtn').style.display = 'none';
-    }
-
-    function toggleMic() {
-      if (!recognition) return;
-      if (isListening) {
-        recognition.stop();
-      } else {
-        window.speechSynthesis.cancel(); // Stop AI voice if currently speaking
-        recognition.start();
-      }
-    }
-
-    function stopMic() {
-      isListening = false;
-      document.getElementById('micIcon').innerText = '🎙️';
-      document.getElementById('micBtn').classList.remove('border-rose-500', 'bg-rose-500/20');
-      document.getElementById('promptInput').placeholder = 'Type or speak a question...';
-    }
-
-    // Toggle AI Speech Output
     function toggleSpeech() {
       isSpeechEnabled = !isSpeechEnabled;
       const statusIcon = document.getElementById('speechStatusIcon');
@@ -225,64 +141,57 @@
       }
     }
 
-    // Text-to-Speech (Multilingual AI Speaking Output)
     function speakText(text) {
       if (!isSpeechEnabled || !('speechSynthesis' in window)) return;
 
-      window.speechSynthesis.cancel(); // Stop any active audio
+      window.speechSynthesis.cancel();
 
-      // Strip markdown code blocks, LaTeX symbols, and formatting for clean voice reading
       let cleanText = text
-        .replace(/```[\s\S]*?```/g, 'Code block omitted.')
+        .replace(/```[\s\S]*?```/g, '')
         .replace(/`([^`]+)`/g, '$1')
-        .replace(/\$\$[\s\S]*?\$\$/g, 'equation')
-        .replace(/\$([^$]+)\$/g, '$1')
         .replace(/[*#_~]/g, '');
 
       const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.rate = 1.0;
+      utterance.rate = 0.95;
       utterance.pitch = 1.0;
-
-      // Select voice based on user's browser language or global voices available
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        // Find best voice matching user locale or default to English
-        const matchingVoice = voices.find(v => v.lang.startsWith(navigator.language.slice(0, 2))) || voices[0];
-        if (matchingVoice) utterance.voice = matchingVoice;
-      }
+      utterance.lang = navigator.language || 'en-US';
 
       window.speechSynthesis.speak(utterance);
     }
 
-    function selectPersona(persona) {
-      currentPersona = persona;
-      document.querySelectorAll('.persona-btn').forEach(btn => {
-        btn.className = "persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border border-transparent transition-all duration-200 text-slate-400 hover:text-slate-200 hover:bg-slate-900";
-      });
-      const activeBtn = document.getElementById(`btn-${persona}`);
-      activeBtn.className = "persona-btn flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all duration-200 bg-slate-800 border-indigo-500/50 text-indigo-300 shadow-md";
+    function speakLastResponse() {
+      speakText(lastAiResponse);
     }
 
-    async function handleSubmit(e) {
-      e.preventDefault();
-      
-      const promptInput = document.getElementById('promptInput');
+    async function evaluateEnvironment() {
       const responseArea = document.getElementById('responseArea');
       const loadingOverlay = document.getElementById('loadingOverlay');
-      const submitBtn = document.getElementById('submitBtn');
 
-      const promptText = promptInput.value.trim();
-      if (!promptText) return;
+      const payload = {
+        atmospheric: {
+          rainfall_rate_mm_hr: parseFloat(document.getElementById('rainRate').value),
+          aqi: parseFloat(document.getElementById('aqiLevel').value)
+        },
+        agricultural: {
+          soil_saturation_percent: parseFloat(document.getElementById('soilSat').value)
+        },
+        land: {
+          slope_tilt_degrees: parseFloat(document.getElementById('slopeTilt').value),
+          ground_vibration_hz: parseFloat(document.getElementById('vibration').value)
+        },
+        water: {
+          surface_water_level_m: parseFloat(document.getElementById('waterLevel').value)
+        }
+      };
 
       loadingOverlay.classList.remove('hidden');
-      submitBtn.disabled = true;
       window.speechSynthesis.cancel();
 
       try {
         const response = await fetch(WORKER_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: promptText, persona: currentPersona })
+          body: JSON.stringify(payload)
         });
 
         const data = await response.json();
@@ -290,25 +199,31 @@
         if (data.error) {
           responseArea.innerHTML = `<p class="text-rose-400 font-mono">Error: ${data.error}</p>`;
         } else {
-          responseArea.innerHTML = marked.parse(data.answer);
-          responseArea.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
-          if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([responseArea]);
+          lastAiResponse = data.aiAnalysis;
+          responseArea.innerHTML = marked.parse(data.aiAnalysis);
 
-          // AI Speaks the answer out loud
-          speakText(data.answer);
+          speakText(data.aiAnalysis);
         }
       } catch (err) {
         responseArea.innerHTML = `<p class="text-rose-400 font-mono">Network Error: ${err.message}</p>`;
       } finally {
         loadingOverlay.classList.add('hidden');
-        submitBtn.disabled = false;
-        promptInput.value = "";
-        document.getElementById('mainContainer').scrollTop = 0;
       }
+    }
+
+    function triggerSimulatedDisaster() {
+      document.getElementById('rainRate').value = 85;
+      document.getElementById('soilSat').value = 94;
+      document.getElementById('slopeTilt').value = 24;
+      document.getElementById('waterLevel').value = 4.8;
+      document.getElementById('aqiLevel').value = 180;
+      document.getElementById('vibration').value = 5.5;
+      evaluateEnvironment();
     }
   </script>
 </body>
 </html>
+
 
 
 

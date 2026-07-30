@@ -24,17 +24,16 @@
     <meta name="mnd-ver" content="0krjlo1bzhvvsglu470ong" />
     <meta name="ezoic-site-verification" content="8kK0sFVcnoj13bEzrlfqi9U5aLPJAx" />
     <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
-<script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
+    <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
-     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
 
     <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
-<script>
-    window.ezstandalone = window.ezstandalone || {};
-    ezstandalone.cmd = ezstandalone.cmd || [];
-</script>
-<script src="//ezoicanalytics.com/analytics.js"></script>
+    <script>
+        window.ezstandalone = window.ezstandalone || {};
+        ezstandalone.cmd = ezstandalone.cmd || [];
+    </script>
+    <script src="//ezoicanalytics.com/analytics.js"></script>
 
     <!-- EXTERNAL TRACKING SDKs -->
     <script src="https://cdn.applixir.com/applixir.app.v6.1.0.js" async></script>
@@ -90,9 +89,24 @@
         .editorial-hub h1 { color: #1e293b; margin-top: 0; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
-        /* CONNECTGOLD AD CONTAINER WRAPPERS */
+        /* AD CONTAINERS & LARGE SPACING WRAPPERS */
         .ad-container-top { width: 100%; max-width: 300px; min-height: 250px; margin: 20px auto; text-align: center; }
         .ad-container-native { width: 100%; margin: 20px 0; }
+        
+        .large-ad-slot {
+            width: 100%;
+            min-height: 280px;
+            margin: 30px 0;
+            padding: 15px;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
 
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #fff; }
@@ -123,6 +137,22 @@
 
 <main class="main-layout" data-sdk-feature="Dashboard">
 
+    <!-- LARGE AD SPACE 1: TOP MAIN BANNER -->
+    <div class="large-ad-slot">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+             crossorigin="anonymous"></script>
+        <!-- Saint -->
+        <ins class="adsbygoogle"
+             style="display:block; width:100%;"
+             data-ad-client="ca-pub-7728035806961877"
+             data-ad-slot="1228301234"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
     <!-- EDITORIAL CONTENT HUB -->
     <section class="editorial-hub" data-sdk-feature="Event Intelligence">
         <h1>Event Intelligence & Regional Updates</h1>
@@ -131,29 +161,77 @@
         </div>
     </section>
 
+    <!-- LARGE AD SPACE 2: MID-CONTENT DISPLAY -->
+    <div class="large-ad-slot">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+             crossorigin="anonymous"></script>
+        <!-- Saint -->
+        <ins class="adsbygoogle"
+             style="display:block; width:100%;"
+             data-ad-client="ca-pub-7728035806961877"
+             data-ad-slot="1228301234"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
     <!-- GOOGLE CUSTOM SEARCH -->
     <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
     <div class="gcse-search" data-sdk-feature="Site Search"></div>
 
-<!-- CG Native: Hot -->
-<div id="plc_5c1j4n0s"></div>
-<script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_5c1j4n0s&pub_id=pub_cg_3n3g1r4o&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_5c1j4n0s");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"native_display",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+    <!-- CG Native: Hot -->
+    <div id="plc_5c1j4n0s"></div>
+    <script>(function(){function l(){var hp=!!document.querySelector('article,.post,.card,.entry');fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=native_display&plc=plc_5c1j4n0s&pub_id=pub_cg_3n3g1r4o&rotation_seconds=30&has_posts="+hp+"&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>{if(r.status===204)return null;return r.json()}).then(d=>{if(!d||!d.adm)return;var e=document.getElementById("plc_5c1j4n0s");if(!e)return;e.innerHTML="";var rng=document.createRange();rng.selectNode(e);e.appendChild(rng.createContextualFragment(d.adm));var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"native_display",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
 
-<script>
-    ezstandalone.cmd.push(function () {
-        ezstandalone.showAds({});
-    });
-</script>
+    <script>
+        ezstandalone.cmd.push(function () {
+            ezstandalone.showAds({});
+        });
+    </script>
     
+    <!-- LARGE AD SPACE 3: PRE-FEED HIGH IMPACT -->
+    <div class="large-ad-slot">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+             crossorigin="anonymous"></script>
+        <!-- Saint -->
+        <ins class="adsbygoogle"
+             style="display:block; width:100%;"
+             data-ad-client="ca-pub-7728035806961877"
+             data-ad-slot="1228301234"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
     <!-- LIVE NEWS RSS FEED CONTAINER -->
     <section id="my-native-feed" data-sdk-feature="Live News Feed">Loading feed...</section>
 
-<!-- CG AI: West -->
-<div id="plc_1l2y4p6f"></div>
-<script>(function(){function l(){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/ai/ad-generator?product=Business%20").then(r=>r.json()).then(d=>{var e=document.getElementById("plc_1l2y4p6f");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"ai_text",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+    <!-- LARGE AD SPACE 4: BOTTOM FEED FOOTER -->
+    <div class="large-ad-slot">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+             crossorigin="anonymous"></script>
+        <!-- Saint -->
+        <ins class="adsbygoogle"
+             style="display:block; width:100%;"
+             data-ad-client="ca-pub-7728035806961877"
+             data-ad-slot="1228301234"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
 
-<!-- CG Event Unit: Cost -->
-<script>function showConnectGoldAd(cb){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=interstitial&plc=plc_5y512u3r&pub_id=pub_cg_3n3g1r4o&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"interstitial_fullscreen",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}</script>
+    <!-- CG AI: West -->
+    <div id="plc_1l2y4p6f"></div>
+    <script>(function(){function l(){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/ai/ad-generator?product=Business%20").then(r=>r.json()).then(d=>{var e=document.getElementById("plc_1l2y4p6f");if(!e)return;e.innerHTML='<div style="border:1px solid #d4af37;padding:16px;background:#161b22;color:#fff;border-radius:8px;max-width:320px;text-align:center;"><h4 style="margin:0 0 10px;">'+(d.headline||'Special Offer')+'</h4><a href="https://chyke.online" target="_blank" style="background:#d4af37;color:#000;padding:8px 16px;border-radius:4px;text-decoration:none;font-weight:bold;display:inline-block;">'+(d.cta||'Shop Now')+'</a></div>';var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"ai_text",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});})}l();setInterval(l,30000);})();</script>
+
+    <!-- CG Event Unit: Cost -->
+    <script>function showConnectGoldAd(cb){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=interstitial&plc=plc_5y512u3r&pub_id=pub_cg_3n3g1r4o&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"interstitial_fullscreen",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}</script>
     
 </main>
 
@@ -230,6 +308,7 @@ loadFeed();
     
 </body>
 </html>
+
 
 
 

@@ -66,6 +66,17 @@
             align-items: center;
             box-sizing: border-box;
         }
+
+        /* IN-FEED AD CONTAINER STYLING */
+        .infeed-ad-wrapper {
+            width: 100%;
+            margin-bottom: 25px;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -186,7 +197,7 @@ async function loadLiveDevArticles() {
         const articles = await response.json();
         feedContainer.innerHTML = ''; 
         
-        articles.forEach((article) => {
+        articles.forEach((article, index) => {
             const articleCardHTML = `
                 <div class="article-card">
                     <span class="article-topic-tag">#${article.tag_list && article.tag_list.length ? article.tag_list[0] : 'Tech'}</span>
@@ -196,6 +207,26 @@ async function loadLiveDevArticles() {
                 </div>
             `;
             feedContainer.insertAdjacentHTML('beforeend', articleCardHTML);
+
+            // Inject AdSense Fluid In-Feed Ad after every 3rd article
+            if ((index + 1) % 3 === 0 && index !== articles.length - 1) {
+                const inFeedAdHTML = `
+                    <div class="infeed-ad-wrapper">
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"><\/script>
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-format="fluid"
+                             data-ad-layout-key="+25+rv+x-4w+75"
+                             data-ad-client="ca-pub-7728035806961877"
+                             data-ad-slot="7362464742"></ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        <\/script>
+                    </div>
+                `;
+                feedContainer.insertAdjacentHTML('beforeend', inFeedAdHTML);
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            }
         });
     } catch (e) {
         feedContainer.innerHTML = "<p>Intelligence feed currently refreshing.</p>";
@@ -221,6 +252,7 @@ loadLiveDevArticles();
     
 </body>
 </html>
+
 
 
 

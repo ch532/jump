@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Paystack 3FA Secure Gateway</title>
   
-  <!-- Google reCAPTCHA v3 SDK -->
-  <script src="https://www.google.com/recaptcha/api.js?render="6LeuXm8tAAAAAHXCS8Dx3bmpMIWzto8QlWxUQKjv"></script>
+  <!-- Google reCAPTCHA v2 API -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -185,6 +185,14 @@
       font-family: monospace; font-size: 0.85rem; white-space: pre-wrap;
       word-break: break-all; margin-bottom: 12px;
     }
+
+    .recaptcha-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -262,16 +270,21 @@
     <p>Paste or type your UID into the text field above, then tap <strong>"2b. Submit Device UID Token"</strong> to proceed.</p>
   </div>
 
-  <!-- Step 3: reCAPTCHA & Final Paystack Payment Execution -->
+  <!-- Step 3: reCAPTCHA v2 Checkbox & Final Paystack Execution -->
   <div id="paymentSection" class="hidden">
     <input type="email" id="userEmail" placeholder="Enter payer email for receipt" />
+    
+    <!-- reCAPTCHA v2 Widget -->
+    <div class="recaptcha-wrapper">
+      <div class="g-recaptcha" data-sitekey="6LeuXm8tAAAAAHXCS8Dx3bmpMIWzto8QlWxUQKjv" data-callback="onRecaptchaSuccess"></div>
+    </div>
+
     <button id="paystackPayBtn" style="background:#0ba464; color:#fff;" disabled>3. Complete Paystack Payment</button>
   </div>
 </div>
 
 <script>
   const WORKER_URL = "https://hidden-cake-9572.trustconnect713.workers.dev";
-  const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_SITE_KEY"; // Replace with your Google reCAPTCHA v3 Site Key
 
   let mode = "card";             // "card" or "direct"
   let scanSource = "camera";     // "camera" or "upload"
@@ -537,38 +550,6 @@ Holder : ${result.cardholderName || 'N/A'}
     }
   });
 
-  // Execute Invisible reCAPTCHA v3 & Enable Step 3 Payment
-  async function triggerRecaptchaVerification() {
-    statusBox.innerText = "Status: Running background security evaluation (reCAPTCHA v3)...";
-    
-    try {
-      grecaptcha.ready(() => {
-        grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'paystack_checkout' }).then(async (token) => {
-          
-          const response = await fetch(`${WORKER_URL}/api/auth/verify-recaptcha`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ recaptchaToken: token })
-          });
-
-          const data = await response.json();
-
-          if (response.ok && data.success) {
-            recaptchaPassed = true;
-            statusBox.innerText = `Status: Security Check Passed (Score: ${data.score}). Ready to pay.`;
-            paymentSection.classList.remove('hidden');
-            paystackPayBtn.disabled = false;
-          } else {
-            statusBox.innerText = "Status: Security evaluation failed. Please try again.";
-            alert("Security check failed: " + (data.error || "Low security score"));
-          }
-        });
-      });
-    } catch (err) {
-      statusBox.innerText = "reCAPTCHA Error: " + err.message;
-    }
-  }
-
   // Step 2a: WebAuthn Hardware Biometric
   bioBtn.addEventListener('click', async () => {
     try {
@@ -584,12 +565,10 @@ Holder : ${result.cardholderName || 'N/A'}
       });
 
       webauthnPassed = true;
-      statusBox.innerText = "Status: Step 2 Passed (Biometrics Verified!)";
+      statusBox.innerText = "Status: Step 2 Passed (Biometrics Verified!). Please complete the reCAPTCHA below.";
       bioBtn.disabled = true;
       uidWrapper.classList.add('hidden');
-      
-      // Trigger invisible reCAPTCHA check
-      triggerRecaptchaVerification();
+      paymentSection.classList.remove('hidden');
 
     } catch (err) {
       statusBox.innerText = "Biometric Verification Unavailable/Failed. Switching to Device UID...";
@@ -611,13 +590,37 @@ Holder : ${result.cardholderName || 'N/A'}
     deviceUidPassed = true;
     webauthnPassed = true; // Hardware token fallback
 
-    statusBox.innerText = `Status: Step 2 Passed (Device UID Verified: ${userUid})`;
+    statusBox.innerText = `Status: Step 2 Passed (Device UID Verified: ${userUid}). Please complete the reCAPTCHA below.`;
     uidBtn.disabled = true;
     customUidInput.disabled = true;
-    
-    // Trigger invisible reCAPTCHA check
-    triggerRecaptchaVerification();
+    paymentSection.classList.remove('hidden');
   });
+
+  // reCAPTCHA v2 Success Callback Handler
+  async function onRecaptchaSuccess(token) {
+    statusBox.innerText = "Status: Verifying reCAPTCHA v2 with Cloudflare Worker...";
+
+    try {
+      const response = await fetch(`${WORKER_URL}/api/auth/verify-recaptcha`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recaptchaToken: token })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        recaptchaPassed = true;
+        statusBox.innerText = "Status: reCAPTCHA v2 Verified! Ready to complete Paystack payment.";
+        paystackPayBtn.disabled = false;
+      } else {
+        statusBox.innerText = "Status: Security verification failed.";
+        alert("reCAPTCHA validation failed on server.");
+      }
+    } catch (err) {
+      statusBox.innerText = "reCAPTCHA Error: " + err.message;
+    }
+  }
 
   // Step 3: Paystack Payment Charge
   paystackPayBtn.addEventListener('click', async () => {
@@ -663,6 +666,7 @@ Holder : ${result.cardholderName || 'N/A'}
 
 </body>
 </html>
+
 
 
 

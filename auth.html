@@ -122,7 +122,7 @@
     }
     .btn-verify { background: #0ba464; color: #fff; }
     .btn-biometric { background: #007bff; color: #fff; }
-    .btn-uid { background: #d97706; color: #fff; flex: 1; margin-bottom: 0; }
+    .btn-uid { background: #d97706; color: #fff; margin-bottom: 0; flex: 1; }
     .btn-help {
       width: 48px;
       padding: 0;
@@ -141,11 +141,19 @@
     .btn-otp { background: #6f42c1; color: #fff; }
     button:disabled { background: #2c2c2c; color: #666; cursor: not-allowed; border-color: transparent; }
 
-    /* UID ROW CONTAINER */
+    /* UID SECTION CONTAINER */
+    .uid-section {
+      background: #151515;
+      border: 1px dashed #d97706;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
     .uid-container-row {
       display: flex;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-top: 8px;
     }
 
     /* HELP MODAL / INSTRUCTION BOX */
@@ -161,15 +169,19 @@
     }
     .uid-help-box h4 {
       color: #fff;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-size: 0.95rem;
     }
-    .uid-help-box ol {
+    .uid-help-box p {
+      margin-bottom: 8px;
+    }
+    .uid-help-box ul {
       margin-left: 18px;
-      margin-top: 6px;
+      margin-top: 4px;
+      margin-bottom: 8px;
     }
     .uid-help-box li {
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     input[type="text"], input[type="email"] {
@@ -234,21 +246,29 @@
   <!-- Step 2: WebAuthn Biometric -->
   <button id="bioBtn" class="btn-biometric" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
 
-  <!-- Fallback: Device UID Identifier + Help Button -->
-  <div id="uidWrapper" class="uid-container-row hidden">
-    <button id="uidBtn" class="btn-uid" disabled>2b. Verify Device UID Hardware Token</button>
-    <button id="uidHelpBtn" class="btn-help" title="How to get Device UID">?</button>
+  <!-- Manual Device UID Section (No Auto Generator) -->
+  <div id="uidWrapper" class="uid-section hidden">
+    <input type="text" id="customUidInput" placeholder="Enter your Device UID (e.g. UID-8A9F...)" />
+    
+    <div class="uid-container-row">
+      <button id="uidBtn" class="btn-uid" disabled>2b. Submit Device UID Token</button>
+      <button id="uidHelpBtn" class="btn-help" title="How to get Device UID" type="button">?</button>
+    </div>
   </div>
 
   <!-- Device UID Instruction Guide Box -->
   <div id="uidHelpBox" class="uid-help-box hidden">
-    <h4>🔑 How Device UID Identification Works</h4>
-    <p>For phones that do not support fingerprint/biometric sensors, your device generates a unique, hardware-bound cryptographic UID token.</p>
-    <ol>
-      <li>Tap <strong>"2b. Verify Device UID"</strong> above.</li>
-      <li>The system automatically detects or creates your persistent device key.</li>
-      <li>Your unique identifier will be displayed in the status window and saved securely for instant verification.</li>
-    </ol>
+    <h4>🔑 How to Get Your Device UID</h4>
+    <p>Your Device UID is a unique hardware token used to authorize transactions when fingerprint sensors are unavailable.</p>
+    
+    <p><strong>Where to Find Your UID:</strong></p>
+    <ul>
+      <li><strong>Android Settings:</strong> Navigate to <em>Settings &gt; About Phone &gt; Status / Device ID</em>.</li>
+      <li><strong>Terminal / Termux:</strong> Execute <code>getprop ro.serialno</code> or inspect device hardware UUID.</li>
+      <li><strong>Saved Hardware Key:</strong> Enter your registered application hardware token.</li>
+    </ul>
+
+    <p>Paste or type your UID into the text field above, then tap <strong>"2b. Submit Device UID Token"</strong> to proceed.</p>
   </div>
 
   <!-- Step 3: Out-of-Band OTP & Paystack Execution -->
@@ -288,6 +308,7 @@
   const step1Btn = document.getElementById('step1Btn');
   const bioBtn = document.getElementById('bioBtn');
   const uidWrapper = document.getElementById('uidWrapper');
+  const customUidInput = document.getElementById('customUidInput');
   const uidBtn = document.getElementById('uidBtn');
   const uidHelpBtn = document.getElementById('uidHelpBtn');
   const uidHelpBox = document.getElementById('uidHelpBox');
@@ -321,18 +342,6 @@
   }
 
   startCamera();
-
-  // Generate / Retrieve Hardware Device UID
-  function getOrCreateDeviceUID() {
-    let uid = localStorage.getItem("paystack_3fa_device_uid");
-    if (!uid) {
-      const randomBytes = new Uint8Array(16);
-      crypto.getRandomValues(randomBytes);
-      uid = 'UID-' + Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
-      localStorage.setItem("paystack_3fa_device_uid", uid);
-    }
-    return uid;
-  }
 
   // Check hardware biometric availability on load
   async function checkBiometricSupport() {
@@ -567,29 +576,65 @@ Holder : ${result.cardholderName || 'N/A'}
     }
   });
 
-  // Step 2b: Device Hardware UID Fallback Verification
+  // Step 2b: User-Submitted Device UID Token
   uidBtn.addEventListener('click', () => {
-    const uid = getOrCreateDeviceUID();
+    const userUid = customUidInput.value.trim();
+
+    if (!userUid) {
+      alert("Please enter your Device UID first!");
+      return;
+    }
+
     deviceUidPassed = true;
     webauthnPassed = true; // Fallback counts as hardware verification token
 
-    statusBox.innerText = `Status: Step 2 Passed (Device UID Verified: ${uid})`;
+    statusBox.innerText = `Status: Step 2 Passed (Device UID Verified: ${userUid})`;
     uidBtn.disabled = true;
+    customUidInput.disabled = true;
     otpSection.classList.remove('hidden');
   });
 
   // Step 3: Out-of-Band OTP & Paystack Charge
-  document.getElementById('sendOtpBtn').addEventListener('click', () => {
+  document.getElementById('sendOtpBtn').addEventListener('click', async () => {
     const email = document.getElementById('userEmail').value;
-    if (!email || !email.includes('@')) { alert("Please enter a valid email address."); return; }
-    statusBox.innerText = "Status: OTP code sent to " + email;
-    otpInputGroup.classList.remove('hidden');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+
+    if (!email || !email.includes('@')) { 
+      alert("Please enter a valid email address."); 
+      return; 
+    }
+
+    try {
+      sendOtpBtn.disabled = true;
+      statusBox.innerText = "Status: Dispatching OTP to " + email + "...";
+
+      const response = await fetch(`${WORKER_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send OTP email.");
+      }
+
+      statusBox.innerText = "Status: OTP sent! Check your email inbox (" + email + ").";
+      otpInputGroup.classList.remove('hidden');
+      sendOtpBtn.disabled = false;
+
+    } catch (err) {
+      statusBox.innerText = "OTP Email Delivery Failed";
+      alert("Could not send OTP: " + err.message);
+      sendOtpBtn.disabled = false;
+    }
   });
 
   paystackPayBtn.addEventListener('click', async () => {
     const email = document.getElementById('userEmail').value;
     const amount = document.getElementById('amountInput')?.value || "5000";
-    const deviceUid = getOrCreateDeviceUID();
+    const userUid = customUidInput.value.trim();
 
     statusBox.innerText = "Status: Processing pre-authenticated Paystack charge...";
 
@@ -602,7 +647,7 @@ Holder : ${result.cardholderName || 'N/A'}
           amount: parseInt(amount),
           paymentMethod: mode,
           webauthnVerified: webauthnPassed,
-          deviceUid: deviceUidPassed ? deviceUid : null
+          deviceUid: deviceUidPassed ? userUid : null
         })
       });
 
@@ -623,6 +668,7 @@ Holder : ${result.cardholderName || 'N/A'}
 
 </body>
 </html>
+
 
 
 

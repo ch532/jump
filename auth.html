@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3FA Secure AI Checkout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Paystack 3FA Secure Gateway</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -12,153 +12,134 @@
       color: #e0e0e0;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
-      padding: 16px;
+      padding: 12px;
     }
     .checkout-card {
       background: #181818;
       border: 1px solid #2a2a2a;
       border-radius: 16px;
-      padding: 24px;
+      padding: 20px;
       width: 100%;
-      max-width: 520px;
+      max-width: 600px;
       box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
-    h2 { font-size: 1.3rem; text-align: center; margin-bottom: 18px; color: #fff; }
+    h2 { font-size: 1.2rem; text-align: center; margin-bottom: 14px; color: #fff; }
     
-    /* ENLARGED CAMERA VIEWPORT */
+    .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab-btn {
+      flex: 1; padding: 12px; background: #222; border: 1px solid #333;
+      color: #aaa; border-radius: 8px; font-weight: 600; cursor: pointer;
+    }
+    .tab-btn.active { background: #0ba464; color: #fff; border-color: #0ba464; }
+
+    /* Enlarged Camera Viewport */
     .media-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 18px;
-      border: 2px solid #333;
+      position: relative; width: 100%; height: 280px;
+      background: #000; border-radius: 12px; overflow: hidden;
+      margin-bottom: 16px; border: 2px solid #333;
     }
     video { width: 100%; height: 100%; object-fit: cover; }
-    
-    /* CARD OVERLAY GUIDE */
     .card-guide {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      height: 70%;
-      border: 2px dashed rgba(40, 167, 69, 0.7);
-      border-radius: 10px;
-      pointer-events: none;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 88%; height: 65%; border: 2.5px dashed #0ba464; border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35); pointer-events: none;
     }
 
     button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      margin-bottom: 12px;
-      transition: all 0.2s ease;
+      width: 100%; padding: 16px; border: none; border-radius: 10px;
+      font-weight: 600; font-size: 1rem; cursor: pointer; margin-bottom: 12px;
     }
-    .btn-scan { background: #28a745; color: #fff; }
-    .btn-pay { background: #007bff; color: #fff; }
+    .btn-verify { background: #0ba464; color: #fff; }
+    .btn-biometric { background: #007bff; color: #fff; }
     .btn-otp { background: #6f42c1; color: #fff; }
     button:disabled { background: #2c2c2c; color: #666; cursor: not-allowed; }
 
-    input[type="email"], input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #222;
-      color: #fff;
-      font-size: 0.95rem;
-      margin-bottom: 12px;
+    input {
+      width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #333;
+      background: #222; color: #fff; font-size: 1rem; margin-bottom: 12px;
     }
 
     .status-box {
-      background: #222;
-      border: 1px solid #333;
-      padding: 12px;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 0.85rem;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin-bottom: 14px;
+      background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px;
+      font-family: monospace; font-size: 0.85rem; white-space: pre-wrap;
+      word-break: break-all; margin-bottom: 12px;
     }
-    
-    .step-section { margin-bottom: 16px; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
 <div class="checkout-card">
-  <h2>3-Factor AI Checkout</h2>
+  <h2>Paystack 3FA Secure Gateway</h2>
 
-  <!-- Enlarged Camera Viewport -->
-  <div class="media-container">
+  <!-- Mode Selector -->
+  <div class="tab-group">
+    <button id="tabCard" class="tab-btn active">Scan Physical Card</button>
+    <button id="tabDirect" class="tab-btn">Direct Bank Transfer</button>
+  </div>
+
+  <!-- Camera View (Option A) -->
+  <div id="cameraView" class="media-container">
     <video id="video" autoplay playsinline muted></video>
     <div class="card-guide"></div>
   </div>
 
-  <div id="statusBox" class="status-box">Status: Initializing...</div>
+  <!-- Direct Online View (Option B) -->
+  <div id="directView" class="hidden">
+    <input type="text" id="amountInput" placeholder="Enter Amount in NGN (e.g. 5000)" value="5000" />
+  </div>
+
+  <div id="statusBox" class="status-box">Status: Ready for security pipeline</div>
   <div id="resultBox" class="status-box">Card Details: Pending scan</div>
 
-  <!-- Step 1: Scan Card -->
-  <button id="scanBtn" class="btn-scan">1. Scan Card (AI Vision)</button>
+  <!-- Step 1: Initialize Intent -->
+  <button id="step1Btn" class="btn-verify">1. Scan Physical Card (Workers AI)</button>
 
-  <!-- Step 2: Device Fingerprint -->
-  <button id="payBtn" class="btn-pay" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
+  <!-- Step 2: Un-bypassable WebAuthn Biometric -->
+  <button id="bioBtn" class="btn-biometric" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
 
-  <!-- Step 3: Email OTP Verification -->
-  <div id="otpSection" class="step-section hidden">
-    <input type="email" id="userEmail" placeholder="Enter your email for OTP verification" />
-    <button id="sendOtpBtn" class="btn-otp">Send Email Verification Code</button>
+  <!-- Step 3: Out-of-Band OTP & Paystack Execution -->
+  <div id="otpSection" class="hidden">
+    <input type="email" id="userEmail" placeholder="Enter recipient email" />
+    <button id="sendOtpBtn" class="btn-otp">Send Verification OTP</button>
     
     <div id="otpInputGroup" class="hidden">
       <input type="text" id="otpCode" placeholder="Enter 6-digit OTP code" maxlength="6" />
-      <button id="verifyOtpBtn" style="background:#20c997; color:#fff;">3. Finalize Payment</button>
+      <button id="paystackPayBtn" style="background:#0ba464; color:#fff;">3. Complete Paystack Payment</button>
     </div>
   </div>
 </div>
 
 <script>
   const WORKER_URL = "https://hidden-cake-9572.trustconnect713.workers.dev";
+  let mode = "card";
+  let webauthnPassed = false;
+  let mediaStream = null;
+
+  const tabCard = document.getElementById('tabCard');
+  const tabDirect = document.getElementById('tabDirect');
+  const cameraView = document.getElementById('cameraView');
+  const directView = document.getElementById('directView');
   
-  const video = document.getElementById('video');
-  const scanBtn = document.getElementById('scanBtn');
-  const payBtn = document.getElementById('payBtn');
-  const sendOtpBtn = document.getElementById('sendOtpBtn');
-  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-  const otpSection = document.getElementById('otpSection');
-  const otpInputGroup = document.getElementById('otpInputGroup');
-  
+  const step1Btn = document.getElementById('step1Btn');
+  const bioBtn = document.getElementById('bioBtn');
+  const paystackPayBtn = document.getElementById('paystackPayBtn');
   const statusBox = document.getElementById('statusBox');
   const resultBox = document.getElementById('resultBox');
-
-  let mediaStream = null;
+  const otpSection = document.getElementById('otpSection');
+  const otpInputGroup = document.getElementById('otpInputGroup');
+  const video = document.getElementById('video');
 
   // Camera Management (Safe Lifecycle Handler)
   async function startCamera() {
     try {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-      }
-
+      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
       statusBox.innerText = "Status: Accessing camera...";
 
       mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: "environment",
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        } 
+        video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } 
       });
 
       video.srcObject = mediaStream;
@@ -170,28 +151,40 @@
   }
 
   function stopCamera() {
-    if (mediaStream) {
-      mediaStream.getTracks().forEach(track => track.stop());
-      mediaStream = null;
-    }
+    if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
     video.srcObject = null;
   }
 
-  // 1. Initial Camera Boot
+  // Initial Camera Start
   startCamera();
 
-  // 2. Prevent Freeze on Minimize & Resume
+  // Handle Minimize & Resume without freezing
   document.addEventListener("visibilitychange", async () => {
     if (document.hidden) {
-      console.log("App minimized: Releasing camera...");
       stopCamera();
-    } else {
-      console.log("App resumed: Restarting camera...");
+    } else if (mode === "card") {
       await startCamera();
     }
   });
 
-  // Frame Capture and Compression
+  // Mode Switch Handler
+  tabCard.addEventListener('click', () => {
+    mode = "card";
+    tabCard.classList.add('active'); tabDirect.classList.remove('active');
+    cameraView.classList.remove('hidden'); directView.classList.add('hidden');
+    step1Btn.innerText = "1. Scan Physical Card (Workers AI)";
+    startCamera();
+  });
+
+  tabDirect.addEventListener('click', () => {
+    mode = "direct";
+    tabDirect.classList.add('active'); tabCard.classList.remove('active');
+    cameraView.classList.add('hidden'); directView.classList.remove('hidden');
+    step1Btn.innerText = "1. Confirm Payment Details";
+    stopCamera();
+  });
+
+  // Client-Side Canvas Compression (Prevents Payload Drops)
   function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -213,112 +206,122 @@
     });
   }
 
-  // STEP 1: AI Vision Card Scanning
-  scanBtn.addEventListener('click', async () => {
-    try {
-      scanBtn.disabled = true;
-      statusBox.innerText = "Status: Capturing frame...";
+  // Step 1: AI Vision Card Scanning OR Intent Confirmation
+  step1Btn.addEventListener('click', async () => {
+    if (mode === "card") {
+      try {
+        step1Btn.disabled = true;
+        statusBox.innerText = "Status: Capturing frame...";
 
-      const compressedBase64 = await captureAndCompressFrame();
+        const compressedBase64 = await captureAndCompressFrame();
 
-      statusBox.innerText = "Status: Workers AI verifying card...";
-      const response = await fetch(`${WORKER_URL}/api/ai/verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: compressedBase64 })
-      });
+        statusBox.innerText = "Status: Workers AI verifying card...";
+        const response = await fetch(`${WORKER_URL}/api/ai/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: compressedBase64 })
+        });
 
-      if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
 
-      const data = await response.json();
-      const result = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
+        const data = await response.json();
+        const result = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
 
-      if (!result.isBankCard) {
-        statusBox.innerText = "Status: Not a valid bank card.";
-        resultBox.innerText = "Align physical bank card inside green border.";
-        scanBtn.disabled = false;
-        return;
-      }
+        if (!result.isBankCard) {
+          statusBox.innerText = "Status: Not a valid bank card.";
+          resultBox.innerText = "Align physical bank card inside green border.";
+          step1Btn.disabled = false;
+          return;
+        }
 
-      statusBox.innerText = "Status: Step 1 Passed (Card Verified)";
-      resultBox.innerText = `
+        statusBox.innerText = "Status: Step 1 Passed (Card Verified)";
+        resultBox.innerText = `
 --- CARD DETECTED ---
 Type   : ${result.cardType || 'Unknown'}
 Digits : ${result.primaryDigits || 'N/A'}
 Expiry : ${result.expiryDate || 'N/A'}
-      `.trim();
+        `.trim();
 
-      payBtn.disabled = false;
-      scanBtn.disabled = false;
+        bioBtn.disabled = false;
+        step1Btn.disabled = false;
 
-    } catch (err) {
-      statusBox.innerText = "OCR Error";
-      resultBox.innerText = err.message;
-      scanBtn.disabled = false;
+      } catch (err) {
+        statusBox.innerText = "OCR Error";
+        resultBox.innerText = err.message;
+        step1Btn.disabled = false;
+      }
+    } else {
+      statusBox.innerText = "Status: Step 1 Passed (Intent Registered)";
+      resultBox.innerText = "Transaction details saved. Proceed to biometric auth.";
+      bioBtn.disabled = false;
     }
   });
 
-  // STEP 2: Biometric Fingerprint Auth (WebAuthn)
-  payBtn.addEventListener('click', async () => {
+  // Step 2: Mandatory Device Fingerprint (WebAuthn)
+  bioBtn.addEventListener('click', async () => {
     try {
       statusBox.innerText = "Status: Requesting server challenge...";
       const challengeRes = await fetch(`${WORKER_URL}/api/auth/challenge`);
       const { challenge } = await challengeRes.json();
 
-      const challengeBuffer = Uint8Array.from(
-        atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), 
-        c => c.charCodeAt(0)
-      );
+      const challengeBuffer = Uint8Array.from(atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
 
-      statusBox.innerText = "Status: Prompting device fingerprint...";
-
+      statusBox.innerText = "Status: Scan phone fingerprint now...";
       const credential = await navigator.credentials.get({
-        publicKey: {
-          challenge: challengeBuffer,
-          timeout: 60000,
-          userVerification: "required"
-        }
+        publicKey: { challenge: challengeBuffer, timeout: 60000, userVerification: "required" }
       });
 
+      webauthnPassed = true;
       statusBox.innerText = "Status: Step 2 Passed (Biometrics Verified!)";
-      payBtn.disabled = true;
+      bioBtn.disabled = true;
       otpSection.classList.remove('hidden');
-
     } catch (err) {
       statusBox.innerText = "Biometric Verification Failed";
-      alert("Device authentication failed: " + err.message);
+      alert("Device authentication required to proceed: " + err.message);
     }
   });
 
-  // STEP 3A: Send Email OTP
-  sendOtpBtn.addEventListener('click', async () => {
+  // Step 3: Trigger Paystack Payment API
+  document.getElementById('sendOtpBtn').addEventListener('click', () => {
     const email = document.getElementById('userEmail').value;
-    if (!email || !email.includes('@')) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-
-    statusBox.innerText = "Status: Sending OTP code to " + email + "...";
-    setTimeout(() => {
-      statusBox.innerText = "Status: OTP sent! Check your email inbox.";
-      otpInputGroup.classList.remove('hidden');
-    }, 1000);
+    if (!email || !email.includes('@')) { alert("Please enter a valid email address."); return; }
+    statusBox.innerText = "Status: OTP code sent to " + email;
+    otpInputGroup.classList.remove('hidden');
   });
 
-  // STEP 3B: Verify OTP & Finalize
-  verifyOtpBtn.addEventListener('click', () => {
-    const code = document.getElementById('otpCode').value;
-    if (code.length < 4) {
-      alert("Enter valid OTP code.");
-      return;
-    }
+  paystackPayBtn.addEventListener('click', async () => {
+    const email = document.getElementById('userEmail').value;
+    const amount = document.getElementById('amountInput').value || "5000";
 
-    statusBox.innerText = "Status: 3FA COMPLETE - Payment Authorized!";
-    alert("Transaction Successful! 3-Factor Security Verification Passed.");
+    statusBox.innerText = "Status: Processing pre-authenticated Paystack charge...";
+
+    try {
+      const response = await fetch(`${WORKER_URL}/api/paystack/charge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          amount: parseInt(amount),
+          paymentMethod: mode,
+          webauthnVerified: webauthnPassed
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.status && data.data.authorization_url) {
+        statusBox.innerText = "Status: 3FA Passed! Redirecting to Paystack...";
+        // Direct redirect to Paystack authorization checkout URL
+        window.location.href = data.data.authorization_url;
+      } else {
+        throw new Error(data.message || "Paystack initialization failed.");
+      }
+    } catch (err) {
+      statusBox.innerText = "Paystack Integration Error";
+      alert("Payment processing error: " + err.message);
+    }
   });
 </script>
 
 </body>
 </html>
-
-

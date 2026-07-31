@@ -9,11 +9,57 @@
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   
   <style>
-    body { font-family: sans-serif; background: #121212; color: #fff; padding: 20px; }
-    .card-box { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 450px; margin: auto; }
-    video, canvas { width: 100%; border-radius: 6px; background: #000; }
-    button { width: 100%; padding: 12px; margin-top: 10px; background: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .output { background: #2b2b2b; padding: 10px; margin-top: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+    * { box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      background: #121212; 
+      color: #e0e0e0; 
+      padding: 15px; 
+      margin: 0;
+    }
+    .card-box { 
+      background: #1e1e1e; 
+      padding: 20px; 
+      border-radius: 12px; 
+      max-width: 480px; 
+      margin: 0 auto; 
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    h2 { margin-top: 0; color: #ffffff; font-size: 1.25rem; text-align: center; }
+    video, canvas { 
+      width: 100%; 
+      border-radius: 8px; 
+      background: #000000; 
+      margin-bottom: 12px;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+    button { 
+      width: 100%; 
+      padding: 14px; 
+      margin-top: 8px; 
+      background: #28a745; 
+      color: #ffffff; 
+      border: none; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 1rem;
+      cursor: pointer; 
+      transition: background 0.2s ease;
+    }
+    button:active { opacity: 0.85; }
+    button:disabled { background: #444444; color: #888888; cursor: not-allowed; }
+    .output { 
+      background: #2b2b2b; 
+      padding: 12px; 
+      margin-top: 10px; 
+      border-radius: 6px; 
+      font-family: monospace; 
+      font-size: 0.85rem;
+      white-space: pre-wrap; 
+      word-break: break-all;
+      border: 1px solid #3a3a3a;
+    }
   </style>
 </head>
 <body>
@@ -21,14 +67,14 @@
 <div class="card-box">
   <h2>Zero-Server Card Reader</h2>
   
-  <video id="video" autoplay playsinline></video>
+  <video id="video" autoplay playsinline muted></video>
   <button id="snap-btn">1. Snap & Read Card</button>
   <canvas id="canvas" style="display:none;"></canvas>
 
-  <div class="output" id="ocr-status">Status: Ready</div>
-  <div class="output" id="card-data">Card Info: Waiting...</div>
+  <div class="output" id="ocr-status">Status: Camera ready</div>
+  <div class="output" id="card-data">Card Info: Waiting for scan...</div>
 
-  <button id="pay-btn" style="background:#007bff; margin-top:15px;" disabled>2. Pay with Fingerprint (WebAuthn)</button>
+  <button id="pay-btn" style="background:#007bff;" disabled>2. Pay with Fingerprint (WebAuthn)</button>
 </div>
 
 <script>
@@ -38,67 +84,79 @@
   const cardDiv = document.getElementById('card-data');
   const payBtn = document.getElementById('pay-btn');
 
-  // Start Camera Feed
+  // 1. Initialize Rear Camera
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     .then(stream => { video.srcObject = stream; })
     .catch(err => { statusDiv.innerText = "Camera error: " + err.message; });
 
-  // Snap Frame & Perform Local OCR
+  // 2. Perform OCR on Click
   document.getElementById('snap-btn').addEventListener('click', async () => {
     statusDiv.innerText = "Status: Capturing frame...";
+    
     const context = canvas.getContext('2d');
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    statusDiv.innerText = "Status: Initializing Tesseract WebAssembly...";
+    statusDiv.innerText = "Status: Loading WASM & Trained Engine...";
 
     try {
-      // 1. Create WebAssembly Worker
-      const worker = await Tesseract.createWorker('eng');
+      // Correct v5 syntax: createWorker takes language and options
+      const worker = await Tesseract.createWorker('eng', 1, {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            statusDiv.innerText = `Status: Scanning... ${Math.round(m.progress * 100)}%`;
+          } else {
+            statusDiv.innerText = `Status: ${m.status}`;
+          }
+        }
+      });
       
-      statusDiv.innerText = "Status: Scanning card locally...";
       const ret = await worker.recognize(canvas);
-      await worker.terminate();
+      await worker.terminate(); // Free WebAssembly memory allocation
 
       const rawText = ret.data.text;
       statusDiv.innerText = "Status: Scan Complete!";
 
-      // 2. Parse 16-digit card number using Regex
-      const digitsOnly = rawText.replace(/\D/g, '');
+      // Extract 13 to 16-digit card numbers
       const cardMatch = rawText.match(/\b(?:\d[ -]*?){13,16}\b/);
       
-      // 3. Parse Expiration Date (MM/YY)
-      const expiryMatch = rawText.match(/\b(0[1-9]|1[0-2])\/([0-9]{2})\b/);
+      // Extract Expiration Date (MM/YY or MM/YYYY)
+      const expiryMatch = rawText.match(/\b(0[1-9]|1[0-2])\/([0-9]{2}|[0-9]{4})\b/);
 
       cardDiv.innerText = `
 --- PARSED RESULTS ---
-Card Number : ${cardMatch ? cardMatch[0].replace(/\s+/g, '') : 'Not detected'}
+Card Number : ${cardMatch ? cardMatch[0].replace(/[\s-]/g, '') : 'Not detected'}
 Expiry Date : ${expiryMatch ? expiryMatch[0] : 'Not detected'}
 
 --- RAW OCR OUTPUT ---
-${rawText}
+${rawText.trim() || '[No text detected inside camera frame]'}
       `.trim();
 
-      // Enable Fingerprint Payment Button
+      // Enable WebAuthn Button after scanning
       payBtn.disabled = false;
 
     } catch (err) {
       statusDiv.innerText = "OCR Error: " + err.message;
+      console.error(err);
     }
   });
 
-  // Fingerprint WebAuthn Trigger
+  // 3. WebAuthn Fingerprint Payment
   payBtn.addEventListener('click', async () => {
     try {
-      // Fetch challenge from your Cloudflare Worker endpoint
+      statusDiv.innerText = "Status: Requesting WebAuthn challenge...";
+      
       const res = await fetch("https://hidden-cake-9572.trustconnect713.workers.dev/api/auth/challenge");
       const { challenge } = await res.json();
 
-      // Convert Base64 URL Challenge string to Uint8Array
-      const challengeBuffer = Uint8Array.from(atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      const challengeBuffer = Uint8Array.from(
+        atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), 
+        c => c.charCodeAt(0)
+      );
 
-      // Trigger OS Biometric / Fingerprint Prompt
+      statusDiv.innerText = "Status: Prompting Biometrics...";
+
       const credential = await navigator.credentials.get({
         publicKey: {
           challenge: challengeBuffer,
@@ -107,10 +165,12 @@ ${rawText}
         }
       });
 
+      statusDiv.innerText = "Status: Payment Verified!";
       alert("Payment Cryptographically Signed via Biometrics!");
       console.log("WebAuthn Signature Payload:", credential);
 
     } catch (err) {
+      statusDiv.innerText = "Biometric error: " + err.message;
       alert("Biometric verification failed: " + err.message);
     }
   });

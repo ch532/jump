@@ -37,34 +37,84 @@
     }
     .tab-btn.active { background: #0ba464; color: #fff; border-color: #0ba464; }
 
-    /* EXPANDED TALLER CAMERA VIEWPORT */
+    /* MEDIA CONTAINER (CAMERA / UPLOAD PREVIEW) */
     .media-container {
       position: relative; 
       width: 100%; 
-      height: 85vw; /* Expanded vertically to capture full bank card height */
+      height: 85vw; 
       max-height: 520px; 
       background: #000; 
       border-radius: 12px; 
       overflow: hidden;
       margin-bottom: 16px; 
       border: 2px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    video { width: 100%; height: 100%; object-fit: cover; }
+    video, #uploadedImagePreview { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+    }
 
-    /* ACCURATE BANK CARD OVERLAY RATIO (1.58 : 1) */
+    /* PHYSICAL CARD RATIO GUIDE (1.58 : 1) */
     .card-guide {
       position: absolute; 
       top: 50%; 
       left: 50%; 
       transform: translate(-50%, -50%);
       width: 90%;
-      aspect-ratio: 1.58 / 1; /* Matches real physical debit/credit card proportions */
+      aspect-ratio: 1.58 / 1; 
       border: 2.5px dashed #0ba464; 
       border-radius: 12px;
       box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); 
       pointer-events: none;
+      z-index: 2;
     }
+
+    /* SCAN TYPE TOGGLE (CAMERA vs UPLOAD) */
+    .scan-mode-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      color: #ccc;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .mode-btn.active {
+      background: #333;
+      color: #0ba464;
+      border-color: #0ba464;
+      font-weight: bold;
+    }
+
+    /* HIDDEN FILE INPUT */
+    #cardFileInput { display: none; }
+
+    .file-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: #151515;
+      color: #888;
+      cursor: pointer;
+      text-align: center;
+      padding: 20px;
+    }
+    .file-upload-label svg { margin-bottom: 8px; fill: #0ba464; }
 
     button {
       width: 100%; padding: 16px; border: none; border-radius: 10px;
@@ -75,7 +125,7 @@
     .btn-otp { background: #6f42c1; color: #fff; }
     button:disabled { background: #2c2c2c; color: #666; cursor: not-allowed; }
 
-    input {
+    input[type="text"], input[type="email"] {
       width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #333;
       background: #222; color: #fff; font-size: 1rem; margin-bottom: 12px;
     }
@@ -85,7 +135,7 @@
       font-family: monospace; font-size: 0.85rem; white-space: pre-wrap;
       word-break: break-all; margin-bottom: 12px;
     }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -99,10 +149,28 @@
     <button id="tabDirect" class="tab-btn">Direct Bank Transfer</button>
   </div>
 
-  <!-- Camera View (Option A) -->
-  <div id="cameraView" class="media-container">
-    <video id="video" autoplay playsinline muted></video>
-    <div class="card-guide"></div>
+  <!-- Scan Method Options (Live Camera OR File Upload) -->
+  <div id="scanMethodContainer">
+    <div class="scan-mode-toggle">
+      <button id="btnOptionCamera" class="mode-btn active">📷 Live Camera</button>
+      <button id="btnOptionUpload" class="mode-btn">📁 Upload Card Image</button>
+    </div>
+
+    <!-- Media Container -->
+    <div id="cameraView" class="media-container">
+      <video id="video" autoplay playsinline muted></video>
+      
+      <!-- Upload View Placeholder -->
+      <label id="uploadView" for="cardFileInput" class="file-upload-label hidden">
+        <svg width="40" height="40" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+        <span>Tap to choose bank card image</span>
+      </label>
+      
+      <img id="uploadedImagePreview" class="hidden" alt="Uploaded Card Preview" />
+      <div id="cardGuideBox" class="card-guide"></div>
+    </div>
+    
+    <input type="file" id="cardFileInput" accept="image/*" />
   </div>
 
   <!-- Direct Online View (Option B) -->
@@ -113,10 +181,10 @@
   <div id="statusBox" class="status-box">Status: Ready for security pipeline</div>
   <div id="resultBox" class="status-box">Card Details: Pending scan</div>
 
-  <!-- Step 1: Initialize Intent -->
+  <!-- Step 1: Vision AI Scan -->
   <button id="step1Btn" class="btn-verify">1. Scan Physical Card (Workers AI)</button>
 
-  <!-- Step 2: Un-bypassable WebAuthn Biometric -->
+  <!-- Step 2: WebAuthn Biometric -->
   <button id="bioBtn" class="btn-biometric" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
 
   <!-- Step 3: Out-of-Band OTP & Paystack Execution -->
@@ -133,15 +201,25 @@
 
 <script>
   const WORKER_URL = "https://hidden-cake-9572.trustconnect713.workers.dev";
-  let mode = "card";
+  let mode = "card";             // "card" or "direct"
+  let scanSource = "camera";     // "camera" or "upload"
+  let uploadedBase64Image = null;
   let webauthnPassed = false;
   let mediaStream = null;
 
   const tabCard = document.getElementById('tabCard');
   const tabDirect = document.getElementById('tabDirect');
-  const cameraView = document.getElementById('cameraView');
+  const scanMethodContainer = document.getElementById('scanMethodContainer');
   const directView = document.getElementById('directView');
   
+  const btnOptionCamera = document.getElementById('btnOptionCamera');
+  const btnOptionUpload = document.getElementById('btnOptionUpload');
+  const video = document.getElementById('video');
+  const uploadView = document.getElementById('uploadView');
+  const uploadedImagePreview = document.getElementById('uploadedImagePreview');
+  const cardFileInput = document.getElementById('cardFileInput');
+  const cardGuideBox = document.getElementById('cardGuideBox');
+
   const step1Btn = document.getElementById('step1Btn');
   const bioBtn = document.getElementById('bioBtn');
   const paystackPayBtn = document.getElementById('paystackPayBtn');
@@ -149,9 +227,8 @@
   const resultBox = document.getElementById('resultBox');
   const otpSection = document.getElementById('otpSection');
   const otpInputGroup = document.getElementById('otpInputGroup');
-  const video = document.getElementById('video');
 
-  // Camera Management Handler
+  // Camera Management
   async function startCamera() {
     try {
       if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
@@ -176,33 +253,99 @@
 
   startCamera();
 
-  // Prevent Camera Lockup on App Minimize & Resume
-  document.addEventListener("visibilitychange", async () => {
-    if (document.hidden) {
-      stopCamera();
-    } else if (mode === "card") {
-      await startCamera();
+  // Handle Scan Method Toggles (Camera vs Upload)
+  btnOptionCamera.addEventListener('click', () => {
+    scanSource = "camera";
+    btnOptionCamera.classList.add('active');
+    btnOptionUpload.classList.remove('active');
+    
+    video.classList.remove('hidden');
+    uploadView.classList.add('hidden');
+    uploadedImagePreview.classList.add('hidden');
+    cardGuideBox.classList.remove('hidden');
+    
+    startCamera();
+  });
+
+  btnOptionUpload.addEventListener('click', () => {
+    scanSource = "upload";
+    btnOptionUpload.classList.add('active');
+    btnOptionCamera.classList.remove('active');
+    
+    stopCamera();
+    video.classList.add('hidden');
+    
+    if (!uploadedBase64Image) {
+      uploadView.classList.remove('hidden');
+      uploadedImagePreview.classList.add('hidden');
+      cardGuideBox.classList.add('hidden');
+      statusBox.innerText = "Status: Please select an image of your bank card.";
+    } else {
+      uploadView.classList.add('hidden');
+      uploadedImagePreview.classList.remove('hidden');
+      cardGuideBox.classList.remove('hidden');
+      statusBox.innerText = "Status: Image uploaded. Ready to scan.";
     }
   });
 
-  // Tab Switching
+  // Handle File Upload Input
+  cardFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    statusBox.innerText = "Status: Processing selected image...";
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const img = new Image();
+      img.onload = function () {
+        // Compress image to 1024px max width before setting
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxWidth = 1024;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        uploadedBase64Image = canvas.toDataURL('image/jpeg', 0.8);
+        uploadedImagePreview.src = uploadedBase64Image;
+
+        uploadView.classList.add('hidden');
+        uploadedImagePreview.classList.remove('hidden');
+        cardGuideBox.classList.remove('hidden');
+        statusBox.innerText = "Status: Image uploaded successfully!";
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Tab Switching (Card Scan vs Direct Transfer)
   tabCard.addEventListener('click', () => {
     mode = "card";
     tabCard.classList.add('active'); tabDirect.classList.remove('active');
-    cameraView.classList.remove('hidden'); directView.classList.add('hidden');
+    scanMethodContainer.classList.remove('hidden'); directView.classList.add('hidden');
     step1Btn.innerText = "1. Scan Physical Card (Workers AI)";
-    startCamera();
+    if (scanSource === "camera") startCamera();
   });
 
   tabDirect.addEventListener('click', () => {
     mode = "direct";
     tabDirect.classList.add('active'); tabCard.classList.remove('active');
-    cameraView.classList.add('hidden'); directView.classList.remove('hidden');
+    scanMethodContainer.classList.add('hidden'); directView.classList.remove('hidden');
     step1Btn.innerText = "1. Confirm Payment Details";
     stopCamera();
   });
 
-  // Client Canvas Compression
+  // Frame Capture for Camera Mode
   function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -224,30 +367,49 @@
     });
   }
 
-  // Step 1: Vision AI Card Scan OR Intent Registration
+  // Step 1 Execution
   step1Btn.addEventListener('click', async () => {
     if (mode === "card") {
       try {
+        let payloadImageBase64 = null;
+
+        if (scanSource === "camera") {
+          statusBox.innerText = "Status: Capturing live frame...";
+          payloadImageBase64 = await captureAndCompressFrame();
+        } else {
+          if (!uploadedBase64Image) {
+            alert("Please select a bank card image file first!");
+            return;
+          }
+          payloadImageBase64 = uploadedBase64Image;
+        }
+
         step1Btn.disabled = true;
-        statusBox.innerText = "Status: Capturing frame...";
-
-        const compressedBase64 = await captureAndCompressFrame();
-
         statusBox.innerText = "Status: Workers AI verifying card...";
+
         const response = await fetch(`${WORKER_URL}/api/ai/verify`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: compressedBase64 })
+          body: JSON.stringify({ imageBase64: payloadImageBase64 })
         });
 
         if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
 
         const data = await response.json();
-        const result = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
+        
+        let result = null;
+        if (typeof data.response === 'string') {
+          const jsonMatch = data.response.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            try { result = JSON.parse(jsonMatch[0]); } catch (e) { result = { isBankCard: false }; }
+          }
+        } else if (data.response && typeof data.response === 'object') {
+          result = data.response;
+        }
 
-        if (!result.isBankCard) {
-          statusBox.innerText = "Status: Not a valid bank card.";
-          resultBox.innerText = "Align physical bank card inside green border.";
+        if (!result || !result.isBankCard) {
+          statusBox.innerText = "Status: Scan rejected (Not a full bank card).";
+          resultBox.innerText = "Ensure full bank card is visible with clear edges.";
           step1Btn.disabled = false;
           return;
         }
@@ -258,13 +420,14 @@
 Type   : ${result.cardType || 'Unknown'}
 Digits : ${result.primaryDigits || 'N/A'}
 Expiry : ${result.expiryDate || 'N/A'}
+Holder : ${result.cardholderName || 'N/A'}
         `.trim();
 
         bioBtn.disabled = false;
         step1Btn.disabled = false;
 
       } catch (err) {
-        statusBox.innerText = "OCR Error";
+        statusBox.innerText = "OCR Verification Failed";
         resultBox.innerText = err.message;
         step1Btn.disabled = false;
       }
@@ -275,7 +438,7 @@ Expiry : ${result.expiryDate || 'N/A'}
     }
   });
 
-  // Step 2: Un-bypassable WebAuthn Device Fingerprint
+  // Step 2: WebAuthn Hardware Biometric
   bioBtn.addEventListener('click', async () => {
     try {
       statusBox.innerText = "Status: Requesting server challenge...";
@@ -299,7 +462,7 @@ Expiry : ${result.expiryDate || 'N/A'}
     }
   });
 
-  // Step 3: Execute Paystack Authorization Call
+  // Step 3: Out-of-Band OTP & Paystack Charge
   document.getElementById('sendOtpBtn').addEventListener('click', () => {
     const email = document.getElementById('userEmail').value;
     if (!email || !email.includes('@')) { alert("Please enter a valid email address."); return; }
@@ -309,7 +472,7 @@ Expiry : ${result.expiryDate || 'N/A'}
 
   paystackPayBtn.addEventListener('click', async () => {
     const email = document.getElementById('userEmail').value;
-    const amount = document.getElementById('amountInput').value || "5000";
+    const amount = document.getElementById('amountInput')?.value || "5000";
 
     statusBox.innerText = "Status: Processing pre-authenticated Paystack charge...";
 
@@ -342,6 +505,7 @@ Expiry : ${result.expiryDate || 'N/A'}
 
 </body>
 </html>
+
 
 
 

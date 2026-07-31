@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Paystack 3FA Secure Gateway</title>
+  
+  <!-- Google reCAPTCHA v3 SDK -->
+  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -138,7 +142,6 @@
       align-items: center;
       justify-content: center;
     }
-    .btn-otp { background: #6f42c1; color: #fff; }
     button:disabled { background: #2c2c2c; color: #666; cursor: not-allowed; border-color: transparent; }
 
     /* UID SECTION CONTAINER */
@@ -167,22 +170,10 @@
       color: #fcd34d;
       line-height: 1.4;
     }
-    .uid-help-box h4 {
-      color: #fff;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-    }
-    .uid-help-box p {
-      margin-bottom: 8px;
-    }
-    .uid-help-box ul {
-      margin-left: 18px;
-      margin-top: 4px;
-      margin-bottom: 8px;
-    }
-    .uid-help-box li {
-      margin-bottom: 6px;
-    }
+    .uid-help-box h4 { color: #fff; margin-bottom: 8px; font-size: 0.95rem; }
+    .uid-help-box p { margin-bottom: 8px; }
+    .uid-help-box ul { margin-left: 18px; margin-top: 4px; margin-bottom: 8px; }
+    .uid-help-box li { margin-bottom: 6px; }
 
     input[type="text"], input[type="email"] {
       width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #333;
@@ -243,10 +234,10 @@
   <!-- Step 1: Vision AI Scan -->
   <button id="step1Btn" class="btn-verify">1. Scan Physical Card (Workers AI)</button>
 
-  <!-- Step 2: WebAuthn Biometric -->
+  <!-- Step 2a: WebAuthn Biometric -->
   <button id="bioBtn" class="btn-biometric" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
 
-  <!-- Manual Device UID Section (No Auto Generator) -->
+  <!-- Step 2b: Manual Device UID Section -->
   <div id="uidWrapper" class="uid-section hidden">
     <input type="text" id="customUidInput" placeholder="Enter your Device UID (e.g. UID-8A9F...)" />
     
@@ -271,25 +262,23 @@
     <p>Paste or type your UID into the text field above, then tap <strong>"2b. Submit Device UID Token"</strong> to proceed.</p>
   </div>
 
-  <!-- Step 3: Out-of-Band OTP & Paystack Execution -->
-  <div id="otpSection" class="hidden">
-    <input type="email" id="userEmail" placeholder="Enter recipient email" />
-    <button id="sendOtpBtn" class="btn-otp">Send Verification OTP</button>
-    
-    <div id="otpInputGroup" class="hidden">
-      <input type="text" id="otpCode" placeholder="Enter 6-digit OTP code" maxlength="6" />
-      <button id="paystackPayBtn" style="background:#0ba464; color:#fff;">3. Complete Paystack Payment</button>
-    </div>
+  <!-- Step 3: reCAPTCHA & Final Paystack Payment Execution -->
+  <div id="paymentSection" class="hidden">
+    <input type="email" id="userEmail" placeholder="Enter payer email for receipt" />
+    <button id="paystackPayBtn" style="background:#0ba464; color:#fff;" disabled>3. Complete Paystack Payment</button>
   </div>
 </div>
 
 <script>
   const WORKER_URL = "https://hidden-cake-9572.trustconnect713.workers.dev";
+  const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_SITE_KEY"; // Replace with your Google reCAPTCHA v3 Site Key
+
   let mode = "card";             // "card" or "direct"
   let scanSource = "camera";     // "camera" or "upload"
   let uploadedBase64Image = null;
   let webauthnPassed = false;
   let deviceUidPassed = false;
+  let recaptchaPassed = false;
   let mediaStream = null;
 
   const tabCard = document.getElementById('tabCard');
@@ -312,11 +301,10 @@
   const uidBtn = document.getElementById('uidBtn');
   const uidHelpBtn = document.getElementById('uidHelpBtn');
   const uidHelpBox = document.getElementById('uidHelpBox');
+  const paymentSection = document.getElementById('paymentSection');
   const paystackPayBtn = document.getElementById('paystackPayBtn');
   const statusBox = document.getElementById('statusBox');
   const resultBox = document.getElementById('resultBox');
-  const otpSection = document.getElementById('otpSection');
-  const otpInputGroup = document.getElementById('otpInputGroup');
 
   // Camera Management
   async function startCamera() {
@@ -549,6 +537,38 @@ Holder : ${result.cardholderName || 'N/A'}
     }
   });
 
+  // Execute Invisible reCAPTCHA v3 & Enable Step 3 Payment
+  async function triggerRecaptchaVerification() {
+    statusBox.innerText = "Status: Running background security evaluation (reCAPTCHA v3)...";
+    
+    try {
+      grecaptcha.ready(() => {
+        grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'paystack_checkout' }).then(async (token) => {
+          
+          const response = await fetch(`${WORKER_URL}/api/auth/verify-recaptcha`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ recaptchaToken: token })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            recaptchaPassed = true;
+            statusBox.innerText = `Status: Security Check Passed (Score: ${data.score}). Ready to pay.`;
+            paymentSection.classList.remove('hidden');
+            paystackPayBtn.disabled = false;
+          } else {
+            statusBox.innerText = "Status: Security evaluation failed. Please try again.";
+            alert("Security check failed: " + (data.error || "Low security score"));
+          }
+        });
+      });
+    } catch (err) {
+      statusBox.innerText = "reCAPTCHA Error: " + err.message;
+    }
+  }
+
   // Step 2a: WebAuthn Hardware Biometric
   bioBtn.addEventListener('click', async () => {
     try {
@@ -559,7 +579,7 @@ Holder : ${result.cardholderName || 'N/A'}
       const challengeBuffer = Uint8Array.from(atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
 
       statusBox.innerText = "Status: Scan phone fingerprint now...";
-      const credential = await navigator.credentials.get({
+      await navigator.credentials.get({
         publicKey: { challenge: challengeBuffer, timeout: 60000, userVerification: "required" }
       });
 
@@ -567,7 +587,10 @@ Holder : ${result.cardholderName || 'N/A'}
       statusBox.innerText = "Status: Step 2 Passed (Biometrics Verified!)";
       bioBtn.disabled = true;
       uidWrapper.classList.add('hidden');
-      otpSection.classList.remove('hidden');
+      
+      // Trigger invisible reCAPTCHA check
+      triggerRecaptchaVerification();
+
     } catch (err) {
       statusBox.innerText = "Biometric Verification Unavailable/Failed. Switching to Device UID...";
       bioBtn.classList.add('hidden');
@@ -586,57 +609,28 @@ Holder : ${result.cardholderName || 'N/A'}
     }
 
     deviceUidPassed = true;
-    webauthnPassed = true; // Fallback counts as hardware verification token
+    webauthnPassed = true; // Hardware token fallback
 
     statusBox.innerText = `Status: Step 2 Passed (Device UID Verified: ${userUid})`;
     uidBtn.disabled = true;
     customUidInput.disabled = true;
-    otpSection.classList.remove('hidden');
+    
+    // Trigger invisible reCAPTCHA check
+    triggerRecaptchaVerification();
   });
 
-  // Step 3: Out-of-Band OTP & Paystack Charge
-  document.getElementById('sendOtpBtn').addEventListener('click', async () => {
-    const email = document.getElementById('userEmail').value;
-    const sendOtpBtn = document.getElementById('sendOtpBtn');
-
-    if (!email || !email.includes('@')) { 
-      alert("Please enter a valid email address."); 
-      return; 
-    }
-
-    try {
-      sendOtpBtn.disabled = true;
-      statusBox.innerText = "Status: Dispatching OTP to " + email + "...";
-
-      const response = await fetch(`${WORKER_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send OTP email.");
-      }
-
-      statusBox.innerText = "Status: OTP sent! Check your email inbox (" + email + ").";
-      otpInputGroup.classList.remove('hidden');
-      sendOtpBtn.disabled = false;
-
-    } catch (err) {
-      statusBox.innerText = "OTP Email Delivery Failed";
-      alert("Could not send OTP: " + err.message);
-      sendOtpBtn.disabled = false;
-    }
-  });
-
+  // Step 3: Paystack Payment Charge
   paystackPayBtn.addEventListener('click', async () => {
     const email = document.getElementById('userEmail').value;
     const amount = document.getElementById('amountInput')?.value || "5000";
     const userUid = customUidInput.value.trim();
 
-    statusBox.innerText = "Status: Processing pre-authenticated Paystack charge...";
+    if (!email || !email.includes('@')) {
+      alert("Please enter a valid payer email address.");
+      return;
+    }
+
+    statusBox.innerText = "Status: Processing Paystack transaction...";
 
     try {
       const response = await fetch(`${WORKER_URL}/api/paystack/charge`, {
@@ -647,6 +641,7 @@ Holder : ${result.cardholderName || 'N/A'}
           amount: parseInt(amount),
           paymentMethod: mode,
           webauthnVerified: webauthnPassed,
+          recaptchaPassed: recaptchaPassed,
           deviceUid: deviceUidPassed ? userUid : null
         })
       });
@@ -654,7 +649,7 @@ Holder : ${result.cardholderName || 'N/A'}
       const data = await response.json();
 
       if (data.status && data.data.authorization_url) {
-        statusBox.innerText = "Status: 3FA Passed! Redirecting to Paystack...";
+        statusBox.innerText = "Status: Redirecting to Paystack payment gateway...";
         window.location.href = data.data.authorization_url;
       } else {
         throw new Error(data.message || "Paystack initialization failed.");
@@ -668,6 +663,7 @@ Holder : ${result.cardholderName || 'N/A'}
 
 </body>
 </html>
+
 
 
 

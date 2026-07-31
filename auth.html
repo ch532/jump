@@ -16,13 +16,16 @@
       min-height: 100vh;
       padding: 12px;
     }
+
+    /* Updated container: 95vw ensures full responsiveness even in Desktop View */
     .checkout-card {
       background: #181818;
       border: 1px solid #2a2a2a;
       border-radius: 16px;
       padding: 20px;
-      width: 100%;
-      max-width: 600px;
+      width: 95vw;
+      max-width: 650px;
+      margin: 0 auto;
       box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
     h2 { font-size: 1.2rem; text-align: center; margin-bottom: 14px; color: #fff; }
@@ -34,11 +37,16 @@
     }
     .tab-btn.active { background: #0ba464; color: #fff; border-color: #0ba464; }
 
-    /* Enlarged Camera Viewport */
+    /* Enlarged Camera Viewport for Desktop View scaling */
     .media-container {
-      position: relative; width: 100%; height: 280px;
-      background: #000; border-radius: 12px; overflow: hidden;
-      margin-bottom: 16px; border: 2px solid #333;
+      position: relative; 
+      width: 100%; 
+      height: 340px; /* Increased height for large mobile display */
+      background: #000; 
+      border-radius: 12px; 
+      overflow: hidden;
+      margin-bottom: 16px; 
+      border: 2px solid #333;
     }
     video { width: 100%; height: 100%; object-fit: cover; }
     .card-guide {
@@ -132,7 +140,7 @@
   const otpInputGroup = document.getElementById('otpInputGroup');
   const video = document.getElementById('video');
 
-  // Camera Management (Safe Lifecycle Handler)
+  // Safe Camera Management Handler
   async function startCamera() {
     try {
       if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
@@ -155,10 +163,9 @@
     video.srcObject = null;
   }
 
-  // Initial Camera Start
   startCamera();
 
-  // Handle Minimize & Resume without freezing
+  // Handle Minimize & Resume without freezing camera context
   document.addEventListener("visibilitychange", async () => {
     if (document.hidden) {
       stopCamera();
@@ -184,7 +191,7 @@
     stopCamera();
   });
 
-  // Client-Side Canvas Compression (Prevents Payload Drops)
+  // Client-Side Canvas Compression (Prevents SSL socket drop timeouts)
   function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -257,7 +264,7 @@ Expiry : ${result.expiryDate || 'N/A'}
     }
   });
 
-  // Step 2: Mandatory Device Fingerprint (WebAuthn)
+  // Step 2: Mandatory Hardware Fingerprint Auth (WebAuthn)
   bioBtn.addEventListener('click', async () => {
     try {
       statusBox.innerText = "Status: Requesting server challenge...";
@@ -281,7 +288,7 @@ Expiry : ${result.expiryDate || 'N/A'}
     }
   });
 
-  // Step 3: Trigger Paystack Payment API
+  // Step 3: Trigger Paystack Charges via Worker
   document.getElementById('sendOtpBtn').addEventListener('click', () => {
     const email = document.getElementById('userEmail').value;
     if (!email || !email.includes('@')) { alert("Please enter a valid email address."); return; }
@@ -311,7 +318,6 @@ Expiry : ${result.expiryDate || 'N/A'}
 
       if (data.status && data.data.authorization_url) {
         statusBox.innerText = "Status: 3FA Passed! Redirecting to Paystack...";
-        // Direct redirect to Paystack authorization checkout URL
         window.location.href = data.data.authorization_url;
       } else {
         throw new Error(data.message || "Paystack initialization failed.");
@@ -325,3 +331,4 @@ Expiry : ${result.expiryDate || 'N/A'}
 
 </body>
 </html>
+

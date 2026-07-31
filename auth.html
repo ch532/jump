@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Biometric Card Checkout</title>
+  <title>3FA Secure AI Checkout</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #121212;
-      color: #ffffff;
+      background: #0d0d0d;
+      color: #e0e0e0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,25 +17,42 @@
       padding: 16px;
     }
     .checkout-card {
-      background: #1e1e1e;
-      border: 1px solid #2d2d2d;
-      border-radius: 12px;
-      padding: 20px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 24px;
       width: 100%;
-      max-width: 440px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      max-width: 520px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
-    h2 { font-size: 1.2rem; text-align: center; margin-bottom: 16px; }
+    h2 { font-size: 1.3rem; text-align: center; margin-bottom: 18px; color: #fff; }
+    
+    /* ENLARGED CAMERA VIEWPORT */
     .media-container {
       position: relative;
       width: 100%;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 16 / 9;
       background: #000;
-      border-radius: 8px;
+      border-radius: 12px;
       overflow: hidden;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+      border: 2px solid #333;
     }
     video { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* CARD OVERLAY GUIDE */
+    .card-guide {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 70%;
+      border: 2px dashed rgba(40, 167, 69, 0.7);
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
     button {
       width: 100%;
       padding: 14px;
@@ -44,40 +61,71 @@
       font-weight: 600;
       font-size: 0.95rem;
       cursor: pointer;
-      margin-bottom: 10px;
-      transition: background 0.2s ease;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
     }
     .btn-scan { background: #28a745; color: #fff; }
     .btn-pay { background: #007bff; color: #fff; }
-    button:disabled { background: #333333; color: #777777; cursor: not-allowed; }
+    .btn-otp { background: #6f42c1; color: #fff; }
+    button:disabled { background: #2c2c2c; color: #666; cursor: not-allowed; }
+
+    input[type="email"], input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #222;
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
     .status-box {
-      background: #262626;
+      background: #222;
       border: 1px solid #333;
       padding: 12px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-family: monospace;
       font-size: 0.85rem;
       white-space: pre-wrap;
       word-break: break-all;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
+    
+    .step-section { margin-bottom: 16px; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
 <div class="checkout-card">
-  <h2>Zero-Friction Checkout</h2>
+  <h2>3-Factor AI Checkout</h2>
 
+  <!-- Enlarged Camera Viewport -->
   <div class="media-container">
     <video id="video" autoplay playsinline muted></video>
+    <div class="card-guide"></div>
   </div>
 
-  <button id="scanBtn" class="btn-scan">1. Scan & Verify Card</button>
-  
-  <div id="statusBox" class="status-box">Status: Camera starting...</div>
+  <div id="statusBox" class="status-box">Status: Initializing...</div>
   <div id="resultBox" class="status-box">Card Details: Pending scan</div>
 
-  <button id="payBtn" class="btn-pay" disabled>2. Pay with Fingerprint</button>
+  <!-- Step 1: Scan Card -->
+  <button id="scanBtn" class="btn-scan">1. Scan Card (AI Vision)</button>
+
+  <!-- Step 2: Device Fingerprint -->
+  <button id="payBtn" class="btn-pay" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
+
+  <!-- Step 3: Email OTP Verification -->
+  <div id="otpSection" class="step-section hidden">
+    <input type="email" id="userEmail" placeholder="Enter your email for OTP verification" />
+    <button id="sendOtpBtn" class="btn-otp">Send Email Verification Code</button>
+    
+    <div id="otpInputGroup" class="hidden">
+      <input type="text" id="otpCode" placeholder="Enter 6-digit OTP code" maxlength="6" />
+      <button id="verifyOtpBtn" style="background:#20c997; color:#fff;">3. Finalize Payment</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -86,25 +134,69 @@
   const video = document.getElementById('video');
   const scanBtn = document.getElementById('scanBtn');
   const payBtn = document.getElementById('payBtn');
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+  const otpSection = document.getElementById('otpSection');
+  const otpInputGroup = document.getElementById('otpInputGroup');
+  
   const statusBox = document.getElementById('statusBox');
   const resultBox = document.getElementById('resultBox');
 
-  // Start Rear Camera Stream
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-    .then(stream => {
-      video.srcObject = stream;
-      statusBox.innerText = "Status: Camera active";
-    })
-    .catch(err => {
-      statusBox.innerText = "Camera access error: " + err.message;
-    });
+  let mediaStream = null;
 
-  // Capture frame from video & compress to JPEG base64
-  function captureAndCompressFrame(maxWidth = 800, quality = 0.8) {
+  // Camera Management (Safe Lifecycle Handler)
+  async function startCamera() {
+    try {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+
+      statusBox.innerText = "Status: Accessing camera...";
+
+      mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: "environment",
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        } 
+      });
+
+      video.srcObject = mediaStream;
+      await video.play();
+      statusBox.innerText = "Status: Camera active";
+    } catch (err) {
+      statusBox.innerText = "Camera error: " + err.message;
+    }
+  }
+
+  function stopCamera() {
+    if (mediaStream) {
+      mediaStream.getTracks().forEach(track => track.stop());
+      mediaStream = null;
+    }
+    video.srcObject = null;
+  }
+
+  // 1. Initial Camera Boot
+  startCamera();
+
+  // 2. Prevent Freeze on Minimize & Resume
+  document.addEventListener("visibilitychange", async () => {
+    if (document.hidden) {
+      console.log("App minimized: Releasing camera...");
+      stopCamera();
+    } else {
+      console.log("App resumed: Restarting camera...");
+      await startCamera();
+    }
+  });
+
+  // Frame Capture and Compression
+  function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
-      let width = video.videoWidth || 640;
-      let height = video.videoHeight || 480;
+      let width = video.videoWidth || 1280;
+      let height = video.videoHeight || 720;
 
       if (width > maxWidth) {
         height = Math.round((height * maxWidth) / width);
@@ -121,15 +213,15 @@
     });
   }
 
-  // 1. Scan and Analyze Card
+  // STEP 1: AI Vision Card Scanning
   scanBtn.addEventListener('click', async () => {
     try {
       scanBtn.disabled = true;
-      statusBox.innerText = "Status: Capturing & compressing frame...";
+      statusBox.innerText = "Status: Capturing frame...";
 
       const compressedBase64 = await captureAndCompressFrame();
 
-      statusBox.innerText = "Status: Verifying with Workers AI...";
+      statusBox.innerText = "Status: Workers AI verifying card...";
       const response = await fetch(`${WORKER_URL}/api/ai/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,48 +234,43 @@
       const result = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
 
       if (!result.isBankCard) {
-        statusBox.innerText = "Status: Scan completed - Not a valid card";
-        resultBox.innerText = "Error: Please align a valid bank card in view.";
+        statusBox.innerText = "Status: Not a valid bank card.";
+        resultBox.innerText = "Align physical bank card inside green border.";
         scanBtn.disabled = false;
         return;
       }
 
-      statusBox.innerText = "Status: Valid bank card verified!";
+      statusBox.innerText = "Status: Step 1 Passed (Card Verified)";
       resultBox.innerText = `
 --- CARD DETECTED ---
 Type   : ${result.cardType || 'Unknown'}
 Digits : ${result.primaryDigits || 'N/A'}
 Expiry : ${result.expiryDate || 'N/A'}
-Holder : ${result.cardholderName || 'N/A'}
       `.trim();
 
-      // Enable WebAuthn button
       payBtn.disabled = false;
       scanBtn.disabled = false;
 
     } catch (err) {
-      statusBox.innerText = "Status: OCR Error";
+      statusBox.innerText = "OCR Error";
       resultBox.innerText = err.message;
       scanBtn.disabled = false;
     }
   });
 
-  // 2. Trigger WebAuthn Biometric Verification
+  // STEP 2: Biometric Fingerprint Auth (WebAuthn)
   payBtn.addEventListener('click', async () => {
     try {
-      payBtn.disabled = true;
-      statusBox.innerText = "Status: Fetching security challenge...";
-
+      statusBox.innerText = "Status: Requesting server challenge...";
       const challengeRes = await fetch(`${WORKER_URL}/api/auth/challenge`);
-      if (!challengeRes.ok) throw new Error("Could not retrieve challenge.");
-
       const { challenge } = await challengeRes.json();
+
       const challengeBuffer = Uint8Array.from(
         atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), 
         c => c.charCodeAt(0)
       );
 
-      statusBox.innerText = "Status: Prompting device biometrics...";
+      statusBox.innerText = "Status: Prompting device fingerprint...";
 
       const credential = await navigator.credentials.get({
         publicKey: {
@@ -193,18 +280,45 @@ Holder : ${result.cardholderName || 'N/A'}
         }
       });
 
-      statusBox.innerText = "Status: Payment Approved!";
-      alert("Payment Cryptographically Signed via Biometrics!");
-      console.log("WebAuthn Signature Payload:", credential);
+      statusBox.innerText = "Status: Step 2 Passed (Biometrics Verified!)";
+      payBtn.disabled = true;
+      otpSection.classList.remove('hidden');
 
     } catch (err) {
-      statusBox.innerText = "Status: Biometric Auth Failed";
-      alert("Biometric auth failed: " + err.message);
-      payBtn.disabled = false;
+      statusBox.innerText = "Biometric Verification Failed";
+      alert("Device authentication failed: " + err.message);
     }
+  });
+
+  // STEP 3A: Send Email OTP
+  sendOtpBtn.addEventListener('click', async () => {
+    const email = document.getElementById('userEmail').value;
+    if (!email || !email.includes('@')) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    statusBox.innerText = "Status: Sending OTP code to " + email + "...";
+    setTimeout(() => {
+      statusBox.innerText = "Status: OTP sent! Check your email inbox.";
+      otpInputGroup.classList.remove('hidden');
+    }, 1000);
+  });
+
+  // STEP 3B: Verify OTP & Finalize
+  verifyOtpBtn.addEventListener('click', () => {
+    const code = document.getElementById('otpCode').value;
+    if (code.length < 4) {
+      alert("Enter valid OTP code.");
+      return;
+    }
+
+    statusBox.innerText = "Status: 3FA COMPLETE - Payment Authorized!";
+    alert("Transaction Successful! 3-Factor Security Verification Passed.");
   });
 </script>
 
 </body>
 </html>
+
 

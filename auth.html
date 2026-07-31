@@ -15,17 +15,16 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      padding: 0; /* Remove body padding for full edge-to-edge layout */
+      padding: 0;
     }
 
-    /* FULL SCREEN EXPANDED CONTAINER */
     .checkout-card {
       background: #181818;
       border-bottom: 1px solid #2a2a2a;
       border-radius: 0 0 16px 16px;
       padding: 16px;
-      width: 100vw; /* Take 100% of the display width */
-      max-width: 100%; /* Remove width cap completely */
+      width: 100vw;
+      max-width: 100%;
       box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
 
@@ -38,12 +37,12 @@
     }
     .tab-btn.active { background: #0ba464; color: #fff; border-color: #0ba464; }
 
-    /* EXPANDED CAMERA VIEWPORT */
+    /* EXPANDED TALLER CAMERA VIEWPORT */
     .media-container {
       position: relative; 
       width: 100%; 
-      height: 60vw; /* Scales height dynamically with screen width */
-      max-height: 480px; 
+      height: 85vw; /* Expanded vertically to capture full bank card height */
+      max-height: 520px; 
       background: #000; 
       border-radius: 12px; 
       overflow: hidden;
@@ -53,11 +52,18 @@
 
     video { width: 100%; height: 100%; object-fit: cover; }
 
-    /* CARD OVERLAY GUIDE */
+    /* ACCURATE BANK CARD OVERLAY RATIO (1.58 : 1) */
     .card-guide {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 92%; height: 75%; border: 2.5px dashed #0ba464; border-radius: 12px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); pointer-events: none;
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%);
+      width: 90%;
+      aspect-ratio: 1.58 / 1; /* Matches real physical debit/credit card proportions */
+      border: 2.5px dashed #0ba464; 
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); 
+      pointer-events: none;
     }
 
     button {
@@ -145,7 +151,7 @@
   const otpInputGroup = document.getElementById('otpInputGroup');
   const video = document.getElementById('video');
 
-  // Safe Camera Management Handler
+  // Camera Management Handler
   async function startCamera() {
     try {
       if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
@@ -170,7 +176,7 @@
 
   startCamera();
 
-  // Handle Minimize & Resume without freezing camera context
+  // Prevent Camera Lockup on App Minimize & Resume
   document.addEventListener("visibilitychange", async () => {
     if (document.hidden) {
       stopCamera();
@@ -179,7 +185,7 @@
     }
   });
 
-  // Mode Switch Handler
+  // Tab Switching
   tabCard.addEventListener('click', () => {
     mode = "card";
     tabCard.classList.add('active'); tabDirect.classList.remove('active');
@@ -196,7 +202,7 @@
     stopCamera();
   });
 
-  // Client-Side Canvas Compression (Prevents payload drops)
+  // Client Canvas Compression
   function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -218,7 +224,7 @@
     });
   }
 
-  // Step 1: AI Vision Card Scanning OR Intent Confirmation
+  // Step 1: Vision AI Card Scan OR Intent Registration
   step1Btn.addEventListener('click', async () => {
     if (mode === "card") {
       try {
@@ -269,7 +275,7 @@ Expiry : ${result.expiryDate || 'N/A'}
     }
   });
 
-  // Step 2: Mandatory Hardware Fingerprint Auth (WebAuthn)
+  // Step 2: Un-bypassable WebAuthn Device Fingerprint
   bioBtn.addEventListener('click', async () => {
     try {
       statusBox.innerText = "Status: Requesting server challenge...";
@@ -293,7 +299,7 @@ Expiry : ${result.expiryDate || 'N/A'}
     }
   });
 
-  // Step 3: Trigger Paystack Charges via Worker
+  // Step 3: Execute Paystack Authorization Call
   document.getElementById('sendOtpBtn').addEventListener('click', () => {
     const email = document.getElementById('userEmail').value;
     if (!email || !email.includes('@')) { alert("Please enter a valid email address."); return; }
@@ -336,5 +342,6 @@ Expiry : ${result.expiryDate || 'N/A'}
 
 </body>
 </html>
+
 
 

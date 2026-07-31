@@ -596,7 +596,7 @@ Holder : ${result.cardholderName || 'N/A'}
     paymentSection.classList.remove('hidden');
   });
 
-  // reCAPTCHA v2 Success Callback Handler
+  // reCAPTCHA v2 Callback with Client-Side Diagnostics
   async function onRecaptchaSuccess(token) {
     statusBox.innerText = "Status: Verifying reCAPTCHA v2 with Cloudflare Worker...";
 
@@ -614,11 +614,17 @@ Holder : ${result.cardholderName || 'N/A'}
         statusBox.innerText = "Status: reCAPTCHA v2 Verified! Ready to complete Paystack payment.";
         paystackPayBtn.disabled = false;
       } else {
-        statusBox.innerText = "Status: Security verification failed.";
-        alert("reCAPTCHA validation failed on server.");
+        const errCodes = data.errorCodes ? data.errorCodes.join(", ") : "None";
+        const rawPayload = JSON.stringify(data);
+
+        statusBox.innerText = `Status: Security Check Failed.\nError Codes: [${errCodes}]`;
+        resultBox.innerText = `[DEBUG ERROR DETECTED]\nHTTP Status: ${response.status}\nServer Response:\n${rawPayload}`;
+
+        alert(`reCAPTCHA validation failed on server.\nError Codes: ${errCodes}`);
       }
     } catch (err) {
-      statusBox.innerText = "reCAPTCHA Error: " + err.message;
+      statusBox.innerText = "reCAPTCHA Request Error: " + err.message;
+      resultBox.innerText = "Failed to connect to verification worker route.";
     }
   }
 
@@ -666,6 +672,7 @@ Holder : ${result.cardholderName || 'N/A'}
 
 </body>
 </html>
+
 
 
 

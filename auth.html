@@ -60,7 +60,7 @@
     .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
     .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-    /* EXPANDED SCANNER PREVIEW TO FIT ENTIRE CARD DOWNWARD */
+    /* EXPANDED SCANNER PREVIEW */
     .scanner-preview { 
       width: 100%; 
       height: 280px; 
@@ -348,7 +348,7 @@
   });
 
   /* -------------------------------------------------------------
-     STEP 4B: BRAND-COMPLIANT GOOGLE PAY BUTTON RENDERING
+     STEP 4B: OFFICIAL G PAY BRAND MARK BUTTON RENDERING
   ------------------------------------------------------------- */
   let paymentsClient = null;
 
@@ -372,7 +372,6 @@
     }
   }];
 
-  // COMPLIANT WHITE BUTTON WITH EXACT TEXT "Pay with Google Pay"
   function renderFallbackGPayButton() {
     const container = document.getElementById('gpay-container');
     if (!container) return;
@@ -392,16 +391,17 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
       ">
-        <svg width="20" height="20" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M23.49 12.28c0-.79-.07-1.54-.19-2.28H12v4.51h6.47c-.28 1.48-1.11 2.73-2.37 3.58v2.98h3.83c2.24-2.06 3.56-5.1 3.56-8.79z"/>
-          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.83-2.98c-1.08.72-2.45 1.16-4.1 1.16-3.15 0-5.82-2.13-6.77-5.01H1.26v3.08C3.25 21.3 7.31 24 12 24z"/>
-          <path fill="#FBBC05" d="M5.23 14.26c-.24-.72-.38-1.49-.38-2.26s.14-1.54.38-2.26V6.66H1.26C.46 8.26 0 10.07 0 12s.46 3.74 1.26 5.34l3.97-3.08z"/>
-          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.66l3.97 3.08c.95-2.88 3.62-4.99 6.77-4.99z"/>
+        <span>Pay with</span>
+        <svg width="52" height="20" viewBox="0 0 41 17" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+          <path d="M19.526 8.221c0-.59-.053-1.157-.152-1.701h-8.222v3.218h4.696c-.203 1.093-.818 2.02-1.744 2.64v2.194h2.825c1.653-1.522 2.607-3.763 2.607-6.351z" fill="#4285F4"/>
+          <path d="M11.152 16.741c2.363 0 4.345-.784 5.794-2.122l-2.825-2.194c-.784.525-1.787.835-2.969.835-2.284 0-4.218-1.543-4.908-3.618H3.327v2.264c1.448 2.871 4.417 4.835 7.825 4.835z" fill="#34A853"/>
+          <path d="M6.244 9.642c-.175-.525-.276-1.086-.276-1.66 0-.575.101-1.135.276-1.66V4.058H3.327c-.6 1.192-.942 2.535-.942 3.924 0 1.389.342 2.732.942 3.924l2.917-2.264z" fill="#FBBC05"/>
+          <path d="M11.152 3.221c1.285 0 2.441.442 3.348 1.307l2.511-2.512C15.492.544 13.515 0 11.152 0 7.744 0 4.775 1.964 3.327 4.835l2.917 2.264c.69-2.075 2.624-3.878 4.908-3.878z" fill="#EA4335"/>
+          <path d="M26.234 3.313h-4.322V12.7h1.611V9.132h2.711c2.148 0 3.618-1.488 3.618-2.91 0-1.421-1.47-2.909-3.618-2.909zm-.044 4.354h-2.667V4.771h2.667c1.233 0 2.012.822 2.012 1.448 0 .626-.779 1.448-2.012 1.448zM31.252 6.425c-1.28 0-2.222.92-2.222 2.15 0 1.23.942 2.15 2.222 2.15 1.28 0 2.222-.92 2.222-2.15 0-1.23-.942-2.15-2.222-2.15zm0 5.485c-2.17 0-3.753-1.488-3.753-3.335 0-1.847 1.583-3.335 3.753-3.335 2.17 0 3.753 1.488 3.753 3.335 0 1.847-1.583 3.335-3.753 3.335zM39.68 5.395l-2.457 6.071h-1.633l.92-1.99-2.73-6.081h1.722l1.782 4.309 1.744-4.309h1.652z" fill="#000000"/>
         </svg>
-        Pay with Google Pay
       </button>
     `;
 
@@ -451,6 +451,7 @@
 
 </body>
 </html>
+
 
 
 

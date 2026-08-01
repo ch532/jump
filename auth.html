@@ -35,9 +35,24 @@
       padding: 16px; 
     }
     
-    .header { text-align: center; margin-bottom: 20px; }
+    .header { text-align: center; margin-bottom: 16px; }
     .header h2 { font-size: 18px; font-weight: 700; color: var(--text); }
     .header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ORDER SUMMARY (ITEM SELECTION FOR GOOGLE PAY APPROVAL) */
+    .order-summary {
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-summary .item-info h4 { font-size: 13px; font-weight: 600; color: #fff; }
+    .order-summary .item-info p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .order-summary .item-price { font-size: 16px; font-weight: 700; color: var(--accent); }
 
     .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
     .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
@@ -68,6 +83,15 @@
   <div class="header">
     <h2>Paystack 3FA Secure Gateway</h2>
     <p>Hybrid AI Vision & Hardware-Bound Authorization</p>
+  </div>
+
+  <!-- ORDER SUMMARY BOX FOR ITEM SELECTION -->
+  <div class="order-summary">
+    <div class="item-info">
+      <h4>3FA Authorization Service Access</h4>
+      <p>Merchant Checkout ID: #AUTH-5000-NGN</p>
+    </div>
+    <div class="item-price">₦5,000</div>
   </div>
 
   <div class="tab-group">
@@ -306,3 +330,4 @@
 
 </body>
 </html>
+

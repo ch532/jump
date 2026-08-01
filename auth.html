@@ -164,8 +164,8 @@
     </div>
   </div>
 
-  <!-- STEP 4: PAYMENT EXECUTION OPTIONS -->
-  <div class="step-container hidden" id="section-step4">
+  <!-- STEP 4: PAYMENT EXECUTION OPTIONS (UNHIDDEN FOR DIRECT ACCESS) -->
+  <div class="step-container" id="section-step4">
     <span class="step-label">Step 4: Execute Payment</span>
     
     <!-- Paystack Checkout Option -->
@@ -310,7 +310,6 @@
       if (data.success) {
         otpVerified = true;
         document.getElementById("status-text").innerText = "Step 3 Passed! Payment options unlocked.";
-        document.getElementById("section-step4").classList.remove("hidden");
       } else {
         alert("Invalid or expired OTP token!");
       }
@@ -350,7 +349,7 @@
   });
 
   /* -------------------------------------------------------------
-     STEP 4B: GOOGLE PAY CLIENT SDK SETUP (FRONTEND ONLY)
+     STEP 4B: GOOGLE PAY CLIENT SDK SETUP (DIRECT RENDER)
   ------------------------------------------------------------- */
   let paymentsClient = null;
 
@@ -375,26 +374,22 @@
   }];
 
   function onGooglePayLoaded() {
-    paymentsClient = new google.payments.api.PaymentsClient({
-      environment: 'TEST' // Change to 'PRODUCTION' when going live
-    });
-
-    const isReadyToPayRequest = Object.assign({}, googlePayBaseRequest, {
-      allowedPaymentMethods: allowedPaymentMethods
-    });
-
-    paymentsClient.isReadyToPay(isReadyToPayRequest)
-      .then(function(response) {
-        if (response.result) {
-          renderGooglePayButton();
-        }
-      })
-      .catch(function(err) {
-        console.error("GPay readiness check error:", err);
+    try {
+      paymentsClient = new google.payments.api.PaymentsClient({
+        environment: 'TEST'
       });
+      renderGooglePayButton();
+    } catch(e) {
+      console.error("Google Pay client initialization error:", e);
+    }
   }
 
   function renderGooglePayButton() {
+    const container = document.getElementById('gpay-container');
+    if (!container) return;
+
+    container.innerHTML = ''; // Prevent duplicates
+
     const button = paymentsClient.createButton({
       buttonColor: 'default',
       buttonType: 'pay',
@@ -402,7 +397,7 @@
       onClick: onGooglePayButtonClicked
     });
     
-    document.getElementById('gpay-container').appendChild(button);
+    container.appendChild(button);
   }
 
   function onGooglePayButtonClicked() {
@@ -432,5 +427,6 @@
 
 </body>
 </html>
+
 
 

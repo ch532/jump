@@ -17,22 +17,38 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 480px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
     
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h2 { font-size: 20px; font-weight: 700; color: var(--text); }
-    .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    /* Restored full-width layout styling */
+    body { 
+      background-color: var(--bg); 
+      color: var(--text); 
+      padding: 12px; 
+      display: block; 
+      width: 100%; 
+    }
+    
+    .container { 
+      width: 100%; 
+      max-width: 100%; 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 16px; 
+    }
+    
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { font-size: 18px; font-weight: 700; color: var(--text); }
+    .header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-    .tab-group { display: flex; gap: 8px; margin-bottom: 20px; }
-    .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+    .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
     .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-    .scanner-preview { width: 100%; height: 200px; background: #000; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 16px; }
+    .scanner-preview { width: 100%; height: 220px; background: #000; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 16px; }
     .scanner-preview img, .scanner-preview video { width: 100%; height: 100%; object-fit: cover; }
     .upload-label { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; }
 
-    .status-box { background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; font-family: monospace; color: var(--text-muted); margin-bottom: 20px; }
+    .status-box { background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; font-family: monospace; color: var(--text-muted); margin-bottom: 16px; word-break: break-all; }
     .status-box strong { color: var(--accent); }
 
     .btn { width: 100%; padding: 14px; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -42,7 +58,8 @@
     .input-field { width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; text-align: center; letter-spacing: 2px; }
     .input-field:focus { border-color: var(--accent); outline: none; }
     
-    .step-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
+    .step-container { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+    .step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
     .hidden { display: none; }
   </style>
 </head>
@@ -109,7 +126,7 @@
 <script>
   let rawBase64Image = null;
   let currentSessionHash = null;
-  let deviceUid = "HUAWEI_P30-dc21d373f8dfb"; // Primary device UID fallback
+  let deviceUid = "HUAWEI_P30-dc21d373f8dfb"; 
   let otpVerified = false;
 
   const cardInput = document.getElementById("card-input");
@@ -121,7 +138,7 @@
   const btnVerifyOtp = document.getElementById("btn-verify-otp");
   const btnPaystack = document.getElementById("btn-paystack");
 
-  // Handle Image Selection
+  // Handle Card Image Selection
   cardInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -138,7 +155,7 @@
     }
   });
 
-  // STEP 1: Vision AI Scan Handler (Redacted Digit Display)
+  // STEP 1: Vision AI Scan Handler (Privacy Redacted Display)
   btnScan.addEventListener("click", async () => {
     document.getElementById("status-text").innerText = "Workers AI verifying card...";
     btnScan.disabled = true;
@@ -149,12 +166,13 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBase64: rawBase64Image })
       });
+      
       const data = await res.json();
 
       if (data.isBankCard) {
         document.getElementById("status-text").innerText = "Step 1 Passed (Card Verified)";
         
-        // Display ONLY Card Type and Holder Name (digits protected)
+        // Display ONLY Card Type and Holder Name (protecting 16-19 digits)
         document.getElementById("card-details").innerHTML = `
           <strong>Type:</strong> ${data.cardType}<br>
           <strong>Holder:</strong> ${data.cardholderName}
@@ -174,7 +192,7 @@
   btnStep2.addEventListener("click", async () => {
     document.getElementById("status-text").innerText = "Scan phone fingerprint now...";
     
-    // Fallback to Device UID binding UI
+    // Fallback UI trigger
     setTimeout(() => {
       document.getElementById("status-text").innerText = "Biometrics unavailable. Switch to Device UID.";
       document.getElementById("uid-fallback").classList.remove("hidden");
@@ -187,7 +205,7 @@
     document.getElementById("section-step3").classList.remove("hidden");
   });
 
-  // STEP 3A: Open Native Mail Intent with Choice Confirmation Link
+  // STEP 3A: Open Native Mail Intent with Confirmation Link
   btnOpenMail.addEventListener("click", async () => {
     const email = document.getElementById("user-email").value;
     if (!email) return alert("Please enter a valid email address");
@@ -205,7 +223,6 @@
       if (data.success) {
         currentSessionHash = data.sessionHash;
 
-        // Construct body with explicit confirmation link choice
         const subject = encodeURIComponent("Paystack 3FA Payment Authorization Request");
         const body = encodeURIComponent(
           `Paystack 3FA Secure Authorization\n\n` +
@@ -214,7 +231,7 @@
           `If you did not initiate this transaction, simply ignore or discard this message.`
         );
 
-        // Open phone's native mail app draft
+        // Open native phone mail intent
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
 
         document.getElementById("status-text").innerText = "Mail application launched. Confirm choice in mail or enter code below.";
@@ -287,6 +304,7 @@
 
 </body>
 </html>
+
 
 
 

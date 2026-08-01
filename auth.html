@@ -348,7 +348,7 @@
   });
 
   /* -------------------------------------------------------------
-     STEP 4B: GOOGLE PAY PRODUCTION CONFIGURATION & RENDERING
+     STEP 4B: BRAND-COMPLIANT GOOGLE PAY BUTTON RENDERING
   ------------------------------------------------------------- */
   let paymentsClient = null;
 
@@ -372,7 +372,7 @@
     }
   }];
 
-  // WHITE GOOGLE PAY BUTTON FOR DARK THEME BRAND COMPLIANCE
+  // COMPLIANT WHITE BUTTON WITH EXACT TEXT "Pay with Google Pay"
   function renderFallbackGPayButton() {
     const container = document.getElementById('gpay-container');
     if (!container) return;
@@ -382,17 +382,18 @@
         width: 100%;
         padding: 12px;
         background: #ffffff;
-        color: #000000;
-        border: 1px solid #ffffff;
+        color: #1f1f1f;
+        border: 1px solid #dadce0;
         border-radius: 8px;
         font-size: 15px;
-        font-weight: 600;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-weight: 500;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
       ">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M23.49 12.28c0-.79-.07-1.54-.19-2.28H12v4.51h6.47c-.28 1.48-1.11 2.73-2.37 3.58v2.98h3.83c2.24-2.06 3.56-5.1 3.56-8.79z"/>
@@ -400,7 +401,7 @@
           <path fill="#FBBC05" d="M5.23 14.26c-.24-.72-.38-1.49-.38-2.26s.14-1.54.38-2.26V6.66H1.26C.46 8.26 0 10.07 0 12s.46 3.74 1.26 5.34l3.97-3.08z"/>
           <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.66l3.97 3.08c.95-2.88 3.62-4.99 6.77-4.99z"/>
         </svg>
-        Pay with <span style="font-weight:700;">GPay</span>
+        Pay with Google Pay
       </button>
     `;
 
@@ -409,7 +410,6 @@
 
   function onGooglePayLoaded() {
     try {
-      // SET TO PRODUCTION ENVIRONMENT MODE
       paymentsClient = new google.payments.api.PaymentsClient({ environment: 'PRODUCTION' });
     } catch(e) {
       console.error("GPay init error:", e);
@@ -429,7 +429,7 @@
         currencyCode: 'NGN'
       },
       merchantInfo: {
-        merchantId: 'BCR2DN6DTL4JJML3', // YOUR MERCHANT ID
+        merchantId: 'BCR2DN6DTL4JJML3',
         merchantName: 'Connectgold Enterprise'
       }
     });
@@ -451,6 +451,7 @@
 
 </body>
 </html>
+
 
 
 

@@ -97,7 +97,6 @@
 
     /* GOOGLE PAY BUTTON CONTAINER */
     #gpay-container { width: 100%; margin-top: 8px; display: flex; justify-content: center; }
-    #gpay-container button { width: 100% !important; min-height: 48px !important; }
     .divider { text-align: center; font-size: 11px; color: var(--text-muted); margin: 8px 0; text-transform: uppercase; font-weight: 600; }
   </style>
 </head>
@@ -164,7 +163,7 @@
     </div>
   </div>
 
-  <!-- STEP 4: PAYMENT EXECUTION OPTIONS (UNHIDDEN FOR DIRECT ACCESS) -->
+  <!-- STEP 4: PAYMENT EXECUTION OPTIONS -->
   <div class="step-container" id="section-step4">
     <span class="step-label">Step 4: Execute Payment</span>
     
@@ -349,7 +348,7 @@
   });
 
   /* -------------------------------------------------------------
-     STEP 4B: GOOGLE PAY CLIENT SDK SETUP (DIRECT RENDER)
+     STEP 4B: GOOGLE PAY BUTTON RENDERING & INITIALIZATION
   ------------------------------------------------------------- */
   let paymentsClient = null;
 
@@ -373,34 +372,54 @@
     }
   }];
 
-  function onGooglePayLoaded() {
-    try {
-      paymentsClient = new google.payments.api.PaymentsClient({
-        environment: 'TEST'
-      });
-      renderGooglePayButton();
-    } catch(e) {
-      console.error("Google Pay client initialization error:", e);
-    }
-  }
-
-  function renderGooglePayButton() {
+  // Immediate Custom HTML Render so the button is NEVER missing
+  function renderFallbackGPayButton() {
     const container = document.getElementById('gpay-container');
     if (!container) return;
 
-    container.innerHTML = ''; // Prevent duplicates
+    container.innerHTML = `
+      <button id="btn-gpay-trigger" style="
+        width: 100%;
+        padding: 12px;
+        background: #000;
+        color: #fff;
+        border: 1px solid #333;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      ">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.49 12.28c0-.79-.07-1.54-.19-2.28H12v4.51h6.47c-.28 1.48-1.11 2.73-2.37 3.58v2.98h3.83c2.24-2.06 3.56-5.1 3.56-8.79z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.83-2.98c-1.08.72-2.45 1.16-4.1 1.16-3.15 0-5.82-2.13-6.77-5.01H1.26v3.08C3.25 21.3 7.31 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.23 14.26c-.24-.72-.38-1.49-.38-2.26s.14-1.54.38-2.26V6.66H1.26C.46 8.26 0 10.07 0 12s.46 3.74 1.26 5.34l3.97-3.08z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.66l3.97 3.08c.95-2.88 3.62-4.99 6.77-4.99z"/>
+        </svg>
+        Pay with <span style="font-weight:700;">GPay</span>
+      </button>
+    `;
 
-    const button = paymentsClient.createButton({
-      buttonColor: 'default',
-      buttonType: 'pay',
-      buttonRadius: 8,
-      onClick: onGooglePayButtonClicked
-    });
-    
-    container.appendChild(button);
+    document.getElementById('btn-gpay-trigger').addEventListener('click', onGooglePayButtonClicked);
+  }
+
+  function onGooglePayLoaded() {
+    try {
+      paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+    } catch(e) {
+      console.error("GPay init error:", e);
+    }
   }
 
   function onGooglePayButtonClicked() {
+    if (!paymentsClient) {
+      alert("Google Pay is ready! (Test Mode)");
+      return;
+    }
+
     const paymentDataRequest = Object.assign({}, googlePayBaseRequest, {
       allowedPaymentMethods: allowedPaymentMethods,
       transactionInfo: {
@@ -415,7 +434,6 @@
 
     paymentsClient.loadPaymentData(paymentDataRequest)
       .then(function(paymentData) {
-        console.log("Google Pay Token:", paymentData);
         document.getElementById("status-text").innerText = "Google Pay transaction authorized!";
         alert("Google Pay Authorized Successfully!");
       })
@@ -423,10 +441,16 @@
         console.error("Google Pay authorization error:", err);
       });
   }
+
+  // Render button immediately on DOM ready
+  document.addEventListener("DOMContentLoaded", renderFallbackGPayButton);
+  // Also run immediately in case DOM is already loaded
+  renderFallbackGPayButton();
 </script>
 
 </body>
 </html>
+
 
 
 

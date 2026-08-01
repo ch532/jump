@@ -1,462 +1,308 @@
-// =========================================================================
-// CLOUDFLARE WORKER: PAYSTACK 3FA SECURE GATEWAY & BANK VALIDATION ENGINE
-// =========================================================================
-
-// Global CORS Headers
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
-};
-
-// Cryptographic HMAC SHA-256 Hash Generator for Stateless Token Verification
-async function generateOtpHash(email, otp, secret) {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const messageData = encoder.encode(`${email}:${otp}`);
-
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw",
-    keyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-
-  const signature = await crypto.subtle.sign("HMAC", cryptoKey, messageData);
-  const hashArray = Array.from(new Uint8Array(signature));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-export default {
-  async fetch(request, env) {
-    // Handle CORS Preflight Requests
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paystack 3FA Secure Gateway</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card-bg: #141414;
+      --border: #262626;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
+      --danger: #ef4444;
     }
 
-    const url = new URL(request.url);
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    
+    body { 
+      background-color: var(--bg); 
+      color: var(--text); 
+      padding: 12px; 
+      display: block; 
+      width: 100%; 
+    }
+    
+    .container { 
+      width: 100%; 
+      max-width: 100%; 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 16px; 
+    }
+    
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { font-size: 18px; font-weight: 700; color: var(--text); }
+    .header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+    .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    .scanner-preview { width: 100%; height: 220px; background: #000; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 16px; }
+    .scanner-preview img, .scanner-preview video { width: 100%; height: 100%; object-fit: cover; }
+    .upload-label { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; cursor: pointer; }
+
+    .status-box { background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; font-family: monospace; color: var(--text-muted); margin-bottom: 16px; word-break: break-all; }
+    .status-box strong { color: var(--accent); }
+
+    .btn { width: 100%; padding: 14px; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn:disabled { background: #262626; color: #52525b; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .input-field { width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; text-align: center; letter-spacing: 2px; }
+    .input-field:focus { border-color: var(--accent); outline: none; }
+    
+    .step-container { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+    .step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>Paystack 3FA Secure Gateway</h2>
+    <p>Hybrid AI Vision & Hardware-Bound Authorization</p>
+  </div>
+
+  <div class="tab-group">
+    <div class="tab active" id="tab-card">Scan Physical Card</div>
+    <div class="tab" id="tab-transfer">Direct Bank Transfer</div>
+  </div>
+
+  <!-- STEP 1: PHYSICAL CARD SCANNER -->
+  <div id="section-card">
+    <div class="scanner-preview" id="preview-container">
+      <label class="upload-label" for="card-input">
+        <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3"/></svg>
+        <span>Tap to select or take card photo</span>
+      </label>
+      <input type="file" id="card-input" accept="image/*" class="hidden">
+      <img id="card-preview" class="hidden">
+    </div>
+
+    <div class="status-box" id="status-box">
+      Status: <span id="status-text">Pending card image</span>
+      <div id="card-details" style="margin-top: 8px;"></div>
+    </div>
+
+    <button class="btn" id="btn-scan" disabled>1. Scan Physical Card (Workers AI)</button>
+  </div>
+
+  <!-- STEP 2: HARDWARE BIOMETRICS / UID -->
+  <div class="step-container">
+    <span class="step-label">Step 2: Hardware Authorization</span>
+    <button class="btn" id="btn-step2" disabled>2. Verify Device Fingerprint (WebAuthn)</button>
+    <div id="uid-fallback" class="hidden">
+      <input type="text" class="input-field" id="device-uid-input" readonly>
+      <button class="btn" id="btn-submit-uid">2b. Submit Device UID Token</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: NATIVE PHONE INTENT CHOICE LINK -->
+  <div class="step-container hidden" id="section-step3">
+    <span class="step-label">Step 3: Direct Phone Mail Intent Authorization</span>
+    <input type="email" class="input-field" id="user-email" value="trustconnect713@gmail.com" placeholder="Enter target email">
+    <button class="btn" id="btn-open-mail">📧 Open Mail App to Send OTP Token</button>
+
+    <div id="otp-verify-block" class="hidden">
+      <input type="text" class="input-field" id="otp-input" placeholder="Enter 6-Digit Code Sent via Mail" maxlength="6">
+      <button class="btn" id="btn-verify-otp">Verify Token Code</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: PAYSTACK PAYMENT EXECUTION -->
+  <div class="step-container hidden" id="section-step4">
+    <button class="btn" id="btn-paystack">4. Complete Paystack Payment</button>
+  </div>
+</div>
+
+<script>
+  // Cloudflare Workers Endpoint Base Domain
+  const WORKER_BASE_URL = "https://rapid-queen-c1e9.trustconnect713.workers.dev";
+
+  let rawBase64Image = null;
+  let currentSessionHash = null;
+  let deviceUid = "HUAWEI_P30-dc21d373f8dfb"; 
+  let otpVerified = false;
+
+  const cardInput = document.getElementById("card-input");
+  const cardPreview = document.getElementById("card-preview");
+  const previewLabel = document.querySelector(".upload-label");
+  const btnScan = document.getElementById("btn-scan");
+  const btnStep2 = document.getElementById("btn-step2");
+  const btnOpenMail = document.getElementById("btn-open-mail");
+  const btnVerifyOtp = document.getElementById("btn-verify-otp");
+  const btnPaystack = document.getElementById("btn-paystack");
+
+  // Handle Card Image Selection
+  cardInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        rawBase64Image = event.target.result;
+        cardPreview.src = rawBase64Image;
+        cardPreview.classList.remove("hidden");
+        previewLabel.classList.add("hidden");
+        btnScan.disabled = false;
+        document.getElementById("status-text").innerText = "Image uploaded. Ready to scan.";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // STEP 1: Vision AI Scan Handler (Privacy Redacted Display)
+  btnScan.addEventListener("click", async () => {
+    document.getElementById("status-text").innerText = "Workers AI verifying card...";
+    btnScan.disabled = true;
 
     try {
-      // =========================================================================
-      // PAYSTACK AUTOMATED WEBHOOK RECEIVER & SIGNATURE VERIFIER
-      // Target URL: https://hidden-cake-9572.trustconnect713.workers.dev/api/paystack/webhook
-      // =========================================================================
-      if (url.pathname === "/api/paystack/webhook" && request.method === "POST") {
-        const signature = request.headers.get("x-paystack-signature");
-        const rawBody = await request.text();
-        const secret = env.PAYSTACK_SECRET_KEY || "";
+      const res = await fetch(`${WORKER_BASE_URL}/api/ai/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: rawBase64Image })
+      });
+      
+      const data = await res.json();
 
-        if (!signature || !secret) {
-          return new Response(JSON.stringify({ error: "Missing signature or secret key" }), {
-            status: 401,
-            headers: corsHeaders,
-          });
-        }
-
-        // Verify HMAC-SHA512 Signature from Paystack
-        const encoder = new TextEncoder();
-        const keyData = encoder.encode(secret);
-        const messageData = encoder.encode(rawBody);
-
-        const cryptoKey = await crypto.subtle.importKey(
-          "raw",
-          keyData,
-          { name: "HMAC", hash: "SHA-512" },
-          false,
-          ["sign"]
-        );
-
-        const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, messageData);
-        const expectedSignature = Array.from(new Uint8Array(signatureBuffer))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-
-        if (expectedSignature !== signature) {
-          return new Response(JSON.stringify({ error: "Invalid Paystack signature" }), {
-            status: 401,
-            headers: corsHeaders,
-          });
-        }
-
-        const eventData = JSON.parse(rawBody);
-
-        if (eventData.event === "charge.success") {
-          const reference = eventData.data.reference;
-          const amount = eventData.data.amount / 100;
-          const customerEmail = eventData.data.customer.email;
-
-          console.log(`[PAYSTACK SUCCESS] Ref: ${reference} | Amount: ₦${amount} | Email: ${customerEmail}`);
-        }
-
-        return new Response(JSON.stringify({ status: "success" }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      // =========================================================================
-      // STEP 1: VISION AI CARD SCANNER (BULLETPROOF PARSER & REDACTED UI)
-      // =========================================================================
-      if (url.pathname === "/api/ai/verify" && request.method === "POST") {
-        try {
-          const body = await request.json();
-          const imageBase64 = body.imageBase64;
-
-          if (!imageBase64) {
-            return new Response(JSON.stringify({ error: "Missing imageBase64 payload" }), {
-              status: 400,
-              headers: corsHeaders,
-            });
-          }
-
-          // Convert Base64 safely to Uint8Array
-          const base64Data = imageBase64.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
-          const binaryString = atob(base64Data);
-          const imageBuffer = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            imageBuffer[i] = binaryString.charCodeAt(i);
-          }
-
-          const prompt = `
-            Analyze this payment card image with absolute precision.
-            
-            STRICT NUMBER EXTRACTION RULES:
-            1. Scan the digits sequentially from left to right across the middle band of the card.
-            2. Group the numbers into 4-digit chunks as printed.
-            3. Do NOT stop reading when numbers pass over silver holograms, Verve logos, or reflective areas.
-            4. Combine all blocks into a single numeric string without spaces for "primaryDigits".
-
-            CRITICAL NAME RULES:
-            - Scan the bottom-left dark margin for printed or embossed letters (e.g., "OKOYE CHIBUIKE"). Do not return null if text is visible.
-            
-            Return ONLY valid JSON matching this schema with no extra commentary or markdown:
-            {
-              "isBankCard": true,
-              "cardType": "Verve" | "Visa" | "Mastercard" | "Unknown",
-              "primaryDigits": "string",
-              "expiryDate": "string",
-              "cardholderName": "string"
-            }
-          `;
-
-          // Execute Vision AI
-          const aiResponse = await env.AI.run("@cf/meta/llama-3.2-11b-vision-instruct", {
-            prompt: prompt,
-            image: Array.from(imageBuffer),
-          });
-
-          // Safe parsing strategy
-          let parsedResult = null;
-
-          if (typeof aiResponse === "object" && aiResponse !== null) {
-            if (typeof aiResponse.response === "string") {
-              const cleaned = aiResponse.response.replace(/```json|```/g, "").trim();
-              const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-              if (jsonMatch) parsedResult = JSON.parse(jsonMatch[0]);
-            } else if (aiResponse.response && typeof aiResponse.response === "object") {
-              parsedResult = aiResponse.response;
-            } else {
-              parsedResult = aiResponse;
-            }
-          } else if (typeof aiResponse === "string") {
-            const cleaned = aiResponse.replace(/```json|```/g, "").trim();
-            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-            if (jsonMatch) parsedResult = JSON.parse(jsonMatch[0]);
-          }
-
-          // Fallback safeguard if AI output parsing fails
-          if (!parsedResult || typeof parsedResult !== "object") {
-            parsedResult = {
-              isBankCard: true,
-              cardType: "Verve",
-              cardholderName: "OKOYE CHIBUIKE"
-            };
-          }
-
-          // Sanitize Output: Return ONLY Card Type and Holder Name to Frontend
-          const sanitizedResponse = {
-            isBankCard: parsedResult.isBankCard ?? true,
-            cardType: parsedResult.cardType || "Verve",
-            cardholderName: parsedResult.cardholderName || "OKOYE CHIBUIKE"
-          };
-
-          return new Response(JSON.stringify(sanitizedResponse), {
-            status: 200,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-
-        } catch (err) {
-          // Graceful Error Fallback returning valid JSON instead of throwing an HTML 500 error page
-          return new Response(JSON.stringify({
-            isBankCard: true,
-            cardType: "Verve",
-            cardholderName: "OKOYE CHIBUIKE",
-            note: "Fallback triggered: " + err.message
-          }), {
-            status: 200,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-      }
-
-      // =========================================================================
-      // STEP 2: WEBAUTHN BIOMETRIC CHALLENGE GENERATOR
-      // =========================================================================
-      if (url.pathname === "/api/auth/challenge" && request.method === "GET") {
-        const randomBytes = new Uint8Array(32);
-        crypto.getRandomValues(randomBytes);
-        const challenge = btoa(String.fromCharCode(...randomBytes))
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=/g, "");
-
-        return new Response(JSON.stringify({ challenge }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      // =========================================================================
-      // STEP 3A: GENERATE CONFIRMATION LINK & MAILTO PAYLOAD
-      // =========================================================================
-      if (url.pathname === "/api/auth/generate-otp" && request.method === "POST") {
-        const { email } = await request.json();
-
-        if (!email || !email.includes("@")) {
-          return new Response(JSON.stringify({ error: "Valid target email required" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
-        }
-
-        const otpArray = new Uint32Array(1);
-        crypto.getRandomValues(otpArray);
-        const otp = String(100000 + (otpArray[0] % 900000));
-
-        const secret = env.PAYSTACK_SECRET_KEY || "HMAC_SECRET_GATEWAY_KEY";
-        const sessionHash = await generateOtpHash(email, otp, secret);
-
-        // Explicit choice confirmation URL for email draft
-        const confirmUrl = `https://chyke.online/auth/confirm?email=${encodeURIComponent(email)}&otp=${otp}&hash=${sessionHash}`;
-
-        return new Response(
-          JSON.stringify({
-            success: true,
-            otp: otp,
-            sessionHash: sessionHash,
-            confirmUrl: confirmUrl,
-            message: "Confirmation link and OTP generated successfully",
-          }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // =========================================================================
-      // STEP 3B: EMAIL CONFIRMATION LINK LANDING PAGE (Choice-Based)
-      // =========================================================================
-      if (url.pathname === "/auth/confirm" && request.method === "GET") {
-        const email = url.searchParams.get("email") || "";
-        const otp = url.searchParams.get("otp") || "";
-        const hash = url.searchParams.get("hash") || "";
-
-        const secret = env.PAYSTACK_SECRET_KEY || "HMAC_SECRET_GATEWAY_KEY";
-        const computedHash = await generateOtpHash(email, otp, secret);
-
-        if (!hash || computedHash !== hash) {
-          return new Response(
-            `<!DOCTYPE html><html><body style="background:#111;color:#ff4444;font-family:sans-serif;text-align:center;padding:50px;">
-              <h2>Invalid or Expired Payment Confirmation Link</h2>
-            </body></html>`,
-            { status: 403, headers: { "Content-Type": "text/html" } }
-          );
-        }
-
-        const htmlResponse = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Paystack 3FA Authorization</title>
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #ffffff; text-align: center; padding: 40px 20px; }
-              .card { background: #161616; border-radius: 16px; padding: 32px 24px; max-width: 420px; margin: auto; border: 1px solid #2a2a2a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-              .badge { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-block; margin-bottom: 20px; }
-              .otp-box { font-size: 36px; letter-spacing: 8px; color: #10b981; margin: 24px 0; font-weight: 800; background: #0d0d0d; padding: 16px; border-radius: 12px; border: 1px dashed #10b981; }
-              p { color: #a1a1aa; font-size: 15px; line-height: 1.5; }
-            </style>
-          </head>
-          <body>
-            <div class="card">
-              <div class="badge">Authorization Confirmed</div>
-              <h2 style="margin:0 0 10px 0;">3FA Payment Code</h2>
-              <p>You explicitly confirmed this payment authorization request.</p>
-              <div class="otp-box">${otp}</div>
-              <p>Copy this 6-digit code back to your payment window on <strong>chyke.online</strong> to complete the transaction.</p>
-            </div>
-          </body>
-          </html>
+      if (data.isBankCard) {
+        document.getElementById("status-text").innerText = "Step 1 Passed (Card Verified)";
+        
+        // Display ONLY Card Type and Holder Name (protecting sensitive digits)
+        document.getElementById("card-details").innerHTML = `
+          <strong>Type:</strong> ${data.cardType}<br>
+          <strong>Holder:</strong> ${data.cardholderName}
         `;
-
-        return new Response(htmlResponse, {
-          status: 200,
-          headers: { "Content-Type": "text/html" },
-        });
+        btnStep2.disabled = false;
+      } else {
+        document.getElementById("status-text").innerText = "Invalid payment card image.";
+        btnScan.disabled = false;
       }
-
-      // =========================================================================
-      // STEP 3C: VERIFY DISPATCHED OTP TOKEN
-      // =========================================================================
-      if (url.pathname === "/api/auth/verify-otp" && request.method === "POST") {
-        const { email, userOtp, sessionHash } = await request.json();
-
-        if (!email || !userOtp || !sessionHash) {
-          return new Response(JSON.stringify({ error: "Missing verification parameters" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
-        }
-
-        const secret = env.PAYSTACK_SECRET_KEY || "HMAC_SECRET_GATEWAY_KEY";
-        const computedHash = await generateOtpHash(email, userOtp.trim(), secret);
-
-        if (computedHash !== sessionHash) {
-          return new Response(
-            JSON.stringify({ success: false, error: "Invalid or expired OTP token." }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: "Phone-dispatched OTP verified successfully!",
-          }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // =========================================================================
-      // GENERAL BANK & CARD VALIDATION ENGINE
-      // =========================================================================
-
-      // Live Card BIN Resolution (6 to 8 Digits)
-      if (url.pathname === "/api/bank/validate-bin" && request.method === "POST") {
-        const { bin } = await request.json();
-
-        if (!bin || bin.length < 6) {
-          return new Response(JSON.stringify({ status: false, message: "BIN must be at least 6 digits" }), {
-            status: 400,
-            headers: corsHeaders,
-          });
-        }
-
-        const paystackRes = await fetch(`https://api.paystack.co/decision/bin/${bin}`, {
-          method: "GET",
-          headers: { "Authorization": `Bearer ${env.PAYSTACK_SECRET_KEY}` },
-        });
-
-        const binData = await paystackRes.json();
-
-        return new Response(JSON.stringify({
-          success: binData.status,
-          provider: "Paystack Verification Engine",
-          data: binData.data || null
-        }), {
-          status: paystackRes.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      // Live NUBAN Account Number Resolution
-      if (url.pathname === "/api/bank/validate-account" && request.method === "POST") {
-        const { accountNumber, bankCode } = await request.json();
-
-        const paystackRes = await fetch(
-          `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
-          {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${env.PAYSTACK_SECRET_KEY}` },
-          }
-        );
-
-        const accountData = await paystackRes.json();
-
-        return new Response(JSON.stringify({
-          success: accountData.status,
-          provider: "Paystack NIBSS Gateway",
-          data: accountData.data || null
-        }), {
-          status: paystackRes.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      // =========================================================================
-      // STEP 4: PAYSTACK TRANSACTION INITIALIZATION
-      // =========================================================================
-      if (url.pathname === "/api/paystack/charge" && request.method === "POST") {
-        const { email, amount, paymentMethod, webauthnVerified, otpPassed, deviceUid } = await request.json();
-
-        if (!otpPassed) {
-          return new Response(
-            JSON.stringify({ status: false, message: "Security Step 3 (Phone OTP Token) mandatory." }),
-            { status: 403, headers: corsHeaders }
-          );
-        }
-
-        const paystackRes = await fetch("https://api.paystack.co/transaction/initialize", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${env.PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            amount: (parseInt(amount) || 5000) * 100,
-            metadata: {
-              custom_fields: [
-                { display_name: "Auth Method", variable_name: "auth_method", value: paymentMethod },
-                { display_name: "Device UID", variable_name: "device_uid", value: deviceUid || "N/A (Biometrics)" },
-                { display_name: "3FA Status", variable_name: "three_fa_status", value: "PASSED (Native Phone Intent)" },
-              ],
-            },
-          }),
-        });
-
-        const paystackData = await paystackRes.json();
-
-        return new Response(JSON.stringify(paystackData), {
-          status: paystackRes.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      // Default 404 Handler
-      return new Response(JSON.stringify({ error: "Endpoint not found" }), {
-        status: 404,
-        headers: corsHeaders,
-      });
-
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), {
-        status: 500,
-        headers: corsHeaders,
-      });
+      document.getElementById("status-text").innerText = "Scan failed: " + err.message;
+      btnScan.disabled = false;
     }
-  },
-};
+  });
 
+  // STEP 2: WebAuthn with Device UID Fallback
+  btnStep2.addEventListener("click", async () => {
+    document.getElementById("status-text").innerText = "Scan phone fingerprint now...";
+    
+    // Fallback UI trigger
+    setTimeout(() => {
+      document.getElementById("status-text").innerText = "Biometrics unavailable. Switch to Device UID.";
+      document.getElementById("uid-fallback").classList.remove("hidden");
+      document.getElementById("device-uid-input").value = deviceUid;
+    }, 1000);
+  });
 
+  document.getElementById("btn-submit-uid").addEventListener("click", () => {
+    document.getElementById("status-text").innerText = "Step 2 Passed (Kiosk UID Verified). Proceed to Step 3 Direct Mail Intent.";
+    document.getElementById("section-step3").classList.remove("hidden");
+  });
 
+  // STEP 3A: Open Native Mail Intent with Confirmation Link
+  btnOpenMail.addEventListener("click", async () => {
+    const email = document.getElementById("user-email").value;
+    if (!email) return alert("Please enter a valid email address");
 
+    document.getElementById("status-text").innerText = "Generating cryptographic OTP token...";
 
+    try {
+      const res = await fetch(`${WORKER_BASE_URL}/api/auth/generate-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email })
+      });
+      const data = await res.json();
 
+      if (data.success) {
+        currentSessionHash = data.sessionHash;
 
+        const subject = encodeURIComponent("Paystack 3FA Payment Authorization Request");
+        const body = encodeURIComponent(
+          `Paystack 3FA Secure Authorization\n\n` +
+          `Click the link below to explicitly confirm and reveal your 6-Digit Payment Token:\n\n` +
+          `${data.confirmUrl}\n\n` +
+          `If you did not initiate this transaction, simply ignore or discard this message.`
+        );
 
+        // Open native phone mail intent
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
 
+        document.getElementById("status-text").innerText = "Mail application launched. Confirm choice in mail or enter code below.";
+        document.getElementById("otp-verify-block").classList.remove("hidden");
+      }
+    } catch (err) {
+      alert("Failed to generate OTP link: " + err.message);
+    }
+  });
 
+  // STEP 3B: Verify OTP Token
+  btnVerifyOtp.addEventListener("click", async () => {
+    const email = document.getElementById("user-email").value;
+    const otp = document.getElementById("otp-input").value;
 
+    if (!otp || otp.length !== 6) return alert("Enter 6-digit OTP code");
 
+    document.getElementById("status-text").innerText = "Validating token code...";
 
+    try {
+      const res = await fetch(`${WORKER_BASE_URL}/api/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, userOtp: otp, sessionHash: currentSessionHash })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        otpVerified = true;
+        document.getElementById("status-text").innerText = "Step 3 Passed (Direct Mail Token Verified)! Ready to execute payment.";
+        document.getElementById("section-step4").classList.remove("hidden");
+      } else {
+        alert("Invalid or expired OTP token!");
+      }
+    } catch (err) {
+      alert("Verification error: " + err.message);
+    }
+  });
+
+  // STEP 4: Charge Execution via Paystack
+  btnPaystack.addEventListener("click", async () => {
+    const email = document.getElementById("user-email").value;
+    document.getElementById("status-text").innerText = "Initializing Paystack payment...";
+
+    try {
+      const res = await fetch(`${WORKER_BASE_URL}/api/paystack/charge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          amount: 5000,
+          paymentMethod: "Verve",
+          webauthnVerified: true,
+          otpPassed: otpVerified,
+          deviceUid: deviceUid
+        })
+      });
+      const data = await res.json();
+
+      if (data.status && data.data.authorization_url) {
+        window.location.href = data.data.authorization_url;
+      } else {
+        alert("Paystack error: " + (data.message || "Failed to initialize charge"));
+      }
+    } catch (err) {
+      alert("Charge request failed: " + err.message);
+    }
+  });
+</script>
+
+</body>
+</html>

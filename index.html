@@ -424,7 +424,25 @@ loadFeed();
 
     <!-- SESSION GUARD + CLIENT LOGIC -->
     <script src="auth.js"></script>
-    
+
+      <script>
+    const WORKER_URL = "https://curly-band-9c3e.trustconnect713.workers.dev";
+
+    // Call Service Health route
+    async function checkServiceHealth() {
+      try {
+        const response = await fetch(`${WORKER_URL}/service-health`);
+        const data = await response.json();
+        console.log("Service Health Status:", data);
+      } catch (err) {
+        console.error("Health Check Error:", err);
+      }
+    }
+
+    // Run automatically on load
+    checkServiceHealth();
+  </script>
+
 </body>
 </html>
 

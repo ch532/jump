@@ -1,21 +1,33 @@
 const WORKER_URL = "https://delicate-violet-862d.trustconnect713.workers.dev";
 
-// On page load: Check if an idToken exists in localStorage
+// Execute session guard automatically on every page load
 document.addEventListener("DOMContentLoaded", function () {
-  checkAuthStatus();
+  checkGlobalAuth();
 });
 
-function checkAuthStatus() {
+/**
+ * Global Redirect Guard
+ * Bounces unauthenticated users back to index.html without requiring HTML wrapper divs.
+ */
+function checkGlobalAuth() {
   const token = localStorage.getItem("idToken");
-  const protectedContent = document.getElementById("protected-content");
-  const output = document.getElementById("output");
+  const currentPath = window.location.pathname;
 
-  if (token && protectedContent) {
-    protectedContent.style.display = "flex";
-    if (output) output.textContent = "Session active. Logged in!";
-  } else if (protectedContent) {
-    protectedContent.style.display = "none";
-    if (output) output.textContent = "Access restricted. Please register or log in.";
+  // Check if current page is the landing/login page
+  const isLoginPage = currentPath === "/" || currentPath.endsWith("index.html") || currentPath === "";
+
+  if (!token && !isLoginPage) {
+    // No active session found -> redirect to login page
+    window.location.href = "index.html";
+  } else {
+    // Session valid (or on login page) -> make body visible if CSS flash guard is enabled
+    document.body.classList.add("auth-ready");
+    document.body.style.display = "block";
+
+    const output = document.getElementById("output");
+    if (output && token) {
+      output.textContent = "Session active. Logged in!";
+    }
   }
 }
 
@@ -23,8 +35,8 @@ function checkAuthStatus() {
  * 1. Register
  */
 async function submitRegister() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value;
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) return alert("Please fill in email and password.");
 
@@ -42,8 +54,10 @@ async function submitRegister() {
     localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("uid", data.localId);
 
-    document.getElementById("output").textContent = JSON.stringify(data, null, 2);
-    checkAuthStatus(); // Unlock the page layout
+    if (document.getElementById("output")) {
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    }
+    checkGlobalAuth();
   } catch (err) {
     alert(err.message);
   }
@@ -53,8 +67,8 @@ async function submitRegister() {
  * 2. Login
  */
 async function submitLogin() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value;
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) return alert("Please fill in email and password.");
 
@@ -72,8 +86,10 @@ async function submitLogin() {
     localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("uid", data.localId);
 
-    document.getElementById("output").textContent = JSON.stringify(data, null, 2);
-    checkAuthStatus(); // Unlock the page layout
+    if (document.getElementById("output")) {
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    }
+    checkGlobalAuth();
   } catch (err) {
     alert(err.message);
   }
@@ -96,7 +112,9 @@ async function getProfile() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Profile fetch failed");
 
-    document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    if (document.getElementById("output")) {
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    }
   } catch (err) {
     alert(err.message);
   }
@@ -110,6 +128,6 @@ function handleLogout() {
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("uid");
 
-  checkAuthStatus(); // Lock the page layout immediately
   alert("Logged out successfully.");
+  window.location.href = "index.html";
 }

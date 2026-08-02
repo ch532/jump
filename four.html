@@ -3,32 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Page Title -->
   <title>Goldtech by Okoye Chibuike</title>
   
-  <!-- Favicon and Icons -->
   <link rel="icon" type="image/png" href="https://www.chyke.online/connectgold_2.png">
   <link rel="apple-touch-icon" href="https://www.chyke.online/connectgold_2.png">
 
-  <!-- SEO Meta Descriptions -->
-  <meta name="description" content="Goldtech by Okoye Chibuike - An AI platform powered by Cloudflare Workers AI providing instant Chat Generation, Content Moderation, Optical Character Recognition (OCR), and Speech-to-Text capabilities.">
-  <meta name="keywords" content="Goldtech, Okoye Chibuike, Cloudflare Workers AI, OCR, Content Moderation, Speech to Text, AI Dashboard">
+  <meta name="description" content="Goldtech by Okoye Chibuike - AI platform featuring Chat, Moderation, OCR, and Image Generation.">
   <meta name="author" content="Okoye Chibuike">
-  <meta name="robots" content="index, follow">
-
-  <!-- Open Graph / Facebook / WhatsApp -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.chyke.online/">
-  <meta property="og:title" content="Goldtech by Okoye Chibuike">
-  <meta property="og:description" content="AI platform featuring Chat Generation, Content Moderation, Vision OCR, and Audio Transcription backed by Cloudflare Workers AI.">
-  <meta property="og:image" content="https://www.chyke.online/connectgold_2.png">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Goldtech by Okoye Chibuike">
-  <meta name="twitter:description" content="AI platform featuring Chat Generation, Content Moderation, Vision OCR, and Audio Transcription backed by Cloudflare Workers AI.">
-  <meta name="twitter:image" content="https://www.chyke.online/connectgold_2.png">
 
   <style>
     :root {
@@ -53,17 +34,8 @@
       gap: 1rem;
       margin-bottom: 1rem;
     }
-    .brand-logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-    h1 {
-      margin: 0;
-      color: var(--accent);
-      font-size: 2rem;
-    }
+    .brand-logo { width: 48px; height: 48px; border-radius: 8px; }
+    h1 { margin: 0; color: var(--accent); font-size: 2rem; }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -79,7 +51,6 @@
       flex-direction: column;
       gap: 0.75rem;
     }
-    h3 { margin: 0 0 0.25rem 0; }
     textarea, input[type="file"] {
       width: 100%;
       background: #0f172a;
@@ -100,7 +71,6 @@
       cursor: pointer;
       font-weight: 600;
     }
-    button:hover { opacity: 0.9; }
     button.voice-btn { background: #10b981; }
     button.voice-btn.recording { background: #ef4444; }
     .output {
@@ -113,6 +83,7 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
+    .output img { max-width: 100%; border-radius: 4px; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -156,21 +127,21 @@
       <div class="output" id="ocrOutput"></div>
     </div>
 
-    <!-- 4. SPEECH TO TEXT -->
+    <!-- 4. IMAGE GENERATION -->
     <div class="card">
-      <h3>🎙️ Speech-to-Text (Audio File)</h3>
-      <input type="file" id="speechFile" accept="audio/*" />
+      <h3>🎨 Visual AI Generator</h3>
+      <textarea id="imageInput" placeholder="Describe the image you want to generate..."></textarea>
       <div class="controls">
-        <button onclick="sendSpeech()">Transcribe Audio File</button>
+        <button onclick="sendImageGen()">Generate Image</button>
+        <button class="voice-btn" id="imageVoiceBtn" onclick="toggleVoiceInput('imageInput', 'imageVoiceBtn')">🎤 Speak Description</button>
       </div>
-      <div class="output" id="speechOutput"></div>
+      <div class="output" id="imageOutput"></div>
     </div>
   </div>
 
   <script>
     const WORKER_URL = "https://summer-bonus-db30.trustconnect713.workers.dev";
 
-    // --- Helper: Convert File to Base64 ---
     const fileToBase64 = (file) => new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -178,49 +149,35 @@
       reader.onerror = (error) => reject(error);
     });
 
-    // --- Helper: Load text file directly into input field ---
     function loadFileContent(event, targetId) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (e) => {
-        document.getElementById(targetId).value = e.target.result;
-      };
+      reader.onload = (e) => { document.getElementById(targetId).value = e.target.result; };
       reader.readAsText(file);
     }
 
-    // --- Helper: Text-to-Speech (Reads AI response aloud) ---
     function speakText(text) {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Stop active audio
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(utterance);
       }
     }
 
-    // --- Helper: Browser Voice Input (Speech-to-Text for Chat & Moderation) ---
     let recognition;
     let activeBtnId = null;
 
     function toggleVoiceInput(inputId, btnId) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert("Web Speech Recognition API is not supported in this browser.");
-        return;
-      }
+      if (!SpeechRecognition) return alert("Web Speech Recognition is not supported.");
 
       const btn = document.getElementById(btnId);
-
-      if (recognition && activeBtnId === btnId) {
-        recognition.stop();
-        return;
-      }
-
+      if (recognition && activeBtnId === btnId) { recognition.stop(); return; }
       if (recognition) recognition.stop();
 
       recognition = new SpeechRecognition();
       recognition.continuous = false;
-      recognition.interimResults = false;
       recognition.lang = 'en-US';
 
       recognition.onstart = () => {
@@ -229,30 +186,23 @@
         btn.textContent = "🛑 Listening...";
       };
 
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById(inputId).value = transcript;
-      };
-
-      recognition.onerror = (event) => {
-        console.error("Speech Recognition Error:", event.error);
+      recognition.onresult = (e) => {
+        document.getElementById(inputId).value = e.results[0][0].transcript;
       };
 
       recognition.onend = () => {
         btn.classList.remove('recording');
-        btn.textContent = "🎤 Speak Text";
+        btn.textContent = "🎤 Speak Input";
         activeBtnId = null;
       };
 
       recognition.start();
     }
 
-    // --- 1. CHAT REQUEST ---
     async function sendChat() {
       const prompt = document.getElementById('chatInput').value;
       const output = document.getElementById('chatOutput');
-      if (!prompt) return alert("Please type or speak a prompt.");
-
+      if (!prompt) return alert("Please enter a prompt.");
       output.textContent = "Generating...";
       try {
         const res = await fetch(`${WORKER_URL}/chat`, {
@@ -261,22 +211,16 @@
           body: JSON.stringify({ prompt })
         });
         const data = await res.json();
-        const textResponse = data.response || data.error;
-        output.textContent = textResponse;
-        
-        // Speak response aloud
-        speakText(textResponse);
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
+        const text = data.response || data.error;
+        output.textContent = text;
+        speakText(text);
+      } catch (err) { output.textContent = "Error: " + err.message; }
     }
 
-    // --- 2. MODERATION REQUEST ---
     async function sendModeration() {
       const text = document.getElementById('modInput').value;
       const output = document.getElementById('modOutput');
-      if (!text) return alert("Please input text or upload a text file.");
-
+      if (!text) return alert("Please enter text.");
       output.textContent = "Evaluating...";
       try {
         const res = await fetch(`${WORKER_URL}/moderation`, {
@@ -285,23 +229,16 @@
           body: JSON.stringify({ text })
         });
         const data = await res.json();
-        const resultText = data.result || data.error;
-        output.textContent = typeof resultText === 'object' ? JSON.stringify(resultText, null, 2) : resultText;
-
-        // Speak summary aloud
+        output.textContent = typeof data.result === 'object' ? JSON.stringify(data.result, null, 2) : data.result;
         speakText(output.textContent);
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
+      } catch (err) { output.textContent = "Error: " + err.message; }
     }
 
-    // --- 3. OCR REQUEST ---
     async function sendOCR() {
       const file = document.getElementById('ocrFile').files[0];
       const output = document.getElementById('ocrOutput');
-      if (!file) return alert("Please select an image file.");
-
-      output.textContent = "Processing image...";
+      if (!file) return alert("Select an image file.");
+      output.textContent = "Extracting text...";
       try {
         const imageBase64 = await fileToBase64(file);
         const res = await fetch(`${WORKER_URL}/ocr`, {
@@ -310,36 +247,31 @@
           body: JSON.stringify({ imageBase64 })
         });
         const data = await res.json();
-        const extractedText = data.text || data.error;
-        output.textContent = extractedText;
-
-        // Speak extracted OCR text aloud
-        speakText(extractedText);
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
+        output.textContent = data.text || data.error;
+        speakText(output.textContent);
+      } catch (err) { output.textContent = "Error: " + err.message; }
     }
 
-    // --- 4. SPEECH TO TEXT REQUEST ---
-    async function sendSpeech() {
-      const file = document.getElementById('speechFile').files[0];
-      const output = document.getElementById('speechOutput');
-      if (!file) return alert("Please select an audio file.");
-
-      output.textContent = "Transcribing audio...";
+    async function sendImageGen() {
+      const prompt = document.getElementById('imageInput').value;
+      const output = document.getElementById('imageOutput');
+      if (!prompt) return alert("Please enter a visual description.");
+      output.textContent = "Rendering image...";
       try {
-        const audioBase64 = await fileToBase64(file);
-        const res = await fetch(`${WORKER_URL}/speech`, {
+        const res = await fetch(`${WORKER_URL}/generate-image`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ audioBase64 })
+          body: JSON.stringify({ prompt })
         });
         const data = await res.json();
-        output.textContent = data.transcription || data.error;
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
+        if (data.imageBase64) {
+          output.innerHTML = `<img src="data:image/png;base64,${data.imageBase64}" alt="Generated Image" />`;
+        } else {
+          output.textContent = data.error || "Generation failed.";
+        }
+      } catch (err) { output.textContent = "Error: " + err.message; }
     }
   </script>
 </body>
 </html>
+

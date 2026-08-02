@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P30 Full Web Awareness Gateway</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; padding: 15px; background: #0f172a; color: #f8fafc; }
+    h2 { border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.2rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+    .card { background: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
+    .card h3 { margin: 0 0 6px 0; font-size: 0.95rem; color: #38bdf8; }
+    button { background: #2563eb; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; width: 100%; cursor: pointer; }
+    pre { background: #020617; padding: 10px; border-radius: 6px; color: #4ade80; font-size: 0.8rem; overflow-x: auto; max-height: 200px; }
+  </style>
+</head>
+<body>
+
+  <h2>Huawei P30 Web Awareness Gateway</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h3>1. Light Sensor (Ambient Light)</h3>
+      <button onclick="checkAmbientLight()">Read Ambient Light</button>
+    </div>
+
+    <div class="card">
+      <h3>2. Motion & Behavior</h3>
+      <button onclick="toggleMotionListener()">Toggle Accelerometer Sensing</button>
+    </div>
+
+    <div class="card">
+      <h3>3. Geofence & Location</h3>
+      <button onclick="sendLocationEvent()">Send GPS Coordinates</button>
+    </div>
+
+    <div class="card">
+      <h3>4. Wi-Fi & Connection State</h3>
+      <button onclick="sendNetworkEvent()">Check Connection</button>
+    </div>
+
+    <div class="card">
+      <h3>5. Time & Sunset/Sunrise</h3>
+      <button onclick="sendTimeEvent()">Send Astronomical Time</button>
+    </div>
+
+    <div class="card">
+      <h3>6. Power & Battery State</h3>
+      <button onclick="sendBatteryEvent()">Check Battery State</button>
+    </div>
+  </div>
+
+  <h2>System Log</h2>
+  <pre id="log">Gateway initialized. Tap any sensor above...</pre>
+
+  <script>
+    const WORKER_URL = "https://royal-tree-a9fd.trustconnect713.workers.dev/awareness-event";
+
+    function log(msg) {
+      document.getElementById("log").innerText = msg;
+    }
+
+    // Core HTTP POST dispatcher to Cloudflare Worker
+    async function dispatchAwarenessEvent(type, label, metrics) {
+      log(`Sending ${type} (${label}) to Worker...`);
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            deviceId: "huawei-p30-web",
+            barrierType: type,
+            barrierLabel: label,
+            status: "TRUE",
+            metrics: metrics
+          })
+        });
+        const data = await response.json();
+        log("Worker Response:\n" + JSON.stringify(data, null, 2));
+      } catch (err) {
+        log("Worker Error: " + err.message);
+      }
+    }
+
+    // 1. AMBIENT LIGHT AWARENESS
+    function checkAmbientLight() {
+      if ('AmbientLightSensor' in window) {
+        try {
+          const sensor = new AmbientLightSensor();
+          sensor.onreading = () => {
+            dispatchAwarenessEvent("AMBIENT_LIGHT", "WEB_LIGHT_READING", { lux: sensor.illuminance });
+            sensor.stop();
+          };
+          sensor.start();
+        } catch (e) {
+          log("AmbientLightSensor permission denied or restricted.");
+        }
+      } else {
+        // Fallback calculation using system theme / time
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        dispatchAwarenessEvent("AMBIENT_LIGHT", "WEB_LIGHT_FALLBACK", { lux: isDark ? 5 : 200, mode: isDark ? "DARK" : "LIGHT" });
+      }
+    }
+
+    // 2. MOTION / BEHAVIOR AWARENESS
+    let sensingMotion = false;
+    function toggleMotionListener() {
+      if (!sensingMotion) {
+        if (window.DeviceMotionEvent) {
+          window.addEventListener("devicemotion", handleMotion, true);
+          sensingMotion = true;
+          log("Listening to P30 motion sensors...");
+        } else {
+          log("DeviceMotionEvent not supported on this browser.");
+        }
+      } else {
+        window.removeEventListener("devicemotion", handleMotion, true);
+        sensingMotion = false;
+        log("Motion listener stopped.");
+      }
+    }
+
+    function handleMotion(event) {
+      let accel = event.accelerationIncludingGravity;
+      if (accel) {
+        let force = Math.sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z);
+        if (force > 15.0) { // Physical movement threshold
+          window.removeEventListener("devicemotion", handleMotion, true);
+          sensingMotion = false;
+          dispatchAwarenessEvent("BEHAVIOR", "WEB_MOTION_DETECTED", { activity: "RUNNING", gForce: force.toFixed(2) });
+        }
+      }
+    }
+
+    // 3. LOCATION & GEOFENCE AWARENESS
+    function sendLocationEvent() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          dispatchAwarenessEvent("LOCATION", "WEB_GEOFENCE_TRIGGER", {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+            event: "ENTER"
+          });
+        }, (err) => log("Location permission error: " + err.message));
+      } else {
+        log("Geolocation API unavailable.");
+      }
+    }
+
+    // 4. WI-FI & NETWORK AWARENESS
+    function sendNetworkEvent() {
+      const nav = navigator;
+      const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+      if (conn) {
+        dispatchAwarenessEvent("WIFI", "WEB_NETWORK_CHECK", {
+          effectiveType: conn.effectiveType || "unknown",
+          rtt: conn.rtt,
+          saveData: conn.saveData
+        });
+      } else {
+        dispatchAwarenessEvent("WIFI", "WEB_NETWORK_CHECK", { status: navigator.onLine ? "ONLINE" : "OFFLINE" });
+      }
+    }
+
+    // 5. TIME & ASTRONOMICAL AWARENESS
+    function sendTimeEvent() {
+      const now = new Date();
+      const hour = now.getHours();
+      let period = (hour >= 6 && hour < 18) ? "DAY" : "NIGHT";
+      if (hour >= 18 || hour < 6) period = "SUNSET";
+
+      dispatchAwarenessEvent("TIME", "WEB_TIME_TRIGGER", {
+        localTime: now.toLocaleTimeString(),
+        period: period,
+        isWeekend: (now.getDay() === 0 || now.getDay() === 6)
+      });
+    }
+
+    // 6. BATTERY & HARDWARE STATE AWARENESS
+    function sendBatteryEvent() {
+      if ('getBattery' in navigator) {
+        navigator.getBattery().then((battery) => {
+          dispatchAwarenessEvent("SCREEN_STATUS", "WEB_BATTERY_STATE", {
+            level: (battery.level * 100) + "%",
+            charging: battery.charging
+          });
+        });
+      } else {
+        log("Battery API not supported on browser.");
+      }
+    }
+
+    // AUTOMATIC EVENT: Screen Visibility / Lock Awareness
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        dispatchAwarenessEvent("SCREEN_STATUS", "WEB_SCREEN_LOCKED", { state: "BACKGROUND" });
+      } else {
+        dispatchAwarenessEvent("SCREEN_STATUS", "WEB_SCREEN_UNLOCKED", { state: "FOREGROUND" });
+      }
+    });
+  </script>
+</body>
+</html>

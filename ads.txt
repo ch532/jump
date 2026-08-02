@@ -1,5 +1,7 @@
 google.com, pub-7103045303312963, DIRECT, f08c47fec0942fa
 
+google.com, pub-7728035806961877, DIRECT, f08c47fec0942fa0
+
 adstxtmanager.com
 Ads.txt Preview
 Changes to your ads.txt file will appear immediately here; however, they will not appear immediately when accessing the ads.txt file. Changes may take up to 1 hour when requesting your ads.txt file and Google may take up to 24 hours before processing them.

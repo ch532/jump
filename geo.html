@@ -376,5 +376,49 @@
     }
   </script>
 
+  <script>
+  const WORKER_URL = "https://proud-wildflower-99aa.trustconnect713.workers.dev";
+
+  /**
+   * Helper function to translate text
+   * @param {string} text - The text you want to translate
+   * @param {string} targetLang - Language code (e.g., 'es', 'fr', 'ig', 'yo', 'ha')
+   */
+  async function translateText(text, targetLang) {
+    try {
+      const response = await fetch(`${WORKER_URL}/translate-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: text,
+          target: targetLang
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.data && data.data.translations) {
+        return data.data.translations[0].translatedText;
+      } else {
+        console.error("Translation API Error:", data);
+        return null;
+      }
+    } catch (error) {
+      console.error("Worker Connection Error:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Example: Automatically translate element content on click or trigger
+   */
+  async function handleTranslationExample() {
+    const originalText = "Hello, welcome to SkyIPworld!";
+    const translatedText = await translateText(originalText, "ig"); // Translate to Igbo
+    console.log("Result:", translatedText);
+  }
+</script>
+
+
 </body>
 </html>

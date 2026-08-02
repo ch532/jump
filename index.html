@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -89,7 +89,7 @@
         .editorial-hub h1 { color: #1e293b; margin-top: 0; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
-        /* AD CONTAINERS & LARGE SPACING WRAGGERS */
+        /* AD CONTAINERS & LARGE SPACING WRAPPERS */
         .ad-container-top { width: 100%; max-width: 300px; min-height: 250px; margin: 20px auto; text-align: center; }
         .ad-container-native { width: 100%; margin: 20px 0; }
         
@@ -125,7 +125,7 @@
 </head>
 <body>
 
-    <header id="auth-header">
+  <header id="auth-header" style="background:#fff; padding:20px; border-bottom:2px solid #e2e8f0; text-align:center;">
     <h2>Account Access</h2>
     <form id="auth-form">
       <input type="email" id="email" placeholder="Email" required />
@@ -162,7 +162,8 @@
     
 <script async src="https://www.getchatads.com/widget.js?key=cwk_24625beca8802d7fcaad17a8762dead0a04afd51"></script>
 
-<main class="main-layout" data-sdk-feature="Dashboard">
+<!-- PROTECTED MAIN CONTENT CONTAINER (HIDDEN UNTIL AUTHENTICATED) -->
+<main id="protected-content" class="main-layout" data-sdk-feature="Dashboard" style="display: none;">
 
     <!-- LARGE AD SPACE 1: TOP MAIN BANNER -->
     <div class="large-ad-slot">
@@ -355,10 +356,12 @@ loadFeed();
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
 <!-- End Cloudflare Web Analytics -->
 
+    <!-- SESSION GUARD + CLIENT LOGIC -->
     <script src="auth.js"></script>
     
 </body>
 </html>
+
 
 
 

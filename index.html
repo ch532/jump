@@ -125,6 +125,22 @@
 </head>
 <body>
 
+    <header id="auth-header">
+    <h2>Account Access</h2>
+    <form id="auth-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <br/><br/>
+      <button type="button" onclick="submitRegister()">Register</button>
+      <button type="button" onclick="submitLogin()">Log In</button>
+      <button type="button" onclick="getProfile()">Get My Profile</button>
+      <button type="button" onclick="handleLogout()">Log Out</button>
+    </form>
+    <pre id="output">Not logged in.</pre>
+  </header>
+
+  <hr>
+
 <header>
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
@@ -338,6 +354,8 @@ loadFeed();
 <!-- Cloudflare Web Analytics -->
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
 <!-- End Cloudflare Web Analytics -->
+
+    <script src="auth.js"></script>
     
 </body>
 </html>

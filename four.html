@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Page Title -->
+  <title>Goldtech by Okoye Chibuike</title>
+  
+  <!-- Favicon and Icons -->
+  <link rel="icon" type="image/png" href="https://www.chyke.online/connectgold_2.png">
+  <link rel="apple-touch-icon" href="https://www.chyke.online/connectgold_2.png">
+
+  <!-- SEO Meta Descriptions -->
+  <meta name="description" content="Goldtech by Okoye Chibuike - An AI platform powered by Cloudflare Workers AI providing instant Chat Generation, Content Moderation, Optical Character Recognition (OCR), and Speech-to-Text capabilities.">
+  <meta name="keywords" content="Goldtech, Okoye Chibuike, Cloudflare Workers AI, OCR, Content Moderation, Speech to Text, AI Dashboard">
+  <meta name="author" content="Okoye Chibuike">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.chyke.online/">
+  <meta property="og:title" content="Goldtech by Okoye Chibuike">
+  <meta property="og:description" content="AI platform featuring Chat Generation, Content Moderation, Vision OCR, and Audio Transcription backed by Cloudflare Workers AI.">
+  <meta property="og:image" content="https://www.chyke.online/connectgold_2.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Goldtech by Okoye Chibuike">
+  <meta name="twitter:description" content="AI platform featuring Chat Generation, Content Moderation, Vision OCR, and Audio Transcription backed by Cloudflare Workers AI.">
+  <meta name="twitter:image" content="https://www.chyke.online/connectgold_2.png">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #3b82f6;
+      --text: #f8fafc;
+      --border: #334155;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    h1 {
+      margin: 0;
+      color: var(--accent);
+      font-size: 2rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    h3 { margin: 0 0 0.25rem 0; }
+    textarea, input[type="file"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea { height: 80px; resize: vertical; }
+    .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { opacity: 0.9; }
+    button.voice-btn { background: #10b981; }
+    button.voice-btn.recording { background: #ef4444; }
+    .output {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      padding: 0.5rem;
+      border-radius: 4px;
+      min-height: 40px;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-container">
+    <img src="https://www.chyke.online/connectgold_2.png" alt="Goldtech Logo" class="brand-logo" />
+    <h1>Goldtech by Okoye Chibuike</h1>
+  </div>
+
+  <div class="grid">
+    <!-- 1. CHAT -->
+    <div class="card">
+      <h3>💬 Chat / Generation</h3>
+      <textarea id="chatInput" placeholder="Type prompt or use voice button..."></textarea>
+      <div class="controls">
+        <button onclick="sendChat()">Send Prompt</button>
+        <button class="voice-btn" id="chatVoiceBtn" onclick="toggleVoiceInput('chatInput', 'chatVoiceBtn')">🎤 Speak Prompt</button>
+      </div>
+      <div class="output" id="chatOutput"></div>
+    </div>
+
+    <!-- 2. CONTENT MODERATION -->
+    <div class="card">
+      <h3>🛡️ Content Moderation</h3>
+      <textarea id="modInput" placeholder="Type text or upload file to moderate..."></textarea>
+      <input type="file" id="modFile" accept=".txt,.json,.md,.js,.html" onchange="loadFileContent(event, 'modInput')" />
+      <div class="controls">
+        <button onclick="sendModeration()">Moderate Text</button>
+        <button class="voice-btn" id="modVoiceBtn" onclick="toggleVoiceInput('modInput', 'modVoiceBtn')">🎤 Speak Text</button>
+      </div>
+      <div class="output" id="modOutput"></div>
+    </div>
+
+    <!-- 3. OCR (IMAGE TO TEXT) -->
+    <div class="card">
+      <h3>📷 Optical Character Recognition (OCR)</h3>
+      <input type="file" id="ocrFile" accept="image/*" />
+      <div class="controls">
+        <button onclick="sendOCR()">Extract Text from Image</button>
+      </div>
+      <div class="output" id="ocrOutput"></div>
+    </div>
+
+    <!-- 4. SPEECH TO TEXT -->
+    <div class="card">
+      <h3>🎙️ Speech-to-Text (Audio File)</h3>
+      <input type="file" id="speechFile" accept="audio/*" />
+      <div class="controls">
+        <button onclick="sendSpeech()">Transcribe Audio File</button>
+      </div>
+      <div class="output" id="speechOutput"></div>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://summer-bonus-db30.trustconnect713.workers.dev";
+
+    // --- Helper: Convert File to Base64 ---
+    const fileToBase64 = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = (error) => reject(error);
+    });
+
+    // --- Helper: Load text file directly into input field ---
+    function loadFileContent(event, targetId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById(targetId).value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    // --- Helper: Text-to-Speech (Reads AI response aloud) ---
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop active audio
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // --- Helper: Browser Voice Input (Speech-to-Text for Chat & Moderation) ---
+    let recognition;
+    let activeBtnId = null;
+
+    function toggleVoiceInput(inputId, btnId) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Web Speech Recognition API is not supported in this browser.");
+        return;
+      }
+
+      const btn = document.getElementById(btnId);
+
+      if (recognition && activeBtnId === btnId) {
+        recognition.stop();
+        return;
+      }
+
+      if (recognition) recognition.stop();
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        activeBtnId = btnId;
+        btn.classList.add('recording');
+        btn.textContent = "🛑 Listening...";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById(inputId).value = transcript;
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech Recognition Error:", event.error);
+      };
+
+      recognition.onend = () => {
+        btn.classList.remove('recording');
+        btn.textContent = "🎤 Speak Text";
+        activeBtnId = null;
+      };
+
+      recognition.start();
+    }
+
+    // --- 1. CHAT REQUEST ---
+    async function sendChat() {
+      const prompt = document.getElementById('chatInput').value;
+      const output = document.getElementById('chatOutput');
+      if (!prompt) return alert("Please type or speak a prompt.");
+
+      output.textContent = "Generating...";
+      try {
+        const res = await fetch(`${WORKER_URL}/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        const textResponse = data.response || data.error;
+        output.textContent = textResponse;
+        
+        // Speak response aloud
+        speakText(textResponse);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+
+    // --- 2. MODERATION REQUEST ---
+    async function sendModeration() {
+      const text = document.getElementById('modInput').value;
+      const output = document.getElementById('modOutput');
+      if (!text) return alert("Please input text or upload a text file.");
+
+      output.textContent = "Evaluating...";
+      try {
+        const res = await fetch(`${WORKER_URL}/moderation`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        const resultText = data.result || data.error;
+        output.textContent = typeof resultText === 'object' ? JSON.stringify(resultText, null, 2) : resultText;
+
+        // Speak summary aloud
+        speakText(output.textContent);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+
+    // --- 3. OCR REQUEST ---
+    async function sendOCR() {
+      const file = document.getElementById('ocrFile').files[0];
+      const output = document.getElementById('ocrOutput');
+      if (!file) return alert("Please select an image file.");
+
+      output.textContent = "Processing image...";
+      try {
+        const imageBase64 = await fileToBase64(file);
+        const res = await fetch(`${WORKER_URL}/ocr`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64 })
+        });
+        const data = await res.json();
+        const extractedText = data.text || data.error;
+        output.textContent = extractedText;
+
+        // Speak extracted OCR text aloud
+        speakText(extractedText);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+
+    // --- 4. SPEECH TO TEXT REQUEST ---
+    async function sendSpeech() {
+      const file = document.getElementById('speechFile').files[0];
+      const output = document.getElementById('speechOutput');
+      if (!file) return alert("Please select an audio file.");
+
+      output.textContent = "Transcribing audio...";
+      try {
+        const audioBase64 = await fileToBase64(file);
+        const res = await fetch(`${WORKER_URL}/speech`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ audioBase64 })
+        });
+        const data = await res.json();
+        output.textContent = data.transcription || data.error;
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

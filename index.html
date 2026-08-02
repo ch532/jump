@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -75,6 +75,9 @@
     </script>
 
     <style>
+        /* FLASH GUARD: Keeps page hidden until auth.js confirms session */
+        body:not(.auth-ready) { display: none; }
+
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; }
@@ -162,8 +165,8 @@
     
 <script async src="https://www.getchatads.com/widget.js?key=cwk_24625beca8802d7fcaad17a8762dead0a04afd51"></script>
 
-<!-- PROTECTED MAIN CONTENT CONTAINER (HIDDEN UNTIL AUTHENTICATED) -->
-<main id="protected-content" class="main-layout" data-sdk-feature="Dashboard" style="display: none;">
+<!-- MAIN CONTENT CONTAINER -->
+<main class="main-layout" data-sdk-feature="Dashboard">
 
     <!-- LARGE AD SPACE 1: TOP MAIN BANNER -->
     <div class="large-ad-slot">
@@ -266,27 +269,40 @@
 <!-- RSS FEED LOADER SCRIPT -->
 <script>
 async function loadFeed() {
-    const rssUrl = "https://www.bellanaija.com/event/feed/";
-    const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+    const proxyUrl = "https://delicate-violet-862d.trustconnect713.workers.dev/feed";
     
     try {
         const response = await fetch(proxyUrl);
-        const data = await response.json();
+        const xmlText = await response.text();
+        
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
+
         const feedContainer = document.getElementById('my-native-feed');
         feedContainer.innerHTML = ''; 
 
-        data.items.forEach((item, index) => {
+        if (items.length === 0) {
+            feedContainer.innerHTML = "No items found in RSS feed.";
+            return;
+        }
+
+        items.forEach((item, index) => {
+            const title = item.querySelector("title")?.textContent || "No Title";
+            const link = item.querySelector("link")?.textContent || "#";
+            const description = item.querySelector("description")?.textContent || "";
+
             const div = document.createElement('div');
             div.className = 'news-item';
             div.innerHTML = `
-                <h3 style="margin-top:0; color:#1e293b;">${item.title}</h3>
-                <p style="color:#475569; font-size:14px;">${item.description}</p>
-                <a href="${item.link}" target="_blank" rel="noopener" style="color:#0284c7; text-decoration:none; font-weight:bold; font-size:13px;">Read Full Article →</a>
+                <h3 style="margin-top:0; color:#1e293b;">${title}</h3>
+                <p style="color:#475569; font-size:14px;">${description}</p>
+                <a href="${link}" target="_blank" rel="noopener" style="color:#0284c7; text-decoration:none; font-weight:bold; font-size:13px;">Read Full Article →</a>
             `;
             feedContainer.appendChild(div);
 
             // Inject AdSense Fluid In-Feed Ad unit after every 3rd RSS news item
-            if ((index + 1) % 3 === 0 && index !== data.items.length - 1) {
+            if ((index + 1) % 3 === 0 && index !== items.length - 1) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'infeed-ad-wrapper';
                 adDiv.innerHTML = `
@@ -306,6 +322,7 @@ async function loadFeed() {
             }
         });
     } catch (e) {
+        console.error("RSS Loader Error:", e);
         document.getElementById('my-native-feed').innerHTML = "Unable to load RSS feed.";
     }
 }
@@ -361,6 +378,8 @@ loadFeed();
     
 </body>
 </html>
+
+
 
 
 

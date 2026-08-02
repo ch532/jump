@@ -111,6 +111,12 @@
             box-sizing: border-box;
         }
 
+            /* Keeps the page hidden until auth.js confirms the user session */
+body:not(.auth-ready) {
+  display: none;
+}
+
+
         /* IN-FEED AD CONTAINER STYLING */
         .infeed-ad-wrapper {
             width: 100%;

@@ -26,6 +26,22 @@
 </head>
 <body class="bg-slate-950 text-slate-100 flex flex-col min-h-screen font-sans">
 
+<header id="auth-header">
+    <h2>Account Access</h2>
+    <form id="auth-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <br/><br/>
+      <button type="button" onclick="submitRegister()">Register</button>
+      <button type="button" onclick="submitLogin()">Log In</button>
+      <button type="button" onclick="getProfile()">Get My Profile</button>
+      <button type="button" onclick="handleLogout()">Log Out</button>
+    </form>
+    <pre id="output">Not logged in.</pre>
+  </header>
+
+  <hr>
+  
   <!-- Header -->
   <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur p-4 shrink-0 z-50">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
@@ -375,5 +391,7 @@
       evaluateEnvironment();
     }
   </script>
+
+  <script src="auth.js"></script>
 </body>
 </html>

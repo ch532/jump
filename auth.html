@@ -55,10 +55,6 @@
     .order-summary .item-info p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
     .order-summary .item-price { font-size: 16px; font-weight: 700; color: var(--accent); }
 
-    .tab-group { display: flex; gap: 8px; margin-bottom: 16px; }
-    .tab { flex: 1; padding: 10px; text-align: center; background: #1f1f1f; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
-    .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
     /* EXPANDED SCANNER PREVIEW */
     .scanner-preview { 
       width: 100%; 
@@ -93,9 +89,6 @@
     .step-container { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
     .step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
     .hidden { display: none !important; }
-    
-    .bank-box { background: #0d0d0d; border: 1px solid var(--border); padding: 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
-    .bank-box strong { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -112,11 +105,6 @@
       <h4>3FA Authorization Service Access</h4>
     </div>
     <div class="item-price">₦1,000</div>
-  </div>
-
-  <div class="tab-group">
-    <div class="tab active" id="tab-card">Scan Physical Card</div>
-    <div class="tab" id="tab-transfer">Direct Bank Transfer</div>
   </div>
 
   <!-- STEP 1: PHYSICAL CARD SCANNER -->
@@ -136,16 +124,6 @@
     </div>
 
     <button class="btn" id="btn-scan" disabled>1. Scan Physical Card (Workers AI)</button>
-  </div>
-
-  <!-- DIRECT BANK TRANSFER SECTION -->
-  <div id="section-transfer" class="hidden">
-    <div class="bank-box">
-      <p>Bank Name: <strong>Wema Bank / Paystack</strong></p>
-      <p>Account Number: <strong>9920123456</strong></p>
-      <p>Account Name: <strong>Goldtech 3FA Gateway</strong></p>
-      <p style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">Transfer exact amount (₦5,000) to activate manual verification.</p>
-    </div>
   </div>
 
   <!-- STEP 2: HARDWARE BIOMETRICS / UID -->
@@ -188,10 +166,6 @@
   let otpVerified = false;
 
   // DOM Handles
-  const tabCard = document.getElementById("tab-card");
-  const tabTransfer = document.getElementById("tab-transfer");
-  const sectionCard = document.getElementById("section-card");
-  const sectionTransfer = document.getElementById("section-transfer");
   const cardInput = document.getElementById("card-input");
   const cardPreview = document.getElementById("card-preview");
   const previewLabel = document.querySelector(".upload-label");
@@ -200,21 +174,6 @@
   const btnOpenMail = document.getElementById("btn-open-mail");
   const btnVerifyOtp = document.getElementById("btn-verify-otp");
   const btnPaystack = document.getElementById("btn-paystack");
-
-  // Tab Switcher
-  tabCard.addEventListener("click", () => {
-    tabCard.classList.add("active");
-    tabTransfer.classList.remove("active");
-    sectionCard.classList.remove("hidden");
-    sectionTransfer.classList.add("hidden");
-  });
-
-  tabTransfer.addEventListener("click", () => {
-    tabTransfer.classList.add("active");
-    tabCard.classList.remove("active");
-    sectionTransfer.classList.remove("hidden");
-    sectionCard.classList.add("hidden");
-  });
 
   // Handle Image Selection
   cardInput.addEventListener("change", (e) => {
@@ -351,7 +310,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email,
-          amount: 5000,
+          amount: 1000,
           paymentMethod: "Verve",
           webauthnVerified: true,
           otpPassed: otpVerified,
@@ -374,6 +333,7 @@
 </script>
 </body>
 </html>
+
 
 
 

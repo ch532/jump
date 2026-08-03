@@ -295,30 +295,6 @@
     
 </main>
 
-<!-- AWS LOCATION SERVICE INITIALIZER SCRIPT -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const apiKey = "V1.public.eyJqdGkiOiIyZDRmYjE3Ny05ZDc5LTRiZjUtYmJjZC1kMzE3ZjA5MDIzY2EifXg_MFblWcsJSDultycwf61L_ISkLOZx8FkS00_GImzl7XMMDWoEedVoRii8IoMFMNDnEkrEGMXxoyFGzVuroCzSoyOjjGVE8bFuogPzdwTzbFyuNTP-8Y8MtV8uGQPmEM5lKG102eoH06rQpioo4k8UqfC8U7SLlyq8yWIIqKIsSAttg2LHtLq_fY-3QueRL3kIUmTlDQB2rC1VEueBmVB86Sp370C4l8eS192srPJliHKFd1nCBGvgJJo5KLxMSskIjPCzcbbmqyURr5R9C-K9HJs4p_KQR6JHLDk4ePCOqO-rtrm8PdLg6ASTDp_-SczTTrgFb7NCGb0SI3eV7I8.ZGQzZDY2OGQtMWQxMy00ZTEwLWIyZGUtOGVjYzUzMjU3OGE4";
-        const region = "eu-west-1";
-
-        const map = new maplibregl.Map({
-            container: 'aws-map',
-            center: [7.4951, 9.0579], // Coordinates [lng, lat] (Abuja, NG)
-            zoom: 11,
-            style: `https://maps.geo.${region}.amazonaws.com/v2/styles/Standard/descriptor?key=${apiKey}`,
-            validateStyle: false
-        });
-
-        // Add Zoom & Compass Navigation Controls
-        map.addControl(new maplibregl.NavigationControl(), "top-left");
-
-        // Add Default Marker
-        new maplibregl.Marker({ color: "#38bdf8" })
-            .setLngLat([7.4951, 9.0579])
-            .setPopup(new maplibregl.Popup().setHTML("<b>Geospatial Node</b><br>Active AWS Location Terminal"))
-            .addTo(map);
-    });
-</script>
 
 <!-- RSS FEED LOADER SCRIPT -->
 <script>

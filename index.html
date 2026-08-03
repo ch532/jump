@@ -35,6 +35,10 @@
     </script>
     <script src="//ezoicanalytics.com/analytics.js"></script>
 
+    <!-- MAPLIBRE GL JS (AWS LOCATION SERVICE COMPATIBLE) -->
+    <link href="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.js"></script>
+
     <!-- EXTERNAL TRACKING SDKs -->
     <script src="https://cdn.applixir.com/applixir.app.v6.1.0.js" async></script>
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
@@ -92,6 +96,26 @@
         .editorial-hub h1 { color: #1e293b; margin-top: 0; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
+        /* AWS MAP CONTAINER STYLING */
+        .aws-map-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .aws-map-card h2 {
+            margin-top: 0;
+            color: #1e293b;
+            font-size: 18px;
+        }
+        #aws-map {
+            width: 100%;
+            height: 400px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
         /* AD CONTAINERS & LARGE SPACING WRAPPERS */
         .ad-container-top { width: 100%; max-width: 300px; min-height: 250px; margin: 20px auto; text-align: center; }
         .ad-container-native { width: 100%; margin: 20px 0; }
@@ -111,12 +135,6 @@
             box-sizing: border-box;
         }
 
-            /* Keeps the page hidden until auth.js confirms the user session */
-body:not(.auth-ready) {
-  display: none;
-}
-
-
         /* IN-FEED AD CONTAINER STYLING */
         .infeed-ad-wrapper {
             width: 100%;
@@ -129,7 +147,6 @@ body:not(.auth-ready) {
         }
 
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .yandex-map-container { width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #fff; }
     </style>
 </head>
 <body>
@@ -196,6 +213,12 @@ body:not(.auth-ready) {
         <div class="editor-summary">
             <strong>Editor's Note:</strong> This terminal aggregates live regional event data and intelligence. We curate these feeds to provide a consolidated view of ongoing developments, serving as a primary resource for event tracking and information analysis.
         </div>
+    </section>
+
+    <!-- AWS LOCATION SERVICE GEOSPATIAL MAP -->
+    <section class="aws-map-card" data-sdk-feature="AWS Map Terminal">
+        <h2>Geospatial Node Map (AWS Location Service)</h2>
+        <div id="aws-map"></div>
     </section>
 
     <!-- LARGE AD SPACE 2: MID-CONTENT DISPLAY -->
@@ -271,6 +294,31 @@ body:not(.auth-ready) {
     <script>function showConnectGoldAd(cb){fetch("https://royal-thunder-8246.trustconnect713.workers.dev/?platform=web&format=interstitial&plc=plc_5y512u3r&pub_id=pub_cg_3n3g1r4o&consent="+(localStorage.getItem("user_ad_consent")==="granted"?"1":"0")).then(r=>r.json()).then(d=>{if(d&&d.adm){var el=document.createElement("div");document.body.appendChild(el);var rng=document.createRange();rng.selectNode(el);el.appendChild(rng.createContextualFragment(d.adm));var e=parseFloat(d.ecpm)||2.50;fetch("https://floral-pine-5c44.trustconnect713.workers.dev/v1/analytics/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"impression",platform:"web",format:"interstitial_fullscreen",pub_id:"pub_cg_3n3g1r4o",domain:window.location.hostname,ecpm:e,revenue:e/1000})}).catch(function(){});if(typeof cb==='function')cb()}}).catch(err=>console.error(err))}</script>
     
 </main>
+
+<!-- AWS LOCATION SERVICE INITIALIZER SCRIPT -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const apiKey = "V1.public.eyJqdGkiOiIyZDRmYjE3Ny05ZDc5LTRiZjUtYmJjZC1kMzE3ZjA5MDIzY2EifXg_MFblWcsJSDultycwf61L_ISkLOZx8FkS00_GImzl7XMMDWoEedVoRii8IoMFMNDnEkrEGMXxoyFGzVuroCzSoyOjjGVE8bFuogPzdwTzbFyuNTP-8Y8MtV8uGQPmEM5lKG102eoH06rQpioo4k8UqfC8U7SLlyq8yWIIqKIsSAttg2LHtLq_fY-3QueRL3kIUmTlDQB2rC1VEueBmVB86Sp370C4l8eS192srPJliHKFd1nCBGvgJJo5KLxMSskIjPCzcbbmqyURr5R9C-K9HJs4p_KQR6JHLDk4ePCOqO-rtrm8PdLg6ASTDp_-SczTTrgFb7NCGb0SI3eV7I8.ZGQzZDY2OGQtMWQxMy00ZTEwLWIyZGUtOGVjYzUzMjU3OGE4";
+        const region = "eu-west-1";
+
+        const map = new maplibregl.Map({
+            container: 'aws-map',
+            center: [7.4951, 9.0579], // Coordinates [lng, lat] (Abuja, NG)
+            zoom: 11,
+            style: `https://maps.geo.${region}.amazonaws.com/v2/styles/Standard/descriptor?key=${apiKey}`,
+            validateStyle: false
+        });
+
+        // Add Zoom & Compass Navigation Controls
+        map.addControl(new maplibregl.NavigationControl(), "top-left");
+
+        // Add Default Marker
+        new maplibregl.Marker({ color: "#38bdf8" })
+            .setLngLat([7.4951, 9.0579])
+            .setPopup(new maplibregl.Popup().setHTML("<b>Geospatial Node</b><br>Active AWS Location Terminal"))
+            .addTo(map);
+    });
+</script>
 
 <!-- RSS FEED LOADER SCRIPT -->
 <script>
@@ -426,12 +474,12 @@ loadFeed();
     <script src="auth.js"></script>
 
       <script>
-    const WORKER_URL = "https://curly-band-9c3e.trustconnect713.workers.dev";
+    const WORKER_URL_HEALTH = "https://curly-band-9c3e.trustconnect713.workers.dev";
 
     // Call Service Health route
     async function checkServiceHealth() {
       try {
-        const response = await fetch(`${WORKER_URL}/service-health`);
+        const response = await fetch(`${WORKER_URL_HEALTH}/service-health`);
         const data = await response.json();
         console.log("Service Health Status:", data);
       } catch (err) {
@@ -445,6 +493,7 @@ loadFeed();
 
 </body>
 </html>
+
 
 
 

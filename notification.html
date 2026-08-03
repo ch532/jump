@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awareness Stack Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .status-badge { display: inline-block; padding: 6px 12px; background: #1e293b; border: 1px solid #334155; border-radius: 20px; font-size: 0.85rem; color: #38bdf8; margin-top: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-2px); }
+    .card h3 { margin: 0 0 6px 0; font-size: 0.95rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+    .card p { margin: 0; font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2>🌐 Context Awareness Stack</h2>
+    <div id="status" class="status-badge">Initializing Service Worker...</div>
+  </div>
+
+  <div id="stack" class="grid"></div>
+
+  <script>
+    const WORKER_URL = "https://white-rain-9773.trustconnect713.workers.dev/telemetry";
+
+    // Register Service Worker and Request Notification Access
+    async function initWebEngine() {
+      const statusEl = document.getElementById('status');
+
+      if ('serviceWorker' in navigator) {
+        try {
+          const reg = await navigator.serviceWorker.register('./sw.js');
+          statusEl.innerText = "⚡ Service Worker Active";
+
+          // 1. Request Notification Permission
+          if (Notification.permission !== 'granted') {
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') {
+              statusEl.innerText = "🔔 Notifications Enabled & Worker Active";
+            }
+          } else {
+            statusEl.innerText = "🔔 Notifications Active in Background";
+          }
+
+          // 2. Register Periodic Background Sync (Runs when website is closed)
+          if ('periodicSync' in reg) {
+            const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+            if (status.state === 'granted') {
+              await reg.periodicSync.register('update-awareness-stack', {
+                minInterval: 60 * 1000 // Request 1-minute execution
+              });
+              console.log("Periodic Sync Registered!");
+            }
+          }
+        } catch (err) {
+          console.error("Worker Registration Failed:", err);
+          statusEl.innerText = "❌ Worker Registration Error";
+        }
+      } else {
+        statusEl.innerText = "⚠️ Service Workers not supported in this browser";
+      }
+    }
+
+    // Live UI Renderer (Updates page content when viewing the tab)
+    async function updateDashboard() {
+      try {
+        const payload = {
+          location: "Abuja, Nigeria",
+          wifi: navigator.onLine ? "Connected" : "Offline",
+          screenStatus: "Active Browser Tab"
+        };
+
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.items) {
+          const container = document.getElementById('stack');
+          container.innerHTML = data.items.map(item => `
+            <div class="card">
+              <h3>${item.title}</h3>
+              <p>${item.content}</p>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      }
+    }
+
+    // Initialize
+    initWebEngine();
+    updateDashboard();
+    setInterval(updateDashboard, 60000); // Refresh UI every 60s while tab is open
+  </script>
+</body>
+</html>

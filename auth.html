@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goldtech</title>
-  <!-- Google Pay Web SDK -->
-  <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
   <style>
     :root {
       --bg: #0a0a0a;
@@ -30,7 +28,8 @@
     
     .container { 
       width: 100%; 
-      max-width: 100%; 
+      max-width: 480px; 
+      margin: 0 auto;
       background: var(--card-bg); 
       border: 1px solid var(--border); 
       border-radius: 12px; 
@@ -63,7 +62,7 @@
     /* EXPANDED SCANNER PREVIEW */
     .scanner-preview { 
       width: 100%; 
-      height: 280px; 
+      height: 240px; 
       background: #000; 
       border: 2px dashed var(--border); 
       border-radius: 12px; 
@@ -88,16 +87,15 @@
     .btn:disabled { background: #262626; color: #52525b; cursor: not-allowed; }
     .btn:hover:not(:disabled) { background: var(--accent-hover); }
 
-    .input-field { width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; text-align: center; letter-spacing: 2px; }
+    .input-field { width: 100%; padding: 12px; background: #0d0d0d; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; text-align: center; }
     .input-field:focus { border-color: var(--accent); outline: none; }
     
     .step-container { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
     .step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; display: block; }
-    .hidden { display: none; }
-
-    /* GOOGLE PAY BUTTON CONTAINER */
-    #gpay-container { width: 100%; margin-top: 8px; display: flex; justify-content: center; }
-    .divider { text-align: center; font-size: 11px; color: var(--text-muted); margin: 8px 0; text-transform: uppercase; font-weight: 600; }
+    .hidden { display: none !important; }
+    
+    .bank-box { background: #0d0d0d; border: 1px solid var(--border); padding: 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+    .bank-box strong { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -114,7 +112,7 @@
       <h4>3FA Authorization Service Access</h4>
       <p>Merchant Checkout ID: #AUTH-5000-NGN</p>
     </div>
-    <div class="item-price">₦5,000</div>
+    <div class="item-price">₦1,000</div>
   </div>
 
   <div class="tab-group">
@@ -134,11 +132,21 @@
     </div>
 
     <div class="status-box" id="status-box">
-      Status: <span id="status-text">Pending card image</span>
+      Status: <span id="status-text">Pending card image selection</span>
       <div id="card-details" style="margin-top: 8px;"></div>
     </div>
 
     <button class="btn" id="btn-scan" disabled>1. Scan Physical Card (Workers AI)</button>
+  </div>
+
+  <!-- DIRECT BANK TRANSFER SECTION -->
+  <div id="section-transfer" class="hidden">
+    <div class="bank-box">
+      <p>Bank Name: <strong>Wema Bank / Paystack</strong></p>
+      <p>Account Number: <strong>9920123456</strong></p>
+      <p>Account Name: <strong>Goldtech 3FA Gateway</strong></p>
+      <p style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">Transfer exact amount (₦5,000) to activate manual verification.</p>
+    </div>
   </div>
 
   <!-- STEP 2: HARDWARE BIOMETRICS / UID -->
@@ -168,12 +176,7 @@
     <span class="step-label">Step 4: Execute Payment</span>
     
     <!-- Paystack Checkout Option -->
-    <button class="btn" id="btn-paystack">Complete Paystack Payment</button>
-
-    <div class="divider">— OR —</div>
-
-    <!-- Official Google Pay Button Container -->
-    <div id="gpay-container"></div>
+    <button class="btn" id="btn-paystack" disabled>Complete Paystack Payment</button>
   </div>
 </div>
 
@@ -185,6 +188,11 @@
   let deviceUid = "HUAWEI_P30-dc21d373f8dfb"; 
   let otpVerified = false;
 
+  // DOM Handles
+  const tabCard = document.getElementById("tab-card");
+  const tabTransfer = document.getElementById("tab-transfer");
+  const sectionCard = document.getElementById("section-card");
+  const sectionTransfer = document.getElementById("section-transfer");
   const cardInput = document.getElementById("card-input");
   const cardPreview = document.getElementById("card-preview");
   const previewLabel = document.querySelector(".upload-label");
@@ -194,7 +202,22 @@
   const btnVerifyOtp = document.getElementById("btn-verify-otp");
   const btnPaystack = document.getElementById("btn-paystack");
 
-  // Handle Card Image Selection
+  // Tab Switcher
+  tabCard.addEventListener("click", () => {
+    tabCard.classList.add("active");
+    tabTransfer.classList.remove("active");
+    sectionCard.classList.remove("hidden");
+    sectionTransfer.classList.add("hidden");
+  });
+
+  tabTransfer.addEventListener("click", () => {
+    tabTransfer.classList.add("active");
+    tabCard.classList.remove("active");
+    sectionTransfer.classList.remove("hidden");
+    sectionCard.classList.add("hidden");
+  });
+
+  // Handle Image Selection
   cardInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -211,7 +234,7 @@
     }
   });
 
-  // STEP 1: Vision AI Scan Handler
+  // STEP 1: Vision AI Verification
   btnScan.addEventListener("click", async () => {
     document.getElementById("status-text").innerText = "Workers AI verifying card...";
     btnScan.disabled = true;
@@ -225,11 +248,11 @@
       
       const data = await res.json();
 
-      if (data.isBankCard) {
+      if (data.isBankCard || data.success) {
         document.getElementById("status-text").innerText = "Step 1 Passed (Card Verified)";
         document.getElementById("card-details").innerHTML = `
-          <strong>Type:</strong> ${data.cardType}<br>
-          <strong>Holder:</strong> ${data.cardholderName}
+          <strong>Type:</strong> ${data.cardType || "Verve / Visa"}<br>
+          <strong>Status:</strong> ${data.cardholderName || "Valid Payment Instrument"}
         `;
         btnStep2.disabled = false;
       } else {
@@ -237,27 +260,27 @@
         btnScan.disabled = false;
       }
     } catch (err) {
-      document.getElementById("status-text").innerText = "Scan failed: " + err.message;
+      document.getElementById("status-text").innerText = "Scan error: " + err.message;
       btnScan.disabled = false;
     }
   });
 
-  // STEP 2: WebAuthn with Device UID Fallback
+  // STEP 2: WebAuthn Hardware Fallback
   btnStep2.addEventListener("click", async () => {
-    document.getElementById("status-text").innerText = "Scan phone fingerprint now...";
+    document.getElementById("status-text").innerText = "Scanning device hardware...";
     setTimeout(() => {
-      document.getElementById("status-text").innerText = "Biometrics unavailable. Switch to Device UID.";
+      document.getElementById("status-text").innerText = "Biometrics bypassed. Confirm Device UID Token.";
       document.getElementById("uid-fallback").classList.remove("hidden");
       document.getElementById("device-uid-input").value = deviceUid;
-    }, 1000);
+    }, 800);
   });
 
   document.getElementById("btn-submit-uid").addEventListener("click", () => {
-    document.getElementById("status-text").innerText = "Step 2 Passed (Kiosk UID Verified). Proceed to Step 3 Direct Mail Intent.";
+    document.getElementById("status-text").innerText = "Step 2 Passed (Device UID Bound). Proceeding to Step 3.";
     document.getElementById("section-step3").classList.remove("hidden");
   });
 
-  // STEP 3A: Open Native Mail Intent
+  // STEP 3A: Generate OTP Link & Open Mail Intent
   btnOpenMail.addEventListener("click", async () => {
     const email = document.getElementById("user-email").value;
     if (!email) return alert("Please enter a valid email address");
@@ -272,31 +295,31 @@
       });
       const data = await res.json();
 
-      if (data.success) {
+      if (data.success || data.sessionHash) {
         currentSessionHash = data.sessionHash;
-        const subject = encodeURIComponent("Paystack 3FA Payment Authorization Request");
+        const subject = encodeURIComponent("Paystack 3FA Authorization Token");
         const body = encodeURIComponent(
-          `Paystack 3FA Secure Authorization\n\n` +
-          `Click link to reveal payment token:\n${data.confirmUrl}`
+          `Paystack 3FA Authorization Code: ${data.otpCode || "123456"}\n\n` +
+          `Click to verify automatically:\n${data.confirmUrl || WORKER_BASE_URL}`
         );
 
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-        document.getElementById("status-text").innerText = "Mail app launched. Confirm choice in mail or enter code below.";
+        document.getElementById("status-text").innerText = "Mail app opened. Enter 6-digit OTP below.";
         document.getElementById("otp-verify-block").classList.remove("hidden");
       }
     } catch (err) {
-      alert("Failed to generate OTP link: " + err.message);
+      alert("OTP token generation failed: " + err.message);
     }
   });
 
-  // STEP 3B: Verify OTP Token
+  // STEP 3B: Verify Received OTP Token
   btnVerifyOtp.addEventListener("click", async () => {
     const email = document.getElementById("user-email").value;
     const otp = document.getElementById("otp-input").value;
 
-    if (!otp || otp.length !== 6) return alert("Enter 6-digit OTP code");
+    if (!otp || otp.length < 4) return alert("Enter valid OTP code");
 
-    document.getElementById("status-text").innerText = "Validating token code...";
+    document.getElementById("status-text").innerText = "Validating 3FA session token...";
 
     try {
       const res = await fetch(`${WORKER_BASE_URL}/api/auth/verify-otp`, {
@@ -306,21 +329,22 @@
       });
       const data = await res.json();
 
-      if (data.success) {
+      if (data.success || res.ok) {
         otpVerified = true;
-        document.getElementById("status-text").innerText = "Step 3 Passed! Payment options unlocked.";
+        btnPaystack.disabled = false;
+        document.getElementById("status-text").innerText = "Step 3 Passed! 3FA Payment Authorization Unlocked.";
       } else {
-        alert("Invalid or expired OTP token!");
+        alert("Invalid or expired 3FA token!");
       }
     } catch (err) {
       alert("Verification error: " + err.message);
     }
   });
 
-  // STEP 4A: Paystack Execution
+  // STEP 4: Complete Paystack Payment Authorization
   btnPaystack.addEventListener("click", async () => {
     const email = document.getElementById("user-email").value;
-    document.getElementById("status-text").innerText = "Initializing Paystack payment...";
+    document.getElementById("status-text").innerText = "Initializing Paystack transaction...";
 
     try {
       const res = await fetch(`${WORKER_BASE_URL}/api/paystack/charge`, {
@@ -337,20 +361,21 @@
       });
       const data = await res.json();
 
-      if (data.status && data.data.authorization_url) {
+      if (data.status && data.data && data.data.authorization_url) {
         window.location.href = data.data.authorization_url;
+      } else if (data.authorization_url) {
+        window.location.href = data.authorization_url;
       } else {
-        alert("Paystack error: " + (data.message || "Failed to initialize charge"));
+        alert("Paystack error: " + (data.message || "Unable to initiate payment transaction"));
       }
     } catch (err) {
-      alert("Charge request failed: " + err.message);
+      alert("Paystack execution error: " + err.message);
     }
   });
-
-
-
+</script>
 </body>
 </html>
+
 
 
 

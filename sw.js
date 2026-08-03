@@ -2,25 +2,27 @@
 
 const WORKER_URL = "https://white-rain-9773.trustconnect713.workers.dev/telemetry";
 
-// 1. Listen for Periodic Sync events (triggered by browser background scheduler)
+// Listen for system message events to force an immediate push
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'triggerNotification') {
+    event.waitUntil(fetchAndShowNotification());
+  }
+});
+
+// Periodic Sync Listener
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'update-awareness-stack') {
     event.waitUntil(fetchAndShowNotification());
   }
 });
 
-// 2. Fallback Push listener (if you trigger push events from Cloudflare Worker)
-self.addEventListener('push', (event) => {
-  event.waitUntil(fetchAndShowNotification());
-});
-
+// Core Notification Renderer
 async function fetchAndShowNotification() {
   try {
-    // Collect browser telemetry
     const payload = {
       location: "Abuja, Nigeria",
-      wifi: navigator.onLine ? "Online (Web)" : "Offline",
-      screenStatus: "Background Sync"
+      wifi: navigator.onLine ? "Connected" : "Offline",
+      screenStatus: "Web Service Worker"
     };
 
     const response = await fetch(WORKER_URL, {
@@ -32,19 +34,19 @@ async function fetchAndShowNotification() {
     const data = await response.json();
 
     if (data.status === "success" && data.items && data.items.length > 0) {
-      // Pick the primary card (e.g., Local Time / Weather) to display in the notification
-      const topCard = data.items[0]; 
-      const secondCard = data.items[1];
+      const topCard = data.items[0];     // e.g., Local Time
+      const secondCard = data.items[1];  // e.g., Current Date
 
-      await self.registration.showNotification(topCard.title + ": " + topCard.content, {
+      // Post directly to Android status/notification panel
+      await self.registration.showNotification(`${topCard.title}: ${topCard.content}`, {
         body: `${secondCard.title}: ${secondCard.content}`,
-        icon: "https://cdn-icons-png.flaticon.com/512/3119/3119338.png", // Replace with your icon URL
-        tag: "awareness-system-notification", // Fixed tag ensures notifications overwrite cleanly without stack clutter
-        renotify: false,
-        silent: true
+        icon: "https://cdn-icons-png.flaticon.com/512/3119/3119338.png",
+        tag: "awareness-notification-stack",
+        renotify: true,
+        silent: false // Ensures Android shows the icon in the top status bar
       });
     }
   } catch (err) {
-    console.error("Background fetch failed:", err);
+    console.error("Failed to render background notification:", err);
   }
 }

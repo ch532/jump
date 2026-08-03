@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyIPworld - Updates and information about events, tools & geospatial node</title>
     
-    <meta name="description" content="SkyIPworld Geospatial Node Terminal - Access custom analytical navigation models, interactive Yandex mapping tools, integrated custom Google Search indices, and regional live RSS intelligence tracking streams.">
-    <meta name="keywords" content="SkyIPworld, Geospatial Node Terminal, Yandex Maps, coordinate tracking, custom web search console, regional news tracker, live RSS feed aggregator, web data terminal, data visualization hub">
+    <meta name="description" content="SkyIPworld Geospatial Node Terminal - Access custom analytical navigation models, interactive mapping tools, integrated custom Google Search indices, and regional live RSS intelligence tracking streams.">
+    <meta name="keywords" content="SkyIPworld, Geospatial Node Terminal, coordinate tracking, custom web search console, regional news tracker, live RSS feed aggregator, web data terminal, data visualization hub">
     <meta name="author" content="SkyIPworld">
     
     <!-- FAVICON & APP LOGOS -->
@@ -36,8 +36,8 @@
     <script src="//ezoicanalytics.com/analytics.js"></script>
 
     <!-- MAPLIBRE GL JS (AWS LOCATION SERVICE COMPATIBLE) -->
-    <link href="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.css" rel="stylesheet" />
-    <script src="https://unpkg.com/maplibre-gl@3.x/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 
     <!-- EXTERNAL TRACKING SDKs -->
     <script src="https://cdn.applixir.com/applixir.app.v6.1.0.js" async></script>
@@ -125,7 +125,7 @@
 
         .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 
-        /* AWS MAP CONTAINER STYLING (BOTTOM CARD) */
+        /* AWS MAP CONTAINER STYLING */
         .aws-map-card {
             background: #fff;
             padding: 20px;
@@ -141,29 +141,15 @@
         }
         #aws-map {
             width: 100%;
-            height: 400px;
+            height: 420px;
+            min-height: 420px;
             border-radius: 6px;
             border: 1px solid #cbd5e1;
+            background: #e2e8f0;
         }
     </style>
 </head>
-<body class="auth-ready">
-
-  <header id="auth-header" style="background:#fff; padding:20px; border-bottom:2px solid #e2e8f0; text-align:center;">
-    <h2>Account Access</h2>
-    <form id="auth-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <br/><br/>
-      <button type="button" onclick="submitRegister()">Register</button>
-      <button type="button" onclick="submitLogin()">Log In</button>
-      <button type="button" onclick="getProfile()">Get My Profile</button>
-      <button type="button" onclick="handleLogout()">Log Out</button>
-    </form>
-    <pre id="output">Not logged in.</pre>
-  </header>
-
-  <hr>
+<body>
 
 <header>
     <nav class="top-nav">
@@ -295,27 +281,46 @@
 
 <!-- AWS LOCATION SERVICE INITIALIZER SCRIPT -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    function initAWSMap() {
+        if (typeof maplibregl === 'undefined') {
+            console.warn("MapLibre GL library not ready yet. Retrying...");
+            setTimeout(initAWSMap, 300);
+            return;
+        }
+
         const apiKey = "V1.public.eyJqdGkiOiIyZDRmYjE3Ny05ZDc5LTRiZjUtYmJjZC1kMzE3ZjA5MDIzY2EifXg_MFblWcsJSDultycwf61L_ISkLOZx8FkS00_GImzl7XMMDWoEedVoRii8IoMFMNDnEkrEGMXxoyFGzVuroCzSoyOjjGVE8bFuogPzdwTzbFyuNTP-8Y8MtV8uGQPmEM5lKG102eoH06rQpioo4k8UqfC8U7SLlyq8yWIIqKIsSAttg2LHtLq_fY-3QueRL3kIUmTlDQB2rC1VEueBmVB86Sp370C4l8eS192srPJliHKFd1nCBGvgJJo5KLxMSskIjPCzcbbmqyURr5R9C-K9HJs4p_KQR6JHLDk4ePCOqO-rtrm8PdLg6ASTDp_-SczTTrgFb7NCGb0SI3eV7I8.ZGQzZDY2OGQtMWQxMy00ZTEwLWIyZGUtOGVjYzUzMjU3OGE4";
         const region = "eu-west-1";
 
-        const map = new maplibregl.Map({
-            container: 'aws-map',
-            center: [7.4951, 9.0579], // Default coordinates [lng, lat]
-            zoom: 11,
-            style: `https://maps.geo.${region}.amazonaws.com/v2/styles/Standard/descriptor?key=${apiKey}`,
-            validateStyle: false
-        });
+        try {
+            const map = new maplibregl.Map({
+                container: 'aws-map',
+                center: [7.4951, 9.0579], // Coordinates [lng, lat] (Abuja, NG)
+                zoom: 11,
+                style: `https://maps.geo.${region}.amazonaws.com/v2/styles/Standard/descriptor?key=${apiKey}`,
+                validateStyle: false
+            });
 
-        // Add Zoom & Compass Controls
-        map.addControl(new maplibregl.NavigationControl(), "top-left");
+            // Add Navigation & Compass Controls
+            map.addControl(new maplibregl.NavigationControl(), "top-left");
 
-        // Add Default Location Marker
-        new maplibregl.Marker({ color: "#38bdf8" })
-            .setLngLat([7.4951, 9.0579])
-            .setPopup(new maplibregl.Popup().setHTML("<b>Geospatial Node</b><br>Active AWS Location Terminal"))
-            .addTo(map);
-    });
+            // Add Default Location Marker
+            new maplibregl.Marker({ color: "#38bdf8" })
+                .setLngLat([7.4951, 9.0579])
+                .setPopup(new maplibregl.Popup().setHTML("<b>Geospatial Node</b><br>Active AWS Location Terminal"))
+                .addTo(map);
+
+            // Force resize trigger after initialization to fix layout rendering
+            setTimeout(() => { map.resize(); }, 500);
+        } catch (err) {
+            console.error("AWS Map Init Error:", err);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initAWSMap);
+    } else {
+        initAWSMap();
+    }
 </script>
 
 <!-- RSS FEED LOADER SCRIPT -->
@@ -410,9 +415,6 @@ loadFeed();
 
 <!-- Cloudflare Web Analytics -->
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
-
-<!-- SESSION GUARD + CLIENT LOGIC -->
-<script src="auth.js"></script>
 
 </body>
 </html>

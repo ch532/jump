@@ -22,7 +22,9 @@
       background-color: var(--bg);
       color: var(--text);
       padding: 2rem;
+      padding-bottom: 5rem; /* Space so content isn't covered by bottom links */
       min-height: 100vh;
+      position: relative;
     }
 
     .container {
@@ -150,6 +152,33 @@
       color: var(--accent);
     }
 
+    /* Fixed Bottom-Left Navigation Links */
+    .bottom-left-links {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+    }
+
+    .bottom-left-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .bottom-left-links a:hover {
+      color: var(--primary);
+    }
+
     @media (max-width: 768px) {
       .breakdown-grid { grid-template-columns: 1fr; }
       header { flex-direction: column; align-items: flex-start; gap: 1rem; }
@@ -216,6 +245,13 @@
       </table>
     </div>
   </div>
+
+  <!-- Bottom-Left Page Links -->
+  <nav class="bottom-left-links">
+    <a href="document4.html">Documentation</a>
+    <span style="color: var(--border);">|</span>
+    <a href="privacy16.html">Privacy Policy</a>
+  </nav>
 
   <script>
     const WORKER_URL = "https://wild-bush-1cd7.trustconnect713.workers.dev/";
@@ -289,11 +325,10 @@
       }
 
       events.forEach(item => {
-        // Format timestamp into human-readable local date & time
         let formattedTime = "N/A";
         if (item.timestamp) {
           const dateObj = new Date(item.timestamp * 1000);
-          formattedTime = dateObj.toLocaleString(); // Displays local time format
+          formattedTime = dateObj.toLocaleString();
         }
 
         const categoryClass = item.category === "custom" ? "badge-custom" : "badge-default";
@@ -317,3 +352,4 @@
   </script>
 </body>
 </html>
+

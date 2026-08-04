@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Analytics Platform</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --accent: #818cf8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2.5rem;
+    }
+
+    h1 { color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; }
+    .effective-date { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    
+    h2 { color: var(--accent); font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    p { margin-bottom: 1rem; color: #cbd5e1; font-size: 0.95rem; }
+
+    ul { margin-left: 1.5rem; margin-bottom: 1rem; color: #cbd5e1; font-size: 0.95rem; }
+    li { margin-bottom: 0.5rem; }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .nav-back {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="dashboard.html" class="nav-back">← Back to Dashboard</a>
+    
+    <h1>Analytics Platform Privacy Policy</h1>
+    <div class="effective-date">Effective Date: August 4, 2026</div>
+
+    <p>This Privacy Policy explains how our general-purpose Analytics Platform collects, processes, and stores application telemetry and performance metrics across integrated applications, websites, and connected services.</p>
+
+    <h2>1. Scope of the Platform</h2>
+    <p>Our analytics infrastructure operates as a multi-application telemetry engine. It accepts event payloads and health metrics sent via API endpoints from mobile apps, web applications, and software services managed under platform-registered application IDs (<code>app_id</code>).</p>
+
+    <h2>2. Telemetry & Data Collected</h2>
+    <p>Our platform collects non-personally identifiable technical telemetry strictly for aggregation, system diagnostic, and performance reporting purposes:</p>
+    <ul>
+      <li><strong>Application Identifiers:</strong> Registered platform package names, domain keys, or unique <code>app_id</code> strings.</li>
+      <li><strong>Environment & Device Metadata:</strong> Client platform/OS type, system build version, and app release version.</li>
+      <li><strong>Automated System Metrics:</strong> Session initialization, startup duration, page or screen views, system state changes, and runtime error counts.</li>
+      <li><strong>Custom Application Telemetry:</strong> Developer-configured metrics, feature interactions, and custom user action events passed via standard API payloads.</li>
+    </ul>
+
+    <h2>3. Data Handling & Security Principles</h2>
+    <ul>
+      <li><strong>No Sensitive PII:</strong> The platform does not collect, track, or require Personally Identifiable Information (PII) such as full legal names, passwords, sensitive financial details, or precise GPS location records.</li>
+      <li><strong>Encryption in Transit:</strong> All ingested metrics and query API requests are transmitted securely over TLS/HTTPS protocols.</li>
+      <li><strong>Automatic Lifecycle Expiry:</strong> Event logs ingested into global key-value database storage are retained for a maximum duration of <strong>90 days</strong>, after which they automatically expire and are deleted.</li>
+    </ul>
+
+    <h2>4. Platform Data Rights & Usage</h2>
+    <p>Aggregated metrics are processed solely to provide app performance dashboards, analytics reports, and stability insights to authorized platform users. We do not sell or trade raw telemetry data to external third-party advertisers or data brokers.</p>
+
+    <h2>5. Contact & Support</h2>
+    <p>For administrative questions or platform compliance requests regarding API usage, please consult your developer console support resources.</p>
+  </div>
+
+</body>
+</html>

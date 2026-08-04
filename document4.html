@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App Analytics SDK & API Reference</title>
+</head>
+<body>
+
+  <!-- DOCUMENTATION START -->
+  <div class="docs-container">
+    <h1>📱 Analytics SDK & API Developer Guide</h1>
+    <p>This engine collects <strong>60 automated system metrics</strong> alongside <strong>custom app event telemetry</strong>, streaming data asynchronously via background workers to eliminate UI thread latency.</p>
+
+    <hr>
+
+    <h2>1. Android SDK Integration (Kotlin)</h2>
+
+    <h3>Step A: Add Internet Permission</h3>
+    <p>Include the required network permission in your <code>AndroidManifest.xml</code>:</p>
+    <pre><code class="language-xml">&lt;uses-permission android:name="android.permission.INTERNET" /&gt;</code></pre>
+
+    <h3>Step B: Initialize SDK in Application Class</h3>
+    <pre><code class="language-kotlin">import android.app.Application
+
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        // Initialize Analytics Engine once at app start
+        MyAnalyticsSDK.initialize(
+            context = this,
+            apiKey = "live_sdk_key_9988",
+            endpoint = "https://wild-bush-1cd7.trustconnect713.workers.dev/"
+        )
+    }
+}</code></pre>
+
+    <h3>Step C: Track Custom Events</h3>
+    <pre><code class="language-kotlin">// Track level completion in a game
+MyAnalyticsSDK.trackEvent(
+    eventName = "level_completed",
+    properties = mapOf(
+        "level_id" to 5,
+        "score" to 12500,
+        "character" to "Explorer"
+    )
+)
+
+// Track UI interaction or purchase
+MyAnalyticsSDK.trackEvent(
+    eventName = "in_app_purchase",
+    properties = mapOf(
+        "item_id" to "coins_pack_100",
+        "price" to 0.99
+    )
+)</code></pre>
+
+    <h3>Step D: Track Automated System Metrics</h3>
+    <pre><code class="language-kotlin">// Track automated performance or startup metric
+MyAnalyticsSDK.trackSystemEvent(
+    eventName = "app_start",
+    properties = mapOf("launch_time_ms" to 320)
+)</code></pre>
+
+    <hr>
+
+    <h2>2. REST API Specification</h2>
+
+    <h3>Ingest Analytics Data (POST /)</h3>
+    <p><strong>Endpoint:</strong> <code>POST https://wild-bush-1cd7.trustconnect713.workers.dev/</code></p>
+    <p><strong>Header:</strong> <code>Content-Type: application/json</code></p>
+
+    <h4>Request Payload Example:</h4>
+    <pre><code class="language-json">{
+  "app_id": "com.atzec.app",
+  "api_key": "live_sdk_key_9988",
+  "device": {
+    "os": "Android",
+    "os_version": "14",
+    "app_version": "2.1.0"
+  },
+  "events": [
+    {
+      "type": "default",
+      "name": "app_start",
+      "timestamp": 1785862000,
+      "properties": { "launch_time_ms": 350 }
+    },
+    {
+      "type": "custom",
+      "name": "level_completed",
+      "timestamp": 1785862050,
+      "properties": { "level": 5, "score": 12500 }
+    }
+  ]
+}</code></pre>
+
+    <h4>cURL Command Example:</h4>
+    <pre><code class="language-bash">curl -X POST "https://wild-bush-1cd7.trustconnect713.workers.dev/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "app_id": "com.atzec.app",
+    "api_key": "live_sdk_key_9988",
+    "device": { "os": "Android", "os_version": "14", "app_version": "2.1.0" },
+    "events": [
+      { "type": "custom", "name": "button_click", "timestamp": 1785862000, "properties": { "target": "play_btn" } }
+    ]
+  }'</code></pre>
+
+    <h4>Success Response (HTTP 202):</h4>
+    <pre><code class="language-json">{
+  "success": true,
+  "queued": 1
+}</code></pre>
+
+    <hr>
+
+    <h3>Query Dashboard Telemetry (GET /)</h3>
+    <p><strong>Endpoint:</strong> <code>GET https://wild-bush-1cd7.trustconnect713.workers.dev/?app_id=com.atzec.app&amp;limit=50</code></p>
+
+    <h4>Response Example (HTTP 200):</h4>
+    <pre><code class="language-json">{
+  "success": true,
+  "app_id": "com.atzec.app",
+  "total_events_retrieved": 2,
+  "summary": {
+    "default_events": 1,
+    "custom_events": 1,
+    "event_breakdown": {
+      "app_start": 1,
+      "level_completed": 1
+    },
+    "os_breakdown": {
+      "Android": 2
+    }
+  },
+  "recent_events": [
+    {
+      "app_id": "com.atzec.app",
+      "category": "custom",
+      "event_name": "level_completed",
+      "device": {
+        "os": "Android",
+        "os_version": "14",
+        "app_version": "2.1.0"
+      },
+      "properties": {
+        "level": 5,
+        "score": 12500
+      },
+      "timestamp": 1785862050
+    }
+  ]
+}</code></pre>
+
+    <hr>
+
+    <h2>3. Complete Kotlin SDK Client Engine</h2>
+    <p>Include the <code>MyAnalyticsSDK.kt</code> client wrapper in your Android Studio project:</p>
+
+    <pre><code class="language-kotlin">import android.content.Context
+import android.os.Build
+import kotlinx.coroutines.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+
+object MyAnalyticsSDK {
+
+    private var appContext: Context? = null
+    private var apiKey: String = ""
+    private var workerUrl: String = ""
+    private val sdkScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    fun initialize(context: Context, apiKey: String, endpoint: String) {
+        this.appContext = context.applicationContext
+        this.apiKey = apiKey
+        this.workerUrl = endpoint
+
+        // Auto-track initialization system metric
+        trackSystemEvent("app_open", mapOf("sdk_version" to "1.0.0"))
+    }
+
+    fun trackEvent(eventName: String, properties: Map&lt;String, Any&gt; = emptyMap()) {
+        sendPayload(eventName, type = "custom", properties = properties)
+    }
+
+    fun trackSystemEvent(eventName: String, properties: Map&lt;String, Any&gt; = emptyMap()) {
+        sendPayload(eventName, type = "default", properties = properties)
+    }
+
+    private fun sendPayload(eventName: String, type: String, properties: Map&lt;String, Any&gt;) {
+        val context = appContext ?: return
+        if (workerUrl.isEmpty()) return
+
+        sdkScope.launch {
+            try {
+                val url = URL(workerUrl)
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+                conn.doOutput = true
+                conn.connectTimeout = 5000
+
+                val deviceObj = JSONObject().apply {
+                    put("os", "Android")
+                    put("os_version", Build.VERSION.RELEASE)
+                    put("app_version", getAppVersion(context))
+                }
+
+                val eventObj = JSONObject().apply {
+                    put("type", type)
+                    put("name", eventName)
+                    put("timestamp", System.currentTimeMillis() / 1000)
+                    put("properties", JSONObject(properties))
+                }
+
+                val payload = JSONObject().apply {
+                    put("app_id", context.packageName)
+                    put("api_key", apiKey)
+                    put("device", deviceObj)
+                    put("events", JSONArray().apply { put(eventObj) })
+                }
+
+                conn.outputStream.use { os ->
+                    val bytes = payload.toString().toByteArray(Charsets.UTF_8)
+                    os.write(bytes, 0, bytes.size)
+                }
+
+                conn.responseCode
+                conn.disconnect()
+            } catch (e: Exception) {
+                // Fail silently to safeguard application main thread runtime
+            }
+        }
+    }
+
+    private fun getAppVersion(context: Context): String {
+        return try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.versionName ?: "1.0.0"
+        } catch (e: Exception) {
+            "1.0.0"
+        }
+    }
+}</code></pre>
+
+  </div>
+  <!-- DOCUMENTATION END -->
+
+</body>
+</html>

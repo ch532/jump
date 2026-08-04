@@ -198,7 +198,8 @@
       .breakdown-grid { grid-template-columns: 1fr; }
       header { flex-direction: column; align-items: flex-start; gap: 1rem; }
       .filter-toolbar { flex-direction: column; align-items: stretch; }
-      .filter-group { flex-direction: column; }
+      .filter-group { flex-direction: column; width: 100%; }
+      select, input[type="text"] { width: 100%; }
     }
   </style>
 </head>
@@ -245,14 +246,87 @@
     <div class="filter-toolbar">
       <h3>Recent Event Log Stream</h3>
       <div class="filter-group">
-        <!-- Category Filter -->
-        <select id="categoryFilter" onchange="applyLogFilters()">
-          <option value="all">All Event Types</option>
-          <option value="default">System Metrics Only (60 Auto)</option>
-          <option value="custom">Custom Events Only</option>
+        <!-- 60 System Analytics + Custom Dropdown Select -->
+        <select id="metricDropdown" onchange="applyLogFilters()">
+          <option value="ALL">All Recorded Logs</option>
+          <optgroup label="General Categories">
+            <option value="CAT_DEFAULT">All 60 System Metrics (Default)</option>
+            <option value="CAT_CUSTOM">All Custom App Events</option>
+          </optgroup>
+          <optgroup label="Lifecycle & App State (1-10)">
+            <option value="app_start">app_start (Cold Boot Launch)</option>
+            <option value="app_open">app_open (App Foreground)</option>
+            <option value="app_background">app_background (App Hidden)</option>
+            <option value="app_close">app_close (App Terminated)</option>
+            <option value="app_update">app_update (App Version Upgraded)</option>
+            <option value="app_install">app_install (First Launch)</option>
+            <option value="session_start">session_start (User Session Initialized)</option>
+            <option value="session_end">session_end (User Session Ended)</option>
+            <option value="screen_view">screen_view (Screen/Activity Changed)</option>
+            <option value="deep_link_opened">deep_link_opened (Deep Link URI Launched)</option>
+          </optgroup>
+          <optgroup label="Performance & Latency (11-20)">
+            <option value="launch_latency_ms">launch_latency_ms (App Startup Time)</option>
+            <option value="frame_drop_detected">frame_drop_detected (Jank / UI Frame Delay)</option>
+            <option value="anr_detected">anr_detected (Application Not Responding)</option>
+            <option value="memory_warning">memory_warning (Low RAM Alert)</option>
+            <option value="out_of_memory_crash">out_of_memory_crash (OOM Crash Event)</option>
+            <option value="cpu_spike">cpu_spike (High CPU Usage Alert)</option>
+            <option value="storage_low">storage_low (Disk Space Critical)</option>
+            <option value="network_latency">network_latency (API RTT Delay)</option>
+            <option value="db_read_latency">db_read_latency (Local DB Query Delay)</option>
+            <option value="render_time_ms">render_time_ms (Layout Render Speed)</option>
+          </optgroup>
+          <optgroup label="Crash & Error Logs (21-30)">
+            <option value="uncaught_exception">uncaught_exception (Fatal App Crash)</option>
+            <option value="non_fatal_error">non_fatal_error (Handled Exception)</option>
+            <option value="network_error">network_error (HTTP Connection Failure)</option>
+            <option value="api_timeout">api_timeout (Endpoint Request Timeout)</option>
+            <option value="ssl_handshake_failed">ssl_handshake_failed (TLS/SSL Connection Error)</option>
+            <option value="json_parse_error">json_parse_error (Malformed Data Error)</option>
+            <option value="file_io_error">file_io_error (File Storage Error)</option>
+            <option value="permission_denied">permission_denied (System Permission Rejected)</option>
+            <option value="sdk_init_failed">sdk_init_failed (Library Setup Error)</option>
+            <option value="token_expired">token_expired (Authentication Session Expired)</option>
+          </optgroup>
+          <optgroup label="Network & Connectivity (31-40)">
+            <option value="connection_type_wifi">connection_type_wifi (Connected to Wi-Fi)</option>
+            <option value="connection_type_cellular">connection_type_cellular (Connected to Mobile Data)</option>
+            <option value="network_lost">network_lost (Offline State Triggered)</option>
+            <option value="network_restored">network_restored (Reconnected State Triggered)</option>
+            <option value="dns_lookup_slow">dns_lookup_slow (DNS Resolution Delay)</option>
+            <option value="payload_size_exceeded">payload_size_exceeded (Overlarge HTTP Payload)</option>
+            <option value="http_4xx_client_error">http_4xx_client_error (Client Request Error)</option>
+            <option value="http_5xx_server_error">http_5xx_server_error (Server Remote Error)</option>
+            <option value="background_sync_started">background_sync_started (Background Sync Job)</option>
+            <option value="background_sync_completed">background_sync_completed (Background Sync Finished)</option>
+          </optgroup>
+          <optgroup label="Device & System Hardware (41-50)">
+            <option value="battery_low">battery_low (Battery Dropped Below 15%)</option>
+            <option value="battery_charging">battery_charging (Charger Plugged In)</option>
+            <option value="device_orientation_change">device_orientation_change (Portrait/Landscape Toggle)</option>
+            <option value="dark_mode_toggled">dark_mode_toggled (System Theme Changed)</option>
+            <option value="locale_changed">locale_changed (Device Language Switched)</option>
+            <option value="device_rebooted">device_rebooted (System Restart Detected)</option>
+            <option value="thermal_throttling">thermal_throttling (Overheating Throttling)</option>
+            <option value="screen_unlocked">screen_unlocked (User Unlocked Phone)</option>
+            <option value="audio_output_changed">audio_output_changed (Headphones/Bluetooth Toggled)</option>
+            <option value="disk_write_completed">disk_write_completed (Local Data Cache Saved)</option>
+          </optgroup>
+          <optgroup label="User Engagement & Notifications (51-60)">
+            <option value="push_received">push_received (Push Notification Delivered)</option>
+            <option value="push_opened">push_opened (User Clicked Notification)</option>
+
+            <option value="push_dismissed">push_dismissed (User Swiped Notification)</option>
+            <option value="in_app_message_shown">in_app_message_shown (In-App Dialog Rendered)</option>
+            <option value="in_app_message_clicked">in_app_message_clicked (In-App Dialog Clicked)</option>
+            <option value="user_engagement_ping">user_engagement_ping (30s Heartbeat Active)</option>
+            <option value="ui_tab_switched">ui_tab_switched (Navigation Bar Switch)</option>
+            <option value="search_performed">search_performed (In-App Search Triggered)</option>
+            <option value="share_triggered">share_triggered (User Opened Native Share Sheet)</option>
+            <option value="rate_app_prompt_shown">rate_app_prompt_shown (Review Request Rendered)</option>
+          </optgroup>
         </select>
-        <!-- Search Event Name Filter -->
-        <input type="text" id="eventNameSearch" oninput="applyLogFilters()" placeholder="Filter by event name..." style="width: 220px;">
       </div>
     </div>
 
@@ -286,7 +360,7 @@
 
   <script>
     const WORKER_URL = "https://wild-bush-1cd7.trustconnect713.workers.dev/";
-    let rawFetchedEvents = []; // Master store for filtering
+    let rawFetchedEvents = []; 
 
     async function fetchAnalytics() {
       const appId = document.getElementById("appIdInput").value.trim();
@@ -310,12 +384,10 @@
     }
 
     function renderDashboard(data) {
-      // Update Stat Cards
       document.getElementById("totalEvents").textContent = data.total_events_retrieved || 0;
       document.getElementById("defaultEvents").textContent = data.summary?.default_events || 0;
       document.getElementById("customEvents").textContent = data.summary?.custom_events || 0;
 
-      // Render Event Breakdown List
       const ebContainer = document.getElementById("eventBreakdown");
       ebContainer.innerHTML = "";
       const eBreakdown = data.summary?.event_breakdown || {};
@@ -331,7 +403,6 @@
         }
       }
 
-      // Render OS Breakdown
       const osContainer = document.getElementById("osBreakdown");
       osContainer.innerHTML = "";
       const osBreakdown = data.summary?.os_breakdown || {};
@@ -347,26 +418,24 @@
         }
       }
 
-      // Apply initial filters to render table
       applyLogFilters();
     }
 
     function applyLogFilters() {
-      const selectedCategory = document.getElementById("categoryFilter").value;
-      const searchQuery = document.getElementById("eventNameSearch").value.toLowerCase().trim();
-
+      const selectedValue = document.getElementById("metricDropdown").value;
       const tbody = document.getElementById("eventsTableBody");
       tbody.innerHTML = "";
 
-      // Filter raw events array in-memory
       const filteredEvents = rawFetchedEvents.filter(item => {
-        const matchesCategory = (selectedCategory === "all") || (item.category === selectedCategory);
-        const matchesName = !searchQuery || (item.event_name && item.event_name.toLowerCase().includes(searchQuery));
-        return matchesCategory && matchesName;
+        if (selectedValue === "ALL") return true;
+        if (selectedValue === "CAT_DEFAULT") return item.category === "default";
+        if (selectedValue === "CAT_CUSTOM") return item.category === "custom";
+        // Specific metric match
+        return item.event_name === selectedValue;
       });
 
       if (filteredEvents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No matching log entries found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No matching entries for "${selectedValue}".</td></tr>`;
         return;
       }
 
@@ -393,11 +462,11 @@
       });
     }
 
-    // Auto-fetch on page load
     window.addEventListener("DOMContentLoaded", fetchAnalytics);
   </script>
 </body>
 </html>
+
 
   
 

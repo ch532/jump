@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldtech - App Builder & Monetization Console</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #202124;
+            --border: #dadce0;
+            --accent-gold: #d4af37;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-top: 6px solid var(--accent-gold);
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .brand-header h1 {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .brand-header h1 span {
+            color: var(--accent-gold);
+        }
+
+        .tagline {
+            color: #5f6368;
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+
+        h2 { 
+            font-size: 1.1rem; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 8px; 
+            margin-top: 28px; 
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 24px;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        button:disabled {
+            background-color: #9aa0a6;
+            cursor: not-allowed;
+        }
+
+        #output {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 4px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
+        .error { background-color: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
+        .loading { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="brand-header">
+        <div>
+            <h1>GOLD<span>TECH</span> BUILDER</h1>
+            <div class="tagline">Automated Cloud Compilation & Monetization System</div>
+        </div>
+    </div>
+
+    <form id="buildForm">
+        <!-- App Details -->
+        <h2>1. Basic App Information</h2>
+        <div class="row">
+            <div class="form-group">
+                <label for="appName">App Name</label>
+                <input type="text" id="appName" value="My Goldtech App" required>
+            </div>
+            <div class="form-group">
+                <label for="packageName">Package Name</label>
+                <input type="text" id="packageName" value="com.goldtech.myapp" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="versionName">Version Name</label>
+                <input type="text" id="versionName" value="1.0.0" required>
+            </div>
+            <div class="form-group">
+                <label for="versionCode">Version Code</label>
+                <input type="number" id="versionCode" value="1" required>
+            </div>
+            <div class="form-group">
+                <label for="primaryColor">Primary Color</label>
+                <input type="text" id="primaryColor" value="#1A73E8" required>
+            </div>
+        </div>
+
+        <!-- SDK Target Configuration -->
+        <h2>2. Target Platform SDK Settings</h2>
+        <div class="row">
+            <div class="form-group">
+                <label for="compileSdk">Compile SDK</label>
+                <input type="number" id="compileSdk" value="34" required>
+            </div>
+            <div class="form-group">
+                <label for="targetSdk">Target SDK</label>
+                <input type="number" id="targetSdk" value="34" required>
+            </div>
+            <div class="form-group">
+                <label for="minSdk">Min SDK</label>
+                <input type="number" id="minSdk" value="21" required>
+            </div>
+        </div>
+
+        <!-- Monetization Configuration -->
+        <h2>3. Monetization & Ad Networks</h2>
+        <div class="form-group">
+            <label for="adProvider">Ad Network Provider</label>
+            <select id="adProvider">
+                <option value="admob">Google AdMob</option>
+                <option value="unity">Unity Ads</option>
+                <option value="yandex">Yandex Ads</option>
+                <option value="inmobi">InMobi</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="appId">Ad App ID / Game ID</label>
+            <input type="text" id="appId" placeholder="e.g., ca-app-pub-3907991240126954~3347511713">
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="bannerId">Banner Placement ID</label>
+                <input type="text" id="bannerId" placeholder="e.g., ca-app-pub-3907991240126954/6300978111">
+            </div>
+            <div class="form-group">
+                <label for="interstitialId">Interstitial Placement ID</label>
+                <input type="text" id="interstitialId" placeholder="e.g., ca-app-pub-3907991240126954/1033173712">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="rewardedId">Rewarded Placement ID</label>
+                <input type="text" id="rewardedId" placeholder="Optional">
+            </div>
+            <div class="form-group">
+                <label for="vastUrl">VAST Tag URL</label>
+                <input type="text" id="vastUrl" placeholder="Optional (https://...)">
+            </div>
+        </div>
+
+        <button type="submit" id="buildBtn">Generate APK</button>
+    </form>
+
+    <div id="output"></div>
+</div>
+
+<script>
+    document.getElementById('buildForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const buildBtn = document.getElementById('buildBtn');
+        const output = document.getElementById('output');
+
+        buildBtn.disabled = true;
+        output.className = 'loading';
+        output.style.display = 'block';
+        output.innerHTML = '⚙️ Goldtech Build Engine is initializing workspace and compiling APK... Please wait.';
+
+        // Construct app_config.json payload
+        const payload = {
+            appInfo: {
+                appName: document.getElementById('appName').value,
+                packageName: document.getElementById('packageName').value,
+                versionName: document.getElementById('versionName').value,
+                versionCode: parseInt(document.getElementById('versionCode').value),
+                primaryColor: document.getElementById('primaryColor').value
+            },
+            sdkConfig: {
+                compileSdk: parseInt(document.getElementById('compileSdk').value),
+                targetSdk: parseInt(document.getElementById('targetSdk').value),
+                minSdk: parseInt(document.getElementById('minSdk').value)
+            },
+            dependencies: {
+                basePlatform: [
+                    "androidx.appcompat:appcompat:1.6.1",
+                    "com.google.android.material:material:1.9.0"
+                ],
+                customDependencies: []
+            },
+            monetization: {
+                selectedType: "built_in",
+                options: {
+                    selectedProvider: document.getElementById('adProvider').value
+                },
+                builtInConfig: {
+                    appId: document.getElementById('appId').value,
+                    placements: [
+                        { format: "banner", placementId: document.getElementById('bannerId').value },
+                        { format: "interstitial", placementId: document.getElementById('interstitialId').value },
+                        { format: "rewarded", placementId: document.getElementById('rewardedId').value },
+                        { format: "vast", vastTagUrl: document.getElementById('vastUrl').value }
+                    ]
+                }
+            }
+        };
+
+        try {
+            const response = await fetch('/api/v1/build', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                output.className = 'success';
+                output.innerHTML = `<strong>🎉 Build Successful!</strong><br><br><a href="${data.downloadUrl}" target="_blank" style="color:#137333; font-weight:bold;">⬇️ Download APK (${data.jobId})</a>`;
+            } else {
+                output.className = 'error';
+                output.innerHTML = `<strong>❌ Build Failed:</strong><br>${data.error}`;
+            }
+        } catch (err) {
+            output.className = 'error';
+            output.innerHTML = `<strong>❌ Error:</strong> ${err.message}`;
+        } finally {
+            buildBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -22,7 +22,7 @@
       background-color: var(--bg);
       color: var(--text);
       padding: 2rem;
-      padding-bottom: 5rem; /* Space so content isn't covered by bottom links */
+      padding-bottom: 5rem;
       min-height: 100vh;
       position: relative;
     }
@@ -48,17 +48,16 @@
       gap: 0.5rem;
     }
 
-    input[type="text"] {
+    input[type="text"], select {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
       padding: 0.6rem 1rem;
       border-radius: 6px;
       outline: none;
-      width: 250px;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, select:focus {
       border-color: var(--primary);
     }
 
@@ -110,6 +109,22 @@
     }
 
     .list-item:last-child { border-bottom: none; }
+
+    /* Table Toolbar Filters */
+    .filter-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
 
     /* Data Table */
     .table-container {
@@ -182,6 +197,8 @@
     @media (max-width: 768px) {
       .breakdown-grid { grid-template-columns: 1fr; }
       header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .filter-toolbar { flex-direction: column; align-items: stretch; }
+      .filter-group { flex-direction: column; }
     }
   </style>
 </head>
@@ -224,8 +241,22 @@
       </div>
     </div>
 
+    <!-- Toolbar Filters -->
+    <div class="filter-toolbar">
+      <h3>Recent Event Log Stream</h3>
+      <div class="filter-group">
+        <!-- Category Filter -->
+        <select id="categoryFilter" onchange="applyLogFilters()">
+          <option value="all">All Event Types</option>
+          <option value="default">System Metrics Only (60 Auto)</option>
+          <option value="custom">Custom Events Only</option>
+        </select>
+        <!-- Search Event Name Filter -->
+        <input type="text" id="eventNameSearch" oninput="applyLogFilters()" placeholder="Filter by event name..." style="width: 220px;">
+      </div>
+    </div>
+
     <!-- Event Logs Table -->
-    <h3 style="margin-bottom: 1rem;">Recent Event Log Stream</h3>
     <div class="table-container">
       <table>
         <thead>
@@ -255,13 +286,14 @@
 
   <script>
     const WORKER_URL = "https://wild-bush-1cd7.trustconnect713.workers.dev/";
+    let rawFetchedEvents = []; // Master store for filtering
 
     async function fetchAnalytics() {
       const appId = document.getElementById("appIdInput").value.trim();
       if (!appId) return alert("Please enter an app_id");
 
       try {
-        const res = await fetch(`${WORKER_URL}?app_id=${encodeURIComponent(appId)}&limit=100`);
+        const res = await fetch(`${WORKER_URL}?app_id=${encodeURIComponent(appId)}&limit=500`);
         const data = await res.json();
 
         if (!data.success) {
@@ -269,6 +301,7 @@
           return;
         }
 
+        rawFetchedEvents = data.recent_events || [];
         renderDashboard(data);
       } catch (err) {
         console.error(err);
@@ -277,12 +310,12 @@
     }
 
     function renderDashboard(data) {
-      // Update Top Stats
+      // Update Stat Cards
       document.getElementById("totalEvents").textContent = data.total_events_retrieved || 0;
       document.getElementById("defaultEvents").textContent = data.summary?.default_events || 0;
       document.getElementById("customEvents").textContent = data.summary?.custom_events || 0;
 
-      // Render Event Name Breakdown
+      // Render Event Breakdown List
       const ebContainer = document.getElementById("eventBreakdown");
       ebContainer.innerHTML = "";
       const eBreakdown = data.summary?.event_breakdown || {};
@@ -314,17 +347,30 @@
         }
       }
 
-      // Render Table Logs
+      // Apply initial filters to render table
+      applyLogFilters();
+    }
+
+    function applyLogFilters() {
+      const selectedCategory = document.getElementById("categoryFilter").value;
+      const searchQuery = document.getElementById("eventNameSearch").value.toLowerCase().trim();
+
       const tbody = document.getElementById("eventsTableBody");
       tbody.innerHTML = "";
 
-      const events = data.recent_events || [];
-      if (events.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No logs found for this app_id.</td></tr>`;
+      // Filter raw events array in-memory
+      const filteredEvents = rawFetchedEvents.filter(item => {
+        const matchesCategory = (selectedCategory === "all") || (item.category === selectedCategory);
+        const matchesName = !searchQuery || (item.event_name && item.event_name.toLowerCase().includes(searchQuery));
+        return matchesCategory && matchesName;
+      });
+
+      if (filteredEvents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No matching log entries found.</td></tr>`;
         return;
       }
 
-      events.forEach(item => {
+      filteredEvents.forEach(item => {
         let formattedTime = "N/A";
         if (item.timestamp) {
           const dateObj = new Date(item.timestamp * 1000);
@@ -352,4 +398,6 @@
   </script>
 </body>
 </html>
+
+  
 

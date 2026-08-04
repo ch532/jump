@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Analytics Console</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --accent: #818cf8;
+      --success: #34d399;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    h1 { font-size: 1.75rem; font-weight: 700; color: var(--primary); }
+
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    input[type="text"] {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      outline: none;
+      width: 250px;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      background: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.9; }
+
+    /* Stat Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .card-title { font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .card-value { font-size: 2rem; font-weight: 700; margin-top: 0.5rem; color: var(--text); }
+
+    /* Breakdown Section */
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .list-item:last-child { border-bottom: none; }
+
+    /* Data Table */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th { background: rgba(0,0,0,0.2); font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+
+    tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-default { background: rgba(56, 189, 248, 0.15); color: var(--primary); }
+    .badge-custom { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+
+    .json-props {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      .breakdown-grid { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>📱 Analytics Console</h1>
+      <div class="search-bar">
+        <input type="text" id="appIdInput" value="com.atzec.app" placeholder="Enter app_id...">
+        <button onclick="fetchAnalytics()">Fetch Telemetry</button>
+      </div>
+    </header>
+
+    <!-- Stat Overview -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Total Retained Events</div>
+        <div class="card-value" id="totalEvents">0</div>
+      </div>
+      <div class="card">
+        <div class="card-title">System Metrics (60 Auto)</div>
+        <div class="card-value" id="defaultEvents" style="color: var(--primary);">0</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Custom App Events</div>
+        <div class="card-value" id="customEvents" style="color: var(--success);">0</div>
+      </div>
+    </div>
+
+    <!-- Breakdown Lists -->
+    <div class="breakdown-grid">
+      <div class="card">
+        <h3 style="margin-bottom: 1rem;">Event Breakdown</h3>
+        <div id="eventBreakdown">No data loaded</div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom: 1rem;">OS Distribution</h3>
+        <div id="osBreakdown">No data loaded</div>
+      </div>
+    </div>
+
+    <!-- Event Logs Table -->
+    <h3 style="margin-bottom: 1rem;">Recent Event Log Stream</h3>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Event Name</th>
+            <th>Date & Time</th>
+            <th>App / OS</th>
+            <th>Properties Payload</th>
+          </tr>
+        </thead>
+        <tbody id="eventsTableBody">
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted);">Click "Fetch Telemetry" to load data.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://wild-bush-1cd7.trustconnect713.workers.dev/";
+
+    async function fetchAnalytics() {
+      const appId = document.getElementById("appIdInput").value.trim();
+      if (!appId) return alert("Please enter an app_id");
+
+      try {
+        const res = await fetch(`${WORKER_URL}?app_id=${encodeURIComponent(appId)}&limit=100`);
+        const data = await res.json();
+
+        if (!data.success) {
+          alert("Error: " + (data.error || "Failed to fetch analytics"));
+          return;
+        }
+
+        renderDashboard(data);
+      } catch (err) {
+        console.error(err);
+        alert("Network error connecting to Worker endpoint.");
+      }
+    }
+
+    function renderDashboard(data) {
+      // Update Top Stats
+      document.getElementById("totalEvents").textContent = data.total_events_retrieved || 0;
+      document.getElementById("defaultEvents").textContent = data.summary?.default_events || 0;
+      document.getElementById("customEvents").textContent = data.summary?.custom_events || 0;
+
+      // Render Event Name Breakdown
+      const ebContainer = document.getElementById("eventBreakdown");
+      ebContainer.innerHTML = "";
+      const eBreakdown = data.summary?.event_breakdown || {};
+      if (Object.keys(eBreakdown).length === 0) {
+        ebContainer.innerHTML = `<div class="list-item"><span>No events recorded</span></div>`;
+      } else {
+        for (const [name, count] of Object.entries(eBreakdown)) {
+          ebContainer.innerHTML += `
+            <div class="list-item">
+              <span>${name}</span>
+              <strong>${count}</strong>
+            </div>`;
+        }
+      }
+
+      // Render OS Breakdown
+      const osContainer = document.getElementById("osBreakdown");
+      osContainer.innerHTML = "";
+      const osBreakdown = data.summary?.os_breakdown || {};
+      if (Object.keys(osBreakdown).length === 0) {
+        osContainer.innerHTML = `<div class="list-item"><span>No OS metrics</span></div>`;
+      } else {
+        for (const [os, count] of Object.entries(osBreakdown)) {
+          osContainer.innerHTML += `
+            <div class="list-item">
+              <span>${os}</span>
+              <strong>${count}</strong>
+            </div>`;
+        }
+      }
+
+      // Render Table Logs
+      const tbody = document.getElementById("eventsTableBody");
+      tbody.innerHTML = "";
+
+      const events = data.recent_events || [];
+      if (events.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No logs found for this app_id.</td></tr>`;
+        return;
+      }
+
+      events.forEach(item => {
+        // Format timestamp into human-readable local date & time
+        let formattedTime = "N/A";
+        if (item.timestamp) {
+          const dateObj = new Date(item.timestamp * 1000);
+          formattedTime = dateObj.toLocaleString(); // Displays local time format
+        }
+
+        const categoryClass = item.category === "custom" ? "badge-custom" : "badge-default";
+        const osInfo = item.device ? `${item.device.os} ${item.device.os_version} (v${item.device.app_version})` : "Android";
+        const propsStr = item.properties ? JSON.stringify(item.properties) : "{}";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><span class="badge ${categoryClass}">${item.category || "default"}</span></td>
+          <td><strong>${item.event_name || "unknown"}</strong></td>
+          <td style="font-size: 0.9rem; color: var(--text-muted);">${formattedTime}</td>
+          <td style="font-size: 0.9rem;">${osInfo}</td>
+          <td class="json-props">${propsStr}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Auto-fetch on page load
+    window.addEventListener("DOMContentLoaded", fetchAnalytics);
+  </script>
+</body>
+</html>

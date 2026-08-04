@@ -56,6 +56,16 @@
       word-break: break-all;
     }
 
+    .info-callout {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--primary);
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+      color: #cbd5e1;
+      font-size: 0.92rem;
+    }
+
     pre {
       background: #090d16;
       border: 1px solid var(--border);
@@ -122,11 +132,16 @@
       <span class="platform-badge">Flutter & React Native</span>
     </div>
 
+    <!-- Language-Agnostic Note Callout -->
+    <div class="info-callout">
+      <strong>💡 Note on Client Implementation:</strong> The REST API is completely language-agnostic. The code snippets provided in this documentation are non-binding sample references demonstrating how to format HTTP request payloads. Developers are free to implement their own HTTP client logic, queuing mechanisms, or wrapper libraries in any programming language or framework.
+    </div>
+
     <hr style="border-color: var(--border); margin: 2rem 0;">
 
-    <h2>1. Cross-Platform Integration Examples</h2>
+    <h2>1. Cross-Platform Sample Integrations</h2>
 
-    <h3>A. Web Integration (JavaScript / Browser Fetch)</h3>
+    <h3>A. Web Integration Sample (JavaScript / Browser Fetch)</h3>
     <pre><code class="language-javascript">async function sendWebTelemetry(eventName, customProps = {}) {
   await fetch("https://wild-bush-1cd7.trustconnect713.workers.dev/", {
     method: "POST",
@@ -154,7 +169,7 @@
 // Example Trigger
 sendWebTelemetry("page_view", { path: "/articles", referrer: "google" });</code></pre>
 
-    <h3>B. Android Integration (Kotlin)</h3>
+    <h3>B. Android Integration Sample (Kotlin)</h3>
     <pre><code class="language-kotlin">// Initialize once in Application class
 MyAnalyticsSDK.initialize(
     context = this,
@@ -267,4 +282,5 @@ MyAnalyticsSDK.trackEvent(
 
 </body>
 </html>
+
 

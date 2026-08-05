@@ -11,6 +11,48 @@
     <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963" crossorigin="anonymous"></script>
 
+<!-- BEGIN EZMOB TAG -->
+<script type="text/javascript" src="https://ezmob-site.sfo3.digitaloceanspaces.com/prebid.js" async></script>
+    <script>
+	var pbjs = pbjs || {};
+	pbjs.que = pbjs.que || [];
+
+	pbjs.que.push(function() {
+        var adUnits = [
+		{
+            code: 'container1',
+			mediaTypes: {
+            banner: {
+                sizes: [300, 250]
+				}
+        },
+			bids: [{
+            bidder: 'adkernel',
+				params: {
+                zoneId: 396126,
+				  host: 'cpm.ezmob.com'
+				}
+			}]
+		}];
+		pbjs.addAdUnits(adUnits);
+		pbjs.requestBids({
+			bidsBackHandler: handleBids
+		});
+	});
+
+	function handleBids() {
+        var winners = pbjs.getHighestCpmBids();
+        for (winner of winners) {
+            var ifrmEl = document.createElement('iframe');
+            ifrmEl.scrolling = 'no'
+			document.getElementById(winner.adUnitCode).appendChild(ifrmEl);
+			pbjs.renderAd(ifrmEl.contentDocument || ifrmEl.contentWindow.document, winner.adId);
+		}
+    }
+    </script>
+    <div id="container1"></div>
+<!-- END TAG -->
+    
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
         (function(m,e,t,r,i,k,a){
@@ -167,6 +209,60 @@
 
 </div>
 
+<script type="text/javascript" src="https://docdn.ezmob.com/prebid.js" async></script>
+<script>
+	var pbjs = pbjs || {};
+	pbjs.que = pbjs.que || [];
+	
+	pbjs.que.push(function() {
+		var adUnits = [{
+			code: 'container-1',
+			mediaTypes: {
+				video: {
+					context: 'outstream',
+					playerSize: [300, 250],
+					renderer: {
+						url: 'https://docdn.ezmob.com/outstream_pb.js',
+						render: renderOutstream
+					}
+				}
+			},
+			bids: [{
+				bidder: 'adkernel',
+				params: {
+				  zoneId: 396127,
+				  host: 'cpm.ezmob.com'
+				}
+
+			}]
+		}];
+		pbjs.addAdUnits(adUnits);
+		pbjs.requestBids({
+			bidsBackHandler: function(bidResponses) {
+				process('container-1');
+			}
+		});
+	});
+
+	function process(adUnit) {
+		var bidResponses = pbjs.getHighestCpmBids(adUnit);
+		if (bidResponses.length == 0) {
+			return;
+		}
+		var bid = bidResponses[0];
+		pbjs.renderAd(document, bid.adId);
+	}
+	
+	function renderOutstream(bid) {
+		OutstreamPlayerPB(bid, {
+			displayMode: 'floating',
+			transitions: true,
+			vpaidMode: 2
+		});
+	}
+</script>
+<div id="container-1"></div>
+    
 <div id="ytrgt-727e202276124cc980f6591cecf4c080"></div><script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:nobid', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:error', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-727e202276124cc980f6591cecf4c080', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "727e202276124cc980f6591cecf4c080", "video": {"mimes": ["video/mp4"], "protocols": [2, 3, 5, 6]}, "videoOptions": {"muted": "auto", "skipDelay": 10, "replay": true}, "tmax": 3000, "showAdMark": true});</script>
     
 <div class="container">

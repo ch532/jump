@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Superpro: Dungeon Chronicles</title>
+  <!-- Phaser 3 Core Library -->
+  <script src="phaser.min.js"></script>
+  <!-- Yandex Games SDK v2 -->
+  <script src="https://yandex.ru/games/sdk/v2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #05050a;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      touch-action: none;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container"></div>
+
+<script>
+// Global reference for Yandex SDK
+window.ysdk = null;
+
+// Initialize Yandex Games SDK
+if (typeof YaGames !== 'undefined') {
+  YaGames.init().then(ysdk => {
+    window.ysdk = ysdk;
+    console.log('Yandex SDK successfully initialized');
+  }).catch(err => {
+    console.warn('Yandex SDK failed to load:', err);
+  });
+}
+
+// --- HELPER AD FUNCTIONS ---
+function showYandexInterstitial(onComplete) {
+  if (window.ysdk && window.ysdk.adv) {
+    window.ysdk.adv.showFullscreenAdv({
+      callbacks: {
+        onClose: function(wasShown) {
+          if (onComplete) onComplete();
+        },
+        onError: function(error) {
+          console.warn('Interstitial Ad error:', error);
+          if (onComplete) onComplete();
+        }
+      }
+    });
+  } else {
+    if (onComplete) onComplete();
+  }
+}
+
+function showYandexRewarded(onRewardSuccess, onComplete) {
+  if (window.ysdk && window.ysdk.adv) {
+    window.ysdk.adv.showRewardedVideo({
+      callbacks: {
+        onRewarded: function() {
+          if (onRewardSuccess) onRewardSuccess();
+        },
+        onClose: function() {
+          if (onComplete) onComplete();
+        },
+        onError: function(error) {
+          console.warn('Rewarded Ad error:', error);
+          alert('Ad unavailable right now. Please try again later.');
+          if (onComplete) onComplete();
+        }
+      }
+    });
+  } else {
+    alert('Yandex SDK not available or running locally.');
+    if (onComplete) onComplete();
+  }
+}
+
+// --- WEB AUDIO SYNTHESIZER ---
+class SoundSynth {
+  constructor() {
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  playShoot(type) {
+    if (GameData.soundVolume <= 0) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    if (type === 'Shotgun') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.12);
+    } else if (type === 'Plasma Gun') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(900, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.1);
+    } else if (type === 'Bomb Launcher') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.25);
+    } else { // Pistol
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.15);
+    }
+
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.35, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.2);
+  }
+
+  playExplosion() {
+    if (GameData.soundVolume <= 0) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.25);
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.4, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.25);
+  }
+
+  playPickup() {
+    if (GameData.soundVolume <= 0) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+    osc.frequency.setValueAtTime(659.25, this.ctx.currentTime + 0.08);
+    osc.frequency.setValueAtTime(783.99, this.ctx.currentTime + 0.16);
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.4, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.25);
+  }
+}
+
+const AudioFX = new SoundSynth();
+
+// --- PERSISTENT GAME DATA ---
+const SavedState = JSON.parse(localStorage.getItem('SUPERPRO_SAVE')) || {};
+
+const GameData = {
+  currentLevel: SavedState.currentLevel || 1,
+  totalLevels: 700,
+  soundVolume: SavedState.soundVolume !== undefined ? SavedState.soundVolume : 0.8,
+  inventory: SavedState.inventory || {
+    coins: 0,
+    ownedWeapons: ['Pistol']
+  },
+  premiumCatalog: [
+    { name: 'Pistol', price: 0, damage: 35, speed: 650, tex: 'bullet_cyan', mode: 'single' },
+    { name: 'Shotgun', price: 4000, damage: 45, speed: 600, tex: 'bullet_yellow', mode: 'spread' },
+    { name: 'Plasma Gun', price: 8000, damage: 160, speed: 950, tex: 'bullet_green', mode: 'single' },
+    { name: 'Bomb Launcher', price: 15000, damage: 380, speed: 480, tex: 'bullet_red', mode: 'heavy' }
+  ],
+  save() {
+    localStorage.setItem('SUPERPRO_SAVE', JSON.stringify({
+      currentLevel: this.currentLevel,
+      soundVolume: this.soundVolume,
+      inventory: this.inventory
+    }));
+  }
+};
+
+// --- SCENE 0: SPLASH / LOGO INTRO SCENE ---
+class SplashScene extends Phaser.Scene {
+  constructor() { super('SplashScene'); }
+
+  create() {
+    if (window.ysdk && window.ysdk.features && window.ysdk.features.LoadingAPI) {
+      window.ysdk.features.LoadingAPI.ready();
+    }
+
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    this.add.rectangle(w / 2, h / 2, w, h, 0x05050a);
+
+    const emblem = this.add.graphics();
+    emblem.lineStyle(6, 0x00f0ff, 1);
+    emblem.strokeCircle(w / 2, h * 0.38, 70);
+    emblem.lineStyle(4, 0xff0055, 1);
+    emblem.strokeRect(w / 2 - 35, h * 0.38 - 35, 70, 70);
+    emblem.fillStyle(0xffea00, 1);
+    emblem.fillCircle(w / 2, h * 0.38, 12);
+
+    const logoText = this.add.text(w / 2, h * 0.58, 'SUPERPRO', {
+      fontSize: '56px',
+      fill: '#00f0ff',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    this.add.text(w / 2, h * 0.66, 'DUNGEON CHRONICLES', {
+      fontSize: '20px',
+      fill: '#ff0055',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    const tapText = this.add.text(w / 2, h * 0.82, 'TAP ANYWHERE TO PLAY', {
+      fontSize: '18px',
+      fill: '#8899ac'
+    }).setOrigin(0.5);
+
+    this.tweens.add({
+      targets: [logoText, emblem],
+      scaleX: 1.08,
+      scaleY: 1.08,
+      duration: 900,
+      yoyo: true,
+      repeat: -1
+    });
+
+    this.tweens.add({
+      targets: tapText,
+      alpha: 0.2,
+      duration: 600,
+      yoyo: true,
+      repeat: -1
+    });
+
+    this.input.on('pointerdown', () => {
+      AudioFX.playPickup();
+      this.scene.start('MenuScene');
+    });
+  }
+}
+
+// --- SCENE 1: MAIN MENU SCENE ---
+class MenuScene extends Phaser.Scene {
+  constructor() { super('MenuScene'); }
+
+  create() {
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    this.add.rectangle(w / 2, h / 2, w, h, 0x0a0a14);
+
+    this.add.text(w / 2, h * 0.18, 'SUPERPRO', { fontSize: '48px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(w / 2, h * 0.26, 'Dungeon Story Mode - 700 Levels', { fontSize: '18px', fill: '#8899ac' }).setOrigin(0.5);
+
+    this.createButton(w / 2, h * 0.42, 'START GAME', () => this.scene.start('GameScene'));
+    this.createButton(w / 2, h * 0.55, 'STORE / INVENTORY', () => this.scene.start('StoreScene'));
+    this.createButton(w / 2, h * 0.68, 'SETTINGS', () => this.scene.start('SettingsScene'));
+  }
+
+  createButton(x, y, label, callback) {
+    const btn = this.add.rectangle(x, y, 280, 55, 0x1e293b).setInteractive({ useHandCursor: true });
+    btn.setStrokeStyle(2, 0x00f0ff);
+    const txt = this.add.text(x, y, label, { fontSize: '20px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    btn.on('pointerdown', callback);
+    btn.on('pointerover', () => btn.setFillStyle(0x334155));
+    btn.on('pointerout', () => btn.setFillStyle(0x1e293b));
+    return btn;
+  }
+}
+
+// --- SCENE 2: GAMEPLAY SCENE ---
+class GameScene extends Phaser.Scene {
+  constructor() { super('GameScene'); }
+
+  create() {
+    this.isPaused = false;
+    this.playerHealth = 100;
+    this.maxHealth = 100;
+    this.currentWeaponIndex = 0;
+    this.weaponDroppedThisLevel = false;
+
+    this.weapons = GameData.premiumCatalog.filter(w => GameData.inventory.ownedWeapons.includes(w.name));
+
+    this.killsThisLevel = 0;
+    this.requiredKills = Math.min(3 + (GameData.currentLevel * 2), 100);
+    this.portalSpawned = false;
+
+    this.moveState = { up: false, down: false, left: false, right: false };
+
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    this.add.rectangle(w / 2, h / 2, w, h, 0x111122);
+    this.createGraphicsTextures();
+
+    this.bullets = this.physics.add.group();
+    this.enemyBullets = this.physics.add.group();
+    this.enemies = this.physics.add.group();
+    this.drops = this.physics.add.group();
+
+    this.player = this.physics.add.sprite(w * 0.3, h * 0.2, 'player_tex').setCollideWorldBounds(true);
+
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+
+    this.spawnTimer = this.time.addEvent({
+      delay: 2000,
+      callback: () => this.maintainEnemyPopulation(),
+      loop: true
+    });
+    this.maintainEnemyPopulation();
+
+    this.physics.add.overlap(this.bullets, this.enemies, this.hitEnemy, null, this);
+    this.physics.add.overlap(this.enemyBullets, this.player, this.hitPlayer, null, this);
+    this.physics.add.overlap(this.player, this.drops, this.pickupItem, null, this);
+
+    this.createHUD();
+    this.createOnScreenControls();
+
+    this.input.keyboard.on('keydown-P', () => this.togglePauseMenu());
+    this.input.keyboard.on('keydown-ESC', () => this.togglePauseMenu());
+  }
+
+  createGraphicsTextures() {
+    if (!this.textures.exists('player_tex')) {
+      const pG = this.make.graphics({add: false});
+      pG.fillStyle(0x00f0ff, 1);
+      pG.fillCircle(16, 16, 16);
+      pG.generateTexture('player_tex', 32, 32);
+
+      const eG = this.make.graphics({add: false});
+      eG.fillStyle(0xff0055, 1);
+      eG.fillRect(0, 0, 30, 30);
+      eG.generateTexture('enemy_std', 30, 30);
+
+      const eFast = this.make.graphics({add: false});
+      eFast.fillStyle(0xffea00, 1);
+      eFast.fillRect(0, 0, 24, 24);
+      eFast.generateTexture('enemy_fast', 24, 24);
+
+      const eTank = this.make.graphics({add: false});
+      eTank.fillStyle(0xa855f7, 1);
+      eTank.fillRect(0, 0, 42, 42);
+      eTank.generateTexture('enemy_tank', 42, 42);
+
+      const bCyan = this.make.graphics({add: false});
+      bCyan.fillStyle(0x00f0ff, 1);
+      bCyan.fillCircle(4, 4, 4);
+      bCyan.generateTexture('bullet_cyan', 8, 8);
+
+      const bYellow = this.make.graphics({add: false});
+      bYellow.fillStyle(0xffea00, 1);
+      bYellow.fillCircle(3, 3, 3);
+      bYellow.generateTexture('bullet_yellow', 6, 6);
+
+      const bGreen = this.make.graphics({add: false});
+      bGreen.fillStyle(0x00ff66, 1);
+      bGreen.fillRect(0, 0, 12, 4);
+      bGreen.generateTexture('bullet_green', 12, 4);
+
+      const bRed = this.make.graphics({add: false});
+      bRed.fillStyle(0xff0055, 1);
+      bRed.fillCircle(7, 7, 7);
+      bRed.generateTexture('bullet_red', 14, 14);
+
+      const dHealth = this.make.graphics({add: false});
+      dHealth.fillStyle(0x00ff66, 1);
+      dHealth.fillRect(0, 0, 22, 22);
+      dHealth.generateTexture('drop_health', 22, 22);
+
+      const dWpn = this.make.graphics({add: false});
+      dWpn.fillStyle(0xffa500, 1);
+      dWpn.fillRect(0, 0, 22, 22);
+      dWpn.generateTexture('drop_weapon', 22, 22);
+
+      const portalG = this.make.graphics({add: false});
+      portalG.fillStyle(0xa855f7, 1);
+      portalG.fillCircle(25, 25, 25);
+      portalG.lineStyle(4, 0x00f0ff, 1);
+      portalG.strokeCircle(25, 25, 25);
+      portalG.generateTexture('portal_tex', 50, 50);
+    }
+  }
+
+  createOnScreenControls() {
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    const gap = 150;
+    const padX = 220;
+    const padY = h - 480;
+
+    this.createTouchBtn(padX, padY - gap, '▲', () => this.moveState.up = true, () => this.moveState.up = false);
+    this.createTouchBtn(padX, padY + gap, '▼', () => this.moveState.down = true, () => this.moveState.down = false);
+    this.createTouchBtn(padX - gap, padY, '◄', () => this.moveState.left = true, () => this.moveState.left = false);
+    this.createTouchBtn(padX + gap, padY, '►', () => this.moveState.right = true, () => this.moveState.right = false);
+
+    const fireBtn = this.add.circle(w - 200, padY, 120, 0xff0055, 0.95).setInteractive({ useHandCursor: true });
+    fireBtn.setStrokeStyle(6, 0xffffff);
+    this.add.text(w - 200, padY, 'FIRE', { fontSize: '42px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    fireBtn.on('pointerdown', () => this.fireAtClosestEnemy());
+  }
+
+  createTouchBtn(x, y, symbol, onDown, onUp) {
+    const btn = this.add.rectangle(x, y, 140, 140, 0x1e293b, 0.95).setInteractive({ useHandCursor: true });
+    btn.setStrokeStyle(5, 0x00f0ff);
+    const txt = this.add.text(x, y, symbol, { fontSize: '64px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    btn.on('pointerdown', () => { btn.setFillStyle(0x334155); onDown(); });
+    btn.on('pointerup', () => { btn.setFillStyle(0x1e293b); onUp(); });
+    btn.on('pointerout', () => { btn.setFillStyle(0x1e293b); onUp(); });
+  }
+
+  fireAtClosestEnemy() {
+    if (this.isPaused) return;
+
+    let targetX = this.player.x + 300;
+    let targetY = this.player.y;
+
+    let closestEnemy = null;
+    let minDist = 9999;
+
+    this.enemies.getChildren().forEach((enemy) => {
+      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
+      if (dist < minDist) {
+        minDist = dist;
+        closestEnemy = enemy;
+      }
+    });
+
+    if (closestEnemy) {
+      targetX = closestEnemy.x;
+      targetY = closestEnemy.y;
+    }
+
+    const activeWpn = this.weapons[this.currentWeaponIndex];
+    AudioFX.playShoot(activeWpn.name);
+
+    if (activeWpn.mode === 'spread') {
+      const baseAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, targetX, targetY);
+      [-0.2, 0, 0.2].forEach((spreadOffset) => {
+        const b = this.bullets.create(this.player.x, this.player.y, activeWpn.tex);
+        const angle = baseAngle + spreadOffset;
+        this.physics.velocityFromRotation(angle, activeWpn.speed, b.body.velocity);
+      });
+    } else {
+      const bullet = this.bullets.create(this.player.x, this.player.y, activeWpn.tex);
+      this.physics.moveTo(bullet, targetX, targetY, activeWpn.speed);
+    }
+  }
+
+  maintainEnemyPopulation() {
+    if (this.isPaused) return;
+
+    const w = this.scale.width;
+    const h = this.scale.height;
+    const currentEnemyCount = this.enemies.countActive();
+    const maxActiveEnemies = Math.min(4 + Math.floor(GameData.currentLevel * 0.8), 20);
+
+    if (currentEnemyCount < maxActiveEnemies) {
+      const x = Phaser.Math.Between(w * 0.4, w - 40);
+      const y = Phaser.Math.Between(60, h * 0.25);
+
+      const roll = Math.random();
+      let texKey = 'enemy_std';
+      let speed = 115;
+      let hp = 30 + (GameData.currentLevel * 6);
+      let enemyRank = 1;
+
+      if (roll > 0.7) {
+        texKey = 'enemy_fast';
+        speed = 180;
+        hp = 20 + (GameData.currentLevel * 4);
+        enemyRank = 2;
+      } else if (roll < 0.25) {
+        texKey = 'enemy_tank';
+        speed = 75;
+        hp = 80 + (GameData.currentLevel * 12);
+        enemyRank = 3;
+      }
+
+      const enemy = this.enemies.create(x, y, texKey);
+      enemy.setCollideWorldBounds(true);
+      enemy.health = hp;
+      enemy.baseSpeed = speed;
+      enemy.rank = enemyRank;
+
+      enemy.shootTimer = this.time.addEvent({
+        delay: Math.max(900, 2600 - GameData.currentLevel * 15),
+        callback: () => this.enemyShoot(enemy),
+        loop: true
+      });
+    }
+  }
+
+  enemyShoot(enemy) {
+    if (!enemy.active || this.isPaused) return;
+    const bullet = this.enemyBullets.create(enemy.x, enemy.y, 'bullet_yellow');
+    this.physics.moveToObject(bullet, this.player, 340);
+  }
+
+  hitEnemy(bullet, enemy) {
+    bullet.destroy();
+    enemy.health -= this.weapons[this.currentWeaponIndex].damage;
+
+    if (enemy.health <= 0) {
+      if (enemy.shootTimer) enemy.shootTimer.remove();
+
+      AudioFX.playExplosion();
+      this.createExplosionParticles(enemy.x, enemy.y);
+
+      GameData.inventory.coins += 5;
+      GameData.save();
+
+      if (this.playerHealth < 30) {
+        const drop = this.drops.create(enemy.x, enemy.y, 'drop_health');
+        drop.dropType = 'HEALTH';
+      } 
+      else if (GameData.currentLevel % 5 === 0 && enemy.rank >= 2 && !this.weaponDroppedThisLevel) {
+        const drop = this.drops.create(enemy.x, enemy.y, 'drop_weapon');
+        drop.dropType = 'WEAPON';
+        this.weaponDroppedThisLevel = true;
+      }
+
+      enemy.destroy();
+      this.killsThisLevel++;
+      this.updateHUD();
+
+      if (this.killsThisLevel >= this.requiredKills && !this.portalSpawned) {
+        this.spawnLevelPortal();
+      }
+    }
+  }
+
+  createExplosionParticles(x, y) {
+    for (let i = 0; i < 8; i++) {
+      const p = this.add.circle(x, y, 4, 0xff0055);
+      this.physics.add.existing(p);
+      p.body.setVelocity(Phaser.Math.Between(-150, 150), Phaser.Math.Between(-150, 150));
+      this.tweens.add({ targets: p, alpha: 0, duration: 300, onComplete: () => p.destroy() });
+    }
+  }
+
+  spawnLevelPortal() {
+    this.portalSpawned = true;
+    AudioFX.playPickup();
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    const portalX = Phaser.Math.Between(100, w - 100);
+    const portalY = Phaser.Math.Between(100, h * 0.25);
+
+    this.portal = this.physics.add.sprite(portalX, portalY, 'portal_tex');
+    this.physics.add.overlap(this.player, this.portal, this.enterPortal, null, this);
+    this.add.text(portalX, portalY - 40, 'PORTAL OPEN!', { fontSize: '16px', fill: '#a855f7', fontStyle: 'bold' }).setOrigin(0.5);
+    this.updateHUD();
+  }
+
+  // --- INTERSTITIAL AD TRIGGER ON LEVEL ENTER ---
+  enterPortal(player, portal) {
+    this.physics.pause();
+    showYandexInterstitial(() => {
+      this.physics.resume();
+      GameData.currentLevel++;
+      GameData.save();
+
+      if (GameData.currentLevel > GameData.totalLevels) {
+        alert("CONGRATULATIONS! You cleared all 700 Levels!");
+        this.scene.start('MenuScene');
+      } else {
+        this.scene.restart();
+      }
+    });
+  }
+
+  hitPlayer(player, bullet) {
+    bullet.destroy();
+    this.playerHealth -= 12;
+    this.updateHUD();
+
+    if (this.playerHealth <= 0) {
+      alert("GAME OVER! Restarting Level " + GameData.currentLevel);
+      this.scene.restart();
+    }
+  }
+
+  pickupItem(player, drop) {
+    AudioFX.playPickup();
+
+    if (drop.dropType === 'HEALTH') {
+      this.playerHealth = Math.min(this.maxHealth, this.playerHealth + 40);
+    } else if (drop.dropType === 'WEAPON') {
+      this.currentWeaponIndex = (this.currentWeaponIndex + 1) % this.weapons.length;
+    }
+    drop.destroy();
+    this.updateHUD();
+  }
+
+  createHUD() {
+    const w = this.scale.width;
+    this.hudText = this.add.text(12, 12, '', { fontSize: '14px', fill: '#00f0ff', fontStyle: 'bold' });
+    
+    this.menuBtn = this.add.text(w - 240, 10, '[ MENU ]', { fontSize: '22px', fill: '#00f0ff', fontStyle: 'bold' })
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.pauseBtn = this.add.text(w - 110, 10, '[ PAUSE ]', { fontSize: '22px', fill: '#ffea00', fontStyle: 'bold' })
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => this.togglePauseMenu());
+
+    this.updateHUD();
+  }
+
+  updateHUD() {
+    const wpn = this.weapons[this.currentWeaponIndex].name;
+    const portalStatus = this.portalSpawned ? 'OPEN 🟣' : `${this.killsThisLevel}/${this.requiredKills}`;
+    this.hudText.setText(`LVL: ${GameData.currentLevel}/${GameData.totalLevels} | HP: ${this.playerHealth} | KILLS: ${portalStatus} | WPN: ${wpn} | COINS: ${GameData.inventory.coins}`);
+  }
+
+  update() {
+    if (this.isPaused) return;
+
+    let vx = 0;
+    let vy = 0;
+    const speed = 230;
+
+    if (this.cursors.left.isDown || this.wasd.left.isDown || this.moveState.left) vx -= speed;
+    if (this.cursors.right.isDown || this.wasd.right.isDown || this.moveState.right) vx += speed;
+    if (this.cursors.up.isDown || this.wasd.up.isDown || this.moveState.up) vy -= speed;
+    if (this.cursors.down.isDown || this.wasd.down.isDown || this.moveState.down) vy += speed;
+
+    this.player.setVelocity(vx, vy);
+
+    this.enemies.getChildren().forEach((enemy) => {
+      this.physics.moveToObject(enemy, this.player, enemy.baseSpeed + (GameData.currentLevel * 2));
+    });
+  }
+
+  togglePauseMenu() {
+    this.isPaused = !this.isPaused;
+
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    if (this.isPaused) {
+      this.physics.pause();
+      this.pauseOverlay = this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.85);
+      this.pauseTitle = this.add.text(w / 2, h * 0.25, 'GAME PAUSED', { fontSize: '38px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+
+      this.resumeBtn = this.createPauseBtn(w / 2, h * 0.42, 'RESUME', () => this.togglePauseMenu());
+      this.restartBtn = this.createPauseBtn(w / 2, h * 0.55, 'RESTART LEVEL', () => { this.scene.restart(); });
+      this.quitBtn = this.createPauseBtn(w / 2, h * 0.68, 'BACK TO MENU', () => { this.scene.start('MenuScene'); });
+    } else {
+      this.physics.resume();
+      if (this.pauseOverlay) this.pauseOverlay.destroy();
+      if (this.pauseTitle) this.pauseTitle.destroy();
+      if (this.resumeBtn) this.resumeBtn.destroy();
+      if (this.restartBtn) this.restartBtn.destroy();
+      if (this.quitBtn) this.quitBtn.destroy();
+    }
+  }
+
+  createPauseBtn(x, y, label, callback) {
+    const container = this.add.container(x, y);
+    const bg = this.add.rectangle(0, 0, 220, 48, 0x1e293b).setInteractive({ useHandCursor: true });
+    bg.setStrokeStyle(2, 0x00f0ff);
+    const txt = this.add.text(0, 0, label, { fontSize: '18px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    container.add([bg, txt]);
+    bg.on('pointerdown', callback);
+    return container;
+  }
+}
+
+// --- SCENE 3: STORE & INVENTORY SCENE ---
+class StoreScene extends Phaser.Scene {
+  constructor() { super('StoreScene'); }
+
+  create() {
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    this.add.rectangle(w / 2, h / 2, w, h, 0x0a0a14);
+
+    const topBackBtn = this.add.rectangle(75, 45, 110, 36, 0x1e293b).setInteractive({ useHandCursor: true });
+    topBackBtn.setStrokeStyle(2, 0x00f0ff);
+    this.add.text(75, 45, '◄ MENU', { fontSize: '15px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    topBackBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.add.text(w / 2, 45, 'ARMORY & STORE', { fontSize: '26px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    this.coinText = this.add.text(w / 2, 85, `Available Balance: ${GameData.inventory.coins} COINS 💰`, { fontSize: '18px', fill: '#ffea00' }).setOrigin(0.5);
+
+    // --- REWARDED AD BUTTON FOR FREE COINS ---
+    const rewardAdBtn = this.add.rectangle(w / 2, 125, 260, 38, 0xa855f7).setInteractive({ useHandCursor: true });
+    rewardAdBtn.setStrokeStyle(2, 0xffea00);
+    this.add.text(w / 2, 125, '🎬 WATCH AD (+500 C)', { fontSize: '15px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    rewardAdBtn.on('pointerdown', () => {
+      showYandexRewarded(
+        () => {
+          GameData.inventory.coins += 500;
+          GameData.save();
+          alert('Reward Granted! +500 Coins');
+        },
+        () => {
+          this.scene.restart();
+        }
+      );
+    });
+
+    let startY = 185;
+    GameData.premiumCatalog.forEach((wpn) => {
+      const isOwned = GameData.inventory.ownedWeapons.includes(wpn.name);
+      
+      this.add.rectangle(w / 2, startY, w * 0.85, 55, 0x1e293b).setStrokeStyle(1, 0x334155);
+      this.add.text(w * 0.12, startY - 10, wpn.name, { fontSize: '18px', fill: '#ffffff', fontStyle: 'bold' });
+      this.add.text(w * 0.12, startY + 12, `Damage: ${wpn.damage} | Speed: ${wpn.speed}`, { fontSize: '13px', fill: '#8899ac' });
+
+      if (isOwned) {
+        this.add.text(w * 0.8, startY, 'UNLOCKED', { fontSize: '16px', fill: '#00ff66', fontStyle: 'bold' }).setOrigin(0.5);
+      } else {
+        const buyBtn = this.add.rectangle(w * 0.8, startY, 110, 36, 0x00f0ff).setInteractive({ useHandCursor: true });
+        this.add.text(w * 0.8, startY, `${wpn.price} C`, { fontSize: '15px', fill: '#000', fontStyle: 'bold' }).setOrigin(0.5);
+
+        buyBtn.on('pointerdown', () => {
+          if (GameData.inventory.coins >= wpn.price) {
+            GameData.inventory.coins -= wpn.price;
+            GameData.inventory.ownedWeapons.push(wpn.name);
+            GameData.save();
+            alert(`Unlocked ${wpn.name}!`);
+            this.scene.restart();
+          } else {
+            alert('Not enough coins! Watch an ad or play levels to earn more.');
+          }
+        });
+      }
+      startY += 70;
+    });
+
+    const backBtn = this.add.rectangle(w / 2, h - 45, 220, 44, 0x1e293b).setInteractive({ useHandCursor: true });
+    backBtn.setStrokeStyle(2, 0x00f0ff);
+    this.add.text(w / 2, h - 45, 'BACK TO MENU', { fontSize: '18px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+  }
+}
+
+// --- SCENE 4: SETTINGS SCENE ---
+class SettingsScene extends Phaser.Scene {
+  constructor() { super('SettingsScene'); }
+
+  create() {
+    const w = this.scale.width;
+    const h = this.scale.height;
+
+    this.add.rectangle(w / 2, h / 2, w, h, 0x0a0a14);
+
+    const topBackBtn = this.add.rectangle(75, 45, 110, 36, 0x1e293b).setInteractive({ useHandCursor: true });
+    topBackBtn.setStrokeStyle(2, 0x00f0ff);
+    this.add.text(75, 45, '◄ MENU', { fontSize: '15px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    topBackBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.add.text(w / 2, 80, 'SETTINGS', { fontSize: '32px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    this.volText = this.add.text(w / 2, h * 0.38, `Master Volume: ${Math.round(GameData.soundVolume * 100)}%`, { fontSize: '24px', fill: '#ffffff' }).setOrigin(0.5);
+
+    const minusBtn = this.add.rectangle(w / 2 - 100, h * 0.52, 60, 60, 0x1e293b).setInteractive({ useHandCursor: true });
+    minusBtn.setStrokeStyle(2, 0xff0055);
+    this.add.text(w / 2 - 100, h * 0.52, '-', { fontSize: '36px', fill: '#ff0055', fontStyle: 'bold' }).setOrigin(0.5);
+
+    const plusBtn = this.add.rectangle(w / 2 + 100, h * 0.52, 60, 60, 0x1e293b).setInteractive({ useHandCursor: true });
+    plusBtn.setStrokeStyle(2, 0x00ff66);
+    this.add.text(w / 2 + 100, h * 0.52, '+', { fontSize: '36px', fill: '#00ff66', fontStyle: 'bold' }).setOrigin(0.5);
+
+    minusBtn.on('pointerdown', () => {
+      GameData.soundVolume = Math.max(0, GameData.soundVolume - 0.1);
+      GameData.save();
+      this.volText.setText(`Master Volume: ${Math.round(GameData.soundVolume * 100)}%`);
+    });
+
+    plusBtn.on('pointerdown', () => {
+      GameData.soundVolume = Math.min(1, GameData.soundVolume + 0.1);
+      GameData.save();
+      this.volText.setText(`Master Volume: ${Math.round(GameData.soundVolume * 100)}%`);
+    });
+
+    const backBtn = this.add.rectangle(w / 2, h - 70, 220, 48, 0x1e293b).setInteractive({ useHandCursor: true });
+    backBtn.setStrokeStyle(2, 0x00f0ff);
+    this.add.text(w / 2, h - 70, 'BACK TO MENU', { fontSize: '18px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+  }
+}
+
+const config = {
+  type: Phaser.AUTO,
+  parent: 'game-container',
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  physics: {
+    default: 'arcade',
+    arcade: { gravity: { y: 0 }, debug: false }
+  },
+  scene: [SplashScene, MenuScene, GameScene, StoreScene, SettingsScene]
+};
+
+const game = new Phaser.Game(config);
+</script>
+</body>
+</html>

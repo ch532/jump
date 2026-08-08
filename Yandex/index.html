@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Superpro: Dungeon Chronicles</title>
-  <!-- Phaser 3 Core Library -->
   <script src="phaser.min.js"></script>
-  <!-- Yandex Games SDK v2 -->
-  <script src="https://yandex.ru/games/sdk/v2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -30,61 +27,6 @@
 <div id="game-container"></div>
 
 <script>
-// Global reference for Yandex SDK
-window.ysdk = null;
-
-// Initialize Yandex Games SDK
-if (typeof YaGames !== 'undefined') {
-  YaGames.init().then(ysdk => {
-    window.ysdk = ysdk;
-    console.log('Yandex SDK successfully initialized');
-  }).catch(err => {
-    console.warn('Yandex SDK failed to load:', err);
-  });
-}
-
-// --- HELPER AD FUNCTIONS ---
-function showYandexInterstitial(onComplete) {
-  if (window.ysdk && window.ysdk.adv) {
-    window.ysdk.adv.showFullscreenAdv({
-      callbacks: {
-        onClose: function(wasShown) {
-          if (onComplete) onComplete();
-        },
-        onError: function(error) {
-          console.warn('Interstitial Ad error:', error);
-          if (onComplete) onComplete();
-        }
-      }
-    });
-  } else {
-    if (onComplete) onComplete();
-  }
-}
-
-function showYandexRewarded(onRewardSuccess, onComplete) {
-  if (window.ysdk && window.ysdk.adv) {
-    window.ysdk.adv.showRewardedVideo({
-      callbacks: {
-        onRewarded: function() {
-          if (onRewardSuccess) onRewardSuccess();
-        },
-        onClose: function() {
-          if (onComplete) onComplete();
-        },
-        onError: function(error) {
-          console.warn('Rewarded Ad error:', error);
-          alert('Ad unavailable right now. Please try again later.');
-          if (onComplete) onComplete();
-        }
-      }
-    });
-  } else {
-    alert('Yandex SDK not available or running locally.');
-    if (onComplete) onComplete();
-  }
-}
-
 // --- WEB AUDIO SYNTHESIZER ---
 class SoundSynth {
   constructor() {
@@ -187,15 +129,12 @@ class SplashScene extends Phaser.Scene {
   constructor() { super('SplashScene'); }
 
   create() {
-    if (window.ysdk && window.ysdk.features && window.ysdk.features.LoadingAPI) {
-      window.ysdk.features.LoadingAPI.ready();
-    }
-
     const w = this.scale.width;
     const h = this.scale.height;
 
     this.add.rectangle(w / 2, h / 2, w, h, 0x05050a);
 
+    // Dynamic Graphic Emblem Logo
     const emblem = this.add.graphics();
     emblem.lineStyle(6, 0x00f0ff, 1);
     emblem.strokeCircle(w / 2, h * 0.38, 70);
@@ -204,13 +143,14 @@ class SplashScene extends Phaser.Scene {
     emblem.fillStyle(0xffea00, 1);
     emblem.fillCircle(w / 2, h * 0.38, 12);
 
+    // Animated Title Text
     const logoText = this.add.text(w / 2, h * 0.58, 'SUPERPRO', {
       fontSize: '56px',
       fill: '#00f0ff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.add.text(w / 2, h * 0.66, 'DUNGEON CHRONICLES', {
+    const subText = this.add.text(w / 2, h * 0.66, 'DUNGEON CHRONICLES', {
       fontSize: '20px',
       fill: '#ff0055',
       fontStyle: 'bold'
@@ -221,6 +161,7 @@ class SplashScene extends Phaser.Scene {
       fill: '#8899ac'
     }).setOrigin(0.5);
 
+    // Pulse animation for logo and text
     this.tweens.add({
       targets: [logoText, emblem],
       scaleX: 1.08,
@@ -569,21 +510,16 @@ class GameScene extends Phaser.Scene {
     this.updateHUD();
   }
 
-  // --- INTERSTITIAL AD TRIGGER ON LEVEL ENTER ---
   enterPortal(player, portal) {
-    this.physics.pause();
-    showYandexInterstitial(() => {
-      this.physics.resume();
-      GameData.currentLevel++;
-      GameData.save();
+    GameData.currentLevel++;
+    GameData.save();
 
-      if (GameData.currentLevel > GameData.totalLevels) {
-        alert("CONGRATULATIONS! You cleared all 700 Levels!");
-        this.scene.start('MenuScene');
-      } else {
-        this.scene.restart();
-      }
-    });
+    if (GameData.currentLevel > GameData.totalLevels) {
+      alert("CONGRATULATIONS! You cleared all 700 Levels!");
+      this.scene.start('MenuScene');
+    } else {
+      this.scene.restart();
+    }
   }
 
   hitPlayer(player, bullet) {
@@ -702,29 +638,11 @@ class StoreScene extends Phaser.Scene {
     this.add.text(w / 2, 45, 'ARMORY & STORE', { fontSize: '26px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
     this.coinText = this.add.text(w / 2, 85, `Available Balance: ${GameData.inventory.coins} COINS 💰`, { fontSize: '18px', fill: '#ffea00' }).setOrigin(0.5);
 
-    // --- REWARDED AD BUTTON FOR FREE COINS ---
-    const rewardAdBtn = this.add.rectangle(w / 2, 125, 260, 38, 0xa855f7).setInteractive({ useHandCursor: true });
-    rewardAdBtn.setStrokeStyle(2, 0xffea00);
-    this.add.text(w / 2, 125, '🎬 WATCH AD (+500 C)', { fontSize: '15px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
-
-    rewardAdBtn.on('pointerdown', () => {
-      showYandexRewarded(
-        () => {
-          GameData.inventory.coins += 500;
-          GameData.save();
-          alert('Reward Granted! +500 Coins');
-        },
-        () => {
-          this.scene.restart();
-        }
-      );
-    });
-
-    let startY = 185;
+    let startY = 140;
     GameData.premiumCatalog.forEach((wpn) => {
       const isOwned = GameData.inventory.ownedWeapons.includes(wpn.name);
       
-      this.add.rectangle(w / 2, startY, w * 0.85, 55, 0x1e293b).setStrokeStyle(1, 0x334155);
+      this.add.rectangle(w / 2, startY, w * 0.85, 60, 0x1e293b).setStrokeStyle(1, 0x334155);
       this.add.text(w * 0.12, startY - 10, wpn.name, { fontSize: '18px', fill: '#ffffff', fontStyle: 'bold' });
       this.add.text(w * 0.12, startY + 12, `Damage: ${wpn.damage} | Speed: ${wpn.speed}`, { fontSize: '13px', fill: '#8899ac' });
 
@@ -732,7 +650,7 @@ class StoreScene extends Phaser.Scene {
         this.add.text(w * 0.8, startY, 'UNLOCKED', { fontSize: '16px', fill: '#00ff66', fontStyle: 'bold' }).setOrigin(0.5);
       } else {
         const buyBtn = this.add.rectangle(w * 0.8, startY, 110, 36, 0x00f0ff).setInteractive({ useHandCursor: true });
-        this.add.text(w * 0.8, startY, `${wpn.price} C`, { fontSize: '15px', fill: '#000', fontStyle: 'bold' }).setOrigin(0.5);
+        const buyTxt = this.add.text(w * 0.8, startY, `${wpn.price} C`, { fontSize: '15px', fill: '#000', fontStyle: 'bold' }).setOrigin(0.5);
 
         buyBtn.on('pointerdown', () => {
           if (GameData.inventory.coins >= wpn.price) {
@@ -742,16 +660,16 @@ class StoreScene extends Phaser.Scene {
             alert(`Unlocked ${wpn.name}!`);
             this.scene.restart();
           } else {
-            alert('Not enough coins! Watch an ad or play levels to earn more.');
+            alert('Not enough coins! Play levels to earn more.');
           }
         });
       }
-      startY += 70;
+      startY += 75;
     });
 
-    const backBtn = this.add.rectangle(w / 2, h - 45, 220, 44, 0x1e293b).setInteractive({ useHandCursor: true });
+    const backBtn = this.add.rectangle(w / 2, h - 50, 220, 48, 0x1e293b).setInteractive({ useHandCursor: true });
     backBtn.setStrokeStyle(2, 0x00f0ff);
-    this.add.text(w / 2, h - 45, 'BACK TO MENU', { fontSize: '18px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(w / 2, h - 50, 'BACK TO MENU', { fontSize: '18px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
     backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
   }
 }
@@ -813,6 +731,7 @@ const config = {
     default: 'arcade',
     arcade: { gravity: { y: 0 }, debug: false }
   },
+  // Added SplashScene first in scene array!
   scene: [SplashScene, MenuScene, GameScene, StoreScene, SettingsScene]
 };
 

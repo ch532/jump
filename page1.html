@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- FORCE DESKTOP SCALING & PINCH-ZOOM SUPPORT -->
     <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>SkyIPworld - Macro Environmental Tracker</title>
     
@@ -129,17 +128,6 @@
         .context-note { font-style: italic; color: #475569; font-size: 0.85rem; margin: 15px 0; border-left: 3px solid #38bdf8; padding-left: 10px; }
         .news-item a { display: inline-block; background-color: #1e293b; color: #f8fafc; font-weight: bold; text-decoration: none; padding: 10px 20px; border-radius: 6px; }
 
-        /* IN-APP AD CONTROLS & NATIVE CARD */
-        .app-ad-card {
-            text-align: center;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-
         .native-ad-card {
             display: none;
             background: #ffffff;
@@ -183,27 +171,19 @@
     
 <main class="container" data-sdk-feature="Global Reporting Terminal">
 
-    <!-- DEDICATED IN-APP AD CONTROLS -->
-    <section class="app-ad-card">
-        <h3 style="margin-top: 0; color: #1e293b;">In-App AdMob Controls</h3>
-        <button onclick="triggerAppInterstitial()" style="padding: 10px 18px; margin: 5px; background: #0284c7; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            Show Interstitial Ad
-        </button>
-        <button onclick="triggerAppRewarded()" style="padding: 10px 18px; margin: 5px; background: #16a34a; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            Watch Rewarded Ad
-        </button>
-    </section>
-
     <!-- ADMOB NATIVE AD CONTAINER SLOT -->
     <div id="admob-native-container" class="native-ad-card">
-        <span class="native-ad-badge">AdMob Native</span>
+        <span class="native-ad-badge">Sponsored</span>
         <h3 id="native-headline" style="margin-top: 5px; color: #1e293b;"></h3>
         <p id="native-body" style="color: #475569; font-size: 14px;"></p>
         <button id="native-cta" style="padding: 8px 16px; background: #0284c7; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;"></button>
     </div>
 
-    <!-- LARGE AD SPACE 1 -->
+    <!-- LARGE AD SPACE 1: TOP MAIN HEADER BANNER -->
     <div class="large-ad-slot">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+             crossorigin="anonymous"></script>
+        <!-- Saint -->
         <ins class="adsbygoogle"
              style="display:block; width:100%;"
              data-ad-client="ca-pub-7728035806961877"
@@ -224,8 +204,11 @@
                 </div>
             </div>
 
-            <!-- LARGE AD SPACE 2 -->
+            <!-- LARGE AD SPACE 2: ABOVE FEED STREAM -->
             <div class="large-ad-slot">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+                     crossorigin="anonymous"></script>
+                <!-- Saint -->
                 <ins class="adsbygoogle"
                      style="display:block; width:100%;"
                      data-ad-client="ca-pub-7728035806961877"
@@ -239,8 +222,11 @@
 
             <div id="my-native-feed">Loading Live News Feed...</div>
 
-            <!-- LARGE AD SPACE 3 -->
+            <!-- LARGE AD SPACE 3: BELOW NEWS FEED -->
             <div class="large-ad-slot">
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+                     crossorigin="anonymous"></script>
+                <!-- Saint -->
                 <ins class="adsbygoogle"
                      style="display:block; width:100%;"
                      data-ad-client="ca-pub-7728035806961877"
@@ -313,8 +299,11 @@
         </aside>
     </div>
 
-    <!-- LARGE AD SPACE 4 -->
+    <!-- LARGE AD SPACE 4: BOTTOM PAGE FOOTER BANNER -->
     <div class="large-ad-slot">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
+             crossorigin="anonymous"></script>
+        <!-- Saint -->
         <ins class="adsbygoogle"
              style="display:block; width:100%;"
              data-ad-client="ca-pub-7728035806961877"
@@ -326,8 +315,7 @@
         </script>
     </div>
 
-<div id="ytrgt-727e202276124cc980f6591cecf4c080"></div>
-<script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:nobid', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:error', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-727e202276124cc980f6591cecf4c080', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "727e202276124cc980f6591cecf4c080", "video": {"mimes": ["video/mp4"], "protocols": [2, 3, 5, 6]}, "videoOptions": {"muted": "auto", "skipDelay": 10, "replay": true}, "tmax": 3000, "showAdMark": true});</script>
+<div id="ytrgt-727e202276124cc980f6591cecf4c080"></div><script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:nobid', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:error', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-727e202276124cc980f6591cecf4c080', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "727e202276124cc980f6591cecf4c080", "video": {"mimes": ["video/mp4"], "protocols": [2, 3, 5, 6]}, "videoOptions": {"muted": "auto", "skipDelay": 10, "replay": true}, "tmax": 3000, "showAdMark": true});</script>
     
 </main>
 
@@ -353,51 +341,75 @@ async function loadFeed() {
                 ${article.thumbnail ? `<img src="${article.thumbnail}" class="news-item-img">` : ''}
                 <p>${article.description || "Read more at source."}</p>
                 <div class="context-note">SkyIPworld Insight: Aggregated report for real-time awareness and event documentation.</div>
-                <a href="${article.link}" target="_blank" rel="noopener">Read Full Report</a>
+                <a href="${article.link}" target="_blank" rel="noopener" class="article-link">Read Full Report</a>
             `;
             feedContainer.appendChild(div);
 
+            // Inject AdSense Fluid In-Feed Ad unit after every 3rd news item
             if ((index + 1) % 3 === 0 && index !== articles.length - 1) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'infeed-ad-wrapper';
                 adDiv.innerHTML = `
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"><\/script>
                     <ins class="adsbygoogle"
                          style="display:block"
                          data-ad-format="fluid"
                          data-ad-layout-key="+25+rv+x-4w+75"
                          data-ad-client="ca-pub-7728035806961877"
                          data-ad-slot="7362464742"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    <\/script>
                 `;
                 feedContainer.appendChild(adDiv);
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
             }
         });
+
+        attachAdListenersToLinks();
     } catch (e) {
         document.getElementById('my-native-feed').innerHTML = "Unable to load feed.";
     }
 }
+
+function attachAdListenersToLinks() {
+    const links = document.querySelectorAll('.nav-links a, .article-link');
+    links.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.AndroidApp && typeof window.AndroidApp.showInterstitial === 'function') {
+                window.AndroidApp.showInterstitial();
+            }
+        });
+    });
+}
+
 loadFeed();
 </script>
 
 <script src="sdk-init.js"></script>
+
+<!-- FIREBASE SDK LOGIC -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
+    authDomain: "air-skye.firebaseapp.com",
+    projectId: "air-skye",
+    storageBucket: "air-skye.appspot.com",
+    messagingSenderId: "46181700573",
+    appId: "1:46181700573:web:1b5d21e443067bba26dc34",
+    measurementId: "G-K4Z4GJ2JLN"
+  };
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
 <!-- Cloudflare Web Analytics -->
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
 
 <!-- ANDROID ADMOB INTERFACE BRIDGE -->
 <script>
-  function triggerAppInterstitial() {
-    if (window.AndroidApp && typeof window.AndroidApp.showInterstitial === 'function') {
-      window.AndroidApp.showInterstitial();
-    }
-  }
-
-  function triggerAppRewarded() {
-    if (window.AndroidApp && typeof window.AndroidApp.showRewarded === 'function') {
-      window.AndroidApp.showRewarded();
-    }
-  }
-
   function renderAppNativeAd(headline, body, cta) {
     const container = document.getElementById('admob-native-container');
     if (container) {
@@ -409,12 +421,7 @@ loadFeed();
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-links a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        triggerAppInterstitial();
-      });
-    });
+    attachAdListenersToLinks();
 
     if (window.AndroidApp && typeof window.AndroidApp.requestNativeAd === 'function') {
       window.AndroidApp.requestNativeAd();
@@ -424,4 +431,5 @@ loadFeed();
 
 </body>
 </html>
+
 

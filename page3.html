@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- FORCE DESKTOP SCALING & PINCH-ZOOM SUPPORT -->
     <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Tips & How-To – SkyIPworld</title>
     
@@ -12,188 +11,91 @@
     
     <link rel="icon" type="image/png" href="https://chyke.online/connectgold_2.png">
 
-<!-- BEGIN EZMOB TAG -->
-<script type="text/javascript" src="https://ezmob-site.sfo3.digitaloceanspaces.com/prebid.js" async></script>
-    <script>
-	var pbjs = pbjs || {};
-	pbjs.que = pbjs.que || [];
+    <!-- EZMOB TAG -->
+    <script type="text/javascript" src="https://ezmob-site.sfo3.digitaloceanspaces.com/prebid.js" async></script>
 
-	pbjs.que.push(function() {
-        var adUnits = [
-		{
-            code: 'container1',
-			mediaTypes: {
-            banner: {
-                sizes: [300, 250]
-				}
-        },
-			bids: [{
-            bidder: 'adkernel',
-				params: {
-                zoneId: 396126,
-				  host: 'cpm.ezmob.com'
-				}
-			}]
-		}];
-		pbjs.addAdUnits(adUnits);
-		pbjs.requestBids({
-			bidsBackHandler: handleBids
-		});
-	});
-
-	function handleBids() {
-        var winners = pbjs.getHighestCpmBids();
-        for (winner of winners) {
-            var ifrmEl = document.createElement('iframe');
-            ifrmEl.scrolling = 'no';
-			document.getElementById(winner.adUnitCode).appendChild(ifrmEl);
-			pbjs.renderAd(ifrmEl.contentDocument || ifrmEl.contentWindow.document, winner.adId);
-		}
-    }
-    </script>
-    <div id="container1"></div>
-<!-- END TAG -->
-    
     <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(r)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110805897', 'ym');
-
-    ym(110805897, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110805897" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-
-    <!-- Clarity tracking code for https://chyke.online/ -->
-<script>
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "xn3kzenf61");
-</script>
-
-    <!-- Yandex Autoplacement 19590314 -->
-<script src="https://yandex.ru/ads/system/context.js" async></script>
-<script data-page-id="19590314" src="https://yandex.ru/ads/system/ap-loader.js" async></script>
-    
-    <!-- Global Publisher AdSense Script Layer -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
-
-    <!-- Google Analytics Tracker Suite -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3XR1R2P73Y"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-3XR1R2P73Y');
-    </script>
-
-    <!-- Microsoft Clarity Telemetry Framework -->
     <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(r)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110805897', 'ym');
+
+        ym(110805897, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110805897" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <!-- Clarity tracking code -->
+    <script>
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "x0mezp3yoh");
+        })(window, document, "clarity", "script", "xn3kzenf61");
     </script>
 
-    <!-- Firebase System Core Configuration Suite -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
-            authDomain: "air-skye.firebaseapp.com",
-            projectId: "air-skye",
-            storageBucket: "air-skye.appspot.com",
-            messagingSenderId: "46181700573",
-            appId: "1:46181700573:web:1b5d21e443067bba26dc34",
-            measurementId: "G-K4Z4GJ2JLN"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; min-width: 1200px; }
         
-        /* Top Navigation Styles */
-        .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; letter-spacing: -0.3px; }
         .nav-brand span { color: #38bdf8; }
         .nav-right-block { display: flex; align-items: center; gap: 25px; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
-        .nav-item:hover { color: #f8fafc; }
+        .nav-links { display: flex; gap: 20px; flex-wrap: nowrap; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; padding-bottom: 2px; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
 
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
         
-        /* Main Content Panel styling */
-        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; opacity: 0.95; color: #1e293b; text-align: left; }
-        
-        /* Educational Card Wrappers style */
+        .main-content { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; min-height: 400px; color: #1e293b; text-align: left; }
         .widget-wrapper-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        
-        /* Fluid In-Feed Ad Slot Container */
-        .infeed-ad-wrapper {
-            width: 100%;
-            margin-bottom: 25px;
-            background: #ffffff;
-            border: 1px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
 
         .native-ad-card {
             display: none;
             background: #ffffff;
             border: 1px solid #38bdf8;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+            transition: opacity 0.5s ease-in-out;
         }
         .native-ad-badge {
             background: #f59e0b;
             color: #ffffff;
             font-size: 11px;
             font-weight: bold;
-            padding: 2px 6px;
+            padding: 2px 8px;
             border-radius: 4px;
             display: inline-block;
             margin-bottom: 10px;
         }
+        .native-media-frame {
+            width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
 
-        /* Fluid reset mappings to natively merge TheFreeDictionary boxes into modern grid */
         #dictionarybox, #dictionarybox12, #WordOfTheDay, #ArticleOfTheDay, #Grammar, #IdiomOfTheDay, #TodaysHistory, #TodaysBirthday, #TodaysHoliday, #QuoteOfTheDay, #WTOfTheDay, #grammarQuiz, #TfdBee, #MatchUp, #Mismatch, #t_wm { 
             width: 100% !important; border: 1px solid #e2e8f0 !important; font-family: Arial, sans-serif !important; border-radius: 6px; overflow: hidden; background: #fff; color: #1e293b !important;
         }
         #dictionarybox TD, #dictionarybox12 TD, #WordOfTheDay TD, #IdiomOfTheDay TD, #TodaysHoliday TD, #QuoteOfTheDay TD, #WTOfTheDay TD { color: #1e293b !important; font-size: 14px !important; }
         #dictionarybox A, #dictionarybox12 A, #WordOfTheDay A, #ArticleOfTheDay A, #Grammar A, #IdiomOfTheDay A, #TodaysHistory A, #TodaysBirthday A, #TodaysHoliday A, #QuoteOfTheDay A, #WTOfTheDay A, #grammarQuiz a, #TfdBee A, #MatchUp A, #Mismatch A, #t_wm A { color: #0284c7 !important; text-decoration: none; font-weight: bold; }
-        #dictionarybox INPUT[type="text"], #dictionarybox12 INPUT[type="text"], #TfdBee INPUT[type="text"], input[name="Word"] { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; margin-top: 4px; font-size: 14px; }
-        #dictionarybox INPUT[type="submit"], #dictionarybox12 input[type="button"], #TfdBee input[type="button"], .gqBtns input[type="button"], #MatchUp input[type="submit"], #MatchUp input[type="button"], #Mismatch input[type="submit"], #Mismatch input[type="button"], input[id="box_submit12"] { 
-            background: #0284c7; color: #fff; border: 1px solid #0284c7; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 5px;
-        }
         
-        /* Sidebar layout details */
-        .sidebar-panel { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 25px; opacity: 0.95; }
+        .sidebar-panel { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
         .sidebar-title { font-size: 14px; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 15px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
         .info-list { list-style: none; padding: 0; margin: 0; font-size: 14px; line-height: 1.6; color: #475569; }
 
         footer { background: #1e293b; color: #94a3b8; padding: 25px 20px; margin-top: 40px; text-align: center; font-size: 13px; }
         footer p { margin: 5px 0; }
         footer a { color: #64748b; text-decoration: none; margin: 0 10px; }
-        footer a:hover { color: #38bdf8; }
     </style>
 </head>
 <body>
@@ -213,73 +115,16 @@
             </div>
         </div>
     </nav>
-
-<script type="text/javascript" src="https://docdn.ezmob.com/prebid.js" async></script>
-<script>
-	var pbjs = pbjs || {};
-	pbjs.que = pbjs.que || [];
-	
-	pbjs.que.push(function() {
-		var adUnits = [{
-			code: 'container-1',
-			mediaTypes: {
-				video: {
-					context: 'outstream',
-					playerSize: [300, 250],
-					renderer: {
-						url: 'https://docdn.ezmob.com/outstream_pb.js',
-						render: renderOutstream
-					}
-				}
-			},
-			bids: [{
-				bidder: 'adkernel',
-				params: {
-				  zoneId: 396127,
-				  host: 'cpm.ezmob.com'
-				}
-
-			}]
-		}];
-		pbjs.addAdUnits(adUnits);
-		pbjs.requestBids({
-			bidsBackHandler: function(bidResponses) {
-				process('container-1');
-			}
-		});
-	});
-
-	function process(adUnit) {
-		var bidResponses = pbjs.getHighestCpmBids(adUnit);
-		if (bidResponses.length == 0) {
-			return;
-		}
-		var bid = bidResponses[0];
-		pbjs.renderAd(document, bid.adId);
-	}
-	
-	function renderOutstream(bid) {
-		OutstreamPlayerPB(bid, {
-			displayMode: 'floating',
-			transitions: true,
-			vpaidMode: 2
-		});
-	}
-</script>
-<div id="container-1"></div>
-    
-    <script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:load', '#ytrgt-092a8477a53f4659a08d35ece9ff36b2', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "092a8477a53f4659a08d35ece9ff36b2", "sizes": [[300, 600], [320, 480]], "tmax": 1000, "showAdMark": true, "format": "interstitial", "interstitial": {"trigger": "interaction", "closeDelay": 10000, "frequency": {"max": 0, "windowSec": 86400}, "backdrop": true}});</script>
-
-<div id="ytrgt-25bdeda14e044c3098d4ced24b73122f"></div><script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', 'hb:nobid', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', 'hb:error', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "25bdeda14e044c3098d4ced24b73122f", "sizes": [[300, 250], [320, 50], [728, 90]], "tmax": 1000, "showAdMark": true});</script>
     
     <div class="container">
 
-        <!-- ADMOB NATIVE AD CONTAINER SLOT -->
+        <!-- ADMOB NATIVE AD SLOT WITH MEDIA DISPLAY -->
         <div id="admob-native-container" class="native-ad-card">
             <span class="native-ad-badge">Sponsored</span>
             <h3 id="native-headline" style="margin-top: 5px; color: #1e293b;"></h3>
+            <img id="native-media" class="native-media-frame" style="display:none;" />
             <p id="native-body" style="color: #475569; font-size: 14px;"></p>
-            <button id="native-cta" style="padding: 8px 16px; background: #0284c7; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;"></button>
+            <button id="native-cta" style="padding: 10px 18px; background: #0284c7; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"></button>
         </div>
 
         <div class="grid">
@@ -290,7 +135,7 @@
                 </p>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 25px;">
 
-                <!-- Widget 1: Online Reference Dictionary Form -->
+                <!-- ALL 17 DICTIONARY & THESAURUS WIDGETS -->
                 <div class="widget-wrapper-card" data-sdk-feature="Online Dictionary">
                     <form action="https://www.thefreedictionary.com/_/partner.aspx" method="get" target="_top" name="dictionary" style="display:inline;margin:0">
                     <table id="dictionarybox" cellspacing="0" cellpadding="3">
@@ -304,63 +149,18 @@
                             </td>
                         </tr>
                         <tr>
-                            <td align="center">Word:<br/>
-                            <img id="dictionarybox_img_toggle" src="https://img.tfd.com/toggle/b-up.gif" style="cursor:pointer" onclick="var s=document.getElementById('dictionarybox_source').style;this.src='//img.tfd.com/toggle/b-'+(s.display?'up.gif':'down.gif');s.display=(s.display?'':'none')"/></td>
+                            <td align="center">Word:<br/></td>
                             <td colspan="2"><input name="Word" value="" size="26" /></td>
-                        </tr>
-                        <tr id="dictionarybox_source">
-                            <td align="right">Look in:</td>
-                            <td colspan="2" style="font-size:8pt;text-align:left" id="boxsource_td">
-                                <input type="radio" name="Set" value="www" checked="yes"/>Dictionary<br/>
-                                <input type="radio" name="Set" value="freethesaurus"/>Thesaurus<br/>
-                                <input type="radio" name="Set" value="medical-dictionary"/>Medical Dictionary<br/>
-                                <input type="radio" name="Set" value="legal-dictionary"/>Legal Dictionary<br/>
-                                <input type="radio" name="Set" value="financial-dictionary"/>Financial Dictionary<br/>
-                                <input type="radio" name="Set" value="acronyms"/>Acronyms<br/>
-                                <input type="radio" name="Set" value="idioms"/>Idioms<br/>
-                                <input type="radio" name="Set" value="encyclopedia2"/>Encyclopedia<br/>
-                                <input type="radio" name="Set" value="encyclopedia"/>Wikipedia<br/>
-                                <input type="radio" name="Set" value="periodicals"/>Periodicals<br/>
-                                <input type="radio" name="Set" value="literature"/>Literature
-                                <div style="cursor:pointer" onclick="var s=document.getElementById('dictionarybox_ol').style;document.getElementById('dictionarybox_ol_img').src='//img.tfd.com/toggle/b-'+(s.display?'up.gif':'down.gif');s.display=(s.display?'':'none')"><img id="dictionarybox_ol_img" src="https://img.tfd.com/toggle/b-up.gif"/>Other languages:</div>
-                                <div id="dictionarybox_ol">
-                                    <input type="radio" name="Set" value="es"/>Spanish Dictionary<br/>
-                                    <input type="radio" name="Set" value="de"/>German Dictionary<br/>
-                                    <input type="radio" name="Set" value="fr"/>French Dictionary<br/>
-                                    <input type="radio" name="Set" value="it"/>Italian Dictionary<br/>
-                                    <input type="radio" name="Set" value="zh"/>Chinese Dictionary<br/>
-                                    <input type="radio" name="Set" value="pt"/>Portuguese Dictionary<br/>
-                                    <input type="radio" name="Set" value="nl"/>Dutch Dictionary<br/>
-                                    <input type="radio" name="Set" value="no"/>Norwegian Dictionary<br/>
-                                    <input type="radio" name="Set" value="el"/>Greek Dictionary<br/>
-                                    <input type="radio" name="Set" value="ru"/>Russian Dictionary
-                                </div>
-                            </td>
                         </tr>
                         <tr>
                             <td align="right">by:</td>
-                            <td><select name="mode"><option value="w">Word</option><option value="s">Starts with</option><option value="e">Ends with</option><option value="d">Mentions</option></select></td>
+                            <td><select name="mode"><option value="w">Word</option><option value="s">Starts with</option><option value="e">Ends with</option></select></td>
                             <td align="right"><input type="submit" name="submit" value="Look it up"/></td>
                         </tr>
                     </table>
                     </form>
                 </div>
 
-                <!-- IN-FEED AD UNIT 1 -->
-                <div class="infeed-ad-wrapper">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-format="fluid"
-                         data-ad-layout-key="+25+rv+x-4w+75"
-                         data-ad-client="ca-pub-7728035806961877"
-                         data-ad-slot="7362464742"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                </div>
-
-                <!-- Widget 2: Word Finder Cheat Lookup Form -->
                 <div class="widget-wrapper-card" data-sdk-feature="Word Finder">
                     <form action="https://www.thefreedictionary.com/_/partner.aspx" method="get" target="_top" name="wordfinder" style="display:inline;margin:0">
                     <input type="hidden" name="LookupSrc" value="wf">
@@ -370,27 +170,13 @@
                             <td bgcolor="#FFFFFF" style="border-bottom:1px #AFAFAF solid" colspan="2" nowrap="yes">
                                 <a href="https://www.thefreedictionary.com/Word-Finder.htm" rel="nofollow">
                                     <div style="font-size:12pt;color:#1e293b;"><b>Word Finder</b></div>
-                                    <div style="font-size:8pt;color:#64748b;">Scrabble Word Finder and Words With Friends cheat dictionary</div>
+                                    <div style="font-size:8pt;color:#64748b;">Scrabble Word Finder</div>
                                 </a>
                             </td>
                         </tr>
                         <tr>
                             <td align="center">Word:</td>
                             <td colspan="2"><input name="Word" value="" size="26"/></td>
-                        </tr>
-                        <tr id="dictionarybox_source12">
-                            <td colspan="3" style="font-size:8pt;text-align:left" id="boxsource_td12">
-                                <table style="margin: 0 auto 0.5em auto;">
-                                    <tr>
-                                        <td><input type="radio" name="mode" id="opt112" value="s" checked><label for="opt112">Starts With</label></td>
-                                        <td><input type="radio" name="mode" id="opt113" value="e"><label for="opt113">Ends With</label></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="radio" name="mode" id="opt114" value="c"><label for="opt114">Contains</label></td>
-                                        <td><input type="radio" name="mode" id="opt115" value="u"><label for="opt115">Unscramble</label></td>
-                                    </tr>
-                                </table>
-                            </td>
                         </tr>
                         <tr>
                             <td colspan="3" align="center" style="text-align: center"><input id="box_submit12" type="button" onclick="this.form.submit()" value="Look it up"></td>
@@ -399,272 +185,95 @@
                     </form>
                 </div>
 
-                <!-- Widget 3: Word of the Day Framework -->
                 <div class="widget-wrapper-card" data-sdk-feature="Word of the Day">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Word of the Day</div>
-                    <div id="tfd_wod_div">
-                        <table id="WordOfTheDay">
-                            <tr><td colspan="2" align="center"><h3 style="margin-bottom:3pt"><a href="https://www.thefreedictionary.com/wirework" rel="nofollow">wirework</a></h3></td></tr>
-                            <tr><td class="WoDLeft" valign="top" align="right">Definition:</td><td align="left">Mesh netting made of wires.</td></tr>
-                            <tr><td class="WoDLeft" valign="top">Synonyms:</td><td><a href="https://www.freethesaurus.com/grillwork" rel="nofollow">grillwork</a></td></tr>
-                        </table>
-                    </div>
-                    <script type="text/javascript">document.getElementById("tfd_wod_div").style.visibility="hidden"</script>
-                    <script type="text/javascript" align="center" async src="https://img.tfd.com/daily/wod-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Word-of-the-Day" rel="nofollow">Word of the Day</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
+                    <div id="tfd_wod_div"></div>
+                    <script type="text/javascript" async src="https://img.tfd.com/daily/wod-top.js" charset="UTF-8"></script>
                 </div>
 
-                <!-- IN-FEED AD UNIT 2 -->
-                <div class="infeed-ad-wrapper">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-format="fluid"
-                         data-ad-layout-key="+25+rv+x-4w+75"
-                         data-ad-client="ca-pub-7728035806961877"
-                         data-ad-slot="7362464742"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                </div>
-
-                <!-- Widget 4: Comprehensive Article of the Day Element -->
                 <div class="widget-wrapper-card" data-sdk-feature="Article of the Day">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Article of the Day</div>
                     <div id="tfd_article_div"></div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/article-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Article-of-the-Day" rel="nofollow">Article of the Day</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 5: Daily Grammar Lesson Module -->
                 <div class="widget-wrapper-card" data-sdk-feature="Grammar Lesson">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Daily Grammar Lesson</div>
                     <div id="tfd_grammar_div"></div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/grammar-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Grammar" rel="nofollow">Daily Grammar Lesson</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- IN-FEED AD UNIT 3 -->
-                <div class="infeed-ad-wrapper">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-format="fluid"
-                         data-ad-layout-key="+25+rv+x-4w+75"
-                         data-ad-client="ca-pub-7728035806961877"
-                         data-ad-slot="7362464742"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                </div>
-
-                <!-- Widget 6: Idiom of the Day Box -->
                 <div class="widget-wrapper-card" data-sdk-feature="Idiom of the Day">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Idiom of the Day</div>
-                    <div id="tfd_idiom_div">
-                        <table id="IdiomOfTheDay">
-                            <tr><td><h3><a href="//idioms.thefreedictionary.com/vertically+challenged" rel="nofollow">vertically challenged</a></h3><span>Short; not tall in stature. (Pseudo-politically correct slang used for humorous effect.)</span></td></tr>
-                        </table>
-                    </div>
-                    <script type="text/javascript">document.getElementById("tfd_idiom_div").style.visibility="hidden"</script>
+                    <div id="tfd_idiom_div"></div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/idiom-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Idiom-of-the-Day" rel="nofollow">Idiom of the Day</a> provided by <a style="color:#000000" href="https://idioms.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 7: This Day in History Module -->
                 <div class="widget-wrapper-card" data-sdk-feature="Today in History">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">This Day in History</div>
                     <div id="tfd_history_div"></div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/history-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#This-Day-in-History" rel="nofollow">This Day in History</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 8: Today's Birthday Aggregator -->
                 <div class="widget-wrapper-card" data-sdk-feature="Today's Birthdays">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Today's Birthday</div>
                     <div id="tfd_birthday_div"></div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/birthday-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Today's-Birthday" rel="nofollow">Today's Birthday</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 9: Today's Holiday Feature -->
                 <div class="widget-wrapper-card" data-sdk-feature="Today's Holiday">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Today's Holiday</div>
-                    <div id="tfd_holiday_div">
-                        <table id="TodaysHoliday" class="TodaysHoliday">
-                            <tr><td>
-                                <h3>Ball-Catching Festival</h3><span>This 500-year-old tradition, said to have its roots in the legend of a <a rel="nofollow" href="//encyclopedia.thefreedictionary.com/Japanese+Dragon">dragon</a> god (Ryujin) offering two balls to the Empress Jingu (170–269), takes place each year in <a rel="nofollow" href="//encyclopedia.thefreedictionary.com/Higashi-ku%2c+Fukuoka">Higashi-Ku, Fukuoka City</a>, Japan.</span>
-                                <a href="//encyclopedia2.thefreedictionary.com/Ball-Catching+Festival" rel="nofollow"><b>More...</b></a>
-                            </td></tr>
-                        </table>
-                    </div>
-                    <script type="text/javascript">document.getElementById("tfd_holiday_div").style.visibility="hidden"</script>
+                    <div id="tfd_holiday_div"></div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/holiday-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Today's-Holiday" rel="nofollow">Today's Holiday</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- IN-FEED AD UNIT 4 -->
-                <div class="infeed-ad-wrapper">
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-format="fluid"
-                         data-ad-layout-key="+25+rv+x-4w+75"
-                         data-ad-client="ca-pub-7728035806961877"
-                         data-ad-slot="7362464742"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                </div>
-
-                <!-- Widget 10: Literary Quote of the Day Block -->
                 <div class="widget-wrapper-card" data-sdk-feature="Quote of the Day">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Quote of the Day</div>
-                    <div id="tfd_quote_div">
-                        <table id="QuoteOfTheDay">
-                            <tr><td align="left">The woods are never solitary—they are full of whispering, beckoning, friendly life. But the sea is a mighty soul, forever moaning of some great, unshareable sorrow, which shuts it up into itself for all eternity…The woods call to us with a hundred voices, but the sea has one only—a mighty voice that drowns our souls in its majestic music. The woods are human, but the sea is of the company of the archangels.<br/><b><a href="//encyclopedia2.thefreedictionary.com/L.+M.+Montgomery" rel="nofollow">Lucy Maud Montgomery</a></b><br/>(1874-1942)</td></tr>
-                        </table>
-                    </div>
-                    <script type="text/javascript">document.getElementById("tfd_quote_div").style.visibility="hidden"</script>
+                    <div id="tfd_quote_div"></div>
                     <script async type="text/javascript" src="https://img.tfd.com/daily/quote-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Quote-of-the-Day" rel="nofollow">Quote of the Day</a> provided by <a style="color:#000000" href="https://www.thefreelibrary.com/" rel="nofollow">The Free Library</a>
-                    </div>
                 </div>
 
-                <!-- Widget 11: Lexicon Word Trivia Core -->
                 <div class="widget-wrapper-card" data-sdk-feature="Word Trivia">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Word Trivia</div>
-                    <div id="tfd_trivia_div">
-                        <table class="WTOfTheDay" id="WTOfTheDay">
-                            <tr><td>
-                                <h3>Today's topic: <a href="//www.freethesaurus.com/please" rel="nofollow">please</a></h3>
-                                <div><p><a rel="nofollow" href="//www.thefreedictionary.com/amuse-bouche"><b>amuse-bouche</b></a>, <a rel="nofollow" href="//www.thefreedictionary.com/amuse-guele"><b>amuse-guele</b></a> - Amuse-bouche and amuse-guele both mean literally &quot;something to please the mouth,&quot; and both refer to an appetizer or pre-meal tidbit. <a rel="nofollow" href="//www.thefreedictionary.com/amuse-bouche">More...</a></p></div>
-                            </td></tr>
-                        </table>
-                    </div>
-                    <script type="text/javascript">document.getElementById("tfd_trivia_div").style.visibility="hidden"</script>
+                    <div id="tfd_trivia_div"></div>
                     <script async type="text/javascript" src="https://img.tfd.com/daily/trivia-top.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Word-Trivia" rel="nofollow">Word Trivia</a> provided by <a style="color:#000000" href="https://www.freethesaurus.com/" rel="nofollow">FreeThesaurus.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 12: Interactive Grammar Quiz Engine -->
                 <div class="widget-wrapper-card" data-sdk-feature="Grammar Quiz">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Grammar Quiz</div>
-                    <div id="grammarQuiz">
-                        <div id="gqQuestion"></div>
-                        <div id="gqAnswers"></div>
-                        <div class="gqBtns" id="gqBtnsStart"><input type="button" id="gqAnsBtn" onclick="grammarQuiz.submit()" disabled="disabled" value="submit"> <a href="" onclick="grammarQuiz.learn(this)">Learn the topic</a></div>
-                        <div class="gqBtns" id="gqBtnsRight" style="display:none"><input type="button" onclick="grammarQuiz.restart()" value="Next question"> <a id="gqLearnR" href="" onclick="grammarQuiz.learn(this)">Learn the topic</a></div>
-                        <div class="gqBtns" id="gqBtnsWrong" style="display:none"><input id="gqLearnW" type="button" onclick="grammarQuiz.learn()" value="Learn the topic"> <a href="" onclick="grammarQuiz.restart();return false">Start over</a></div>
-                    </div>
+                    <div id="grammarQuiz"></div>
                     <script async type="text/javascript" src="https://img.tfd.com/daily/grammar-quiz.js" charset="UTF-8"></script>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#GrammarQuiz" rel="nofollow">Grammar Quiz</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 13: Spelling Bee Interaction Module -->
                 <div class="widget-wrapper-card" data-sdk-feature="Spelling Bee">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Spelling Bee</div>
-                    <div id="TfdBee">
-                        <form name="tfd_bee_f" style="display:inline;margin:0">
-                            <div id="tfd_bee_difficulty">
-                                difficulty&nbsp;level: <span style="white-space:nowrap">
-                                <input type="radio" name="level" value="1" id="tfd_bee_level1" onclick="tfd_level_click(this)"/><label for="tfd_bee_level1">easy</label>
-                                <input type="radio" name="level" value="2" id="tfd_bee_level2" onclick="tfd_level_click(this)" checked="yes"/><label for="tfd_bee_level2">hard</label>
-                                <input type="radio" name="level" value="3" id="tfd_bee_level3" onclick="tfd_level_click(this)"/><label for="tfd_bee_level3">expert</label></span>
-                            </div>
-                            <div id="tfd_bee_score">score: -</div>
-                            <div id="tfd_bee_sound"></div>
-                            <div id="tfd_bee_def"><b>please wait...</b></div>
-                            <div id="tfd_bee_answ" style="font-size:110%">&nbsp;</div>
-                            <div class="spell_word">spell the word: <input type="text" class="tfd_bee_na" id="tfd_bee_uword" size="12"/></div>
-                            <input type="button" onclick="tfd_bee_answer()" value="answer"/>
-                            <input type="button" onclick="tfd_bee_new()" value="new word"/>
-                            <script async type="text/javascript" src="https://img.tfd.com/daily/spellbee-top.js" charset="UTF-8"></script>
-                        </form>
-                    </div>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Spelling-Bee" rel="nofollow">Spelling Bee</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
+                    <div id="TfdBee"></div>
+                    <script async type="text/javascript" src="https://img.tfd.com/daily/spellbee-top.js" charset="UTF-8"></script>
                 </div>
 
-                <!-- Widget 14: Synonym Match Up Matrix -->
                 <div class="widget-wrapper-card" data-sdk-feature="Synonym Match Up">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Match Up</div>
-                    <form name="SynMatch" method="get" action="https://www.thefreedictionary.com/_/MatchUp.aspx" style="display:inline;margin:0" target="_top">
-                        <table id="MatchUp">
-                            <tr><td>
-                                <div id="tfd_mu_div"></div>
-                                <script type="text/javascript" async src="https://img.tfd.com/daily/matchup.js" charset="UTF-8"></script>
-                                Match each word in the left column with its synonym on the right. When finished, click Answer to see the results. Good luck!<br/><br/>
-                                <center><input type="button" value="Clear" onclick="tfd_mw_clear()"/>&nbsp;<input type="submit" value="Answer" onclick="this.form.res.value=tfd_mw_answers"/></center>
-                            </td></tr>
-                        </table>
-                    </form>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Match-Up" rel="nofollow">Match Up</a> provided by <a style="color:#000000" href="https://www.freethesaurus.com/" rel="nofollow">FreeThesaurus.com</a>
-                    </div>
+                    <div id="tfd_mu_div"></div>
+                    <script type="text/javascript" async src="https://img.tfd.com/daily/matchup.js" charset="UTF-8"></script>
                 </div>
 
-                <!-- Widget 15: Classic Vocabulary Hangman Game -->
                 <div class="widget-wrapper-card" data-sdk-feature="Hangman Game">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Hangman</div>
                     <iframe id="Hangman" src="https://www.thefreedictionary.com/_/WoD/hangman.aspx?#,x000000,x0000FF,10pt,''" width="100%" scrolling="no" frameborder="0"></iframe>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Hangman" rel="nofollow">Hangman</a> provided by <a style="color:#000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                 </div>
 
-                <!-- Widget 16: WordHub Maker Loop Panel -->
                 <div class="widget-wrapper-card" data-sdk-feature="WordHub Maker">
                     <div style="font: bold 12pt ''; color: #000000;margin-bottom:8px;">WordHub</div>
                     <div id="t_wm"> Please wait...</div>
-                    <div style="font: normal 8pt ''; color: #000000;margin-top:5px;">
-                        <a style="color: #000000" href="https://wordhub.com" rel="nofollow">WordHub</a> provided by <a style="color: #000000" href="https://www.thefreedictionary.com/" rel="nofollow">TheFreeDictionary.com</a>
-                    </div>
                     <script type="text/javascript" async src="https://img.tfd.com/daily/wordmaker-top.js" charset="UTF-8"></script>
                 </div>
 
-                <!-- Widget 17: Antonym Mismatch Testing Grid -->
                 <div class="widget-wrapper-card" data-sdk-feature="Antonym Mismatch">
                     <div style="font:bold 12pt '';color:#000000;margin-bottom:8px;">Mismatch</div>
-                    <form name="SynMatch" method="get" action="https://www.thefreedictionary.com/_/MatchUp.aspx" style="display:inline;margin:0" target="_top">
-                        <input type="hidden" name="mismatch" value="1"/>
-                        <table id="Mismatch">
-                            <tr><td>
-                                <div id="tfd_mm_div"></div>
-                                <script type="text/javascript" async src="https://img.tfd.com/daily/mismatch.js" charset="UTF-8"></script>
-                                Match each word in the left column with its antonym (opposite) on the right. When finished, click Answer to see the results. Good luck!<br/><br/>
-                                <center><input type="button" value="Clear" onclick="tfd_mm_clear()"/>&nbsp;<input type="submit" value="Answer" onclick="this.form.res.value=tfd_mm_answers"/></center>
-                            </td></tr>
-                        </table>
-                    </form>
-                    <div style="font:normal 8pt '';color:#000000;margin-top:5px;">
-                        <a style="color:#000000" href="https://www.thefreedictionary.com/lookup.htm#Mismatch" rel="nofollow">Mismatch</a> provided by <a style="color:#000000" href="https://www.freethesaurus.com/" rel="nofollow">FreeThesaurus.com</a>
-                    </div>
+                    <div id="tfd_mm_div"></div>
+                    <script type="text/javascript" async src="https://img.tfd.com/daily/mismatch.js" charset="UTF-8"></script>
                 </div>
             </main>
-
-            <div id="ytrgt-727e202276124cc980f6591cecf4c080"></div>
-<script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:nobid', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:error', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-727e202276124cc980f6591cecf4c080', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "727e202276124cc980f6591cecf4c080", "video": {"mimes": ["video/mp4"], "protocols": [2, 3, 5, 6]}, "videoOptions": {"muted": "auto", "skipDelay": 10, "replay": true}, "tmax": 3000, "showAdMark": true});</script>
 
             <aside>
                 <div class="sidebar-panel" data-sdk-feature="Terminal Info">
@@ -688,10 +297,10 @@
     </div>
 </footer>
 
+<!-- FIREBASE SDK LOGIC -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
     authDomain: "air-skye.firebaseapp.com",
@@ -701,22 +310,33 @@
     appId: "1:46181700573:web:1b5d21e443067bba26dc34",
     measurementId: "G-K4Z4GJ2JLN"
   };
-
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
 
-<script src="sdk-init.js"></script>
+<!-- Cloudflare Web Analytics -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
 
 <!-- ANDROID ADMOB INTERFACE BRIDGE -->
 <script>
-  function renderAppNativeAd(headline, body, cta) {
+  function renderAppNativeAd(headline, body, cta, mediaUrl) {
     const container = document.getElementById('admob-native-container');
     if (container) {
       document.getElementById('native-headline').innerText = headline;
       document.getElementById('native-body').innerText = body;
       document.getElementById('native-cta').innerText = cta;
+      
+      const mediaImg = document.getElementById('native-media');
+      if (mediaUrl && mediaUrl.length > 0) {
+        mediaImg.src = mediaUrl;
+        mediaImg.style.display = 'block';
+      } else {
+        mediaImg.style.display = 'none';
+      }
+
+      container.style.opacity = '0';
       container.style.display = 'block';
+      setTimeout(() => { container.style.opacity = '1'; }, 50);
     }
   }
 
@@ -736,7 +356,6 @@
   });
 </script>
 
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script><!-- End Cloudflare Web Analytics -->
-    
 </body>
 </html>
+

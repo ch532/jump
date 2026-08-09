@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- FORCE DESKTOP SCALING & PINCH-ZOOM SUPPORT -->
+    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>SkyIPworld - Macro Environmental Tracker</title>
     
     <meta name="description" content="SkyIPworld Global News Hub - Real-time curated updates, live reports, and multi-format international news coverage.">
@@ -43,7 +44,7 @@
         var winners = pbjs.getHighestCpmBids();
         for (winner of winners) {
             var ifrmEl = document.createElement('iframe');
-            ifrmEl.scrolling = 'no'
+            ifrmEl.scrolling = 'no';
 			document.getElementById(winner.adUnitCode).appendChild(ifrmEl);
 			pbjs.renderAd(ifrmEl.contentDocument || ifrmEl.contentWindow.document, winner.adId);
 		}
@@ -66,7 +67,6 @@
         ym(110805897, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/110805897" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
 
     <!-- Clarity tracking code -->
     <script>
@@ -80,7 +80,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963" crossorigin="anonymous"></script>
     
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; min-width: 1200px; }
         .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; }
         .nav-brand span { color: #38bdf8; }
@@ -88,14 +88,12 @@
         .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         
-        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
         .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
         
         .editorial-hub { background: #fff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
         .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
 
-        /* LARGE ADS CONTAINER STYLING */
         .large-ad-slot {
             width: 100%;
             min-height: 280px;
@@ -111,7 +109,6 @@
             box-sizing: border-box;
         }
 
-        /* IN-FEED AD CONTAINER STYLING */
         .infeed-ad-wrapper {
             width: 100%;
             margin-bottom: 25px;
@@ -131,6 +128,37 @@
         .news-item-img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
         .context-note { font-style: italic; color: #475569; font-size: 0.85rem; margin: 15px 0; border-left: 3px solid #38bdf8; padding-left: 10px; }
         .news-item a { display: inline-block; background-color: #1e293b; color: #f8fafc; font-weight: bold; text-decoration: none; padding: 10px 20px; border-radius: 6px; }
+
+        /* IN-APP AD CONTROLS & NATIVE CARD */
+        .app-ad-card {
+            text-align: center;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .native-ad-card {
+            display: none;
+            background: #ffffff;
+            border: 1px solid #38bdf8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .native-ad-badge {
+            background: #f59e0b;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -148,17 +176,34 @@
     </div>
 </nav>
 
-    <script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:load', '#ytrgt-092a8477a53f4659a08d35ece9ff36b2', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "092a8477a53f4659a08d35ece9ff36b2", "sizes": [[300, 600], [320, 480]], "tmax": 1000, "showAdMark": true, "format": "interstitial", "interstitial": {"trigger": "interaction", "closeDelay": 10000, "frequency": {"max": 0, "windowSec": 86400}, "backdrop": true}});</script>
+<script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:load', '#ytrgt-092a8477a53f4659a08d35ece9ff36b2', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "092a8477a53f4659a08d35ece9ff36b2", "sizes": [[300, 600], [320, 480]], "tmax": 1000, "showAdMark": true, "format": "interstitial", "interstitial": {"trigger": "interaction", "closeDelay": 10000, "frequency": {"max": 0, "windowSec": 86400}, "backdrop": true}});</script>
 
-<div id="ytrgt-25bdeda14e044c3098d4ced24b73122f"></div><script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', 'hb:nobid', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', 'hb:error', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "25bdeda14e044c3098d4ced24b73122f", "sizes": [[300, 250], [320, 50], [728, 90]], "tmax": 1000, "showAdMark": true});</script>
+<div id="ytrgt-25bdeda14e044c3098d4ced24b73122f"></div>
+<script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', 'hb:nobid', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', 'hb:error', function(){var s=document.getElementById('ytrgt-25bdeda14e044c3098d4ced24b73122f');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-25bdeda14e044c3098d4ced24b73122f', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "25bdeda14e044c3098d4ced24b73122f", "sizes": [[300, 250], [320, 50], [728, 90]], "tmax": 1000, "showAdMark": true});</script>
     
 <main class="container" data-sdk-feature="Global Reporting Terminal">
 
-    <!-- LARGE AD SPACE 1: TOP MAIN HEADER BANNER -->
+    <!-- DEDICATED IN-APP AD CONTROLS -->
+    <section class="app-ad-card">
+        <h3 style="margin-top: 0; color: #1e293b;">In-App AdMob Controls</h3>
+        <button onclick="triggerAppInterstitial()" style="padding: 10px 18px; margin: 5px; background: #0284c7; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            Show Interstitial Ad
+        </button>
+        <button onclick="triggerAppRewarded()" style="padding: 10px 18px; margin: 5px; background: #16a34a; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            Watch Rewarded Ad
+        </button>
+    </section>
+
+    <!-- ADMOB NATIVE AD CONTAINER SLOT -->
+    <div id="admob-native-container" class="native-ad-card">
+        <span class="native-ad-badge">AdMob Native</span>
+        <h3 id="native-headline" style="margin-top: 5px; color: #1e293b;"></h3>
+        <p id="native-body" style="color: #475569; font-size: 14px;"></p>
+        <button id="native-cta" style="padding: 8px 16px; background: #0284c7; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;"></button>
+    </div>
+
+    <!-- LARGE AD SPACE 1 -->
     <div class="large-ad-slot">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
-             crossorigin="anonymous"></script>
-        <!-- Saint -->
         <ins class="adsbygoogle"
              style="display:block; width:100%;"
              data-ad-client="ca-pub-7728035806961877"
@@ -179,11 +224,8 @@
                 </div>
             </div>
 
-            <!-- LARGE AD SPACE 2: ABOVE FEED STREAM -->
+            <!-- LARGE AD SPACE 2 -->
             <div class="large-ad-slot">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
-                     crossorigin="anonymous"></script>
-                <!-- Saint -->
                 <ins class="adsbygoogle"
                      style="display:block; width:100%;"
                      data-ad-client="ca-pub-7728035806961877"
@@ -197,11 +239,8 @@
 
             <div id="my-native-feed">Loading Live News Feed...</div>
 
-            <!-- LARGE AD SPACE 3: BELOW NEWS FEED -->
+            <!-- LARGE AD SPACE 3 -->
             <div class="large-ad-slot">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
-                     crossorigin="anonymous"></script>
-                <!-- Saint -->
                 <ins class="adsbygoogle"
                      style="display:block; width:100%;"
                      data-ad-client="ca-pub-7728035806961877"
@@ -274,11 +313,8 @@
         </aside>
     </div>
 
-    <!-- LARGE AD SPACE 4: BOTTOM PAGE FOOTER BANNER -->
+    <!-- LARGE AD SPACE 4 -->
     <div class="large-ad-slot">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877"
-             crossorigin="anonymous"></script>
-        <!-- Saint -->
         <ins class="adsbygoogle"
              style="display:block; width:100%;"
              data-ad-client="ca-pub-7728035806961877"
@@ -290,7 +326,8 @@
         </script>
     </div>
 
-<div id="ytrgt-727e202276124cc980f6591cecf4c080"></div><script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:nobid', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:error', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-727e202276124cc980f6591cecf4c080', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "727e202276124cc980f6591cecf4c080", "video": {"mimes": ["video/mp4"], "protocols": [2, 3, 5, 6]}, "videoOptions": {"muted": "auto", "skipDelay": 10, "replay": true}, "tmax": 3000, "showAdMark": true});</script>
+<div id="ytrgt-727e202276124cc980f6591cecf4c080"></div>
+<script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:nobid', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:on', '#ytrgt-727e202276124cc980f6591cecf4c080', 'hb:error', function(){var s=document.getElementById('ytrgt-727e202276124cc980f6591cecf4c080');if(s){s.style.display='none';}});ytrgt('hb:load', '#ytrgt-727e202276124cc980f6591cecf4c080', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "727e202276124cc980f6591cecf4c080", "video": {"mimes": ["video/mp4"], "protocols": [2, 3, 5, 6]}, "videoOptions": {"muted": "auto", "skipDelay": 10, "replay": true}, "tmax": 3000, "showAdMark": true});</script>
     
 </main>
 
@@ -320,21 +357,16 @@ async function loadFeed() {
             `;
             feedContainer.appendChild(div);
 
-            // Inject AdSense Fluid In-Feed Ad unit after every 3rd news item
             if ((index + 1) % 3 === 0 && index !== articles.length - 1) {
                 const adDiv = document.createElement('div');
                 adDiv.className = 'infeed-ad-wrapper';
                 adDiv.innerHTML = `
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"><\/script>
                     <ins class="adsbygoogle"
                          style="display:block"
                          data-ad-format="fluid"
                          data-ad-layout-key="+25+rv+x-4w+75"
                          data-ad-client="ca-pub-7728035806961877"
                          data-ad-slot="7362464742"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    <\/script>
                 `;
                 feedContainer.appendChild(adDiv);
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -351,7 +383,45 @@ loadFeed();
 
 <!-- Cloudflare Web Analytics -->
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
-<!-- End Cloudflare Web Analytics -->
+
+<!-- ANDROID ADMOB INTERFACE BRIDGE -->
+<script>
+  function triggerAppInterstitial() {
+    if (window.AndroidApp && typeof window.AndroidApp.showInterstitial === 'function') {
+      window.AndroidApp.showInterstitial();
+    }
+  }
+
+  function triggerAppRewarded() {
+    if (window.AndroidApp && typeof window.AndroidApp.showRewarded === 'function') {
+      window.AndroidApp.showRewarded();
+    }
+  }
+
+  function renderAppNativeAd(headline, body, cta) {
+    const container = document.getElementById('admob-native-container');
+    if (container) {
+      document.getElementById('native-headline').innerText = headline;
+      document.getElementById('native-body').innerText = body;
+      document.getElementById('native-cta').innerText = cta;
+      container.style.display = 'block';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        triggerAppInterstitial();
+      });
+    });
+
+    if (window.AndroidApp && typeof window.AndroidApp.requestNativeAd === 'function') {
+      window.AndroidApp.requestNativeAd();
+    }
+  });
+</script>
 
 </body>
 </html>
+

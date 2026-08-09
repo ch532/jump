@@ -60,7 +60,7 @@
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        k=e.createElement(t),a=e.getElementsByTagName(r)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110805897', 'ym');
 
     ym(110805897, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
@@ -152,17 +152,6 @@
             border-radius: 8px;
             padding: 10px;
             box-sizing: border-box;
-        }
-
-        /* IN-APP AD CONTROLS & NATIVE CARD */
-        .app-ad-card {
-            text-align: center;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
         }
 
         .native-ad-card {
@@ -285,20 +274,9 @@
     
     <div class="container">
 
-        <!-- DEDICATED IN-APP AD CONTROLS -->
-        <section class="app-ad-card">
-            <h3 style="margin-top: 0; color: #1e293b;">In-App AdMob Controls</h3>
-            <button onclick="triggerAppInterstitial()" style="padding: 10px 18px; margin: 5px; background: #0284c7; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                Show Interstitial Ad
-            </button>
-            <button onclick="triggerAppRewarded()" style="padding: 10px 18px; margin: 5px; background: #16a34a; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                Watch Rewarded Ad
-            </button>
-        </section>
-
         <!-- ADMOB NATIVE AD CONTAINER SLOT -->
         <div id="admob-native-container" class="native-ad-card">
-            <span class="native-ad-badge">AdMob Native</span>
+            <span class="native-ad-badge">Sponsored</span>
             <h3 id="native-headline" style="margin-top: 5px; color: #1e293b;"></h3>
             <p id="native-body" style="color: #475569; font-size: 14px;"></p>
             <button id="native-cta" style="padding: 8px 16px; background: #0284c7; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;"></button>
@@ -702,7 +680,6 @@
     </div>
 </div>
 
-<!-- Footer area matching your brand styles -->
 <footer>
     <p>Address: Near Beulah International School, Kurudu, Abuja, FCT, Nigeria</p>
     <p>© 2026 SkyIPworld. All Rights Reserved.</p>
@@ -733,18 +710,6 @@
 
 <!-- ANDROID ADMOB INTERFACE BRIDGE -->
 <script>
-  function triggerAppInterstitial() {
-    if (window.AndroidApp && typeof window.AndroidApp.showInterstitial === 'function') {
-      window.AndroidApp.showInterstitial();
-    }
-  }
-
-  function triggerAppRewarded() {
-    if (window.AndroidApp && typeof window.AndroidApp.showRewarded === 'function') {
-      window.AndroidApp.showRewarded();
-    }
-  }
-
   function renderAppNativeAd(headline, body, cta) {
     const container = document.getElementById('admob-native-container');
     if (container) {
@@ -756,10 +721,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-links a');
+    const navLinks = document.querySelectorAll('.nav-links a, .widget-wrapper-card a');
     navLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        triggerAppInterstitial();
+      link.addEventListener('click', function() {
+        if (window.AndroidApp && typeof window.AndroidApp.showInterstitial === 'function') {
+          window.AndroidApp.showInterstitial();
+        }
       });
     });
 
@@ -773,7 +740,3 @@
     
 </body>
 </html>
-
-
-
-

@@ -21,6 +21,7 @@
             --input-bg: #0d1322;
             --success: #10b981;
             --error: #ef4444;
+            --testnet-blue: #3b82f6;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
@@ -46,7 +47,7 @@
         .network-badge {
             display: inline-flex; align-items: center; gap: 6px;
             background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.2);
-            color: var(--ember-orange); padding: 4px 12px; border-radius: 20px;
+            color: var(--ember-orange); padding: 6px 14px; border-radius: 20px;
             font-size: 0.725rem; font-weight: 700; margin-top: 10px; cursor: pointer;
         }
 
@@ -64,13 +65,13 @@
 
         label { display: block; font-size: 0.775rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        input, select, textarea {
+        input, textarea {
             width: 100%; padding: 12px; background: var(--input-bg);
             border: 1px solid var(--panel-border); border-radius: 8px;
             color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
         }
 
-        input:focus, select:focus, textarea:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
+        input:focus, textarea:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
         textarea { resize: vertical; height: 75px; }
 
         .btn {
@@ -106,8 +107,8 @@
     <div class="brand-header">
         <h1 class="brand-title"><span class="fire">🔥 EMBER</span> AS</h1>
         <div class="brand-subtitle">Encrypted Bitcoin Core Engine</div>
-        <div class="network-badge" onclick="toggleNetwork()">
-            <div class="pulse-dot"></div>
+        <div class="network-badge" id="netBadge" onclick="toggleNetwork()">
+            <div class="pulse-dot" id="netDot"></div>
             <span id="networkLabel">MAINNET ACTIVE</span>
         </div>
     </div>
@@ -174,7 +175,6 @@
     </div>
 </div>
 
-<!-- REAL CLIENT-SIDE BITCOIN ENGINE WITH TESTNET/MAINNET TOGGLE -->
 <script type="module">
     import { generateMnemonic, mnemonicToSeedSync } from 'https://esm.sh/@scure/bip39@1.3.0';
     import { wordlist } from 'https://esm.sh/@scure/bip39@1.3.0/wordlists/english';
@@ -187,14 +187,21 @@
     window.toggleNetwork = function() {
         isTestnetMode = !isTestnetMode;
         const label = document.getElementById('networkLabel');
+        const badge = document.getElementById('netBadge');
+        const dot = document.getElementById('netDot');
+
         if (isTestnetMode) {
             label.innerText = "TESTNET3 ACTIVE (Faucet Ready)";
-            document.querySelector('.network-badge').style.borderColor = "#3b82f6";
-            document.querySelector('.network-badge').style.color = "#3b82f6";
+            badge.style.borderColor = "#3b82f6";
+            badge.style.color = "#3b82f6";
+            dot.style.backgroundColor = "#3b82f6";
+            dot.style.boxShadow = "0 0 8px #3b82f6";
         } else {
             label.innerText = "MAINNET ACTIVE";
-            document.querySelector('.network-badge').style.borderColor = "var(--ember-orange)";
-            document.querySelector('.network-badge').style.color = "var(--ember-orange)";
+            badge.style.borderColor = "var(--ember-orange)";
+            badge.style.color = "var(--ember-orange)";
+            dot.style.backgroundColor = "var(--ember-orange)";
+            dot.style.boxShadow = "0 0 8px var(--ember-orange)";
         }
     };
 
@@ -413,6 +420,7 @@
 
 </body>
 </html>
+
 
 
 

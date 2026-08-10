@@ -175,7 +175,8 @@
 </div>
 
 <script>
-    const API_BASE = '/api/v1/wallet';
+    // OPTION 1 APPLIED: Explicit full backend endpoint URL
+    const API_BASE = 'https://www.chyke.online/api/v1/wallet';
 
     async function handleResponse(res) {
         const text = await res.text();
@@ -278,3 +279,4 @@
 
 </body>
 </html>
+

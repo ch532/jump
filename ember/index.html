@@ -105,7 +105,7 @@
 <div class="app-container">
     <div class="brand-header">
         <h1 class="brand-title"><span class="fire">🔥 EMBER</span> AS</h1>
-        <div class="brand-subtitle">Encrypted Bitcoin Core Engine</div>
+        <div class="brand-subtitle">Encrypted Bitcoin Core Engine (Real On-Chain)</div>
         <div class="network-badge">
             <div class="pulse-dot"></div>
             BITCOIN CORE ACTIVE
@@ -154,8 +154,8 @@
             <h2 class="panel-title">3. PSBT Sign & Broadcast</h2>
         </div>
         <div class="form-group">
-            <label for="sendWifPayload">Encrypted WIF Key Object</label>
-            <textarea id="sendWifPayload" placeholder='{"ciphertext":"...","iv":"...","authTag":"..."}'></textarea>
+            <label for="sendWifPayload">Encrypted Payload Object</label>
+            <textarea id="sendWifPayload" placeholder='{"ciphertext":"...","iv":"...","pubKeyHex":"...","address":"..."}'></textarea>
         </div>
         <div class="form-group">
             <label for="sendPin">Decryption PIN</label>
@@ -174,8 +174,54 @@
     </div>
 </div>
 
-<script>
-    async function createWallet() {
+<!-- REAL CLIENT-SIDE BITCOIN ENGINE USING @SCURE LIBRARIES -->
+<script type="module">
+    // Load Audited Bitcoin Modules from NPM via esm.sh CDN
+    import { generateMnemonic, mnemonicToSeedSync } from 'https://esm.sh/@scure/bip39@1.3.0';
+    import { wordlist } from 'https://esm.sh/@scure/bip39@1.3.0/wordlists/english';
+    import { HDKey } from 'https://esm.sh/@scure/bip32@1.4.0';
+    import * as btc from 'https://esm.sh/@scure/btc-signer@1.4.0';
+    import { hex, base64 } from 'https://esm.sh/@scure/base@1.1.7';
+
+    // 1. WEB CRYPTO API: AES-256-GCM Encryption
+    async function deriveKeyFromPin(pin) {
+        const enc = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+            "raw", enc.encode(pin), { name: "PBKDF2" }, false, ["deriveKey"]
+        );
+        const salt = enc.encode("ember_core_secure_salt_v1");
+        return crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+            keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+        );
+    }
+
+    async function encryptData(text, pin) {
+        const key = await deriveKeyFromPin(pin);
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const enc = new TextEncoder();
+        const encrypted = await crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv }, key, enc.encode(text)
+        );
+        return {
+            ciphertext: base64.encode(new Uint8Array(encrypted)),
+            iv: base64.encode(iv)
+        };
+    }
+
+    async function decryptData(encryptedObj, pin) {
+        const key = await deriveKeyFromPin(pin);
+        const iv = base64.decode(encryptedObj.iv);
+        const ciphertext = base64.decode(encryptedObj.ciphertext);
+        const decrypted = await crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: iv }, key, ciphertext
+        );
+        const dec = new TextDecoder();
+        return dec.decode(decrypted);
+    }
+
+    // 2. REAL WALLET GENERATION
+    window.createWallet = async function() {
         const pin = document.getElementById('createPin').value;
         const out = document.getElementById('createOutput');
         if (!pin || pin.length < 4) {
@@ -183,39 +229,55 @@
             return;
         }
 
-        out.innerText = 'Deriving keys locally in browser memory...';
+        out.innerText = 'Deriving real keys locally...';
 
         try {
-            const randomBytes = new Uint8Array(20);
-            window.crypto.getRandomValues(randomBytes);
+            // Generate Real 12-word Mnemonic & Seed
+            const mnemonic = generateMnemonic(wordlist, 128); 
+            const seed = mnemonicToSeedSync(mnemonic);
             
-            const hexString = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
-            const address = "bc1q" + hexString;
+            // BIP84 Native SegWit Derivation
+            const root = HDKey.fromMasterSeed(seed);
+            const child = root.derive("m/84'/0'/0'/0/0");
+            
+            // Derive P2WPKH Mainnet Address
+            const p2wpkh = btc.p2wpkh(child.publicKey, btc.NETWORK); 
+            const address = p2wpkh.address;
+
+            // Encrypt the Private Key (Hex) with AES
+            const privKeyHex = hex.encode(child.privateKey);
+            const pubKeyHex = hex.encode(child.publicKey);
+            
+            const encryptedKey = await encryptData(privKeyHex, pin);
 
             const payload = {
                 success: true,
                 address: address,
+                pubKeyHex: pubKeyHex,
                 encryptedData: {
-                    wif: {
-                        ciphertext: "enc_gcm_" + btoa(pin + address),
-                        iv: Array.from(window.crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join(''),
-                        authTag: Array.from(window.crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('')
-                    }
+                    wif: encryptedKey
                 }
             };
 
-            out.innerText = JSON.stringify(payload, null, 2);
+            // Display results + Seed Phrase Backup
+            out.innerText = JSON.stringify({ ...payload, mnemonic_backup: mnemonic }, null, 2);
 
+            // Populate next steps automatically
             document.getElementById('checkAddress').value = payload.address;
-            document.getElementById('sendWifPayload').value = JSON.stringify(payload.encryptedData.wif);
+            document.getElementById('sendWifPayload').value = JSON.stringify({
+                ...payload.encryptedData.wif, 
+                pubKeyHex: payload.pubKeyHex,
+                address: payload.address 
+            });
             document.getElementById('sendPin').value = pin;
 
         } catch (err) {
             out.innerText = 'Error generating keys: ' + err.message;
         }
-    }
+    };
 
-    async function checkBalance() {
+    // 3. REAL BALANCE API
+    window.checkBalance = async function() {
         const address = document.getElementById('checkAddress').value.trim();
         if (!address) {
             alert('Please enter a valid address.');
@@ -243,30 +305,111 @@
         } catch (err) {
             alert('Balance fetch error: ' + err.message);
         }
-    }
+    };
 
-    async function sendBitcoin() {
+    // 4. REAL SIGNING & NETWORK BROADCAST
+    window.sendBitcoin = async function() {
         const wifRaw = document.getElementById('sendWifPayload').value.trim();
         const pin = document.getElementById('sendPin').value;
         const recipient = document.getElementById('recipientAddress').value.trim();
-        const amountSats = parseInt(document.getElementById('sendAmount').value);
+        const amountSatsStr = document.getElementById('sendAmount').value;
         const out = document.getElementById('sendOutput');
 
-        if (!wifRaw || !pin || !recipient || !amountSats) {
+        if (!wifRaw || !pin || !recipient || !amountSatsStr) {
             alert('Please complete all send parameters.');
             return;
         }
 
-        out.innerText = 'Decrypting WIF key in client memory and signing PSBT...';
+        out.innerText = 'Decrypting memory, fetching UTXOs, calculating fees, and signing TX...';
 
-        setTimeout(() => {
-            out.innerText = JSON.stringify({
-                success: true,
-                txid: "0000000000000000000000000000000000000000000000000000000000000000",
-                message: "Transaction constructed & signed locally"
-            }, null, 2);
-        }, 800);
-    }
+        let encryptedObj;
+        try {
+            encryptedObj = JSON.parse(wifRaw);
+        } catch (e) {
+            alert('Malformed Encrypted JSON.');
+            return;
+        }
+
+        try {
+            // Decrypt Private Key
+            const privKeyHex = await decryptData(encryptedObj, pin);
+            const privKey = hex.decode(privKeyHex);
+            const pubKey = hex.decode(encryptedObj.pubKeyHex);
+            const address = encryptedObj.address;
+            
+            const isTestnet = address.startsWith('tb1') || address.startsWith('m');
+            const network = isTestnet ? btc.TEST_NETWORK : btc.NETWORK;
+
+            // Fetch UTXOs from Blockstream
+            const utxoUrl = isTestnet 
+                ? `https://blockstream.info/testnet/api/address/${address}/utxo` 
+                : `https://blockstream.info/api/address/${address}/utxo`;
+                
+            const utxoRes = await fetch(utxoUrl);
+            if (!utxoRes.ok) throw new Error("Failed to fetch UTXOs. Network block maybe?");
+            const utxos = await utxoRes.json();
+            
+            if (utxos.length === 0) throw new Error("No UTXOs found (Wallet is empty)");
+
+            const p2wpkh = btc.p2wpkh(pubKey, network);
+            const tx = new btc.Transaction();
+
+            let totalInput = 0n;
+            for (const utxo of utxos) {
+                totalInput += BigInt(utxo.value);
+                tx.addInput({
+                    ...p2wpkh,
+                    txid: utxo.txid,
+                    index: utxo.vout,
+                    witnessUtxo: { script: p2wpkh.script, amount: BigInt(utxo.value) }
+                });
+            }
+
+            const sendAmount = BigInt(amountSatsStr);
+            const fee = 300n; // Hardcoded basic fee buffer for now
+            
+            if (totalInput < sendAmount + fee) {
+                throw new Error(`Insufficient balance. Have ${totalInput}, need ${sendAmount + fee}`);
+            }
+
+            // Add Output to Recipient
+            tx.addOutputAddress(recipient, sendAmount, network);
+
+            // Add Change Output back to Sender (if above dust limit)
+            const change = totalInput - sendAmount - fee;
+            if (change > 546n) { 
+                tx.addOutputAddress(address, change, network);
+            }
+
+            // Sign and Finalize internally!
+            tx.sign(privKey);
+            tx.finalize();
+            const txHex = tx.hex;
+
+            out.innerText = `Raw TX Signed Successfully:\n${txHex.substring(0,60)}...\n\nBroadcasting to network...`;
+
+            // Broadcast to real blockchain network
+            const broadcastUrl = isTestnet 
+                ? `https://blockstream.info/testnet/api/tx` 
+                : `https://blockstream.info/api/tx`;
+                
+            const bRes = await fetch(broadcastUrl, {
+                method: 'POST',
+                body: txHex
+            });
+            
+            if (bRes.ok) {
+                const txid = await bRes.text();
+                out.innerText = `SUCCESS! Transaction sent to network.\n\nTXID: ${txid}`;
+            } else {
+                const errText = await bRes.text();
+                throw new Error(`Broadcast rejected by node: ${errText}`);
+            }
+
+        } catch (err) {
+            out.innerText = 'Error: ' + err.message;
+        }
+    };
 </script>
 
 </body>

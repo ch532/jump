@@ -5,27 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ember AS — Encrypted Bitcoin Core</title>
     
-    <!-- STRUCTURED DATA FOR CRYPTO & SEARCH INDEXERS -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Ember AS",
-      "operatingSystem": "Web Browser, Chrome Extension",
-      "applicationCategory": "FinanceApplication",
-      "description": "Encrypted Non-Custodial Bitcoin Core Engine & Web3 Wallet.",
-      "url": "https://www.chyke.online",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    }
-    </script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --bg-main: #090d16;
@@ -40,10 +23,7 @@
             --error: #ef4444;
         }
 
-        * {
-            box-sizing: border-box;
-            transition: all 0.2s ease-in-out;
-        }
+        * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -57,194 +37,66 @@
             min-height: 100vh;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 620px;
-        }
-
-        .brand-header {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .brand-title {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin: 0 0 6px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .brand-title span.fire {
-            color: var(--ember-orange);
-            filter: drop-shadow(0 0 10px var(--ember-glow));
-        }
-
-        .brand-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 600;
-        }
-
+        .app-container { width: 100%; max-width: 620px; }
+        .brand-header { text-align: center; margin-bottom: 28px; }
+        .brand-title { font-size: 2rem; font-weight: 700; margin: 0 0 6px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .brand-title span.fire { color: var(--ember-orange); filter: drop-shadow(0 0 10px var(--ember-glow)); }
+        .brand-subtitle { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        
         .network-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 107, 0, 0.1);
-            border: 1px solid rgba(255, 107, 0, 0.2);
-            color: var(--ember-orange);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.725rem;
-            font-weight: 700;
-            margin-top: 10px;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.2);
+            color: var(--ember-orange); padding: 4px 12px; border-radius: 20px;
+            font-size: 0.725rem; font-weight: 700; margin-top: 10px;
         }
 
-        .pulse-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--ember-orange);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--ember-orange);
-        }
+        .pulse-dot { width: 6px; height: 6px; background-color: var(--ember-orange); border-radius: 50%; box-shadow: 0 0 8px var(--ember-orange); }
 
         .panel {
-            background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            background: var(--panel-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border); border-radius: 16px;
+            padding: 22px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--panel-border);
-            padding-bottom: 12px;
-        }
+        .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
+        .panel-title { font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-main); }
+        .form-group { margin-bottom: 14px; }
 
-        .panel-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.775rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        label { display: block; font-size: 0.775rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
 
         input, textarea {
-            width: 100%;
-            padding: 12px;
-            background: var(--input-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            outline: none;
+            width: 100%; padding: 12px; background: var(--input-bg);
+            border: 1px solid var(--panel-border); border-radius: 8px;
+            color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
         }
 
-        input:focus, textarea:focus {
-            border-color: var(--ember-orange);
-            box-shadow: 0 0 0 3px var(--ember-glow);
-        }
-
-        textarea {
-            resize: vertical;
-            height: 65px;
-        }
+        input:focus, textarea:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
+        textarea { resize: vertical; height: 75px; }
 
         .btn {
-            width: 100%;
-            padding: 13px;
-            background: var(--ember-orange);
-            color: #000;
-            font-weight: 700;
-            font-size: 0.875rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            width: 100%; padding: 13px; background: var(--ember-orange); color: #000;
+            font-weight: 700; font-size: 0.875rem; border: none; border-radius: 8px; cursor: pointer;
             box-shadow: 0 4px 14px var(--ember-glow);
         }
 
-        .btn:hover {
-            opacity: 0.92;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: #2563eb;
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: #000;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
-        }
+        .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+        .btn-secondary { background: #2563eb; color: #fff; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); }
+        .btn-success { background: var(--success); color: #000; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25); }
 
         .balance-card {
-            background: var(--input-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 14px;
+            background: var(--input-bg); border: 1px solid var(--panel-border);
+            border-radius: 12px; padding: 16px; display: flex; align-items: center;
+            justify-content: space-between; margin-top: 14px;
         }
 
-        .balance-amount {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--success);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .balance-sub {
-            font-size: 0.825rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .balance-amount { font-size: 1.5rem; font-weight: 700; color: var(--success); font-family: 'JetBrains Mono', monospace; }
+        .balance-sub { font-size: 0.825rem; color: var(--text-muted); font-weight: 500; }
 
         .console-output {
-            background: var(--input-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.775rem;
-            color: var(--text-muted);
-            max-height: 160px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin-top: 12px;
+            background: var(--input-bg); border: 1px solid var(--panel-border);
+            border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.775rem; color: var(--text-muted); max-height: 180px; overflow-y: auto;
+            white-space: pre-wrap; word-break: break-all; margin-top: 12px;
         }
     </style>
 </head>
@@ -256,7 +108,7 @@
         <div class="brand-subtitle">Encrypted Bitcoin Core Engine</div>
         <div class="network-badge">
             <div class="pulse-dot"></div>
-            BITCOIN MAINNET ACTIVE
+            BITCOIN CORE ACTIVE
         </div>
     </div>
 
@@ -279,8 +131,8 @@
             <h2 class="panel-title">2. Address Inspector</h2>
         </div>
         <div class="form-group">
-            <label for="checkAddress">Native SegWit Address (p2wpkh)</label>
-            <input type="text" id="checkAddress" placeholder="bc1q...">
+            <label for="checkAddress">Native SegWit Address (P2WPKH)</label>
+            <input type="text" id="checkAddress" placeholder="bc1q... or tb1q...">
         </div>
         <button class="btn btn-secondary" onclick="checkBalance()">Sync On-Chain Balance</button>
         
@@ -311,7 +163,7 @@
         </div>
         <div class="form-group">
             <label for="recipientAddress">Recipient SegWit Address</label>
-            <input type="text" id="recipientAddress" placeholder="bc1q...">
+            <input type="text" id="recipientAddress" placeholder="bc1q... or tb1q...">
         </div>
         <div class="form-group">
             <label for="sendAmount">Amount (Satoshis)</label>
@@ -325,6 +177,15 @@
 <script>
     const API_BASE = '/api/v1/wallet';
 
+    async function handleResponse(res) {
+        const text = await res.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            throw new Error(`Server returned HTML/Invalid Response (Status: ${res.status}). Ensure PM2 process is running.`);
+        }
+    }
+
     async function createWallet() {
         const pin = document.getElementById('createPin').value;
         const out = document.getElementById('createOutput');
@@ -333,14 +194,17 @@
             return;
         }
 
-        out.innerText = 'Deriving keys & running AES-256-GCM encryption...';
+        out.innerText = 'Deriving keys and running AES-256-GCM encryption...';
         try {
             const res = await fetch(`${API_BASE}/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ pin })
             });
-            const data = await res.json();
+            const data = await handleResponse(res);
+            
+            if (!res.ok) throw new Error(data.error || 'Wallet creation failed');
+
             out.innerText = JSON.stringify(data, null, 2);
 
             if (data.address) {
@@ -362,7 +226,7 @@
 
         try {
             const res = await fetch(`${API_BASE}/balance/${address}`);
-            const data = await res.json();
+            const data = await handleResponse(res);
 
             if (data.balanceSats !== undefined) {
                 document.getElementById('satsVal').innerText = `${data.balanceSats.toLocaleString()} Sats`;
@@ -371,7 +235,7 @@
                 alert(data.error || 'Failed to fetch balance');
             }
         } catch (err) {
-            alert('Error communicating with Ember AS engine.');
+            alert(err.message);
         }
     }
 
@@ -395,7 +259,7 @@
             return;
         }
 
-        out.innerText = 'Decrypting key in memory, calculating mempool fees, and signing PSBT...';
+        out.innerText = 'Decrypting key in memory, calculating fees, and signing PSBT...';
 
         try {
             const res = await fetch(`${API_BASE}/send`, {
@@ -403,7 +267,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ encryptedWif, pin, recipient, amountSats })
             });
-            const data = await res.json();
+            const data = await handleResponse(res);
+            if (!res.ok) throw new Error(data.error || 'Broadcast failed');
             out.innerText = JSON.stringify(data, null, 2);
         } catch (err) {
             out.innerText = 'Error: ' + err.message;

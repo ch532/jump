@@ -47,7 +47,7 @@
             display: inline-flex; align-items: center; gap: 6px;
             background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.2);
             color: var(--ember-orange); padding: 4px 12px; border-radius: 20px;
-            font-size: 0.725rem; font-weight: 700; margin-top: 10px;
+            font-size: 0.725rem; font-weight: 700; margin-top: 10px; cursor: pointer;
         }
 
         .pulse-dot { width: 6px; height: 6px; background-color: var(--ember-orange); border-radius: 50%; box-shadow: 0 0 8px var(--ember-orange); }
@@ -64,13 +64,13 @@
 
         label { display: block; font-size: 0.775rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        input, textarea {
+        input, select, textarea {
             width: 100%; padding: 12px; background: var(--input-bg);
             border: 1px solid var(--panel-border); border-radius: 8px;
             color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
         }
 
-        input:focus, textarea:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
+        input:focus, select:focus, textarea:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
         textarea { resize: vertical; height: 75px; }
 
         .btn {
@@ -105,10 +105,10 @@
 <div class="app-container">
     <div class="brand-header">
         <h1 class="brand-title"><span class="fire">🔥 EMBER</span> AS</h1>
-        <div class="brand-subtitle">Encrypted Bitcoin Core Engine (Real On-Chain)</div>
-        <div class="network-badge">
+        <div class="brand-subtitle">Encrypted Bitcoin Core Engine</div>
+        <div class="network-badge" onclick="toggleNetwork()">
             <div class="pulse-dot"></div>
-            BITCOIN CORE ACTIVE
+            <span id="networkLabel">MAINNET ACTIVE</span>
         </div>
     </div>
 
@@ -174,16 +174,30 @@
     </div>
 </div>
 
-<!-- REAL CLIENT-SIDE BITCOIN ENGINE USING @SCURE LIBRARIES -->
+<!-- REAL CLIENT-SIDE BITCOIN ENGINE WITH TESTNET/MAINNET TOGGLE -->
 <script type="module">
-    // Load Audited Bitcoin Modules from NPM via esm.sh CDN
     import { generateMnemonic, mnemonicToSeedSync } from 'https://esm.sh/@scure/bip39@1.3.0';
     import { wordlist } from 'https://esm.sh/@scure/bip39@1.3.0/wordlists/english';
     import { HDKey } from 'https://esm.sh/@scure/bip32@1.4.0';
     import * as btc from 'https://esm.sh/@scure/btc-signer@1.4.0';
     import { hex, base64 } from 'https://esm.sh/@scure/base@1.1.7';
 
-    // 1. WEB CRYPTO API: AES-256-GCM Encryption
+    let isTestnetMode = false;
+
+    window.toggleNetwork = function() {
+        isTestnetMode = !isTestnetMode;
+        const label = document.getElementById('networkLabel');
+        if (isTestnetMode) {
+            label.innerText = "TESTNET3 ACTIVE (Faucet Ready)";
+            document.querySelector('.network-badge').style.borderColor = "#3b82f6";
+            document.querySelector('.network-badge').style.color = "#3b82f6";
+        } else {
+            label.innerText = "MAINNET ACTIVE";
+            document.querySelector('.network-badge').style.borderColor = "var(--ember-orange)";
+            document.querySelector('.network-badge').style.color = "var(--ember-orange)";
+        }
+    };
+
     async function deriveKeyFromPin(pin) {
         const enc = new TextEncoder();
         const keyMaterial = await crypto.subtle.importKey(
@@ -220,7 +234,6 @@
         return dec.decode(decrypted);
     }
 
-    // 2. REAL WALLET GENERATION
     window.createWallet = async function() {
         const pin = document.getElementById('createPin').value;
         const out = document.getElementById('createOutput');
@@ -232,37 +245,31 @@
         out.innerText = 'Deriving real keys locally...';
 
         try {
-            // Generate Real 12-word Mnemonic & Seed
             const mnemonic = generateMnemonic(wordlist, 128); 
             const seed = mnemonicToSeedSync(mnemonic);
             
-            // BIP84 Native SegWit Derivation
             const root = HDKey.fromMasterSeed(seed);
-            const child = root.derive("m/84'/0'/0'/0/0");
+            const path = isTestnetMode ? "m/84'/1'/0'/0/0" : "m/84'/0'/0'/0/0";
+            const child = root.derive(path);
             
-            // Derive P2WPKH Mainnet Address
-            const p2wpkh = btc.p2wpkh(child.publicKey, btc.NETWORK); 
+            const network = isTestnetMode ? btc.TEST_NETWORK : btc.NETWORK;
+            const p2wpkh = btc.p2wpkh(child.publicKey, network); 
             const address = p2wpkh.address;
 
-            // Encrypt the Private Key (Hex) with AES
             const privKeyHex = hex.encode(child.privateKey);
             const pubKeyHex = hex.encode(child.publicKey);
-            
             const encryptedKey = await encryptData(privKeyHex, pin);
 
             const payload = {
                 success: true,
+                network: isTestnetMode ? "testnet" : "mainnet",
                 address: address,
                 pubKeyHex: pubKeyHex,
-                encryptedData: {
-                    wif: encryptedKey
-                }
+                encryptedData: { wif: encryptedKey }
             };
 
-            // Display results + Seed Phrase Backup
             out.innerText = JSON.stringify({ ...payload, mnemonic_backup: mnemonic }, null, 2);
 
-            // Populate next steps automatically
             document.getElementById('checkAddress').value = payload.address;
             document.getElementById('sendWifPayload').value = JSON.stringify({
                 ...payload.encryptedData.wif, 
@@ -276,7 +283,6 @@
         }
     };
 
-    // 3. REAL BALANCE API
     window.checkBalance = async function() {
         const address = document.getElementById('checkAddress').value.trim();
         if (!address) {
@@ -307,7 +313,6 @@
         }
     };
 
-    // 4. REAL SIGNING & NETWORK BROADCAST
     window.sendBitcoin = async function() {
         const wifRaw = document.getElementById('sendWifPayload').value.trim();
         const pin = document.getElementById('sendPin').value;
@@ -320,7 +325,7 @@
             return;
         }
 
-        out.innerText = 'Decrypting memory, fetching UTXOs, calculating fees, and signing TX...';
+        out.innerText = 'Decrypting memory, fetching UTXOs, and signing TX...';
 
         let encryptedObj;
         try {
@@ -331,7 +336,6 @@
         }
 
         try {
-            // Decrypt Private Key
             const privKeyHex = await decryptData(encryptedObj, pin);
             const privKey = hex.decode(privKeyHex);
             const pubKey = hex.decode(encryptedObj.pubKeyHex);
@@ -340,16 +344,15 @@
             const isTestnet = address.startsWith('tb1') || address.startsWith('m');
             const network = isTestnet ? btc.TEST_NETWORK : btc.NETWORK;
 
-            // Fetch UTXOs from Blockstream
             const utxoUrl = isTestnet 
                 ? `https://blockstream.info/testnet/api/address/${address}/utxo` 
                 : `https://blockstream.info/api/address/${address}/utxo`;
                 
             const utxoRes = await fetch(utxoUrl);
-            if (!utxoRes.ok) throw new Error("Failed to fetch UTXOs. Network block maybe?");
+            if (!utxoRes.ok) throw new Error("Failed to fetch UTXOs.");
             const utxos = await utxoRes.json();
             
-            if (utxos.length === 0) throw new Error("No UTXOs found (Wallet is empty)");
+            if (utxos.length === 0) throw new Error("No UTXOs found (Wallet balance is 0)");
 
             const p2wpkh = btc.p2wpkh(pubKey, network);
             const tx = new btc.Transaction();
@@ -366,29 +369,25 @@
             }
 
             const sendAmount = BigInt(amountSatsStr);
-            const fee = 300n; // Hardcoded basic fee buffer for now
+            const fee = 300n;
             
             if (totalInput < sendAmount + fee) {
                 throw new Error(`Insufficient balance. Have ${totalInput}, need ${sendAmount + fee}`);
             }
 
-            // Add Output to Recipient
             tx.addOutputAddress(recipient, sendAmount, network);
 
-            // Add Change Output back to Sender (if above dust limit)
             const change = totalInput - sendAmount - fee;
             if (change > 546n) { 
                 tx.addOutputAddress(address, change, network);
             }
 
-            // Sign and Finalize internally!
             tx.sign(privKey);
             tx.finalize();
             const txHex = tx.hex;
 
             out.innerText = `Raw TX Signed Successfully:\n${txHex.substring(0,60)}...\n\nBroadcasting to network...`;
 
-            // Broadcast to real blockchain network
             const broadcastUrl = isTestnet 
                 ? `https://blockstream.info/testnet/api/tx` 
                 : `https://blockstream.info/api/tx`;
@@ -400,10 +399,10 @@
             
             if (bRes.ok) {
                 const txid = await bRes.text();
-                out.innerText = `SUCCESS! Transaction sent to network.\n\nTXID: ${txid}`;
+                out.innerText = `SUCCESS! Transaction sent.\n\nTXID: ${txid}`;
             } else {
                 const errText = await bRes.text();
-                throw new Error(`Broadcast rejected by node: ${errText}`);
+                throw new Error(`Broadcast rejected: ${errText}`);
             }
 
         } catch (err) {
@@ -414,5 +413,6 @@
 
 </body>
 </html>
+
 
 

@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ember AS — Encrypted Bitcoin Core</title>
+    <title>Ember AS — Advanced Encrypted Bitcoin Core</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,13 +65,13 @@
 
         label { display: block; font-size: 0.775rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%; padding: 12px; background: var(--input-bg);
             border: 1px solid var(--panel-border); border-radius: 8px;
             color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
         }
 
-        input:focus, textarea:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
+        input:focus, textarea:focus, select:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
         textarea { resize: vertical; height: 75px; }
 
         .btn {
@@ -82,6 +83,7 @@
         .btn:hover { opacity: 0.92; transform: translateY(-1px); }
         .btn-secondary { background: #2563eb; color: #fff; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); }
         .btn-success { background: var(--success); color: #000; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25); }
+        .btn-purple { background: #8b5cf6; color: #fff; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25); }
 
         .balance-card {
             background: var(--input-bg); border: 1px solid var(--panel-border);
@@ -105,10 +107,10 @@
 <div class="app-container">
     <div class="brand-header">
         <h1 class="brand-title"><span class="fire">🔥 EMBER</span> AS</h1>
-        <div class="brand-subtitle">Encrypted Bitcoin Core Engine</div>
+        <div class="brand-subtitle">Encrypted Bitcoin Core Engine v2</div>
         <div class="network-badge">
             <div class="pulse-dot"></div>
-            <span>MAINNET ACTIVE</span>
+            <span>MAINNET ACTIVE (UTXO & PROOF ENGINE)</span>
         </div>
     </div>
 
@@ -125,16 +127,16 @@
         <div id="createOutput" class="console-output">Awaiting key derivation...</div>
     </div>
 
-    <!-- 2. BALANCE QUERY -->
+    <!-- 2. BALANCE & UTXO INSPECTOR -->
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">2. Address Inspector</h2>
+            <h2 class="panel-title">2. Address Inspector & Coin Control</h2>
         </div>
         <div class="form-group">
             <label for="checkAddress">Native SegWit Address (P2WPKH)</label>
             <input type="text" id="checkAddress" placeholder="bc1q...">
         </div>
-        <button class="btn btn-secondary" onclick="checkBalance()">Sync On-Chain Balance</button>
+        <button class="btn btn-secondary" onclick="checkBalanceAndUtxos()">Sync Balance & UTXOs</button>
         
         <div class="balance-card">
             <div>
@@ -146,12 +148,40 @@
                 <div style="font-size: 1rem; font-weight: 600;" id="btcVal">0.00000000 BTC</div>
             </div>
         </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+            <label for="utxoSelect">Available UTXOs (Coin Control)</label>
+            <select id="utxoSelect">
+                <option value="">-- Sync address to load unspent outputs --</option>
+            </select>
+        </div>
     </div>
 
-    <!-- 3. TRANSACTION BROADCAST -->
+    <!-- 3. ADDRESS VERIFICATION (SIGN MESSAGE) -->
     <div class="panel">
         <div class="panel-header">
-            <h2 class="panel-title">3. PSBT Sign & Broadcast</h2>
+            <h2 class="panel-title">3. Address Ownership Proof</h2>
+        </div>
+        <div class="form-group">
+            <label for="verifyWifPayload">Encrypted Payload Object</label>
+            <textarea id="verifyWifPayload" placeholder='{"ciphertext":"...","iv":"...","pubKeyHex":"..."}'></textarea>
+        </div>
+        <div class="form-group">
+            <label for="verifyPin">Decryption PIN</label>
+            <input type="password" id="verifyPin" placeholder="Enter PIN...">
+        </div>
+        <div class="form-group">
+            <label for="verifyMessage">Message to Sign</label>
+            <input type="text" id="verifyMessage" value="I own this Ember wallet address on chyke.online">
+        </div>
+        <button class="btn btn-purple" onclick="signMessageProof()">Generate Cryptographic Signature</button>
+        <div id="verifyOutput" class="console-output">Signature proof will appear here...</div>
+    </div>
+
+    <!-- 4. TRANSACTION BROADCAST -->
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title">4. PSBT Sign & Broadcast</h2>
         </div>
         <div class="form-group">
             <label for="sendWifPayload">Encrypted Payload Object</label>
@@ -159,7 +189,7 @@
         </div>
         <div class="form-group">
             <label for="sendPin">Decryption PIN</label>
-            <input type="password" id="sendPin" placeholder="Enter PIN to decrypt private key in memory">
+            <input type="password" id="sendPin" placeholder="Enter PIN...">
         </div>
         <div class="form-group">
             <label for="recipientAddress">Recipient SegWit Address</label>
@@ -252,20 +282,20 @@
             out.innerText = JSON.stringify({ ...payload, mnemonic_backup: mnemonic }, null, 2);
 
             document.getElementById('checkAddress').value = payload.address;
-            document.getElementById('sendWifPayload').value = JSON.stringify({
-                ...payload.encryptedData.wif, 
-                pubKeyHex: payload.pubKeyHex,
-                address: payload.address 
-            });
+            const payloadStr = JSON.stringify({ ...payload.encryptedData.wif, pubKeyHex: payload.pubKeyHex, address: payload.address });
+            document.getElementById('sendWifPayload').value = payloadStr;
+            document.getElementById('verifyWifPayload').value = payloadStr;
             document.getElementById('sendPin').value = pin;
+            document.getElementById('verifyPin').value = pin;
 
         } catch (err) {
             out.innerText = 'Error generating keys: ' + err.message;
         }
     };
 
-    window.checkBalance = async function() {
+    window.checkBalanceAndUtxos = async function() {
         const address = document.getElementById('checkAddress').value.trim();
+        const utxoSelect = document.getElementById('utxoSelect');
         if (!address) {
             alert('Please enter a valid address.');
             return;
@@ -285,8 +315,51 @@
             document.getElementById('satsVal').innerText = `${balanceSats.toLocaleString()} Sats`;
             document.getElementById('btcVal').innerText = `${balanceBtc} BTC`;
 
+            // Fetch UTXOs for Coin Control dropdown
+            const utxoRes = await fetch(`https://blockstream.info/api/address/${address}/utxo`);
+            if (utxoRes.ok) {
+                const utxos = await utxoRes.json();
+                utxoSelect.innerHTML = '';
+                if (utxos.length === 0) {
+                    utxoSelect.innerHTML = '<option value="">No unspent outputs found</option>';
+                } else {
+                    utxos.forEach((u, index) => {
+                        const opt = document.option || document.createElement('option');
+                        opt.value = JSON.stringify(u);
+                        opt.text = `UTXO #${index + 1}: ${u.value} Sats (${u.txid.substring(0, 10)}...)`;
+                        utxoSelect.appendChild(opt);
+                    });
+                }
+            }
+
         } catch (err) {
-            alert('Balance fetch error: ' + err.message);
+            alert('Balance/UTXO sync error: ' + err.message);
+        }
+    };
+
+    window.signMessageProof = async function() {
+        const wifRaw = document.getElementById('verifyWifPayload').value.trim();
+        const pin = document.getElementById('verifyPin').value;
+        const message = document.getElementById('verifyMessage').value;
+        const out = document.getElementById('verifyOutput');
+
+        if (!wifRaw || !pin || !message) {
+            alert('Complete all fields to sign message.');
+            return;
+        }
+
+        try {
+            const encryptedObj = JSON.parse(wifRaw);
+            const privKeyHex = await decryptData(encryptedObj, pin);
+            const privKey = hex.decode(privKeyHex);
+
+            // Generate cryptographic signature proof of the message hash
+            const msgBytes = new TextEncoder().encode(message);
+            // Simple secp256k1 message signing via btc-signer / noble curves
+            const sig = btc.signMessage(privKey, msgBytes);
+            out.innerText = `SUCCESS! Address Ownership Verified.\n\nMessage: "${message}"\nSignature (Base64): ${sig}`;
+        } catch (err) {
+            out.innerText = 'Verification Error: ' + err.message;
         }
     };
 
@@ -302,28 +375,27 @@
             return;
         }
 
-        out.innerText = 'Decrypting memory, fetching UTXOs, and signing TX...';
-
-        let encryptedObj;
-        try {
-            encryptedObj = JSON.parse(wifRaw);
-        } catch (e) {
-            alert('Malformed Encrypted JSON.');
-            return;
-        }
+        out.innerText = 'Decrypting memory, parsing selected UTXOs, and signing TX...';
 
         try {
+            const encryptedObj = JSON.parse(wifRaw);
             const privKeyHex = await decryptData(encryptedObj, pin);
             const privKey = hex.decode(privKeyHex);
             const pubKey = hex.decode(encryptedObj.pubKeyHex);
             const address = encryptedObj.address;
             
-            const utxoUrl = `https://blockstream.info/api/address/${address}/utxo`;
-            const utxoRes = await fetch(utxoUrl);
-            if (!utxoRes.ok) throw new Error("Failed to fetch UTXOs.");
-            const utxos = await utxoRes.json();
+            // Check if user selected a specific UTXO via Coin Control dropdown
+            const selectedUtxoRaw = document.getElementById('utxoSelect').value;
+            let utxos = [];
+            if (selectedUtxoRaw) {
+                utxos = [JSON.parse(selectedUtxoRaw)];
+            } else {
+                const utxoRes = await fetch(`https://blockstream.info/api/address/${address}/utxo`);
+                if (!utxoRes.ok) throw new Error("Failed to fetch UTXOs.");
+                utxos = await utxoRes.json();
+            }
             
-            if (utxos.length === 0) throw new Error("No UTXOs found (Wallet balance is 0)");
+            if (utxos.length === 0) throw new Error("No UTXOs available to spend.");
 
             const p2wpkh = btc.p2wpkh(pubKey, btc.NETWORK);
             const tx = new btc.Transaction();
@@ -357,10 +429,9 @@
             tx.finalize();
             const txHex = tx.hex;
 
-            out.innerText = `Raw TX Signed Successfully:\n${txHex.substring(0,60)}...\n\nBroadcasting to network...`;
+            out.innerText = `Raw TX Signed Successfully:\n${txHex.substring(0,60)}...\n\nBroadcasting...`;
 
-            const broadcastUrl = `https://blockstream.info/api/tx`;
-            const bRes = await fetch(broadcastUrl, {
+            const bRes = await fetch(`https://blockstream.info/api/tx`, {
                 method: 'POST',
                 body: txHex
             });

@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 340px;
+            height: 500px;
+            background: #090d16;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
+        }
 
+        .header {
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+        }
+
+        .title {
+            color: #ff6b00;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            background: rgba(255, 107, 0, 0.2);
+            color: #ff6b00;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .card {
+            background: #151d2e;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 0.7rem;
+            color: #64748b;
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            background: #0d1322;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #ff6b00;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .balance-box {
+            text-align: center;
+            padding: 12px;
+            background: #0d1322;
+            border-radius: 8px;
+        }
+
+        .sats {
+            font-size: 1.3rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .addr {
+            font-family: monospace;
+            font-size: 0.65rem;
+            color: #94a3b8;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="title">🔥 EMBER AS</div>
+    <span class="badge">MAINNET READY</span>
+</div>
+
+<div class="card">
+    <label>Wallet Address</label>
+    <div class="addr" id="activeAddr">No Wallet Derived</div>
+    
+    <div class="balance-box" style="margin-top: 8px;">
+        <div class="sats" id="satsDisplay">0 Sats</div>
+    </div>
+</div>
+
+<div class="card">
+    <label>Master PIN</label>
+    <input type="password" id="pinInput" placeholder="Enter PIN">
+    <button id="genBtn">Create Mainnet Wallet</button>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ember AS — Advanced Encrypted Bitcoin Core</title>
+    <title>Ember Wallet</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,10 +17,9 @@
             --ember-orange: #ff6b00;
             --ember-glow: rgba(255, 107, 0, 0.25);
             --text-main: #f8fafc;
-            --text-muted: #64748b;
+            --text-muted: #94a3b8;
             --input-bg: #0d1322;
             --success: #10b981;
-            --error: #ef4444;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
@@ -37,45 +36,35 @@
             min-height: 100vh;
         }
 
-        .app-container { width: 100%; max-width: 620px; }
-        .brand-header { text-align: center; margin-bottom: 28px; }
-        .brand-title { font-size: 2rem; font-weight: 700; margin: 0 0 6px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .app-container { width: 100%; max-width: 580px; }
+        .brand-header { text-align: center; margin-bottom: 24px; }
+        .brand-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 4px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .brand-title span.fire { color: var(--ember-orange); filter: drop-shadow(0 0 10px var(--ember-glow)); }
-        .brand-subtitle { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        .brand-subtitle { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
         
-        .network-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.2);
-            color: var(--ember-orange); padding: 6px 14px; border-radius: 20px;
-            font-size: 0.725rem; font-weight: 700; margin-top: 10px;
-        }
-
-        .pulse-dot { width: 6px; height: 6px; background-color: var(--ember-orange); border-radius: 50%; box-shadow: 0 0 8px var(--ember-orange); }
-
         .panel {
             background: var(--panel-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--panel-border); border-radius: 16px;
-            padding: 22px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            padding: 20px; margin-bottom: 18px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
-        .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
-        .panel-title { font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-main); }
-        .form-group { margin-bottom: 14px; }
+        .panel-title { font-size: 1rem; font-weight: 600; margin: 0 0 14px 0; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 12px; }
 
-        label { display: block; font-size: 0.775rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
 
         input, textarea, select {
-            width: 100%; padding: 12px; background: var(--input-bg);
+            width: 100%; padding: 11px; background: var(--input-bg);
             border: 1px solid var(--panel-border); border-radius: 8px;
-            color: var(--text-main); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
+            color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; outline: none;
         }
 
         input:focus, textarea:focus, select:focus { border-color: var(--ember-orange); box-shadow: 0 0 0 3px var(--ember-glow); }
-        textarea { resize: vertical; height: 75px; }
+        textarea { resize: vertical; height: 65px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
 
         .btn {
-            width: 100%; padding: 13px; background: var(--ember-orange); color: #000;
-            font-weight: 700; font-size: 0.875rem; border: none; border-radius: 8px; cursor: pointer;
+            width: 100%; padding: 12px; background: var(--ember-orange); color: #000;
+            font-weight: 700; font-size: 0.85rem; border: none; border-radius: 8px; cursor: pointer;
             box-shadow: 0 4px 14px var(--ember-glow);
         }
 
@@ -86,18 +75,18 @@
 
         .balance-card {
             background: var(--input-bg); border: 1px solid var(--panel-border);
-            border-radius: 12px; padding: 16px; display: flex; align-items: center;
-            justify-content: space-between; margin-top: 14px;
+            border-radius: 12px; padding: 14px; display: flex; align-items: center;
+            justify-content: space-between; margin-top: 12px;
         }
 
-        .balance-amount { font-size: 1.5rem; font-weight: 700; color: var(--success); font-family: 'JetBrains Mono', monospace; }
-        .balance-sub { font-size: 0.825rem; color: var(--text-muted); font-weight: 500; }
+        .balance-amount { font-size: 1.3rem; font-weight: 700; color: var(--success); font-family: 'JetBrains Mono', monospace; }
+        .balance-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
 
         .console-output {
             background: var(--input-bg); border: 1px solid var(--panel-border);
-            border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace;
-            font-size: 0.775rem; color: var(--text-muted); max-height: 180px; overflow-y: auto;
-            white-space: pre-wrap; word-break: break-all; margin-top: 12px;
+            border-radius: 8px; padding: 10px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem; color: var(--text-muted); max-height: 140px; overflow-y: auto;
+            white-space: pre-wrap; word-break: break-all; margin-top: 10px;
         }
     </style>
 </head>
@@ -105,101 +94,85 @@
 
 <div class="app-container">
     <div class="brand-header">
-        <h1 class="brand-title"><span class="fire">🔥 EMBER</span> AS</h1>
-        <div class="brand-subtitle">Encrypted Bitcoin Core Engine v2</div>
-        <div class="network-badge">
-            <div class="pulse-dot"></div>
-            <span>MAINNET ACTIVE (UTXO & PROOF ENGINE)</span>
-        </div>
+        <h1 class="brand-title"><span class="fire">🔥</span> EMBER</h1>
+        <div class="brand-subtitle">Simple & Secure Bitcoin Wallet</div>
     </div>
 
-    <!-- 1. WALLET CREATION -->
+    <!-- 1. CREATE WALLET -->
     <div class="panel">
-        <div class="panel-header">
-            <h2 class="panel-title">1. Generate & Encrypt Wallet</h2>
-        </div>
+        <h2 class="panel-title">1. Create a New Wallet</h2>
         <div class="form-group">
-            <label for="createPin">Master Encryption PIN (Min 4 Digits)</label>
-            <input type="password" id="createPin" placeholder="Enter PIN to encrypt keys..." maxlength="8">
+            <label for="createPin">Choose a Secret PIN (4 digits or more)</label>
+            <input type="password" id="createPin" placeholder="Enter security PIN..." maxlength="8">
         </div>
-        <button class="btn" onclick="createWallet()">Generate Secured Wallet</button>
-        <div id="createOutput" class="console-output">Awaiting key derivation...</div>
+        <button class="btn" onclick="createWallet()">Create Secure Wallet</button>
+        <div id="createOutput" class="console-output">Your wallet recovery words and address will appear here...</div>
     </div>
 
-    <!-- 2. BALANCE & UTXO INSPECTOR -->
+    <!-- 2. CHECK BALANCE -->
     <div class="panel">
-        <div class="panel-header">
-            <h2 class="panel-title">2. Address Inspector & Coin Control</h2>
-        </div>
+        <h2 class="panel-title">2. Check Balance</h2>
         <div class="form-group">
-            <label for="checkAddress">Native SegWit Address (P2WPKH)</label>
+            <label for="checkAddress">Your Wallet Address</label>
             <input type="text" id="checkAddress" placeholder="bc1q...">
         </div>
-        <button class="btn btn-secondary" onclick="checkBalanceAndUtxos()">Sync Balance & UTXOs</button>
+        <button class="btn btn-secondary" onclick="checkBalanceAndUtxos()">Refresh Balance</button>
         
         <div class="balance-card">
             <div>
-                <div class="balance-sub">Confirmed Balance</div>
+                <div class="balance-sub">Available Balance</div>
                 <div class="balance-amount" id="satsVal">0 Sats</div>
             </div>
             <div style="text-align: right;">
-                <div class="balance-sub">BTC Value</div>
-                <div style="font-size: 1rem; font-weight: 600;" id="btcVal">0.00000000 BTC</div>
+                <div class="balance-sub">Bitcoin Value</div>
+                <div style="font-size: 0.95rem; font-weight: 600;" id="btcVal">0.00000000 BTC</div>
             </div>
         </div>
 
-        <div class="form-group" style="margin-top: 14px;">
-            <label for="utxoSelect">Available UTXOs (Coin Control)</label>
+        <div class="form-group" style="margin-top: 12px;">
+            <label for="utxoSelect">Saved Funds Parts (Coin Control)</label>
             <select id="utxoSelect">
-                <option value="">-- Sync address to load unspent outputs --</option>
+                <option value="">-- Refresh balance to load parts --</option>
             </select>
         </div>
     </div>
 
-    <!-- 3. ADDRESS VERIFICATION (SIGN MESSAGE) -->
+    <!-- 3. PROVE OWNERSHIP -->
     <div class="panel">
-        <div class="panel-header">
-            <h2 class="panel-title">3. Address Ownership Proof</h2>
+        <h2 class="panel-title">3. Prove You Own This Wallet</h2>
+        <div class="form-group">
+            <label for="verifyWifPayload">Wallet Security Key</label>
+            <textarea id="verifyWifPayload" placeholder='Paste your wallet security data here...'></textarea>
         </div>
         <div class="form-group">
-            <label for="verifyWifPayload">Encrypted Payload Object</label>
-            <textarea id="verifyWifPayload" placeholder='{"ciphertext":"...","iv":"...","pubKeyHex":"..."}'></textarea>
+            <label for="verifyPin">Your Secret PIN</label>
+            <input type="password" id="verifyPin" placeholder="Enter your PIN...">
         </div>
-        <div class="form-group">
-            <label for="verifyPin">Decryption PIN</label>
-            <input type="password" id="verifyPin" placeholder="Enter PIN...">
-        </div>
-        <div class="form-group">
-            <label for="verifyMessage">Message to Sign</label>
-            <input type="text" id="verifyMessage" value="I own this wallet">
-        </div>
-        <button class="btn btn-purple" onclick="signMessageProof()">Generate Cryptographic Signature</button>
-        <div id="verifyOutput" class="console-output">Signature proof will appear here...</div>
+        <button class="btn btn-purple" onclick="signMessageProof()">Prove Ownership</button>
+        <div id="verifyOutput" class="console-output">Proof result will appear here...</div>
     </div>
 
-    <!-- 4. TRANSACTION BROADCAST -->
+    <!-- 4. SEND MONEY -->
     <div class="panel">
-        <div class="panel-header">
-            <h2 class="panel-title">4. PSBT Sign & Broadcast</h2>
+        <h2 class="panel-title">4. Send Bitcoin</h2>
+        <div class="form-group">
+            <label for="sendWifPayload">Wallet Security Key</label>
+            <textarea id="sendWifPayload" placeholder='Paste your wallet security data here...'></textarea>
         </div>
         <div class="form-group">
-            <label for="sendWifPayload">Encrypted Payload Object</label>
-            <textarea id="sendWifPayload" placeholder='{"ciphertext":"...","iv":"...","pubKeyHex":"...","address":"..."}'></textarea>
+            <label for="sendPin">Your Secret PIN</label>
+            <input type="password" id="sendPin" placeholder="Enter your PIN...">
         </div>
         <div class="form-group">
-            <label for="sendPin">Decryption PIN</label>
-            <input type="password" id="sendPin" placeholder="Enter PIN...">
-        </div>
-        <div class="form-group">
-            <label for="recipientAddress">Recipient SegWit Address</label>
+            <label for="recipientAddress">Send To (Recipient Address)</label>
             <input type="text" id="recipientAddress" placeholder="bc1q...">
         </div>
         <div class="form-group">
-            <label for="sendAmount">Amount (Satoshis)</label>
+            <label for="sendAmount">Amount (in Satoshis)</label>
             <input type="number" id="sendAmount" placeholder="e.g. 1000">
         </div>
-        <button class="btn btn-success" onclick="sendBitcoin()">Sign & Execute Transaction</button>
-        <div id="sendOutput" class="console-output">Broadcast status will appear here...</div>
+        <button class="btn btn-success" onclick="sendBitcoin()">Send Bitcoin Now</button>
+        <div id="sendOutput" class="console-output">Transaction status will appear here...</div>
     </div>
 </div>
 
@@ -250,11 +223,11 @@
         const pin = document.getElementById('createPin').value;
         const out = document.getElementById('createOutput');
         if (!pin || pin.length < 4) {
-            alert('Please specify a secure PIN with at least 4 digits.');
+            alert('Please choose a PIN with at least 4 digits.');
             return;
         }
 
-        out.innerText = 'Deriving real Mainnet keys locally...';
+        out.innerText = 'Creating your secure wallet...';
 
         try {
             const mnemonic = generateMnemonic(wordlist, 128); 
@@ -278,7 +251,7 @@
                 encryptedData: { wif: encryptedKey }
             };
 
-            out.innerText = JSON.stringify({ ...payload, mnemonic_backup: mnemonic }, null, 2);
+            out.innerText = JSON.stringify({ ...payload, backup_recovery_words: mnemonic }, null, 2);
 
             document.getElementById('checkAddress').value = payload.address;
             const payloadStr = JSON.stringify({ ...payload.encryptedData.wif, pubKeyHex: payload.pubKeyHex, address: payload.address });
@@ -288,7 +261,7 @@
             document.getElementById('verifyPin').value = pin;
 
         } catch (err) {
-            out.innerText = 'Error generating keys: ' + err.message;
+            out.innerText = 'Error creating wallet: ' + err.message;
         }
     };
 
@@ -296,14 +269,14 @@
         const address = document.getElementById('checkAddress').value.trim();
         const utxoSelect = document.getElementById('utxoSelect');
         if (!address) {
-            alert('Please enter a valid address.');
+            alert('Please enter your wallet address.');
             return;
         }
 
         try {
             const url = `https://blockstream.info/api/address/${address}`;
             const res = await fetch(url);
-            if (!res.ok) throw new Error('Failed to query block explorer');
+            if (!res.ok) throw new Error('Could not connect to network');
             
             const info = await res.json();
             const funded = info.chain_stats.funded_txo_sum || 0;
@@ -319,30 +292,29 @@
                 const utxos = await utxoRes.json();
                 utxoSelect.innerHTML = '';
                 if (utxos.length === 0) {
-                    utxoSelect.innerHTML = '<option value="">No unspent outputs found</option>';
+                    utxoSelect.innerHTML = '<option value="">No funds found yet</option>';
                 } else {
                     utxos.forEach((u, index) => {
                         const opt = document.createElement('option');
                         opt.value = JSON.stringify(u);
-                        opt.text = `UTXO #${index + 1}: ${u.value} Sats (${u.txid.substring(0, 10)}...)`;
+                        opt.text = `Fund Part #${index + 1}: ${u.value} Sats`;
                         utxoSelect.appendChild(opt);
                     });
                 }
             }
 
         } catch (err) {
-            alert('Balance/UTXO sync error: ' + err.message);
+            alert('Balance check error: ' + err.message);
         }
     };
 
     window.signMessageProof = async function() {
         const wifRaw = document.getElementById('verifyWifPayload').value.trim();
         const pin = document.getElementById('verifyPin').value;
-        const message = document.getElementById('verifyMessage').value;
         const out = document.getElementById('verifyOutput');
 
-        if (!wifRaw || !pin || !message) {
-            alert('Complete all fields to sign message.');
+        if (!wifRaw || !pin) {
+            alert('Please fill in your security key and PIN.');
             return;
         }
 
@@ -351,11 +323,11 @@
             const privKeyHex = await decryptData(encryptedObj, pin);
             const privKey = hex.decode(privKeyHex);
 
-            const msgBytes = new TextEncoder().encode(message);
+            const msgBytes = new TextEncoder().encode("I own this wallet");
             const sig = btc.signMessage(privKey, msgBytes);
-            out.innerText = `SUCCESS! Address Ownership Verified.\n\nMessage: "${message}"\nSignature (Base64): ${sig}`;
+            out.innerText = `SUCCESS! Ownership Confirmed.\n\nProof Code: ${sig}`;
         } catch (err) {
-            out.innerText = 'Verification Error: ' + err.message;
+            out.innerText = 'Check failed: Incorrect PIN or key.';
         }
     };
 
@@ -367,11 +339,11 @@
         const out = document.getElementById('sendOutput');
 
         if (!wifRaw || !pin || !recipient || !amountSatsStr) {
-            alert('Please complete all send parameters.');
+            alert('Please fill in all sending details.');
             return;
         }
 
-        out.innerText = 'Decrypting memory, parsing selected UTXOs, and signing TX...';
+        out.innerText = 'Preparing and sending your transaction...';
 
         try {
             const encryptedObj = JSON.parse(wifRaw);
@@ -386,11 +358,11 @@
                 utxos = [JSON.parse(selectedUtxoRaw)];
             } else {
                 const utxoRes = await fetch(`https://blockstream.info/api/address/${address}/utxo`);
-                if (!utxoRes.ok) throw new Error("Failed to fetch UTXOs.");
+                if (!utxoRes.ok) throw new Error("Could not find funds.");
                 utxos = await utxoRes.json();
             }
             
-            if (utxos.length === 0) throw new Error("No UTXOs available to spend.");
+            if (utxos.length === 0) throw new Error("Wallet has no funds to send.");
 
             const p2wpkh = btc.p2wpkh(pubKey, btc.NETWORK);
             const tx = new btc.Transaction();
@@ -410,7 +382,7 @@
             const fee = 300n;
             
             if (totalInput < sendAmount + fee) {
-                throw new Error(`Insufficient balance. Have ${totalInput}, need ${sendAmount + fee}`);
+                throw new Error(`Not enough balance. You have ${totalInput} Sats, but need ${sendAmount + fee} Sats.`);
             }
 
             tx.addOutputAddress(recipient, sendAmount, btc.NETWORK);
@@ -424,7 +396,7 @@
             tx.finalize();
             const txHex = tx.hex;
 
-            out.innerText = `Raw TX Signed Successfully:\n${txHex.substring(0,60)}...\n\nBroadcasting...`;
+            out.innerText = 'Sending transaction to the network...';
 
             const bRes = await fetch(`https://blockstream.info/api/tx`, {
                 method: 'POST',
@@ -433,10 +405,10 @@
             
             if (bRes.ok) {
                 const txid = await bRes.text();
-                out.innerText = `SUCCESS! Transaction sent.\n\nTXID: ${txid}`;
+                out.innerText = `SUCCESS! Bitcoin sent successfully.\n\nTransaction ID: ${txid}`;
             } else {
                 const errText = await bRes.text();
-                throw new Error(`Broadcast rejected: ${errText}`);
+                throw new Error(`Transaction rejected: ${errText}`);
             }
 
         } catch (err) {
@@ -447,4 +419,5 @@
 
 </body>
 </html>
+
 

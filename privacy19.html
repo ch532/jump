@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Ember AS</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #111;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 25px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #555;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        .highlight {
+            background-color: #f4f6f8;
+            border-left: 4px solid #0066cc;
+            padding: 12px 16px;
+            margin: 20px 0;
+        }
+        footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Privacy Policy for Ember AS</h1>
+    <p><strong>Effective Date:</strong> August 10, 2026</p>
+
+    <div class="highlight">
+        <strong>Summary:</strong> Ember AS is a non-custodial, client-side encrypted Bitcoin wallet software and browser extension. We do not collect, store, sell, or transmit your private keys, seed phrases, PINs, or personally identifiable data to any external server.
+    </div>
+
+    <h2>1. Data Collection and Usage</h2>
+    <p>Ember AS is engineered around a local-first, zero-data collection architecture:</p>
+    <ul>
+        <li><strong>No Personal Data Collection:</strong> We do not ask for or record your name, email address, IP address, or phone number.</li>
+        <li><strong>Local Key Encryption:</strong> All key derivation (BIP-84 Native SegWit) and cryptographic operations occur entirely inside your local client environment. Private keys and Wallet Import Format (WIF) payloads are encrypted locally using AES-256-GCM.</li>
+        <li><strong>No Tracking or Analytics:</strong> We do not deploy third-party analytics, tracking scripts, or telemetry code within the browser extension or web interface.</li>
+    </ul>
+
+    <h2>2. Extension Permissions Disclosures</h2>
+    <p>To deliver non-custodial wallet functionality, Ember AS requires the following minimal browser permissions:</p>
+    <ul>
+        <li><code>storage</code>: Strictly used to persist encrypted wallet payloads and user UI preferences locally on your browser.</li>
+        <li><code>activeTab</code>: Strictly used to allow the wallet provider interface to interact with active dApps for signing PSBT transactions upon your explicit action.</li>
+        <li><code>host permissions</code>: Strictly used to query public Bitcoin network nodes for balance verification and to broadcast signed transactions.</li>
+    </ul>
+
+    <h2>3. Remote Code Execution</h2>
+    <p>In accordance with extension store security policies, Ember AS does <strong>not</strong> load or execute remote JavaScript or WebAssembly files. All extension code is statically bundled within the installed extension package.</p>
+
+    <h2>4. Data Sharing & Third Parties</h2>
+    <p>Because we do not collect any user data, we do not sell, rent, trade, or share any personal information with third parties, marketing agencies, or analytics platforms under any circumstances.</p>
+
+    <h2>5. Blockchain Transactions</h2>
+    <p>When you broadcast a transaction using Ember AS, the signed payload is submitted to the public Bitcoin blockchain. Public blockchain records are immutable and globally accessible by nature.</p>
+
+    <h2>6. Changes to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time to reflect ongoing compliance requirements. Any updates will be published directly to this page.</p>
+
+    <h2>7. Contact Us</h2>
+    <p>If you have any questions or security inquiries regarding Ember AS, please visit our official website at <a href="https://www.chyke.online/ember">https://www.chyke.online/ember</a>.</p>
+
+    <footer>
+        &copy; 2026 Ember AS. All rights reserved.
+    </footer>
+</div>
+
+</body>
+</html>

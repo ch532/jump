@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,7 +171,7 @@
         </div>
         <div class="form-group">
             <label for="verifyMessage">Message to Sign</label>
-            <input type="text" id="verifyMessage" value="I own this Ember wallet address on chyke.online">
+            <input type="text" id="verifyMessage" value="I own this wallet">
         </div>
         <button class="btn btn-purple" onclick="signMessageProof()">Generate Cryptographic Signature</button>
         <div id="verifyOutput" class="console-output">Signature proof will appear here...</div>
@@ -315,7 +314,6 @@
             document.getElementById('satsVal').innerText = `${balanceSats.toLocaleString()} Sats`;
             document.getElementById('btcVal').innerText = `${balanceBtc} BTC`;
 
-            // Fetch UTXOs for Coin Control dropdown
             const utxoRes = await fetch(`https://blockstream.info/api/address/${address}/utxo`);
             if (utxoRes.ok) {
                 const utxos = await utxoRes.json();
@@ -324,7 +322,7 @@
                     utxoSelect.innerHTML = '<option value="">No unspent outputs found</option>';
                 } else {
                     utxos.forEach((u, index) => {
-                        const opt = document.option || document.createElement('option');
+                        const opt = document.createElement('option');
                         opt.value = JSON.stringify(u);
                         opt.text = `UTXO #${index + 1}: ${u.value} Sats (${u.txid.substring(0, 10)}...)`;
                         utxoSelect.appendChild(opt);
@@ -353,9 +351,7 @@
             const privKeyHex = await decryptData(encryptedObj, pin);
             const privKey = hex.decode(privKeyHex);
 
-            // Generate cryptographic signature proof of the message hash
             const msgBytes = new TextEncoder().encode(message);
-            // Simple secp256k1 message signing via btc-signer / noble curves
             const sig = btc.signMessage(privKey, msgBytes);
             out.innerText = `SUCCESS! Address Ownership Verified.\n\nMessage: "${message}"\nSignature (Base64): ${sig}`;
         } catch (err) {
@@ -384,7 +380,6 @@
             const pubKey = hex.decode(encryptedObj.pubKeyHex);
             const address = encryptedObj.address;
             
-            // Check if user selected a specific UTXO via Coin Control dropdown
             const selectedUtxoRaw = document.getElementById('utxoSelect').value;
             let utxos = [];
             if (selectedUtxoRaw) {
@@ -452,8 +447,4 @@
 
 </body>
 </html>
-
-
-
-
 

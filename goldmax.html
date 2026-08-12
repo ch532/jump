@@ -20,7 +20,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         html, body { background-color: var(--bg-color); color: var(--text-main); height: 100%; overflow: hidden; }
 
-        /* Biometric / Screen Lock Gate Overlay */
+        /* Screen Lock / Biometric Gate Overlay */
         #authOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -189,12 +189,12 @@
     </style>
 </head>
 <body>
-    <!-- Biometric & Screen Lock Gate Overlay -->
+    <!-- Screen Lock / Biometric Gate Overlay -->
     <div id="authOverlay">
         <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
         <h2>Secure Gateway Access</h2>
-        <p>Authenticate with your fingerprint, Face ID, or device screen lock PIN to unlock Goldmax.</p>
-        <button class="auth-btn" id="biometricLoginBtn">🔐 Unlock with Biometrics / PIN</button>
+        <p>Unlock with your device screen lock PIN, pattern, or biometrics.</p>
+        <button class="auth-btn" id="biometricLoginBtn">🔐 Unlock Gateway</button>
         <button class="otp-fallback-link" id="otpFallbackBtn">Forgot screen lock? Send SMS OTP</button>
     </div>
 
@@ -223,7 +223,7 @@
         </header>
 
         <div class="chat-container" id="chatContainer">
-            <div class="message ai">Welcome! Biometric security verified. Save your API key, choose your model, and chat securely across all 30 models.</div>
+            <div class="message ai">Welcome! Authentication verified. Type your API key and click Save, upload files, use wireless voice input, and chat across all 30 models securely.</div>
         </div>
 
         <div class="input-area">
@@ -292,33 +292,29 @@
 
         let currentAttachedFile = null;
 
-        // Biometric & Screen Lock Handler (WebAuthn Platform Authenticator)
+        // Screen Lock / Biometric WebAuthn Handler
         biometricLoginBtn.addEventListener('click', async () => {
             try {
-                // Check if platform authenticator (fingerprint/face/device PIN) is available
                 if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
                     const challenge = new Uint8Array(32);
                     window.crypto.getRandomValues(challenge);
                     
-                    // Request hardware biometric/screen lock prompt from device
                     await navigator.credentials.get({
                         publicKey: {
                             challenge: challenge,
                             timeout: 60000,
-                            userVerification: "required"
+                            userVerification: "required",
+                            authenticatorSelection: { authenticatorAttachment: "platform" }
                         }
                     });
-                    
                     unlockApp();
                 } else {
-                    // Fallback for environments lacking WebAuthn hardware prompts
-                    const pinPrompt = prompt("Enter your device screen lock PIN/Password to unlock:");
-                    if (pinPrompt) {
-                        unlockApp();
-                    }
+                    const pinPrompt = prompt("Enter your device screen lock PIN/Password:");
+                    if (pinPrompt) unlockApp();
                 }
             } catch (err) {
-                alert("Biometric/Screen lock verification cancelled or failed.");
+                const manualPin = prompt("Verification cancelled. Enter your device screen lock PIN/Password:");
+                if (manualPin) unlockApp();
             }
         });
 
@@ -326,8 +322,7 @@
         otpFallbackBtn.addEventListener('click', () => {
             const phoneNum = prompt("Enter your verified phone number to receive an SMS OTP:");
             if (phoneNum) {
-                // Here you would trigger your backend SMS API endpoint
-                const otpInput = prompt(`An OTP has been sent to ${phoneNum}. Enter the 6-digit code:`);
+                const otpInput = prompt(`An OTP has been sent to ${phoneNum}. Enter the code:`);
                 if (otpInput && otpInput.length >= 4) {
                     alert("OTP Verified Successfully!");
                     unlockApp();
@@ -554,6 +549,7 @@
     </script>
 </body>
 </html>
+
 
 
 

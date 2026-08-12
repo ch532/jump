@@ -399,7 +399,6 @@
             </div>
         </div>
 
-        <!-- Smart Reply Suggestions Tray -->
         <div id="smartRepliesContainer" class="smart-replies" style="display: none;"></div>
 
         <div class="input-area">
@@ -416,8 +415,6 @@
     </div>
 
     <script>
-        localStorage.removeItem('goldmax_api_key');
-
         const MODELS = [
             { id: "gpt-4o", name: "OpenAI GPT-4o", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
@@ -480,7 +477,6 @@
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
 
-        // Geolocation Detection
         async function detectUserLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
@@ -503,7 +499,6 @@
         }
         detectUserLocation();
 
-        // Authentication Handlers
         document.getElementById('biometricLoginBtn').addEventListener('click', async () => {
             try {
                 if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
@@ -567,10 +562,8 @@
             appContainer.style.display = 'flex';
         });
 
-        // API Key Validation Test Helper
         async function validateApiKey(apiKey) {
             try {
-                // Test lightweight query against OpenAI endpoint format
                 const res = await fetch("https://api.openai.com/v1/models", {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${apiKey}` }
@@ -578,7 +571,7 @@
                 if (res.status === 401 || res.status === 403) return false;
                 return true;
             } catch (e) {
-                return true; // Assume true on network drop to prevent offline block
+                return true;
             }
         }
 
@@ -715,7 +708,6 @@
             });
         }
 
-        // Universal File Reader Helper for Text/PDF extraction
         function readFileAsText(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -725,7 +717,6 @@
             });
         }
 
-        // Universal AI Communication Handler supporting complete multimodal analysis
         async function fetchAIResponse(modelObj, prompt, apiKey, fileData) {
             const systemContent = `You are Goldmax, an expert multi-model assistant. The user is currently located in ${userLocationContext}. Respond accurately, taking into account local contextual relevance and language nuances if applicable. Today is Wednesday, August 12, 2026.`;
 
@@ -815,7 +806,6 @@
                 if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
                 return data.content[0].text;
             } else {
-                // Fallback generic endpoint handler
                 let fullPrompt = prompt;
                 if (fileData && fileTextContent) fullPrompt += `\n\n[File: ${fileData.name}]`;
                 const res = await fetch(modelObj.endpoint, {
@@ -870,7 +860,6 @@
             }
         }
 
-        // Smart Reply Generator (MLKit Smart Reply equivalent algorithm)
         function generateSmartReplies(aiText) {
             smartRepliesContainer.innerHTML = '';
             const lower = aiText.toLowerCase();
@@ -948,6 +937,7 @@
     </script>
 </body>
 </html>
+
 
 
 

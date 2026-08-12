@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goldmax</title>
+    <title>Goldmax AI Gateway</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
@@ -22,7 +22,27 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Fixed Header */
+        /* Lock Screen Overlay */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        #authOverlay img { width: 64px; height: 64px; border-radius: 12px; }
+        #authOverlay h2 { font-size: 1.5rem; color: var(--text-main); }
+        #authOverlay p { color: var(--text-muted); font-size: 0.9rem; max-width: 320px; line-height: 1.4; }
+
+        /* App Wrapper (Hidden until signed in) */
+        #appContainer { display: none; flex-direction: column; height: 100vh; width: 100%; }
+
         header { 
             background-color: var(--panel-bg); 
             padding: 0.75rem 1rem; 
@@ -43,7 +63,7 @@
         
         select, input, button { 
             background: #0f172a; 
-            color: var(--text-main); 
+            color: #ffffff !important; 
             border: 1px solid var(--panel-border); 
             padding: 0.45rem 0.75rem; 
             border-radius: 0.5rem; 
@@ -51,19 +71,18 @@
             outline: none; 
             white-space: nowrap;
         }
-        input { color: #ffffff !important; }
         select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
         
-        button { background-color: var(--accent); color: #0b0f19; font-weight: 600; cursor: pointer; border: none; }
+        button { background-color: var(--accent); color: #0b0f19 !important; font-weight: 600; cursor: pointer; border: none; }
         button:hover { opacity: 0.9; }
 
         .key-box { display: flex; gap: 0.4rem; align-items: center; }
-        .key-box input[type="password"] { width: 120px; }
+        .key-box input[type="password"] { width: 120px; color: #ffffff !important; }
         .key-status { font-size: 0.7rem; color: var(--success-color); display: none; font-weight: 500; }
         .key-status.active { display: block; }
 
         .user-pill {
-            display: none;
+            display: flex;
             align-items: center;
             gap: 0.4rem;
             background: #1e293b;
@@ -137,7 +156,7 @@
             width: 100%;
         }
         .input-wrapper { max-width: 900px; width: 100%; display: flex; gap: 0.4rem; align-items: center; }
-        .input-wrapper input { flex: 1; padding: 0.7rem 0.8rem; font-size: 0.9rem; background: #0b0f19; }
+        .input-wrapper input { flex: 1; padding: 0.7rem 0.8rem; font-size: 0.9rem; background: #0b0f19; color: #ffffff !important; }
         
         .action-icon-btn {
             background: #1e293b;
@@ -158,49 +177,58 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-top">
-            <div class="brand">
-                <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
-                <h1>Goldmax</h1>
-            </div>
-            <!-- Google Sign In Button -->
-            <div id="g_id_onload"
-                 data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
-                 data-callback="handleGoogleSignIn"
-                 data-auto_prompt="false">
-            </div>
-            <div class="g_id_signin" data-type="standard" data-size="small" data-theme="filled_black"></div>
+    <!-- Google Sign-In Lock Screen Overlay -->
+    <div id="authOverlay">
+        <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
+        <h2>Welcome to Goldmax</h2>
+        <p>Please sign in with your Google account to access the AI gateway.</p>
+        <div id="g_id_onload"
+             data-client_id="46181700573-ioktcosvfphls3ug89nv2v61prvhqo32.apps.googleusercontent.com"
+             data-callback="handleGoogleSignIn"
+             data-auto_prompt="false">
         </div>
-
-        <div class="controls">
-            <div id="userPill" class="user-pill">
-                <img id="userAvatar" src="" alt="Avatar">
-                <span id="userName"></span>
-            </div>
-            <div class="key-box">
-                <input type="password" id="apiKeyInput" placeholder="API Key...">
-                <button id="saveKeyBtn" style="background: var(--success-color); color: #0b0f19; padding: 0.4rem 0.5rem;">Save</button>
-                <button id="clearKeyBtn" title="Reset" style="background: #334155; color: #fff; padding: 0.4rem 0.5rem; display:none;">Reset</button>
-            </div>
-            <div id="keyStatus" class="key-status">🔒 Saved</div>
-            <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
-        </div>
-    </header>
-
-    <div class="chat-container" id="chatContainer">
-        <div class="message ai">Welcome! Sign in with Google, save your API key securely, upload files, use wireless voice dictation, and chat across all 30 models.</div>
+        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="filled_black"></div>
     </div>
 
-    <div class="input-area">
-        <div id="activeAttachmentContainer" style="width: 100%; max-width: 900px; display: none;"></div>
-        <div class="input-wrapper">
-            <input type="file" id="fileInput" style="display: none;" multiple>
-            <button class="action-icon-btn" id="attachBtn" title="Attach">📎</button>
-            <button class="action-icon-btn" id="voiceBtn" title="Voice">🎤</button>
-            
-            <input type="text" id="promptInput" placeholder="Message..." autofocus autocomplete="off">
-            <button id="sendBtn">Send</button>
+    <!-- Main App Container (Revealed After Sign-In) -->
+    <div id="appContainer">
+        <header>
+            <div class="header-top">
+                <div class="brand">
+                    <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
+                    <h1>Goldmax</h1>
+                </div>
+                <div id="userPill" class="user-pill">
+                    <img id="userAvatar" src="" alt="Avatar">
+                    <span id="userName"></span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="key-box">
+                    <input type="password" id="apiKeyInput" placeholder="API Key...">
+                    <button id="saveKeyBtn" style="background: var(--success-color); color: #0b0f19; padding: 0.4rem 0.5rem;">Save</button>
+                    <button id="clearKeyBtn" title="Reset" style="background: #334155; color: #fff; padding: 0.4rem 0.5rem; display:none;">Reset</button>
+                </div>
+                <div id="keyStatus" class="key-status">🔒 Saved</div>
+                <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
+            </div>
+        </header>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message ai">Welcome! Save your API key securely, upload files, use wireless voice dictation, and chat across all 30 models.</div>
+        </div>
+
+        <div class="input-area">
+            <div id="activeAttachmentContainer" style="width: 100%; max-width: 900px; display: none;"></div>
+            <div class="input-wrapper">
+                <input type="file" id="fileInput" style="display: none;" multiple>
+                <button class="action-icon-btn" id="attachBtn" title="Attach">📎</button>
+                <button class="action-icon-btn" id="voiceBtn" title="Voice">🎤</button>
+                
+                <input type="text" id="promptInput" placeholder="Message..." autofocus autocomplete="off">
+                <button id="sendBtn">Send</button>
+            </div>
         </div>
     </div>
 
@@ -239,6 +267,8 @@
         const fileInput = document.getElementById('fileInput');
         const voiceBtn = document.getElementById('voiceBtn');
         const activeAttachmentContainer = document.getElementById('activeAttachmentContainer');
+        const authOverlay = document.getElementById('authOverlay');
+        const appContainer = document.getElementById('appContainer');
 
         let currentAttachedFile = null;
 
@@ -254,10 +284,10 @@
         window.handleGoogleSignIn = function(response) {
             const profile = parseJwt(response.credential);
             if (profile) {
-                document.querySelector('.g_id_signin').style.display = 'none';
+                authOverlay.style.display = 'none';
+                appContainer.style.display = 'flex';
                 document.getElementById('userAvatar').src = profile.picture;
                 document.getElementById('userName').textContent = profile.name;
-                document.getElementById('userPill').style.display = 'flex';
             }
         };
 
@@ -465,6 +495,7 @@
     </script>
 </body>
 </html>
+
 
 
 

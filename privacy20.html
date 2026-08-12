@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #131b2e;
+            --panel-border: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 2rem 1rem; line-height: 1.6; }
+        .container { max-width: 700px; margin: 0 auto; background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 2rem; border-radius: 12px; }
+        h1 { font-size: 1.75rem; color: var(--text-main); margin-bottom: 0.5rem; }
+        .updated { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; }
+        h2 { font-size: 1.1rem; color: var(--accent); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p, li { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+        ul { padding-left: 1.2rem; }
+        .back-link { display: inline-block; margin-top: 1.5rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Goldmax AI Privacy Policy</h1>
+        <div class="updated">Last Updated: August 12, 2026</div>
+
+        <p>Welcome to Goldmax AI. Your privacy and data security are our primary design principles. This Privacy Policy outlines how your information is handled when using our multi-model AI gateway.</p>
+
+        <h2>1. Local Storage of API Keys</h2>
+        <p>Goldmax operates on a bring-your-own-key architecture. Any API keys you input are saved exclusively inside your device browser's secure local storage (<code>localStorage</code>). They are never transmitted to our remote servers and remain entirely under your personal control.</p>
+
+        <h2>2. Zero Chat Logging</h2>
+        <p>We do not store, archive, or monitor your chat histories, uploaded files, or AI responses on any server. Conversations occur directly between your browser client and the respective AI model providers (OpenAI, Anthropic, Google, DeepSeek, etc.) using your direct credentials.</p>
+
+        <h2>3. Device Security & Authentication</h2>
+        <p>To protect unauthorized access, Goldmax utilizes device-bound screen lock verification and biometric checks. Your device credentials remain processed locally by your operating system's native security layer.</p>
+
+        <h2>4. Multimodal Uploads & Voice</h2>
+        <p>Files attached for analysis and voice inputs transcribed via your device microphone are processed transiently to fulfill your immediate AI request and are discarded immediately afterward.</p>
+
+        <a href="index.html" class="back-link">← Back to Goldmax AI</a>
+    </div>
+</body>
+</html>

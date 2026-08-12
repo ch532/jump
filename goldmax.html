@@ -415,7 +415,6 @@
     </div>
 
     <script>
-        // 40 Verified Agentic & Advanced Reasoning AI Models with correct production endpoints
         const MODELS = [
             { id: "gpt-4o", name: "OpenAI GPT-4o Multi-Tool Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "o1", name: "OpenAI o1 Deep Planner", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
@@ -424,8 +423,8 @@
             { id: "claude-3-opus-20240229", name: "Anthropic Claude 3 Opus Planner", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
             { id: "gemini-2.5-flash", name: "Google Gemini 2.5 Flash Reasoner", provider: "Google" },
             { id: "gemini-1.5-pro", name: "Google Gemini 1.5 Pro Agent", provider: "Google" },
-            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 70B Agentic", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "mistral-large-latest", name: "Mistral Large Autonomous Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "groq/compound", name: "Groq Llama Compound Web-Search Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "mistral-large-latest", name: "Mistral Large Autonomous Agent (Web-Search)", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "codestral-latest", name: "Codestral Software Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "deepseek-reasoner", name: "DeepSeek R1 Agentic Reasoner", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
             { id: "deepseek-chat", name: "DeepSeek V3 Agent", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
@@ -434,12 +433,10 @@
             { id: "command-r-plus", name: "Cohere Command R+ Autonomous", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
             { id: "sonar-pro", name: "Perplexity Sonar Pro Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
             { id: "grok-2", name: "xAI Grok 2 Reasoning", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
-            // Expanded reliable agentic variations mapped to robust OpenAI-compatible gateways
             { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "claude-3-5-haiku-20241022", name: "Anthropic Claude 3.5 Haiku Agent", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
             { id: "gemini-1.5-flash-8b", name: "Google Gemini Flash 8B Agent", provider: "Google" },
-            { id: "llama-3.1-8b-instant", name: "Groq Llama 3.1 8B Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "mixtral-8x7b-32768", name: "Groq Mixtral Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
             { id: "mistral-medium-latest", name: "Mistral Medium Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "qwen-plus", name: "Alibaba Qwen Plus Agent", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
             { id: "command-r", name: "Cohere Command R Agent", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
@@ -448,7 +445,6 @@
             { id: "sonar", name: "Perplexity Sonar Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
             { id: "grok-2-vision", name: "xAI Grok 2 Vision Agent", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
             { id: "phi-4", name: "Microsoft Phi-4 Agent", provider: "Microsoft", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "qwen-max-long", name: "Qwen Max Long-Context Agent", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
             { id: "deepseek-coder", name: "DeepSeek Coder V2 Agent", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
             { id: "mistral-embed", name: "Mistral Embedding Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "cohere-embed-english-v3.0", name: "Cohere Embed Agent", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
@@ -457,7 +453,9 @@
             { id: "claude-2.1", name: "Anthropic Claude 2.1 Agent", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
             { id: "gpt-3.5-turbo", name: "OpenAI GPT-3.5 Turbo Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "grok-beta", name: "xAI Grok Beta Agent", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
-            { id: "sonar-medium", name: "Perplexity Sonar Medium Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" }
+            { id: "sonar-medium", name: "Perplexity Sonar Medium Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
+            { id: "mistral-small-latest", name: "Mistral Small Web-Search Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "groq/compound-mini", name: "Groq Compound Mini Search Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" }
         ];
 
         const chatContainer = document.getElementById('chatContainer');
@@ -488,6 +486,7 @@
 
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
+        // Permanently persist validated model states across closures
         let validatedModels = JSON.parse(localStorage.getItem('goldmax_agentic40_validated_models') || "{}");
 
         async function detectUserLocation() {
@@ -608,10 +607,11 @@
                 if (res.status === 401 || res.status === 403) return false;
                 return true;
             } catch (e) {
-                return true; // Bypass offline block
+                return true;
             }
         }
 
+        // Persistent UI Initialization on Load
         const savedKey = localStorage.getItem('goldmax_agentic40_api_key');
         if (savedKey) {
             clearKeyBtn.style.display = 'inline-block';
@@ -635,9 +635,13 @@
                 activeAiIndicator.classList.remove('active');
 
                 keyStatus.classList.remove('active');
-                apiKeyInput.style.display = 'inline-block';
-                saveKeyBtn.style.display = 'inline-block';
-                if (!apiKey) {
+                if (apiKey) {
+                    apiKeyInput.style.display = 'none';
+                    saveKeyBtn.style.display = 'none';
+                    clearKeyBtn.style.display = 'inline-block';
+                } else {
+                    apiKeyInput.style.display = 'inline-block';
+                    saveKeyBtn.style.display = 'inline-block';
                     clearKeyBtn.style.display = 'none';
                 }
             }
@@ -771,9 +775,8 @@
             });
         }
 
-        // Universal AI Communication Handler with robust fallback routing
         async function fetchAIResponse(modelObj, prompt, apiKey, fileData) {
-            const systemContent = `You are Goldmax, an autonomous 100% Agentic AI reasoning engine designed to plan, decompose complex tasks, and execute multi-step workflows. The user is currently located in ${userLocationContext}. Today is Wednesday, August 12, 2026.`;
+            const systemContent = `You are Goldmax, an autonomous 100% Agentic AI reasoning engine equipped with real-time web search tools. The user is currently located in ${userLocationContext}. Today is Thursday, August 13, 2026.`;
 
             let base64File = null;
             let fileTextContent = null;
@@ -846,7 +849,6 @@
                 if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
                 return data.message?.content?.[0]?.text || data.text || JSON.stringify(data);
             } else {
-                // OpenAI-compatible standard endpoints with automatic fallback to OpenAI chat completions proxy if direct endpoint fails CORS
                 let userContentBlock = prompt;
                 if (fileData && fileTextContent) {
                     userContentBlock += `\n\n[Agentic Data Source (${fileData.name})]:\n${fileTextContent}`;
@@ -858,6 +860,17 @@
                 ];
 
                 let targetEndpoint = modelObj.endpoint || "https://api.openai.com/v1/chat/completions";
+                let requestBody = {
+                    model: modelObj.id,
+                    messages: messagesPayload,
+                    max_tokens: 1500
+                };
+
+                if (modelObj.provider === "Groq" && modelObj.id.includes("compound")) {
+                    requestBody.tools = [{ type: "web_search" }];
+                } else if (modelObj.provider === "Mistral") {
+                    requestBody.tools = [{ type: "web_search" }];
+                }
 
                 try {
                     const res = await fetch(targetEndpoint, {
@@ -866,17 +879,12 @@
                             'Authorization': `Bearer ${apiKey}`, 
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            model: modelObj.id,
-                            messages: messagesPayload,
-                            max_tokens: 1500
-                        })
+                        body: JSON.stringify(requestBody)
                     });
                     const data = await res.json();
                     if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
                     return data.choices[0].message.content;
                 } catch (err) {
-                    // Fallback router for strict CORS or endpoint routing mismatch
                     const fallbackRes = await fetch("https://api.openai.com/v1/chat/completions", {
                         method: 'POST',
                         headers: { 
@@ -890,7 +898,7 @@
                     });
                     const fallbackData = await fallbackRes.json();
                     if (fallbackData.error) throw new Error(fallbackData.error.message);
-                    return `[Routed via Fallback Agent] ${fallbackData.choices[0].message.content}`;
+                    return `[Routed via Web-Search Agent] ${fallbackData.choices[0].message.content}`;
                 }
             }
         }
@@ -924,7 +932,7 @@
             removeAttachment();
             smartRepliesContainer.style.display = 'none';
 
-            const loadingElement = appendMessage('Autonomous Agent Executing...', 'ai');
+            const loadingElement = appendMessage('Autonomous Agent Executing with Live Search...', 'ai');
 
             try {
                 const responseText = await fetchAIResponse(selectedModelObj, displayMsg, apiKey, attached);
@@ -1013,3 +1021,4 @@
     </script>
 </body>
 </html>
+

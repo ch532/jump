@@ -476,6 +476,8 @@
 
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
+        // Tracks set of model IDs that have successfully validated an API key
+        let validatedModels = JSON.parse(localStorage.getItem('goldmax_validated_models') || "{}");
 
         async function detectUserLocation() {
             if (navigator.geolocation) {
@@ -562,7 +564,6 @@
             appContainer.style.display = 'flex';
         });
 
-        // Strict API Key Validation against selected model during entry check
         async function validateApiKey(apiKey, selectedModel) {
             try {
                 let testEndpoint = selectedModel.endpoint || "https://api.openai.com/v1/chat/completions";
@@ -583,7 +584,7 @@
                     authHeaders = { 'Content-Type': 'application/json' };
                     testPayload = { contents: [{ role: "user", parts: [{ text: "hi" }] }] };
                 } else if (selectedModel.provider === 'Cohere') {
-                    testEndpoint = "https://api.cohome.com/v2/chat";
+                    testEndpoint = "https://api.cohere.com/v2/chat";
                     testPayload = { model: selectedModel.id, messages: [{ role: "user", content: "hi" }] };
                 }
 
@@ -601,7 +602,7 @@
                 }
                 return true;
             } catch (e) {
-                return true; // Network offline tolerance
+                return true; // Allow offline grace
             }
         }
 
@@ -618,14 +619,15 @@
             keyStatus.classList.remove('active');
         }
 
-        // Active AI Indicator logic: ONLY displays if a model is chosen AND a verified key exists
-        async function updateActiveAiDisplay() {
+        // Active AI Indicator logic: ONLY displays if a model is chosen AND that specific model has a validated key stored
+        function updateActiveAiDisplay() {
             const val = modelSelect.value;
             const apiKey = localStorage.getItem('goldmax_api_key');
 
             if (val !== "" && val !== null && val !== undefined && apiKey) {
                 const selected = MODELS[val];
-                if (selected) {
+                // Check if this model has been explicitly validated/used with a key
+                if (selected && validatedModels[selected.id]) {
                     activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
                     activeAiIndicator.classList.add('active');
                     return;
@@ -656,6 +658,11 @@
             }
 
             localStorage.setItem('goldmax_api_key', val);
+            
+            // Mark ONLY this specific model as validated
+            validatedModels[selectedModel.id] = true;
+            localStorage.setItem('goldmax_validated_models', JSON.stringify(validatedModels));
+
             apiKeyInput.value = '';
             apiKeyInput.style.display = 'none';
             saveKeyBtn.style.display = 'none';
@@ -663,12 +670,14 @@
             keyStatus.classList.add('active');
             
             updateActiveAiDisplay();
-            alert("✅ API Key verified and saved successfully!");
+            alert(`✅ API Key verified and successfully validated for ${selectedModel.name}!`);
         });
 
         clearKeyBtn.addEventListener('click', () => {
-            if (confirm("Clear stored key?")) {
+            if (confirm("Clear stored key and validation records?")) {
                 localStorage.removeItem('goldmax_api_key');
+                localStorage.removeItem('goldmax_validated_models');
+                validatedModels = {};
                 apiKeyInput.style.display = 'inline-block';
                 saveKeyBtn.style.display = 'inline-block';
                 clearKeyBtn.style.display = 'none';
@@ -880,8 +889,8 @@
             const attached = currentAttachedFile;
 
             if (!text && !attached) return;
-            if (!apiKey) {
-                alert("Please enter and save your API Key first!");
+            if (!apiKey || !validatedModels[selectedModelObj.id]) {
+                alert(`Please enter and successfully validate your API Key for ${selectedModelObj.name} first!`);
                 apiKeyInput.focus();
                 return;
             }

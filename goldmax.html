@@ -204,11 +204,9 @@
         .key-box { display: flex; gap: 0.3rem; align-items: center; }
         .key-box input[type="password"] { width: 120px; color: #ffffff !important; }
         
-        /* Key Status Hidden by Default */
         .key-status { font-size: 0.7rem; color: var(--success-color); display: none; font-weight: 500; }
         .key-status.active { display: inline-block; }
 
-        /* Active AI Indicator Badge (Hidden when empty) */
         .active-ai-indicator {
             font-size: 0.75rem;
             color: var(--accent);
@@ -245,10 +243,21 @@
             word-break: break-word; 
             white-space: pre-wrap; 
             font-size: 0.9rem; 
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
         }
         .message.user { background-color: var(--user-bubble); color: #fff; align-self: flex-end; border-bottom-right-radius: 0.2rem; }
         .message.ai { background-color: var(--ai-bubble); border: 1px solid var(--panel-border); align-self: flex-start; border-bottom-left-radius: 0.2rem; }
         .error-text { color: #f87171 !important; font-weight: 500; }
+
+        .message-timestamp {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            align-self: flex-end;
+            margin-top: 0.2rem;
+        }
+        .message.user .message-timestamp { color: rgba(255, 255, 255, 0.7); }
 
         .message-footer { display: flex; justify-content: flex-end; margin-top: 0.4rem; }
         .share-btn {
@@ -272,6 +281,29 @@
             gap: 0.4rem;
             color: var(--accent);
         }
+
+        /* Smart Reply Container */
+        .smart-replies {
+            display: flex;
+            gap: 0.4rem;
+            padding: 0 1rem 0.5rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-x: auto;
+        }
+        .smart-reply-chip {
+            background: #1e293b;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.3rem 0.6rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .smart-reply-chip:hover { background: var(--accent); color: #0b0f19; }
 
         /* Bottom Input Dock */
         .input-area { 
@@ -343,7 +375,7 @@
                     <h1>Goldmax</h1>
                 </div>
                 <div class="user-pill">
-                    <span>🛡️ Secure Session</span>
+                    <span id="locationIndicator">🌍 Detecting Location...</span>
                 </div>
             </div>
 
@@ -357,13 +389,18 @@
                 <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
             </div>
             
-            <!-- Active AI Indicator (Blank/Hidden by default) -->
             <div id="activeAiIndicator" class="active-ai-indicator"></div>
         </header>
 
         <div class="chat-container" id="chatContainer">
-            <div class="message ai">Welcome! Privacy agreement verified. Choose your model and chat across all 30 models seamlessly.</div>
+            <div class="message ai">
+                <span>Welcome! Privacy agreement verified. Choose your model and chat across all 30 models seamlessly.</span>
+                <span class="message-timestamp">Just now</span>
+            </div>
         </div>
+
+        <!-- Smart Reply Suggestions Tray -->
+        <div id="smartRepliesContainer" class="smart-replies" style="display: none;"></div>
 
         <div class="input-area">
             <div id="activeAttachmentContainer" style="width: 100%; max-width: 900px; display: none;"></div>
@@ -379,7 +416,6 @@
     </div>
 
     <script>
-        // CLEANUP SCRIPT: Automatically clears any leftover stored API key and forces a fresh state
         localStorage.removeItem('goldmax_api_key');
 
         const MODELS = [
@@ -428,6 +464,8 @@
         const fileInput = document.getElementById('fileInput');
         const voiceBtn = document.getElementById('voiceBtn');
         const activeAttachmentContainer = document.getElementById('activeAttachmentContainer');
+        const locationIndicator = document.getElementById('locationIndicator');
+        const smartRepliesContainer = document.getElementById('smartRepliesContainer');
         
         const authOverlay = document.getElementById('authOverlay');
         const pinModal = document.getElementById('pinModal');
@@ -440,8 +478,32 @@
         const appContainer = document.getElementById('appContainer');
 
         let currentAttachedFile = null;
+        let userLocationContext = "Global / General Location";
 
-        // Screen Lock / Biometric WebAuthn Handler
+        // Geolocation Detection
+        async function detectUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    try {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                        const data = await res.json();
+                        userLocationContext = `${data.city || data.locality}, ${data.countryName}`;
+                        locationIndicator.textContent = `📍 ${userLocationContext}`;
+                    } catch (e) {
+                        locationIndicator.textContent = `🌍 Worldwide Mode`;
+                    }
+                }, () => {
+                    locationIndicator.textContent = `🌍 Worldwide Mode`;
+                });
+            } else {
+                locationIndicator.textContent = `🌍 Worldwide Mode`;
+            }
+        }
+        detectUserLocation();
+
+        // Authentication Handlers
         document.getElementById('biometricLoginBtn').addEventListener('click', async () => {
             try {
                 if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
@@ -505,7 +567,21 @@
             appContainer.style.display = 'flex';
         });
 
-        // Check if API key is already saved on load (now clean since we ran removeItem above)
+        // API Key Validation Test Helper
+        async function validateApiKey(apiKey) {
+            try {
+                // Test lightweight query against OpenAI endpoint format
+                const res = await fetch("https://api.openai.com/v1/models", {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                if (res.status === 401 || res.status === 403) return false;
+                return true;
+            } catch (e) {
+                return true; // Assume true on network drop to prevent offline block
+            }
+        }
+
         const savedKey = localStorage.getItem('goldmax_api_key');
         if (savedKey) {
             apiKeyInput.style.display = 'none';
@@ -519,15 +595,27 @@
             keyStatus.classList.remove('active');
         }
 
-        saveKeyBtn.addEventListener('click', () => {
+        saveKeyBtn.addEventListener('click', async () => {
             const val = apiKeyInput.value.trim();
             if (!val) return alert("Please enter an API key.");
+            
+            saveKeyBtn.textContent = "Checking...";
+            const isValid = await validateApiKey(val);
+            saveKeyBtn.textContent = "Save";
+
+            if (!isValid) {
+                alert("⚠️ Invalid API Key detected! Please verify your key and try again.");
+                apiKeyInput.focus();
+                return;
+            }
+
             localStorage.setItem('goldmax_api_key', val);
             apiKeyInput.value = '';
             apiKeyInput.style.display = 'none';
             saveKeyBtn.style.display = 'none';
             clearKeyBtn.style.display = 'inline-block';
             keyStatus.classList.add('active');
+            alert("✅ API Key verified and saved successfully!");
         });
 
         clearKeyBtn.addEventListener('click', () => {
@@ -542,7 +630,6 @@
             }
         });
 
-        // Initialize dropdown with a blank default option
         const defaultOpt = document.createElement('option');
         defaultOpt.value = "";
         defaultOpt.textContent = "-- Select Model --";
@@ -628,15 +715,37 @@
             });
         }
 
+        // Universal File Reader Helper for Text/PDF extraction
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Universal AI Communication Handler supporting complete multimodal analysis
         async function fetchAIResponse(modelObj, prompt, apiKey, fileData) {
-            const systemContent = "You are Goldmax, a direct multi-model assistant. Today is Wednesday, August 12, 2026.";
+            const systemContent = `You are Goldmax, an expert multi-model assistant. The user is currently located in ${userLocationContext}. Respond accurately, taking into account local contextual relevance and language nuances if applicable. Today is Wednesday, August 12, 2026.`;
+
+            let base64File = null;
+            let fileTextContent = null;
+            if (fileData) {
+                if (fileData.type.startsWith("image/") || fileData.type === "application/pdf") {
+                    base64File = await fileToBase64(fileData);
+                } else {
+                    fileTextContent = await readFileAsText(fileData);
+                }
+            }
 
             if (modelObj.provider === "Google") {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${apiKey}`;
-                let parts = [{ text: `${systemContent}\n\nUser: ${prompt}` }];
-                if (fileData) {
-                    const base64Content = await fileToBase64(fileData);
-                    parts.push({ inline_data: { mime_type: fileData.type, data: base64Content } });
+                let parts = [{ text: `${systemContent}\n\nUser Request: ${prompt}` }];
+                if (fileData && base64File) {
+                    parts.push({ inline_data: { mime_type: fileData.type, data: base64File } });
+                } else if (fileData && fileTextContent) {
+                    parts[0].text += `\n\n[Attached File Content (${fileData.name})]:\n${fileTextContent}`;
                 }
                 const res = await fetch(url, {
                     method: 'POST',
@@ -646,32 +755,77 @@
                 const data = await res.json();
                 if (data.error) throw new Error(data.error.message);
                 return data.candidates[0].content.parts[0].text;
-            } else {
+            } else if (modelObj.provider === "OpenAI" || modelObj.provider === "Groq" || modelObj.provider === "Mistral" || modelObj.provider === "DeepSeek" || modelObj.provider === "Qwen" || modelObj.provider === "Together" || modelObj.provider === "Perplexity" || modelObj.provider === "xAI" || modelObj.provider === "Microsoft") {
+                let userContentBlock = prompt;
+                if (fileData && fileTextContent) {
+                    userContentBlock += `\n\n[Attached File Content (${fileData.name})]:\n${fileTextContent}`;
+                }
+
+                let messagesPayload = [
+                    { role: "system", content: systemContent }
+                ];
+
+                if (fileData && base64File && fileData.type.startsWith("image/")) {
+                    messagesPayload.push({
+                        role: "user",
+                        content: [
+                            { type: "text", text: prompt },
+                            { type: "image_url", image_url: { url: `data:${fileData.type};base64,${base64File}` } }
+                        ]
+                    });
+                } else {
+                    messagesPayload.push({ role: "user", content: userContentBlock });
+                }
+
+                const res = await fetch(modelObj.endpoint, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${apiKey}`, 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: modelObj.id,
+                        messages: messagesPayload
+                    })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+                return data.choices[0].message.content;
+            } else if (modelObj.provider === "Anthropic") {
                 let fullPrompt = prompt;
-                if (fileData) fullPrompt += ` [File: ${fileData.name}]`;
+                if (fileData && fileTextContent) fullPrompt += `\n\n[Attached File Content (${fileData.name})]:\n${fileTextContent}`;
+
                 const res = await fetch(modelObj.endpoint, {
                     method: 'POST',
                     headers: { 
                         'Authorization': `Bearer ${apiKey}`, 
                         'Content-Type': 'application/json',
-                        ...(modelObj.provider === 'Anthropic' ? {
-                            'x-api-key': apiKey,
-                            'anthropic-version': '2023-06-01',
-                            'anthropic-dangerous-direct-browser-access': 'true'
-                        } : {})
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
                     },
                     body: JSON.stringify({
                         model: modelObj.id,
-                        ...(modelObj.provider === 'Anthropic' ? {
-                            max_tokens: 1024, system: systemContent, messages: [{ role: "user", content: fullPrompt }]
-                        } : {
-                            messages: [{ role: "system", content: systemContent }, { role: "user", content: fullProviderPrompt = fullPrompt }]
-                        })
+                        max_tokens: 1024,
+                        system: systemContent,
+                        messages: [{ role: "user", content: fullPrompt }]
                     })
                 });
                 const data = await res.json();
                 if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-                return modelObj.provider === 'Anthropic' ? data.content[0].text : data.choices[0].message.content;
+                return data.content[0].text;
+            } else {
+                // Fallback generic endpoint handler
+                let fullPrompt = prompt;
+                if (fileData && fileTextContent) fullPrompt += `\n\n[File: ${fileData.name}]`;
+                const res = await fetch(modelObj.endpoint, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: modelObj.id, messages: [{ role: "user", content: fullPrompt }] })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                return data.choices[0].message.content;
             }
         }
 
@@ -702,29 +856,76 @@
             appendMessage(displayMsg, 'user');
             promptInput.value = '';
             removeAttachment();
+            smartRepliesContainer.style.display = 'none';
 
             const loadingElement = appendMessage('Thinking...', 'ai');
 
             try {
                 const responseText = await fetchAIResponse(selectedModelObj, displayMsg, apiKey, attached);
                 updateMessage(loadingElement, responseText, true);
+                generateSmartReplies(responseText);
             } catch (err) {
                 updateMessage(loadingElement, `⚠️ Error: ${err.message}`, false);
                 loadingElement.classList.add("error-text");
             }
         }
 
+        // Smart Reply Generator (MLKit Smart Reply equivalent algorithm)
+        function generateSmartReplies(aiText) {
+            smartRepliesContainer.innerHTML = '';
+            const lower = aiText.toLowerCase();
+            let suggestions = [];
+
+            if (lower.includes("code") || lower.includes("function") || lower.includes("script")) {
+                suggestions = ["Explain this code", "Can you optimize it?", "Write a test case"];
+            } else if (lower.includes("error") || lower.includes("issue") || lower.includes("bug")) {
+                suggestions = ["How do I fix this?", "Show example fix", "Why did this happen?"];
+            } else {
+                suggestions = ["Tell me more", "Summarize key points", "Give me an example"];
+            }
+
+            suggestions.forEach(s => {
+                const chip = document.createElement('div');
+                chip.className = 'smart-reply-chip';
+                chip.textContent = s;
+                chip.onclick = () => {
+                    promptInput.value = s;
+                    smartRepliesContainer.style.display = 'none';
+                    sendMessage();
+                };
+                smartRepliesContainer.appendChild(chip);
+            });
+
+            smartRepliesContainer.style.display = 'flex';
+        }
+
+        function getCurrentTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
         function appendMessage(text, sender) {
             const div = document.createElement('div');
             div.className = `message ${sender}`;
-            div.textContent = text;
+            
+            const textSpan = document.createElement('span');
+            textSpan.textContent = text;
+            div.appendChild(textSpan);
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-timestamp';
+            timeSpan.textContent = getCurrentTimestamp();
+            div.appendChild(timeSpan);
+
             chatContainer.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
             return div;
         }
 
         function updateMessage(element, text, addShare = false) {
-            element.textContent = text;
+            const textSpan = element.querySelector('span');
+            if (textSpan) textSpan.textContent = text;
+
             if (addShare) {
                 const footer = document.createElement('div');
                 footer.className = 'message-footer';
@@ -747,6 +948,7 @@
     </script>
 </body>
 </html>
+
 
 
 

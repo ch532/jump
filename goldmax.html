@@ -573,6 +573,7 @@
             appContainer.style.display = 'flex';
         });
 
+        // Robust API Key Validator with clean chat payloads
         async function validateApiKey(apiKey, selectedModel) {
             try {
                 let testEndpoint = selectedModel.endpoint || "https://api.openai.com/v1/chat/completions";
@@ -634,9 +635,13 @@
                 activeAiIndicator.classList.remove('active');
 
                 keyStatus.classList.remove('active');
-                apiKeyInput.style.display = 'inline-block';
-                saveKeyBtn.style.display = 'inline-block';
-                if (!apiKey) {
+                if (apiKey) {
+                    apiKeyInput.style.display = 'none';
+                    saveKeyBtn.style.display = 'none';
+                    clearKeyBtn.style.display = 'inline-block';
+                } else {
+                    apiKeyInput.style.display = 'inline-block';
+                    saveKeyBtn.style.display = 'inline-block';
                     clearKeyBtn.style.display = 'none';
                 }
             }
@@ -861,12 +866,6 @@
                     max_tokens: 1500
                 };
 
-                if (modelObj.provider === "Groq" && modelObj.id.includes("compound")) {
-                    requestBody.tools = [{ type: "web_search" }];
-                } else if (modelObj.provider === "Mistral") {
-                    requestBody.tools = [{ type: "web_search" }];
-                }
-
                 try {
                     const res = await fetch(targetEndpoint, {
                         method: 'POST',
@@ -1016,5 +1015,6 @@
     </script>
 </body>
 </html>
+
 
 

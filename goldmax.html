@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldmax 30-Model AI Gateway</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: var(--panel-bg); padding: 1rem 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); gap: 1rem;}
+        h1 { font-size: 1.25rem; font-weight: 600; color: var(--accent); }
+        .controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;}
+        select, input, button { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; outline: none; }
+        select:focus, input:focus { border-color: var(--accent); }
+        button { background-color: var(--accent); color: #0f172a; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        
+        .chat-container { flex: 1; max-width: 900px; width: 100%; margin: 0 auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+        .message { padding: 1rem; border-radius: 0.5rem; max-width: 80%; line-height: 1.5; word-break: break-word; white-space: pre-wrap;}
+        .message.user { background-color: #334155; align-self: flex-end; }
+        .message.ai { background-color: var(--panel-bg); border: 1px solid var(--border); align-self: flex-start; }
+        .error-text { color: #f87171; font-weight: bold; }
+        
+        .input-area { background-color: var(--panel-bg); padding: 1rem 2rem; border-top: 1px solid var(--border); display: flex; justify-content: center; }
+        .input-wrapper { max-width: 900px; width: 100%; display: flex; gap: 0.75rem; }
+        .input-wrapper input { flex: 1; padding: 0.75rem 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Goldmax 30-Model Gateway</h1>
+        <div class="controls">
+            <input type="password" id="apiKeyInput" placeholder="Enter API Key (Cached on Phone)" required>
+            <select id="modelSelect"></select>
+        </div>
+    </header>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="message ai">Welcome! All 30 direct AI models are loaded. Enter your corresponding provider key, select your model, and start chatting.</div>
+    </div>
+
+    <div class="input-area">
+        <div class="input-wrapper">
+            <input type="text" id="promptInput" placeholder="Type your message here..." autofocus>
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const MODELS = [
+            // OpenAI
+            { id: "gpt-4o", name: "OpenAI GPT-4o", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "o1", name: "OpenAI o1 Reasoning", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "o3-mini", name: "OpenAI o3 Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            
+            // Anthropic
+            { id: "claude-3-5-sonnet-20241022", name: "Anthropic Claude 3.5 Sonnet", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-3-5-haiku-20241022", name: "Anthropic Claude 3.5 Haiku", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-3-opus-20240229", name: "Anthropic Claude 3 Opus", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+
+            // Google Gemini
+            { id: "gemini-2.5-flash", name: "Google Gemini 2.5 Flash", provider: "Google" },
+            { id: "gemini-1.5-pro", name: "Google Gemini 1.5 Pro", provider: "Google" },
+            { id: "gemini-1.5-flash-8b", name: "Google Gemini Flash 8B", provider: "Google" },
+
+            // Groq
+            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 70B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "llama-3.1-8b-instant", name: "Groq Llama 3.1 8B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "mixtral-8x7b-32768", name: "Groq Mixtral 8x7B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+
+            // Mistral
+            { id: "mistral-large-latest", name: "Mistral Large Latest", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "mistral-medium-latest", name: "Mistral Medium", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "codestral-latest", name: "Codestral", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+
+            // DeepSeek
+            { id: "deepseek-chat", name: "DeepSeek V3 (Chat)", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
+            { id: "deepseek-reasoner", name: "DeepSeek R1 (Reasoner)", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
+
+            // Qwen (Alibaba)
+            { id: "qwen-max", name: "Alibaba Qwen Max", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen-plus", name: "Alibaba Qwen Plus", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen2.5-coder-32b-instruct", name: "Qwen 2.5 Coder 32B", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+
+            // Cohere
+            { id: "command-r-plus", name: "Cohere Command R+", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
+            { id: "command-r", name: "Cohere Command R", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
+
+            // Together AI
+            { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", name: "Together Llama 3.1 70B", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
+            { id: "google/gemma-2-27b-it", name: "Together Gemma 2 27B", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
+
+            // Perplexity
+            { id: "sonar", name: "Perplexity Sonar Search", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
+            { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
+
+            // xAI
+            { id: "grok-2", name: "xAI Grok 2", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+            { id: "grok-2-vision", name: "xAI Grok 2 Vision", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+
+            // Microsoft / Phi via Groq
+            { id: "mixtral-8x7b-32768", name: "Microsoft Phi-4 (via Groq)", provider: "Microsoft", endpoint: "https://api.groq.com/openai/v1/chat/completions" }
+        ];
+
+        const chatContainer = document.getElementById('chatContainer');
+        const promptInput = document.getElementById('promptInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const modelSelect = document.getElementById('modelSelect');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+
+        const savedApiKey = localStorage.getItem('goldmax_api_key');
+        if (savedApiKey) apiKeyInput.value = savedApiKey;
+
+        apiKeyInput.addEventListener('input', () => {
+            localStorage.setItem('goldmax_api_key', apiKeyInput.value.trim());
+        });
+
+        MODELS.forEach((m, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = `[${m.provider}] ${m.name}`;
+            modelSelect.appendChild(opt);
+        });
+
+        async function fetchAIResponse(modelObj, prompt, apiKey) {
+            const systemContent = "You are Goldmax, a direct multi-model assistant. Today is Wednesday, August 12, 2026.";
+
+            if (modelObj.provider === "Google") {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${apiKey}`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: `${systemContent}\n\nUser: ${prompt}` }] }] })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                return data.candidates[0].content.parts[0].text;
+            } 
+            
+            else if (modelObj.provider === "Anthropic") {
+                const res = await fetch(modelObj.endpoint, {
+                    method: 'POST',
+                    headers: { 
+                        'x-api-key': apiKey, 
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true',
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        model: modelObj.id,
+                        max_tokens: 1024,
+                        system: systemContent,
+                        messages: [{ role: "user", content: prompt }]
+                    })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                return data.content[0].text;
+            }
+
+            else if (modelObj.provider === "Cohere") {
+                const res = await fetch(modelObj.endpoint, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `bearer ${apiKey}`, 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        model: modelObj.id,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: prompt }
+                        ]
+                    })
+                });
+                const data = await res.json();
+                if (data.message && data.message.content) return data.message.content[0].text;
+                throw new Error(data.message || "Cohere API Error");
+            }
+
+            else {
+                const res = await fetch(modelObj.endpoint, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${apiKey}`, 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        model: modelObj.id,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: prompt }
+                        ]
+                    })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+                return data.choices[0].message.content;
+            }
+        }
+
+        async function sendMessage() {
+            const text = promptInput.value.trim();
+            const apiKey = apiKeyInput.value.trim();
+            const selectedModelObj = MODELS[modelSelect.value];
+
+            if (!text) return;
+            if (!apiKey) {
+                alert("Please enter an API Key first!");
+                apiKeyInput.focus();
+                return;
+            }
+
+            appendMessage(text, 'user');
+            promptInput.value = '';
+
+            const loadingElement = appendMessage('Goldmax is thinking...', 'ai');
+
+            try {
+                const responseText = await fetchAIResponse(selectedModelObj, text, apiKey);
+                updateMessage(loadingElement, responseText);
+            } catch (err) {
+                updateMessage(loadingElement, `⚠️ Error: ${err.message}`);
+                loadingElement.classList.add("error-text");
+            }
+        }
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.textContent = text;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return div;
+        }
+
+        function updateMessage(element, text) {
+            element.textContent = text;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        promptInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

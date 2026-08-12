@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Goldmax 30-Model AI Gateway</title>
+    <title>Goldmax 40-Model Agentic AI Gateway</title>
     <!-- Primary Meta Tags -->
-    <meta name="title" content="Goldmax 30-Model AI Gateway">
-    <meta name="description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
-    <meta name="keywords" content="AI gateway, multi-model AI, GPT-4o, Claude, Gemini, secure AI client, private AI gateway">
+    <meta name="title" content="Goldmax 40-Model Agentic AI Gateway">
+    <meta name="description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
+    <meta name="keywords" content="Agentic AI, autonomous AI, reasoning models, GPT-4o, Claude Sonnet, deepseek reasoner, secure AI client">
 
     <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.chyke.online/">
-    <meta property="og:title" content="Goldmax 30-Model AI Gateway">
-    <meta property="og:description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
+    <meta property="og:title" content="Goldmax 40-Model Agentic AI Gateway">
+    <meta property="og:description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
     <meta property="og:image" content="https://www.chyke.online/connectgold_2.png">
 
     <!-- Twitter / X -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://www.chyke.online/">
-    <meta property="twitter:title" content="Goldmax 30-Model AI Gateway">
-    <meta property="twitter:description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
+    <meta property="twitter:title" content="Goldmax 40-Model Agentic AI Gateway">
+    <meta property="twitter:description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
     <meta property="twitter:image" content="https://www.chyke.online/connectgold_2.png">
 
     <style>
@@ -204,7 +204,6 @@
         .key-box { display: flex; gap: 0.3rem; align-items: center; }
         .key-box input[type="password"] { width: 120px; color: #ffffff !important; }
         
-        /* Key Loaded status hidden by default until model is specifically validated */
         .key-status { font-size: 0.7rem; color: var(--success-color); display: none; font-weight: 500; }
         .key-status.active { display: inline-block; }
 
@@ -373,7 +372,7 @@
             <div class="header-top">
                 <div class="brand">
                     <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
-                    <h1>Goldmax</h1>
+                    <h1>Goldmax Agentic 40</h1>
                 </div>
                 <div class="user-pill">
                     <span id="locationIndicator">🌍 Detecting Location...</span>
@@ -386,7 +385,6 @@
                     <button id="saveKeyBtn" style="background: var(--success-color); color: #0b0f19; padding: 0.35rem 0.5rem;">Save</button>
                     <button id="clearKeyBtn" title="Reset" style="background: #334155; color: #fff; padding: 0.35rem 0.5rem; display:none;">Reset</button>
                 </div>
-                <!-- API Key Loaded Status Badge (Model-Specific) -->
                 <span id="keyStatus" class="key-status">🔒 API Key Loaded & Ready</span>
                 <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
             </div>
@@ -396,7 +394,7 @@
 
         <div class="chat-container" id="chatContainer">
             <div class="message ai">
-                <span>Welcome! Privacy agreement verified. Choose your model and chat across all 30 models seamlessly.</span>
+                <span>Welcome! 40-Model Agentic AI Gateway verified. Select an autonomous reasoning engine to begin execution.</span>
                 <span class="message-timestamp">Just now</span>
             </div>
         </div>
@@ -410,44 +408,55 @@
                 <button class="action-icon-btn" id="attachBtn" title="Attach Files">📎</button>
                 <button class="action-icon-btn" id="voiceBtn" title="Voice Input">🎤</button>
                 
-                <input type="text" id="promptInput" placeholder="Message..." autocomplete="off">
-                <button id="sendBtn">Send</button>
+                <input type="text" id="promptInput" placeholder="Agentic task instruction..." autocomplete="off">
+                <button id="sendBtn">Execute</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Exactly 40 Agentic & Advanced Reasoning AI Models
         const MODELS = [
-            { id: "gpt-4o", name: "OpenAI GPT-4o", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
-            { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
-            { id: "o1", name: "OpenAI o1 Reasoning", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
-            { id: "o3-mini", name: "OpenAI o3 Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
-            { id: "claude-3-5-sonnet-20241022", name: "Anthropic Claude 3.5 Sonnet", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
-            { id: "claude-3-5-haiku-20241022", name: "Anthropic Claude 3.5 Haiku", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
-            { id: "claude-3-opus-20240229", name: "Anthropic Claude 3 Opus", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
-            { id: "gemini-2.5-flash", name: "Google Gemini 2.5 Flash", provider: "Google" },
-            { id: "gemini-1.5-pro", name: "Google Gemini 1.5 Pro", provider: "Google" },
-            { id: "gemini-1.5-flash-8b", name: "Google Gemini Flash 8B", provider: "Google" },
-            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 70B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "llama-3.1-8b-instant", name: "Groq Llama 3.1 8B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "mixtral-8x7b-32768", name: "Groq Mixtral 8x7B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "mistral-large-latest", name: "Mistral Large Latest", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
-            { id: "mistral-medium-latest", name: "Mistral Medium", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
-            { id: "codestral-latest", name: "Codestral", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
-            { id: "deepseek-chat", name: "DeepSeek V3 (Chat)", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
-            { id: "deepseek-reasoner", name: "DeepSeek R1 (Reasoner)", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
-            { id: "qwen-max", name: "Alibaba Qwen Max", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
-            { id: "qwen-plus", name: "Alibaba Qwen Plus", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
-            { id: "qwen2.5-coder-32b-instruct", name: "Qwen 2.5 Coder 32B", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
-            { id: "command-r-plus", name: "Cohere Command R+", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
-            { id: "command-r", name: "Cohere Command R", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
-            { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", name: "Together Llama 3.1 70B", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
-            { id: "google/gemma-2-27b-it", name: "Together Gemma 2 27B", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
-            { id: "sonar", name: "Perplexity Sonar Search", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
-            { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
-            { id: "grok-2", name: "xAI Grok 2", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
-            { id: "grok-2-vision", name: "xAI Grok 2 Vision", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
-            { id: "mixtral-8x7b-32768", name: "Microsoft Phi-4 (via Groq)", provider: "Microsoft", endpoint: "https://api.groq.com/openai/v1/chat/completions" }
+            { id: "gpt-5.6-sol", name: "OpenAI GPT-5.6 Sol Frontier Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "gpt-5.5", name: "OpenAI GPT-5.5 Autonomous Orchestrator", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "gpt-5.4", name: "OpenAI GPT-5.4 Unified Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "gpt-5.2", name: "OpenAI GPT-5.2 Adaptive Reasoner", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "gpt-4o", name: "OpenAI GPT-4o Multi-Tool Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "o1", name: "OpenAI o1 Deep Planner", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "o3-mini", name: "OpenAI o3-mini Fast Reasoner", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "claude-opus-5", name: "Anthropic Claude Opus 5 Ultimate Agent", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-mythos-5", name: "Anthropic Claude Mythos 5 Core", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-fable-5", name: "Anthropic Claude Fable 5 Autonomous", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-sonnet-5", name: "Anthropic Claude Sonnet 5 Agentic", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-opus-4.8", name: "Anthropic Claude Opus 4.8 Orchestrator", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-3-5-sonnet-20241022", name: "Anthropic Claude 3.5 Sonnet Agent", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-3-opus-20240229", name: "Anthropic Claude 3 Opus Planner", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "gemini-3.5-flash", name: "Google Gemini 3.5 Flash Agentic", provider: "Google" },
+            { id: "gemini-3.1-pro-preview", name: "Google Gemini 3.1 Pro Autonomous", provider: "Google" },
+            { id: "gemini-2.5-flash", name: "Google Gemini 2.5 Flash Reasoner", provider: "Google" },
+            { id: "gemini-1.5-pro", name: "Google Gemini 1.5 Pro Agent", provider: "Google" },
+            { id: "qwen-3.8-max", name: "Alibaba Qwen 3.8 Max Agentic", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen-3.6-plus", name: "Alibaba Qwen 3.6 Plus Hybrid Agent", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen-max", name: "Alibaba Qwen Max Reasoner", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen2.5-coder-32b-instruct", name: "Qwen 2.5 Coder Agent", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "kimi-k3", name: "Moonshot Kimi K3 Open-Weight Reasoner", provider: "Moonshot", endpoint: "https://api.moonshot.cn/v1/chat/completions" },
+            { id: "kimi-k2.7-code", name: "Moonshot Kimi K2.7 Coding Agent", provider: "Moonshot", endpoint: "https://api.moonshot.cn/v1/chat/completions" },
+            { id: "grok-4.5", name: "xAI Grok 4.5 Autonomous Agent", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+            { id: "grok-build-0.1", name: "xAI Grok Build 0.1 Engineering Agent", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+            { id: "grok-2", name: "xAI Grok 2 Reasoning", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+            { id: "glm-5.2", name: "Z.ai GLM 5.2 Long-Horizon Agent", provider: "Zhipu", endpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions" },
+            { id: "mimo-v2.5-pro", name: "Xiaomi MiMo-V2.5-Pro Engineering Agent", provider: "Xiaomi", endpoint: "https://api.xiaomi.com/v1/chat/completions" },
+            { id: "hy3", name: "Tencent Hy3 Mixture-of-Experts Agent", provider: "Tencent", endpoint: "https://api.tencent.com/v1/chat/completions" },
+            { id: "nemotron-3-ultra", name: "NVIDIA Nemotron 3 Ultra Frontier", provider: "NVIDIA", endpoint: "https://integrate.api.nvidia.com/v1/chat/completions" },
+            { id: "laguna-s-2.1", name: "Poolside Laguna S 2.1 Coding Agent", provider: "Poolside", endpoint: "https://api.poolside.ai/v1/chat/completions" },
+            { id: "deepseek-reasoner", name: "DeepSeek R1 Agentic Reasoner", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
+            { id: "deepseek-chat", name: "DeepSeek V3 Agent", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
+            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 70B Agentic", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "mistral-large-latest", name: "Mistral Large Autonomous Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "codestral-latest", name: "Codestral Software Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "command-r-plus", name: "Cohere Command R+ Autonomous", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
+            { id: "sonar-pro", name: "Perplexity Sonar Pro Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
+            { id: "muse-spark-1.1", name: "Meta Muse Spark 1.1 Reasoner", provider: "Meta", endpoint: "https://api.meta.com/v1/chat/completions" }
         ];
 
         const chatContainer = document.getElementById('chatContainer');
@@ -478,7 +487,7 @@
 
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
-        let validatedModels = JSON.parse(localStorage.getItem('goldmax_validated_models') || "{}");
+        let validatedModels = JSON.parse(localStorage.getItem('goldmax_agentic40_validated_models') || "{}");
 
         async function detectUserLocation() {
             if (navigator.geolocation) {
@@ -491,13 +500,13 @@
                         userLocationContext = `${data.city || data.locality}, ${data.countryName}`;
                         locationIndicator.textContent = `📍 ${userLocationContext}`;
                     } catch (e) {
-                        locationIndicator.textContent = `🌍 Worldwide Mode`;
+                        locationIndicator.textContent = `🌍 Autonomous Mode`;
                     }
                 }, () => {
-                    locationIndicator.textContent = `🌍 Worldwide Mode`;
+                    locationIndicator.textContent = `🌍 Autonomous Mode`;
                 });
             } else {
-                locationIndicator.textContent = `🌍 Worldwide Mode`;
+                locationIndicator.textContent = `🌍 Autonomous Mode`;
             }
         }
         detectUserLocation();
@@ -607,33 +616,28 @@
             }
         }
 
-        const savedKey = localStorage.getItem('goldmax_api_key');
+        const savedKey = localStorage.getItem('goldmax_agentic40_api_key');
         if (savedKey) {
             clearKeyBtn.style.display = 'inline-block';
         }
 
-        // Updates both Active AI Indicator and "API Key Loaded" Badge based strictly on current model validation
         function updateUIState() {
             const val = modelSelect.value;
-            const apiKey = localStorage.getItem('goldmax_api_key');
+            const apiKey = localStorage.getItem('goldmax_agentic40_api_key');
 
             if (val !== "" && val !== null && val !== undefined && apiKey && validatedModels[val]) {
                 const selected = MODELS[val];
-                // Show Active AI Indicator
-                activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
+                activeAiIndicator.innerHTML = `🤖 Agentic AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
                 activeAiIndicator.classList.add('active');
 
-                // Show API Key Loaded Badge
                 keyStatus.classList.add('active');
                 apiKeyInput.style.display = 'none';
                 saveKeyBtn.style.display = 'none';
                 clearKeyBtn.style.display = 'inline-block';
             } else {
-                // Hide Active AI Indicator
                 activeAiIndicator.textContent = "";
                 activeAiIndicator.classList.remove('active');
 
-                // Hide API Key Loaded Badge if this model isn't validated yet
                 keyStatus.classList.remove('active');
                 apiKeyInput.style.display = 'inline-block';
                 saveKeyBtn.style.display = 'inline-block';
@@ -649,35 +653,34 @@
             
             const modelVal = modelSelect.value;
             if (modelVal === "") {
-                return alert("Please select a target AI model from the dropdown first to validate the key against it!");
+                return alert("Please select a target Agentic AI model from the dropdown first to validate the key against it!");
             }
 
-            saveKeyBtn.textContent = "Checking...";
+            saveKeyBtn.textContent = "Verifying Agent...";
             const selectedModel = MODELS[modelVal];
             const isValid = await validateApiKey(val, selectedModel);
             saveKeyBtn.textContent = "Save";
 
             if (!isValid) {
-                alert(`⚠️ Invalid API Key for ${selectedModel.name}! Please verify your key.`);
+                alert(`⚠️ Invalid API Key for ${selectedModel.name}!`);
                 apiKeyInput.focus();
                 return;
             }
 
-            localStorage.setItem('goldmax_api_key', val);
+            localStorage.setItem('goldmax_agentic40_api_key', val);
             
-            // Mark ONLY this specific model index as validated
             validatedModels[modelVal] = true;
-            localStorage.setItem('goldmax_validated_models', JSON.stringify(validatedModels));
+            localStorage.setItem('goldmax_agentic40_validated_models', JSON.stringify(validatedModels));
 
             apiKeyInput.value = '';
             updateUIState();
-            alert(`✅ API Key verified and successfully validated for ${selectedModel.name}!`);
+            alert(`✅ Agentic Key successfully verified for ${selectedModel.name}!`);
         });
 
         clearKeyBtn.addEventListener('click', () => {
-            if (confirm("Clear stored key and validation records?")) {
-                localStorage.removeItem('goldmax_api_key');
-                localStorage.removeItem('goldmax_validated_models');
+            if (confirm("Clear stored key and agent validations?")) {
+                localStorage.removeItem('goldmax_agentic40_api_key');
+                localStorage.removeItem('goldmax_agentic40_validated_models');
                 validatedModels = {};
                 apiKeyInput.value = '';
                 apiKeyInput.style.display = 'inline-block';
@@ -690,7 +693,7 @@
 
         const defaultOpt = document.createElement('option');
         defaultOpt.value = "";
-        defaultOpt.textContent = "-- Select Model --";
+        defaultOpt.textContent = "-- Select Agentic Model --";
         defaultOpt.selected = true;
         defaultOpt.disabled = true;
         modelSelect.appendChild(defaultOpt);
@@ -773,7 +776,7 @@
         }
 
         async function fetchAIResponse(modelObj, prompt, apiKey, fileData) {
-            const systemContent = `You are Goldmax, an expert multi-model assistant. The user is currently located in ${userLocationContext}. Respond accurately, taking into account local contextual relevance and language nuances if applicable. Today is Wednesday, August 12, 2026.`;
+            const systemContent = `You are Goldmax, an autonomous 100% Agentic AI reasoning engine designed to plan, decompose complex tasks, and execute multi-step workflows. The user is currently located in ${userLocationContext}. Today is Wednesday, August 12, 2026.`;
 
             let base64File = null;
             let fileTextContent = null;
@@ -787,11 +790,11 @@
 
             if (modelObj.provider === "Google") {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${apiKey}`;
-                let parts = [{ text: `${systemContent}\n\nUser Request: ${prompt}` }];
+                let parts = [{ text: `${systemContent}\n\nAutonomous Agent Objective: ${prompt}` }];
                 if (fileData && base64File) {
                     parts.push({ inline_data: { mime_type: fileData.type, data: base64File } });
                 } else if (fileData && fileTextContent) {
-                    parts[0].text += `\n\n[Attached File Content (${fileData.name})]:\n${fileTextContent}`;
+                    parts[0].text += `\n\n[Agentic Data Source (${fileData.name})]:\n${fileTextContent}`;
                 }
                 const res = await fetch(url, {
                     method: 'POST',
@@ -801,10 +804,10 @@
                 const data = await res.json();
                 if (data.error) throw new Error(data.error.message);
                 return data.candidates[0].content.parts[0].text;
-            } else if (modelObj.provider === "OpenAI" || modelObj.provider === "Groq" || modelObj.provider === "Mistral" || modelObj.provider === "DeepSeek" || modelObj.provider === "Qwen" || modelObj.provider === "Together" || modelObj.provider === "Perplexity" || modelObj.provider === "xAI" || modelObj.provider === "Microsoft") {
+            } else if (modelObj.provider === "OpenAI" || modelObj.provider === "Groq" || modelObj.provider === "Mistral" || modelObj.provider === "DeepSeek" || modelObj.provider === "Qwen" || modelObj.provider === "Perplexity" || modelObj.provider === "Moonshot" || modelObj.provider === "xAI" || modelObj.provider === "Zhipu" || modelObj.provider === "Xiaomi" || modelObj.provider === "Tencent" || modelObj.provider === "NVIDIA" || modelObj.provider === "Poolside" || modelObj.provider === "Meta") {
                 let userContentBlock = prompt;
                 if (fileData && fileTextContent) {
-                    userContentBlock += `\n\n[Attached File Content (${fileData.name})]:\n${fileTextContent}`;
+                    userContentBlock += `\n\n[Agentic Data Source (${fileData.name})]:\n${fileTextContent}`;
                 }
 
                 let messagesPayload = [
@@ -839,7 +842,7 @@
                 return data.choices[0].message.content;
             } else if (modelObj.provider === "Anthropic") {
                 let fullPrompt = prompt;
-                if (fileData && fileTextContent) fullPrompt += `\n\n[Attached File Content (${fileData.name})]:\n${fileTextContent}`;
+                if (fileData && fileTextContent) fullPrompt += `\n\n[Agentic Data Source (${fileData.name})]:\n${fileTextContent}`;
 
                 const res = await fetch(modelObj.endpoint, {
                     method: 'POST',
@@ -852,7 +855,7 @@
                     },
                     body: JSON.stringify({
                         model: modelObj.id,
-                        max_tokens: 1024,
+                        max_tokens: 1500,
                         system: systemContent,
                         messages: [{ role: "user", content: fullPrompt }]
                     })
@@ -876,11 +879,11 @@
 
         async function sendMessage() {
             const text = promptInput.value.trim();
-            const apiKey = localStorage.getItem('goldmax_api_key');
+            const apiKey = localStorage.getItem('goldmax_agentic40_api_key');
             const modelVal = modelSelect.value;
             
             if (modelVal === "") {
-                alert("Please select an active AI model first!");
+                alert("Please select an active Agentic AI model first!");
                 modelSelect.focus();
                 return;
             }
@@ -903,14 +906,14 @@
             removeAttachment();
             smartRepliesContainer.style.display = 'none';
 
-            const loadingElement = appendMessage('Thinking...', 'ai');
+            const loadingElement = appendMessage('Autonomous Agent Executing...', 'ai');
 
             try {
                 const responseText = await fetchAIResponse(selectedModelObj, displayMsg, apiKey, attached);
                 updateMessage(loadingElement, responseText, true);
                 generateSmartReplies(responseText);
             } catch (err) {
-                updateMessage(loadingElement, `⚠️ Error: ${err.message}`, false);
+                updateMessage(loadingElement, `⚠️ Agent Error: ${err.message}`, false);
                 loadingElement.classList.add("error-text");
             }
         }
@@ -920,12 +923,12 @@
             const lower = aiText.toLowerCase();
             let suggestions = [];
 
-            if (lower.includes("code") || lower.includes("function") || lower.includes("script")) {
-                suggestions = ["Explain this code", "Can you optimize it?", "Write a test case"];
-            } else if (lower.includes("error") || lower.includes("issue") || lower.includes("bug")) {
-                suggestions = ["How do I fix this?", "Show example fix", "Why did this happen?"];
+            if (lower.includes("plan") || lower.includes("step") || lower.includes("execute")) {
+                suggestions = ["Proceed to next step", "Refine strategy", "Review execution logs"];
+            } else if (lower.includes("error") || lower.includes("fail") || lower.includes("issue")) {
+                suggestions = ["Autonomous retry", "Alternative approach", "Diagnose failure"];
             } else {
-                suggestions = ["Tell me more", "Summarize key points", "Give me an example"];
+                suggestions = ["Automate next phase", "Summarize execution", "Deploy solution"];
             }
 
             suggestions.forEach(s => {
@@ -977,7 +980,7 @@
                 shareBtn.className = 'share-btn';
                 shareBtn.textContent = 'Share 🔗';
                 shareBtn.onclick = () => {
-                    if (navigator.share) navigator.share({ title: 'Goldmax AI', text: text }).catch(() => {});
+                    if (navigator.share) navigator.share({ title: 'Goldmax Agentic AI', text: text }).catch(() => {});
                     else { navigator.clipboard.writeText(text); alert("Copied!"); }
                 };
                 footer.appendChild(shareBtn);
@@ -992,19 +995,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

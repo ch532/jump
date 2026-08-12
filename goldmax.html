@@ -486,7 +486,6 @@
 
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
-        // Permanently persist validated model states across closures
         let validatedModels = JSON.parse(localStorage.getItem('goldmax_agentic40_validated_models') || "{}");
 
         async function detectUserLocation() {
@@ -635,13 +634,9 @@
                 activeAiIndicator.classList.remove('active');
 
                 keyStatus.classList.remove('active');
-                if (apiKey) {
-                    apiKeyInput.style.display = 'none';
-                    saveKeyBtn.style.display = 'none';
-                    clearKeyBtn.style.display = 'inline-block';
-                } else {
-                    apiKeyInput.style.display = 'inline-block';
-                    saveKeyBtn.style.display = 'inline-block';
+                apiKeyInput.style.display = 'inline-block';
+                saveKeyBtn.style.display = 'inline-block';
+                if (!apiKey) {
                     clearKeyBtn.style.display = 'none';
                 }
             }
@@ -1021,4 +1016,5 @@
     </script>
 </body>
 </html>
+
 

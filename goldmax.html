@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Goldmax 40-Model Agentic AI Gateway</title>
+    <title>Goldmax</title>
     <!-- Primary Meta Tags -->
     <meta name="title" content="Goldmax 40-Model Agentic AI Gateway">
     <meta name="description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
@@ -388,7 +388,7 @@
             <div class="header-top">
                 <div class="brand">
                     <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
-                    <h1>Goldmax Agentic 40</h1>
+                    <h1>Goldmax Agentic AI</h1>
                 </div>
                 <div class="user-pill">
                     <span id="locationIndicator">🌍 Detecting Location...</span>
@@ -410,7 +410,7 @@
 
         <div class="chat-container" id="chatContainer">
             <div class="message ai">
-                <span>Welcome! 40-Model Agentic AI Gateway verified. Select an autonomous reasoning engine to begin execution.</span>
+                <span>Welcome! Agentic AI Gateway verified. Select an autonomous reasoning engine to begin execution.</span>
                 <div class="message-footer">
                     <div class="feedback-container">
                         <button class="feedback-btn" onclick="sendFeedback(this, 'Good')">👍 Good</button>
@@ -446,9 +446,6 @@
             { id: "claude-3-opus-20240229", name: "Anthropic Claude 3 Opus Planner", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
             { id: "gemini-2.5-flash", name: "Google Gemini 2.5 Flash Reasoner", provider: "Google" },
             { id: "gemini-1.5-pro", name: "Google Gemini 1.5 Pro Agent", provider: "Google" },
-            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 70B Agentic", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "mistral-large-latest", name: "Mistral Large Autonomous Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
-            { id: "codestral-latest", name: "Codestral Software Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "deepseek-reasoner", name: "DeepSeek R1 Agentic Reasoner", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
             { id: "deepseek-chat", name: "DeepSeek V3 Agent", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
             { id: "qwen-max", name: "Alibaba Qwen Max Reasoner", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
@@ -459,26 +456,20 @@
             { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "claude-3-5-haiku-20241022", name: "Anthropic Claude 3.5 Haiku Agent", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
             { id: "gemini-1.5-flash-8b", name: "Google Gemini Flash 8B Agent", provider: "Google" },
-            { id: "llama-3.1-8b-instant", name: "Groq Llama 3.1 8B Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
-            { id: "mistral-medium-latest", name: "Mistral Medium Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "qwen-plus", name: "Alibaba Qwen Plus Agent", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
             { id: "command-r", name: "Cohere Command R Agent", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
             { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", name: "Together Llama 3.1 Agent", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
             { id: "google/gemma-2-27b-it", name: "Together Gemma Agent", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
             { id: "sonar", name: "Perplexity Sonar Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
             { id: "grok-2-vision", name: "xAI Grok 2 Vision Agent", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
-            { id: "phi-4", name: "Microsoft Phi-4 Agent", provider: "Microsoft", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
             { id: "deepseek-coder", name: "DeepSeek Coder V2 Agent", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
-            { id: "mistral-embed", name: "Mistral Embedding Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
             { id: "cohere-embed-english-v3.0", name: "Cohere Embed Agent", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
             { id: "llama-3-70b-instruct", name: "Together Llama 3 Agent", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
             { id: "qwen-turbo", name: "Alibaba Qwen Turbo Agent", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
             { id: "claude-2.1", name: "Anthropic Claude 2.1 Agent", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
             { id: "gpt-3.5-turbo", name: "OpenAI GPT-3.5 Turbo Agent", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "grok-beta", name: "xAI Grok Beta Agent", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
-            { id: "sonar-medium", name: "Perplexity Sonar Medium Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
-            { id: "mistral-small-latest", name: "Mistral Small Agent", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
-            { id: "mixtral-8x7b-32768", name: "Groq Mixtral Agent", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" }
+            { id: "sonar-medium", name: "Perplexity Sonar Medium Agent", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" }
         ];
 
         const chatContainer = document.getElementById('chatContainer');
@@ -509,7 +500,7 @@
 
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
-        let validatedModels = JSON.parse(localStorage.getItem('goldmax_agentic40_validated_models') || "{}");
+        let validatedModels = JSON.parse(localStorage.getItem('goldmax_agentic_clean_validated_models') || "{}");
 
         async function detectUserLocation() {
             if (navigator.geolocation) {
@@ -633,11 +624,15 @@
             }
         }
 
+        const savedKey = localStorage.getItem('goldmax_agentic_clean_api_key');
+        if (savedKey) {
+            clearKeyBtn.style.display = 'inline-block';
+        }
+
         function updateUIState() {
             const val = modelSelect.value;
-            const apiKey = localStorage.getItem('goldmax_agentic40_api_key');
+            const apiKey = localStorage.getItem('goldmax_agentic_clean_api_key');
 
-            // Check if model is selected AND has an explicitly validated key stored
             if (val !== "" && val !== null && val !== undefined && apiKey && validatedModels[val]) {
                 const selected = MODELS[val];
                 activeAiIndicator.innerHTML = `🤖 Agentic AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
@@ -648,7 +643,6 @@
                 saveKeyBtn.style.display = 'none';
                 clearKeyBtn.style.display = 'inline-block';
             } else {
-                // If model lacks a verified key or no model selected, show input box
                 activeAiIndicator.textContent = "";
                 activeAiIndicator.classList.remove('active');
 
@@ -683,10 +677,10 @@
                 return;
             }
 
-            localStorage.setItem('goldmax_agentic40_api_key', val);
+            localStorage.setItem('goldmax_agentic_clean_api_key', val);
             
             validatedModels[modelVal] = true;
-            localStorage.setItem('goldmax_agentic40_validated_models', JSON.stringify(validatedModels));
+            localStorage.setItem('goldmax_agentic_clean_validated_models', JSON.stringify(validatedModels));
 
             apiKeyInput.value = '';
             updateUIState();
@@ -695,8 +689,8 @@
 
         clearKeyBtn.addEventListener('click', () => {
             if (confirm("Clear stored key and agent validations?")) {
-                localStorage.removeItem('goldmax_agentic40_api_key');
-                localStorage.removeItem('goldmax_agentic40_validated_models');
+                localStorage.removeItem('goldmax_agentic_clean_api_key');
+                localStorage.removeItem('goldmax_agentic_clean_validated_models');
                 validatedModels = {};
                 apiKeyInput.value = '';
                 apiKeyInput.style.display = 'inline-block';
@@ -915,7 +909,7 @@
 
         async function sendMessage() {
             const text = promptInput.value.trim();
-            const apiKey = localStorage.getItem('goldmax_agentic40_api_key');
+            const apiKey = localStorage.getItem('goldmax_agentic_clean_api_key');
             const modelVal = modelSelect.value;
             
             if (modelVal === "") {
@@ -1071,6 +1065,7 @@
     </script>
 </body>
 </html>
+
 
 
 

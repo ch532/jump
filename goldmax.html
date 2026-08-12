@@ -204,6 +204,7 @@
         .key-box { display: flex; gap: 0.3rem; align-items: center; }
         .key-box input[type="password"] { width: 120px; color: #ffffff !important; }
         
+        /* Key Loaded status hidden by default until model is specifically validated */
         .key-status { font-size: 0.7rem; color: var(--success-color); display: none; font-weight: 500; }
         .key-status.active { display: inline-block; }
 
@@ -385,6 +386,7 @@
                     <button id="saveKeyBtn" style="background: var(--success-color); color: #0b0f19; padding: 0.35rem 0.5rem;">Save</button>
                     <button id="clearKeyBtn" title="Reset" style="background: #334155; color: #fff; padding: 0.35rem 0.5rem; display:none;">Reset</button>
                 </div>
+                <!-- API Key Loaded Status Badge (Model-Specific) -->
                 <span id="keyStatus" class="key-status">🔒 API Key Loaded & Ready</span>
                 <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
             </div>
@@ -476,7 +478,6 @@
 
         let currentAttachedFile = null;
         let userLocationContext = "Global / General Location";
-        // Tracks set of model IDs that have successfully validated an API key
         let validatedModels = JSON.parse(localStorage.getItem('goldmax_validated_models') || "{}");
 
         async function detectUserLocation() {
@@ -602,39 +603,44 @@
                 }
                 return true;
             } catch (e) {
-                return true; // Allow offline grace
+                return true;
             }
         }
 
         const savedKey = localStorage.getItem('goldmax_api_key');
         if (savedKey) {
-            apiKeyInput.style.display = 'none';
-            saveKeyBtn.style.display = 'none';
             clearKeyBtn.style.display = 'inline-block';
-            keyStatus.classList.add('active');
-        } else {
-            apiKeyInput.style.display = 'inline-block';
-            saveKeyBtn.style.display = 'inline-block';
-            clearKeyBtn.style.display = 'none';
-            keyStatus.classList.remove('active');
         }
 
-        // Active AI Indicator logic: ONLY displays if a model is chosen AND that specific model has a validated key stored
-        function updateActiveAiDisplay() {
+        // Updates both Active AI Indicator and "API Key Loaded" Badge based strictly on current model validation
+        function updateUIState() {
             const val = modelSelect.value;
             const apiKey = localStorage.getItem('goldmax_api_key');
 
-            if (val !== "" && val !== null && val !== undefined && apiKey) {
+            if (val !== "" && val !== null && val !== undefined && apiKey && validatedModels[val]) {
                 const selected = MODELS[val];
-                // Check if this model has been explicitly validated/used with a key
-                if (selected && validatedModels[selected.id]) {
-                    activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
-                    activeAiIndicator.classList.add('active');
-                    return;
+                // Show Active AI Indicator
+                activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
+                activeAiIndicator.classList.add('active');
+
+                // Show API Key Loaded Badge
+                keyStatus.classList.add('active');
+                apiKeyInput.style.display = 'none';
+                saveKeyBtn.style.display = 'none';
+                clearKeyBtn.style.display = 'inline-block';
+            } else {
+                // Hide Active AI Indicator
+                activeAiIndicator.textContent = "";
+                activeAiIndicator.classList.remove('active');
+
+                // Hide API Key Loaded Badge if this model isn't validated yet
+                keyStatus.classList.remove('active');
+                apiKeyInput.style.display = 'inline-block';
+                saveKeyBtn.style.display = 'inline-block';
+                if (!apiKey) {
+                    clearKeyBtn.style.display = 'none';
                 }
             }
-            activeAiIndicator.textContent = "";
-            activeAiIndicator.classList.remove('active');
         }
 
         saveKeyBtn.addEventListener('click', async () => {
@@ -659,17 +665,12 @@
 
             localStorage.setItem('goldmax_api_key', val);
             
-            // Mark ONLY this specific model as validated
-            validatedModels[selectedModel.id] = true;
+            // Mark ONLY this specific model index as validated
+            validatedModels[modelVal] = true;
             localStorage.setItem('goldmax_validated_models', JSON.stringify(validatedModels));
 
             apiKeyInput.value = '';
-            apiKeyInput.style.display = 'none';
-            saveKeyBtn.style.display = 'none';
-            clearKeyBtn.style.display = 'inline-block';
-            keyStatus.classList.add('active');
-            
-            updateActiveAiDisplay();
+            updateUIState();
             alert(`✅ API Key verified and successfully validated for ${selectedModel.name}!`);
         });
 
@@ -678,13 +679,12 @@
                 localStorage.removeItem('goldmax_api_key');
                 localStorage.removeItem('goldmax_validated_models');
                 validatedModels = {};
+                apiKeyInput.value = '';
                 apiKeyInput.style.display = 'inline-block';
                 saveKeyBtn.style.display = 'inline-block';
                 clearKeyBtn.style.display = 'none';
                 keyStatus.classList.remove('active');
-                apiKeyInput.value = '';
-                apiKeyInput.focus();
-                updateActiveAiDisplay();
+                updateUIState();
             }
         });
 
@@ -702,8 +702,8 @@
             modelSelect.appendChild(opt);
         });
 
-        modelSelect.addEventListener('change', updateActiveAiDisplay);
-        updateActiveAiDisplay();
+        modelSelect.addEventListener('change', updateUIState);
+        updateUIState();
 
         attachBtn.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => {
@@ -889,7 +889,7 @@
             const attached = currentAttachedFile;
 
             if (!text && !attached) return;
-            if (!apiKey || !validatedModels[selectedModelObj.id]) {
+            if (!apiKey || !validatedModels[modelVal]) {
                 alert(`Please enter and successfully validate your API Key for ${selectedModelObj.name} first!`);
                 apiKeyInput.focus();
                 return;

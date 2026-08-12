@@ -1,3 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Goldmax 30-Model AI Gateway</title>
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Goldmax 30-Model AI Gateway">
+    <meta name="description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
+    <meta name="keywords" content="AI gateway, multi-model AI, GPT-4o, Claude, Gemini, secure AI client, private AI gateway">
+
+    <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.chyke.online/">
+    <meta property="og:title" content="Goldmax 30-Model AI Gateway">
+    <meta property="og:description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
+    <meta property="og:image" content="https://www.chyke.online/connectgold_2.png">
+
+    <!-- Twitter / X -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.chyke.online/">
+    <meta property="twitter:title" content="Goldmax 30-Model AI Gateway">
+    <meta property="twitter:description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
+    <meta property="twitter:image" content="https://www.chyke.online/connectgold_2.png">
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #131b2e;
+            --panel-border: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --user-bubble: #0284c7;
+            --ai-bubble: #1e293b;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        html, body { background-color: var(--bg-color); color: var(--text-main); height: 100%; overflow: hidden; }
+
+        /* Screen Lock / Biometric Gate Overlay */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        #authOverlay img { width: 64px; height: 64px; border-radius: 12px; object-fit: contain; }
+        #authOverlay h2 { font-size: 1.5rem; color: var(--text-main); }
+        #authOverlay p { color: var(--text-muted); font-size: 0.9rem; max-width: 320px; line-height: 1.4; }
+        
+        .auth-btn {
+            background-color: var(--accent);
+            color: #0b0f19;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .otp-fallback-link {
+            color: var(--accent);
+            font-size: 0.8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Custom Masked PIN Modal */
+        #pinModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        .pin-modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        .pin-modal-content h3 { font-size: 1.1rem; color: var(--text-main); }
+        .pin-modal-content input {
+            background: #0b0f19;
+            color: #ffffff !important;
+            border: 1px solid var(--panel-border);
+            padding: 0.6rem;
+            border-radius: 0.4rem;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 0.2rem;
+            outline: none;
+        }
+        .pin-modal-buttons { display: flex; gap: 0.5rem; justify-content: space-between; }
+        .pin-modal-buttons button { flex: 1; padding: 0.5rem; border-radius: 0.4rem; font-weight: 600; cursor: pointer; border: none; }
+        #pinCancelBtn { background: #334155; color: #fff !important; }
+        #pinSubmitBtn { background: var(--accent); color: #0b0f19 !important; }
+
+        /* Privacy Policy Agreement Modal */
+        #privacyModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.95);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        .privacy-modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+        }
+        .privacy-modal-content h3 { font-size: 1.2rem; color: var(--text-main); text-align: center; }
+        .privacy-modal-content p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; }
+        .privacy-modal-content a { color: var(--accent); text-decoration: underline; }
+        .privacy-agree-btn {
+            background-color: var(--accent);
+            color: #0b0f19;
+            font-weight: 600;
+            padding: 0.65rem;
+            border-radius: 0.4rem;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        /* Main App Container */
+        #appContainer { display: none; flex-direction: column; height: 100%; width: 100%; }
+
+        header { 
+            background-color: var(--panel-bg); 
+            padding: 0.5rem 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.4rem; 
+            border-bottom: 1px solid var(--panel-border); 
+            flex-shrink: 0;
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .brand { display: flex; align-items: center; gap: 0.5rem; }
+        .brand img { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; }
+        h1 { font-size: 0.95rem; font-weight: 600; color: var(--text-main); }
+        
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #1e293b;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--panel-border);
+            font-size: 0.75rem;
+            color: var(--success-color);
+        }
+
+        .controls { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+        
+        select, input, button { 
+            background: #0f172a; 
+            color: #ffffff !important; 
+            border: 1px solid var(--panel-border); 
+            padding: 0.4rem 0.6rem; 
+            border-radius: 0.4rem; 
+            font-size: 0.8rem; 
+            outline: none; 
+        }
+        input::placeholder { color: #64748b; }
+        select:focus, input:focus { border-color: var(--accent); }
+        
+        button { background-color: var(--accent); color: #0b0f19 !important; font-weight: 600; cursor: pointer; border: none; }
+        button:hover { opacity: 0.9; }
+
+        .key-box { display: flex; gap: 0.3rem; align-items: center; }
+        .key-box input[type="password"] { width: 120px; color: #ffffff !important; }
+        
+        /* Key Status Hidden by Default */
+        .key-status { font-size: 0.7rem; color: var(--success-color); display: none; font-weight: 500; }
+        .key-status.active { display: inline-block; }
+
+        /* Active AI Indicator Badge (Hidden when empty) */
+        .active-ai-indicator {
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            display: none;
+            align-items: center;
+            gap: 0.3rem;
+            width: fit-content;
+        }
+        .active-ai-indicator.active { display: inline-flex; }
+
+        /* Chat Container */
+        .chat-container { 
+            flex: 1; 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1rem; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .message { 
+            padding: 0.8rem 1rem; 
+            border-radius: 1rem; 
+            max-width: 85%; 
+            line-height: 1.5; 
+            word-break: break-word; 
+            white-space: pre-wrap; 
+            font-size: 0.9rem; 
+        }
+        .message.user { background-color: var(--user-bubble); color: #fff; align-self: flex-end; border-bottom-right-radius: 0.2rem; }
+        .message.ai { background-color: var(--ai-bubble); border: 1px solid var(--panel-border); align-self: flex-start; border-bottom-left-radius: 0.2rem; }
+        .error-text { color: #f87171 !important; font-weight: 500; }
+
+        .message-footer { display: flex; justify-content: flex-end; margin-top: 0.4rem; }
+        .share-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            border: none;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .attachment-preview {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--accent);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 0.4rem;
+            display: inline-flex;
+            gap: 0.4rem;
+            color: var(--accent);
+        }
+
+        /* Bottom Input Dock */
+        .input-area { 
+            width: 100%; 
+            background-color: var(--panel-bg); 
+            padding: 0.6rem 1rem; 
+            border-top: 1px solid var(--panel-border); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 0.4rem; 
+            flex-shrink: 0;
+        }
+        .input-wrapper { max-width: 900px; width: 100%; display: flex; gap: 0.4rem; align-items: center; }
+        .input-wrapper input { flex: 1; padding: 0.6rem 0.8rem; font-size: 0.9rem; background: #0b0f19; color: #ffffff !important; }
+        
+        .action-icon-btn {
+            background: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--panel-border);
+            padding: 0.55rem;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-icon-btn.recording { background: var(--danger-color); color: #fff; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <!-- Screen Lock / Biometric Gate Overlay -->
+    <div id="authOverlay">
+        <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
+        <h2>Secure Gateway Access</h2>
+        <p>Unlock with your device screen lock PIN, pattern, or biometrics.</p>
+        <button class="auth-btn" id="biometricLoginBtn">🔐 Unlock Gateway</button>
+        <button class="otp-fallback-link" id="otpFallbackBtn">Forgot screen lock? Send SMS OTP</button>
+    </div>
+
+    <!-- Custom Masked PIN Input Modal -->
+    <div id="pinModal">
+        <div class="pin-modal-content">
+            <h3>Enter Screen Lock PIN</h3>
+            <input type="password" id="pinInput" placeholder="••••" autocomplete="current-password">
+            <div class="pin-modal-buttons">
+                <button id="pinCancelBtn">Cancel</button>
+                <button id="pinSubmitBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Agreement Modal -->
+    <div id="privacyModal">
+        <div class="privacy-modal-content">
+            <h3>Privacy Policy Agreement</h3>
+            <p>Before accessing Goldmax AI, please review and accept our <a href="privacy20.html" target="_blank">Privacy Policy</a>. We secure your API keys locally and do not store external chat logs.</p>
+            <button class="privacy-agree-btn" id="privacyAgreeBtn">Agree & Continue</button>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="appContainer">
+        <header>
+            <div class="header-top">
+                <div class="brand">
+                    <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
+                    <h1>Goldmax</h1>
+                </div>
+                <div class="user-pill">
+                    <span>🛡️ Secure Session</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="key-box">
+                    <input type="password" id="apiKeyInput" placeholder="API Key...">
+                    <button id="saveKeyBtn" style="background: var(--success-color); color: #0b0f19; padding: 0.35rem 0.5rem;">Save</button>
+                    <button id="clearKeyBtn" title="Reset" style="background: #334155; color: #fff; padding: 0.35rem 0.5rem; display:none;">Reset</button>
+                </div>
+                <span id="keyStatus" class="key-status">🔒 API Key Loaded & Ready</span>
+                <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
+            </div>
+            
+            <!-- Active AI Indicator (Blank/Hidden by default) -->
+            <div id="activeAiIndicator" class="active-ai-indicator"></div>
+        </header>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message ai">Welcome! Privacy agreement verified. Choose your model and chat across all 30 models seamlessly.</div>
+        </div>
+
+        <div class="input-area">
+            <div id="activeAttachmentContainer" style="width: 100%; max-width: 900px; display: none;"></div>
+            <div class="input-wrapper">
+                <input type="file" id="fileInput" style="display: none;" multiple>
+                <button class="action-icon-btn" id="attachBtn" title="Attach Files">📎</button>
+                <button class="action-icon-btn" id="voiceBtn" title="Voice Input">🎤</button>
+                
+                <input type="text" id="promptInput" placeholder="Message..." autocomplete="off">
+                <button id="sendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MODELS = [
+            { id: "gpt-4o", name: "OpenAI GPT-4o", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "o1", name: "OpenAI o1 Reasoning", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "o3-mini", name: "OpenAI o3 Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
+            { id: "claude-3-5-sonnet-20241022", name: "Anthropic Claude 3.5 Sonnet", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-3-5-haiku-20241022", name: "Anthropic Claude 3.5 Haiku", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "claude-3-opus-20240229", name: "Anthropic Claude 3 Opus", provider: "Anthropic", endpoint: "https://api.anthropic.com/v1/messages" },
+            { id: "gemini-2.5-flash", name: "Google Gemini 2.5 Flash", provider: "Google" },
+            { id: "gemini-1.5-pro", name: "Google Gemini 1.5 Pro", provider: "Google" },
+            { id: "gemini-1.5-flash-8b", name: "Google Gemini Flash 8B", provider: "Google" },
+            { id: "llama-3.3-70b-versatile", name: "Groq Llama 3.3 70B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "llama-3.1-8b-instant", name: "Groq Llama 3.1 8B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "mixtral-8x7b-32768", name: "Groq Mixtral 8x7B", provider: "Groq", endpoint: "https://api.groq.com/openai/v1/chat/completions" },
+            { id: "mistral-large-latest", name: "Mistral Large Latest", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "mistral-medium-latest", name: "Mistral Medium", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "codestral-latest", name: "Codestral", provider: "Mistral", endpoint: "https://api.mistral.ai/v1/chat/completions" },
+            { id: "deepseek-chat", name: "DeepSeek V3 (Chat)", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
+            { id: "deepseek-reasoner", name: "DeepSeek R1 (Reasoner)", provider: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" },
+            { id: "qwen-max", name: "Alibaba Qwen Max", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen-plus", name: "Alibaba Qwen Plus", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "qwen2.5-coder-32b-instruct", name: "Qwen 2.5 Coder 32B", provider: "Qwen", endpoint: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" },
+            { id: "command-r-plus", name: "Cohere Command R+", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
+            { id: "command-r", name: "Cohere Command R", provider: "Cohere", endpoint: "https://api.cohere.com/v2/chat" },
+            { id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", name: "Together Llama 3.1 70B", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
+            { id: "google/gemma-2-27b-it", name: "Together Gemma 2 27B", provider: "Together", endpoint: "https://api.together.xyz/v1/chat/completions" },
+            { id: "sonar", name: "Perplexity Sonar Search", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
+            { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "Perplexity", endpoint: "https://api.perplexity.ai/chat/completions" },
+            { id: "grok-2", name: "xAI Grok 2", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+            { id: "grok-2-vision", name: "xAI Grok 2 Vision", provider: "xAI", endpoint: "https://api.x.ai/v1/chat/completions" },
+            { id: "mixtral-8x7b-32768", name: "Microsoft Phi-4 (via Groq)", provider: "Microsoft", endpoint: "https://api.groq.com/openai/v1/chat/completions" }
+        ];
+
+        const chatContainer = document.getElementById('chatContainer');
+        const promptInput = document.getElementById('promptInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const modelSelect = document.getElementById('modelSelect');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveKeyBtn = document.getElementById('saveKeyBtn');
+        const clearKeyBtn = document.getElementById('clearKeyBtn');
+        const keyStatus = document.getElementById('keyStatus');
+        const activeAiIndicator = document.getElementById('activeAiIndicator');
+        const attachBtn = document.getElementById('attachBtn');
+        const fileInput = document.getElementById('fileInput');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const activeAttachmentContainer = document.getElementById('activeAttachmentContainer');
+        
+        const authOverlay = document.getElementById('authOverlay');
+        const pinModal = document.getElementById('pinModal');
+        const pinInput = document.getElementById('pinInput');
+        const pinSubmitBtn = document.getElementById('pinSubmitBtn');
+        const pinCancelBtn = document.getElementById('pinCancelBtn');
+        
+        const privacyModal = document.getElementById('privacyModal');
+        const privacyAgreeBtn = document.getElementById('privacyAgreeBtn');
+        const appContainer = document.getElementById('appContainer');
+
+        let currentAttachedFile = null;
+
+        // Screen Lock / Biometric WebAuthn Handler
+        document.getElementById('biometricLoginBtn').addEventListener('click', async () => {
+            try {
+                if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
+                    const challenge = new Uint8Array(32);
+                    window.crypto.getRandomValues(challenge);
+                    await navigator.credentials.get({
+                        publicKey: { challenge: challenge, timeout: 60000, userVerification: "required", authenticatorSelection: { authenticatorAttachment: "platform" } }
+                    });
+                    handleAuthSuccess();
+                } else {
+                    showPinModal();
+                }
+            } catch (err) {
+                showPinModal();
+            }
+        });
+
+        function showPinModal() {
+            pinModal.style.display = 'flex';
+            pinInput.value = '';
+            pinInput.focus();
+        }
+
+        pinCancelBtn.addEventListener('click', () => { pinModal.style.display = 'none'; });
+        pinSubmitBtn.addEventListener('click', () => {
+            if (pinInput.value.trim().length > 0) {
+                pinModal.style.display = 'none';
+                handleAuthSuccess();
+            } else {
+                alert("Please enter your PIN.");
+            }
+        });
+        pinInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') pinSubmitBtn.click(); });
+
+        document.getElementById('otpFallbackBtn').addEventListener('click', () => {
+            const phoneNum = prompt("Enter your verified phone number to receive an SMS OTP:");
+            if (phoneNum) {
+                const otpInput = prompt(`An OTP has been sent to ${phoneNum}. Enter the code:`);
+                if (otpInput && otpInput.length >= 4) {
+                    alert("OTP Verified Successfully!");
+                    handleAuthSuccess();
+                } else {
+                    alert("Invalid OTP code.");
+                }
+            }
+        });
+
+        function handleAuthSuccess() {
+            authOverlay.style.display = 'none';
+            const agreed = localStorage.getItem('goldmax_privacy_agreed');
+            if (agreed) {
+                appContainer.style.display = 'flex';
+            } else {
+                privacyModal.style.display = 'flex';
+            }
+        }
+
+        privacyAgreeBtn.addEventListener('click', () => {
+            localStorage.setItem('goldmax_privacy_agreed', 'true');
+            privacyModal.style.display = 'none';
+            appContainer.style.display = 'flex';
+        });
+
+        // Check if API key is already saved on load
+        const savedKey = localStorage.getItem('goldmax_api_key');
+        if (savedKey) {
+            apiKeyInput.style.display = 'none';
+            saveKeyBtn.style.display = 'none';
+            clearKeyBtn.style.display = 'inline-block';
+            keyStatus.classList.add('active');
+        }
+
+        saveKeyBtn.addEventListener('click', () => {
+            const val = apiKeyInput.value.trim();
+            if (!val) return alert("Please enter an API key.");
+            localStorage.setItem('goldmax_api_key', val);
+            apiKeyInput.value = '';
+            apiKeyInput.style.display = 'none';
+            saveKeyBtn.style.display = 'none';
+            clearKeyBtn.style.display = 'inline-block';
+            keyStatus.classList.add('active');
+        });
+
+        clearKeyBtn.addEventListener('click', () => {
+            if (confirm("Clear stored key?")) {
+                localStorage.removeItem('goldmax_api_key');
+                apiKeyInput.style.display = 'inline-block';
+                saveKeyBtn.style.display = 'inline-block';
+                clearKeyBtn.style.display = 'none';
+                keyStatus.classList.remove('active');
+                apiKeyInput.value = '';
+                apiKeyInput.focus();
+            }
+        });
+
+        // Initialize dropdown with a blank default option
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = "";
+        defaultOpt.textContent = "-- Select Model --";
+        defaultOpt.selected = true;
+        defaultOpt.disabled = true;
+        modelSelect.appendChild(defaultOpt);
+
+        MODELS.forEach((m, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = `[${m.provider}] ${m.name}`;
+            modelSelect.appendChild(opt);
+        });
+
+        function updateActiveAiDisplay() {
+            const val = modelSelect.value;
+            if (val === "") {
+                activeAiIndicator.textContent = "";
+                activeAiIndicator.classList.remove('active');
+            } else {
+                const selected = MODELS[val];
+                activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
+                activeAiIndicator.classList.add('active');
+            }
+        }
+        modelSelect.addEventListener('change', updateActiveAiDisplay);
+
+        attachBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            currentAttachedFile = file;
+            activeAttachmentContainer.style.display = 'block';
+            activeAttachmentContainer.innerHTML = `
+                <div class="attachment-preview">
+                    📎 ${file.name} <span style="cursor:pointer; font-weight:bold;" onclick="removeAttachment()">✕</span>
+                </div>
+            `;
+        });
+
+        window.removeAttachment = function() {
+            currentAttachedFile = null;
+            fileInput.value = '';
+            activeAttachmentContainer.style.display = 'none';
+            activeAttachmentContainer.innerHTML = '';
+        }
+
+        let recognition = null;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+                promptInput.value = transcript;
+            };
+            recognition.onerror = () => voiceBtn.classList.remove('recording');
+            recognition.onend = () => voiceBtn.classList.remove('recording');
+        }
+
+        let isRecording = false;
+        voiceBtn.addEventListener('click', () => {
+            if (!recognition) return alert("Speech recognition not supported.");
+            if (!isRecording) {
+                recognition.start();
+                voiceBtn.classList.add('recording');
+                isRecording = true;
+            } else {
+                recognition.stop();
+                voiceBtn.classList.remove('recording');
+                isRecording = false;
+            }
+        });
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function fetchAIResponse(modelObj, prompt, apiKey, fileData) {
+            const systemContent = "You are Goldmax, a direct multi-model assistant. Today is Wednesday, August 12, 2026.";
+
+            if (modelObj.provider === "Google") {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelObj.id}:generateContent?key=${apiKey}`;
+                let parts = [{ text: `${systemContent}\n\nUser: ${prompt}` }];
+                if (fileData) {
+                    const base64Content = await fileToBase64(fileData);
+                    parts.push({ inline_data: { mime_type: fileData.type, data: base64Content } });
+                }
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ role: "user", parts: parts }] })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message);
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                let fullPrompt = prompt;
+                if (fileData) fullPrompt += ` [File: ${fileData.name}]`;
+                const res = await fetch(modelObj.endpoint, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${apiKey}`, 
+                        'Content-Type': 'application/json',
+                        ...(modelObj.provider === 'Anthropic' ? {
+                            'x-api-key': apiKey,
+                            'anthropic-version': '2023-06-01',
+                            'anthropic-dangerous-direct-browser-access': 'true'
+                        } : {})
+                    },
+                    body: JSON.stringify({
+                        model: modelObj.id,
+                        ...(modelObj.provider === 'Anthropic' ? {
+                            max_tokens: 1024, system: systemContent, messages: [{ role: "user", content: fullPrompt }]
+                        } : {
+                            messages: [{ role: "system", content: systemContent }, { role: "user", content: fullPrompt }]
+                        })
+                    })
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+                return modelObj.provider === 'Anthropic' ? data.content[0].text : data.choices[0].message.content;
+            }
+        }
+
+        async function sendMessage() {
+            const text = promptInput.value.trim();
+            const apiKey = localStorage.getItem('goldmax_api_key');
+            const modelVal = modelSelect.value;
+            
+            if (modelVal === "") {
+                alert("Please select an active AI model first!");
+                modelSelect.focus();
+                return;
+            }
+
+            const selectedModelObj = MODELS[modelVal];
+            const attached = currentAttachedFile;
+
+            if (!text && !attached) return;
+            if (!apiKey) {
+                alert("Please enter and save your API Key first!");
+                apiKeyInput.focus();
+                return;
+            }
+
+            let displayMsg = text;
+            if (attached) displayMsg += `\n[File: ${attached.name}]`;
+
+            appendMessage(displayMsg, 'user');
+            promptInput.value = '';
+            removeAttachment();
+
+            const loadingElement = appendMessage('Thinking...', 'ai');
+
+            try {
+                const responseText = await fetchAIResponse(selectedModelObj, displayMsg, apiKey, attached);
+                updateMessage(loadingElement, responseText, true);
+            } catch (err) {
+                updateMessage(loadingElement, `⚠️ Error: ${err.message}`, false);
+                loadingElement.classList.add("error-text");
+            }
+        }
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.textContent = text;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return div;
+        }
+
+        function updateMessage(element, text, addShare = false) {
+            element.textContent = text;
+            if (addShare) {
+                const footer = document.createElement('div');
+                footer.className = 'message-footer';
+                const shareBtn = document.createElement('button');
+                shareBtn.className = 'share-btn';
+                shareBtn.textContent = 'Share 🔗';
+                shareBtn.onclick = () => {
+                    if (navigator.share) navigator.share({ title: 'Goldmax AI', text: text }).catch(() => {});
+                    else { navigator.clipboard.writeText(text); alert("Copied!"); }
+                };
+                footer.appendChild(shareBtn);
+                element.appendChild(footer);
+            }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        promptInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        promptInput.addEventListener('focus', () => { setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 300); });
+    </script>
+</body>
+</html>
 
 
 

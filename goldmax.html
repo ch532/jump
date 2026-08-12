@@ -23,7 +23,6 @@
     <meta property="twitter:description" content="Secure, client-side multi-model AI gateway featuring 30 top-tier AI models, biometric and screen lock security, voice input, and complete data privacy.">
     <meta property="twitter:image" content="https://www.chyke.online/connectgold_2.png">
 
-    
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -207,7 +206,7 @@
         .key-status { font-size: 0.7rem; color: var(--success-color); display: none; font-weight: 500; }
         .key-status.active { display: inline-block; }
 
-        /* Active AI Indicator Badge */
+        /* Active AI Indicator Badge (Hidden when empty) */
         .active-ai-indicator {
             font-size: 0.75rem;
             color: var(--accent);
@@ -215,11 +214,12 @@
             border: 1px solid rgba(56, 189, 248, 0.2);
             padding: 0.2rem 0.5rem;
             border-radius: 4px;
-            display: inline-flex;
+            display: none;
             align-items: center;
             gap: 0.3rem;
             width: fit-content;
         }
+        .active-ai-indicator.active { display: inline-flex; }
 
         /* Chat Container */
         .chat-container { 
@@ -323,7 +323,7 @@
         </div>
     </div>
 
-    <!-- Privacy Policy Agreement Modal (Appears after authentication) -->
+    <!-- Privacy Policy Agreement Modal -->
     <div id="privacyModal">
         <div class="privacy-modal-content">
             <h3>Privacy Policy Agreement</h3>
@@ -355,9 +355,8 @@
                 <select id="modelSelect" style="flex: 1; min-width: 130px;"></select>
             </div>
             
-            <div id="activeAiIndicator" class="active-ai-indicator">
-                🤖 Active AI: <strong>Loading...</strong>
-            </div>
+            <!-- Active AI Indicator (Blank/Hidden by default) -->
+            <div id="activeAiIndicator" class="active-ai-indicator"></div>
         </header>
 
         <div class="chat-container" id="chatContainer">
@@ -485,7 +484,6 @@
             }
         });
 
-        // Trigger Privacy Policy agreement prompt after authentication
         function handleAuthSuccess() {
             authOverlay.style.display = 'none';
             const agreed = localStorage.getItem('goldmax_privacy_agreed');
@@ -533,6 +531,14 @@
             }
         });
 
+        // Initialize dropdown with a blank default option so nothing is active on load
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = "";
+        defaultOpt.textContent = "-- Select Model --";
+        defaultOpt.selected = true;
+        defaultOpt.disabled = true;
+        modelSelect.appendChild(defaultOpt);
+
         MODELS.forEach((m, idx) => {
             const opt = document.createElement('option');
             opt.value = idx;
@@ -540,12 +546,19 @@
             modelSelect.appendChild(opt);
         });
 
+        // Update active AI display only when a model is selected
         function updateActiveAiDisplay() {
-            const selected = MODELS[modelSelect.value];
-            activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
+            const val = modelSelect.value;
+            if (val === "") {
+                activeAiIndicator.textContent = "";
+                activeAiIndicator.classList.remove('active');
+            } else {
+                const selected = MODELS[val];
+                activeAiIndicator.innerHTML = `🤖 Active AI: <strong>[${selected.provider}] ${selected.name}</strong>`;
+                activeAiIndicator.classList.add('active');
+            }
         }
         modelSelect.addEventListener('change', updateActiveAiDisplay);
-        updateActiveAiDisplay();
 
         attachBtn.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => {
@@ -655,7 +668,15 @@
         async function sendMessage() {
             const text = promptInput.value.trim();
             const apiKey = localStorage.getItem('goldmax_api_key');
-            const selectedModelObj = MODELS[modelSelect.value];
+            const modelVal = modelSelect.value;
+            
+            if (modelVal === "") {
+                alert("Please select an active AI model first!");
+                modelSelect.focus();
+                return;
+            }
+
+            const selectedModelObj = MODELS[modelVal];
             const attached = currentAttachedFile;
 
             if (!text && !attached) return;
@@ -716,6 +737,7 @@
     </script>
 </body>
 </html>
+
 
 
 

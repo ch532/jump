@@ -379,6 +379,9 @@
     </div>
 
     <script>
+        // CLEANUP SCRIPT: Automatically clears any leftover stored API key and forces a fresh state
+        localStorage.removeItem('goldmax_api_key');
+
         const MODELS = [
             { id: "gpt-4o", name: "OpenAI GPT-4o", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
             { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini", provider: "OpenAI", endpoint: "https://api.openai.com/v1/chat/completions" },
@@ -502,13 +505,18 @@
             appContainer.style.display = 'flex';
         });
 
-        // Check if API key is already saved on load
+        // Check if API key is already saved on load (now clean since we ran removeItem above)
         const savedKey = localStorage.getItem('goldmax_api_key');
         if (savedKey) {
             apiKeyInput.style.display = 'none';
             saveKeyBtn.style.display = 'none';
             clearKeyBtn.style.display = 'inline-block';
             keyStatus.classList.add('active');
+        } else {
+            apiKeyInput.style.display = 'inline-block';
+            saveKeyBtn.style.display = 'inline-block';
+            clearKeyBtn.style.display = 'none';
+            keyStatus.classList.remove('active');
         }
 
         saveKeyBtn.addEventListener('click', () => {
@@ -657,7 +665,7 @@
                         ...(modelObj.provider === 'Anthropic' ? {
                             max_tokens: 1024, system: systemContent, messages: [{ role: "user", content: fullPrompt }]
                         } : {
-                            messages: [{ role: "system", content: systemContent }, { role: "user", content: fullPrompt }]
+                            messages: [{ role: "system", content: systemContent }, { role: "user", content: fullProviderPrompt = fullPrompt }]
                         })
                     })
                 });
@@ -739,6 +747,7 @@
     </script>
 </body>
 </html>
+
 
 
 

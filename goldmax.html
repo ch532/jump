@@ -562,13 +562,46 @@
             appContainer.style.display = 'flex';
         });
 
+        // Universal API Key Validator supporting all providers
         async function validateApiKey(apiKey) {
             try {
-                const res = await fetch("https://api.openai.com/v1/models", {
-                    method: 'GET',
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                const modelVal = modelSelect.value;
+                const selectedModel = modelVal !== "" ? MODELS[modelVal] : MODELS[0];
+                let testEndpoint = selectedModel.endpoint || "https://api.openai.com/v1/chat/completions";
+                let authHeaders = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+                let testPayload = { model: selectedModel.id, messages: [{ role: "user", content: "hi" }], max_tokens: 1 };
+
+                if (selectedModel.provider === 'Anthropic') {
+                    testEndpoint = "https://api.anthropic.com/v1/messages";
+                    authHeaders = {
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true',
+                        'Content-Type': 'application/json'
+                    };
+                    testPayload = { model: selectedModel.id, max_tokens: 1, messages: [{ role: "user", content: "hi" }] };
+                } else if (selectedModel.provider === 'Google') {
+                    testEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel.id}:generateContent?key=${apiKey}`;
+                    authHeaders = { 'Content-Type': 'application/json' };
+                    testPayload = { contents: [{ role: "user", parts: [{ text: "hi" }] }] };
+                } else if (selectedModel.provider === 'Cohere') {
+                    testEndpoint = "https://api.cohere.com/v2/chat";
+                    testPayload = { model: selectedModel.id, messages: [{ role: "user", content: "hi" }] };
+                }
+
+                const res = await fetch(testEndpoint, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: JSON.stringify(testPayload)
                 });
-                if (res.status === 401 || res.status === 403) return false;
+
+                if (res.status === 401 || res.status === 403 || res.status === 400) {
+                    const errData = await res.json().catch(() => ({}));
+                    if (errData.error && (errData.error.message?.includes('key') || errData.error.code === 'invalid_api_key' || errData.error.status === 'INVALID_ARGUMENT')) {
+                        return false;
+                    }
+                    if (res.status === 401 || res.status === 403) return false;
+                }
                 return true;
             } catch (e) {
                 return true;
@@ -937,6 +970,7 @@
     </script>
 </body>
 </html>
+
 
 
 

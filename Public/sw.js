@@ -25,7 +25,7 @@ self.addEventListener('activate', (e) => {
                     }
                 })
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
@@ -56,40 +56,73 @@ self.addEventListener('fetch', (e) => {
 });
 
 // =========================================================================
-// 4. WEB PUSH NOTIFICATION LISTENERS
+// 4. BACKGROUND SYNC: Handle queued actions when connection returns
 // =========================================================================
-
-// Listen for incoming server push notifications
-self.addEventListener('push', (event) => {
-  let data = { title: 'Gold Technology', body: 'New update available!' };
-  
-  if (event.data) {
-    try {
-      data = event.data.json();
-    } catch (e) {
-      data.body = event.data.text();
+self.addEventListener('sync', (e) => {
+    if (e.tag === 'sync-video-actions') {
+        e.waitUntil(
+            // Place your logic here to process offline requests/data sync
+            console.log('Background sync triggered: uploading queued data...')
+        );
     }
-  }
-
-  const options = {
-    body: data.body,
-    icon: 'https://www.chyke.com/connectgold_2.png',
-    badge: 'https://www.chyke.com/connectgold_2.png',
-    vibrate:, // Corrected: valid millisecond array
-    data: {
-      url: '/' // Opens your root app link when clicked
-    }
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
 });
 
-// Handle clicking on the notification banner
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  );
+// =========================================================================
+// 5. PERIODIC BACKGROUND SYNC: Update cached media data periodically
+// =========================================================================
+self.addEventListener('periodicsync', (e) => {
+    if (e.tag === 'update-content') {
+        e.waitUntil(
+            // Place your logic here to fetch fresh video lists or updates in the background
+            console.log('Periodic background sync triggered.')
+        );
+    }
+});
+
+// =========================================================================
+// 6. PUSH NOTIFICATIONS: Receive and display incoming push messages
+// =========================================================================
+self.addEventListener('push', (e) => {
+    let data = { title: 'Goldtech', body: 'New video available!' };
+    
+    if (e.data) {
+        try {
+            data = e.data.json();
+        } catch (err) {
+            data.body = e.data.text();
+        }
+    }
+
+    const options = {
+        body: data.body,
+        icon: '/connectgold_2.png',
+        badge: '/connectgold_2.png',
+        data: { url: data.url || '/' }
+    };
+
+    e.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+// =========================================================================
+// 7. NOTIFICATION CLICK: Open app when user taps push notification
+// =========================================================================
+self.addEventListener('notificationclick', (e) => {
+    e.notification.close();
+    e.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            // Focus if window already open
+            for (let i = 0; i < clientList.length; i++) {
+                let client = clientList[i];
+                if ('focus' in client) {
+                    return client.focus();
+                }
+            }
+            // Otherwise open a new window
+            if (clients.openWindow) {
+                return clients.openWindow(e.notification.data.url || '/');
+            }
+        })
+    );
 });

@@ -1,8 +1,19 @@
 {
-  "background_color": "#0f0101",
-  "dir": "ltr",
+  "name": "Goldprotechnology",
+  "short_name": "Goldtech",
+  "description": "A fast and lightweight video player to watch your favorite videos offline.",
+  "start_url": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "background_color": "#0f0101",
+  "theme_color": "#000000",
+  "dir": "ltr",
+  "lang": "en",
+  "orientation": "any",
+  "scope": "/",
   "icons": [
     {
       "src": "https://www.chyke.online/connectgold_2.png",
@@ -11,47 +22,15 @@
       "purpose": "any maskable"
     }
   ],
-  "name": "Goldprotechnology",
-  "orientation": "any",
-  "scope": "/",
-  "short_name": "Goldtech",
-  "start_url": "/",
-  "theme_color": "#000000",
-  "lang": "en",
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-  "widgets": [
-    {
-      "name": "Goldtech Quick Player",
-      "description": "Quickly access recent videos and controls.",
-      "tag": "player-widget",
-      "template": "player-widget-template",
-      "ms_ac_template": "/widgets/player-adaptive-card.json",
-      "data": "/widgets/player-data.json",
-      "type": "application/json",
-      "icons": [
-        {
-          "src": "https://www.chyke.online/connectgold_2.png",
-          "sizes": "512x512"
-        }
-      ]
-    }
+  "categories": [
+    "video"
   ],
   "shortcuts": [
     {
       "name": "Recent",
       "url": "/?page=history",
       "description": "View your recently watched videos"
-    },
-    {
-      "name": "Take Note",
-      "url": "/?page=notes",
-      "description": "Jot down notes while watching"
     }
-  ],
-  "categories": [
-    "video"
   ],
   "protocol_handlers": [
     {
@@ -68,5 +47,7 @@
       "url": "url"
     }
   },
-  "description": "A fast and lightweight video player to watch your favorite videos offline."
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
 }

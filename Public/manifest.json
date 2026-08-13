@@ -1,0 +1,38 @@
+{
+  "background_color": "#000000",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Goldpro Technolology",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Goldtech",
+  "start_url": "/",
+  "theme_color": "#000000",
+  "description": "A fast and lightweight video player to watch your favorite videos offline.",
+  "lang": "en",
+  "shortcuts": [
+    {
+      "name": "Recent",
+      "url": "/?page=history",
+      "description": "View your recently watched videos"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+player",
+      "url": "/?open=%s"
+    }
+  ],
+  "categories": [
+    "video"
+  ],
+  "share_target": {
+    "method": "GET",
+    "action": "/?share=video",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

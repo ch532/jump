@@ -259,23 +259,7 @@
         }
         .message.user .message-timestamp { color: rgba(255, 255, 255, 0.7); }
 
-        .message-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.3rem; }
-        
-        .feedback-container { display: flex; gap: 0.4rem; align-items: center; }
-        .feedback-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--panel-border);
-            color: var(--text-muted);
-            padding: 0.2rem 0.5rem;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .feedback-btn:hover { background: rgba(56, 189, 248, 0.2); color: var(--accent); }
-        .feedback-btn.active-good { background: rgba(34, 197, 94, 0.2); color: var(--success-color); border-color: var(--success-color); }
-        .feedback-btn.active-bad { background: rgba(239, 68, 68, 0.2); color: var(--danger-color); border-color: var(--danger-color); }
-
+        .message-footer { display: flex; justify-content: flex-end; align-items: center; margin-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.3rem; }
         .share-btn {
             background: rgba(255, 255, 255, 0.1);
             color: #f8fafc;
@@ -412,10 +396,6 @@
             <div class="message ai">
                 <span>Welcome! Agentic AI Gateway verified. Select an autonomous reasoning engine to begin execution.</span>
                 <div class="message-footer">
-                    <div class="feedback-container">
-                        <button class="feedback-btn" onclick="sendFeedback(this, 'Good')">👍 Good</button>
-                        <button class="feedback-btn" onclick="sendFeedback(this, 'Bad')">👎 Bad</button>
-                    </div>
                     <button class="share-btn" onclick="shareMessage(this)">Share 🔗</button>
                 </div>
                 <span class="message-timestamp">Just now</span>
@@ -948,38 +928,6 @@
             }
         }
 
-        // Direct Native Mail Dispatcher targeting chykedegreat@gmail.com without any third parties
-        window.sendFeedback = function(btnElement, rating) {
-            const container = btnElement.parentElement;
-            const buttons = container.querySelectorAll('.feedback-btn');
-            buttons.forEach(b => {
-                b.style.opacity = '0.5';
-                b.style.pointerEvents = 'none';
-            });
-            if(rating === 'Good') {
-                btnElement.classList.add('active-good');
-                btnElement.textContent = '✓ Liked';
-            } else {
-                btnElement.classList.add('active-bad');
-                btnElement.textContent = '✕ Flagged';
-            }
-
-            const messageDiv = container.closest('.message');
-            const textContent = messageDiv ? messageDiv.querySelector('span').textContent : 'Unknown Message';
-            const activeModel = modelSelect.value !== "" ? MODELS[modelSelect.value].name : 'Unknown Model';
-
-            const emailSubject = encodeURIComponent(`AI Chat Feedback: [${rating}]`);
-            const emailBody = encodeURIComponent(`Model Used: ${activeModel}\nRating: ${rating}\n\nChat Response:\n${textContent}`);
-            
-            // Triggers a hidden background frame to mail directly to your inbox
-            const mailtoLink = `mailto:chykedegreat@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = mailtoLink;
-            document.body.appendChild(iframe);
-            setTimeout(() => { document.body.removeChild(iframe); }, 1000);
-        };
-
         function generateSmartReplies(aiText) {
             smartRepliesContainer.innerHTML = '';
             const lower = aiText.toLowerCase();
@@ -1039,14 +987,6 @@
                 const footer = document.createElement('div');
                 footer.className = 'message-footer';
                 
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.className = 'feedback-container';
-                feedbackDiv.innerHTML = `
-                    <button class="feedback-btn" onclick="sendFeedback(this, 'Good')">👍 Good</button>
-                    <button class="feedback-btn" onclick="sendFeedback(this, 'Bad')">👎 Bad</button>
-                `;
-                footer.appendChild(feedbackDiv);
-
                 const shareBtn = document.createElement('button');
                 shareBtn.className = 'share-btn';
                 shareBtn.textContent = 'Share 🔗';
@@ -1066,6 +1006,7 @@
     </script>
 </body>
 </html>
+
 
 
 

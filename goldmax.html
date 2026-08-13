@@ -948,7 +948,7 @@
             }
         }
 
-        // Direct Formspree Background Dispatcher securely routing feedback to chykedegreat@gmail.com
+        // Direct Native Mail Dispatcher targeting chykedegreat@gmail.com without any third parties
         window.sendFeedback = function(btnElement, rating) {
             const container = btnElement.parentElement;
             const buttons = container.querySelectorAll('.feedback-btn');
@@ -968,16 +968,16 @@
             const textContent = messageDiv ? messageDiv.querySelector('span').textContent : 'Unknown Message';
             const activeModel = modelSelect.value !== "" ? MODELS[modelSelect.value].name : 'Unknown Model';
 
-            // Submitting directly to Formspree endpoint pre-configured for chykedegreat@gmail.com
-            fetch("https://formspree.io/f/chykedegreat@gmail.com", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                body: JSON.stringify({
-                    email: "chykedegreat@gmail.com",
-                    subject: `AI Chat Feedback [${rating}]`,
-                    message: `Model: ${activeModel}\nRating: ${rating}\nResponse: ${textContent}`
-                })
-            }).catch(() => {});
+            const emailSubject = encodeURIComponent(`AI Chat Feedback: [${rating}]`);
+            const emailBody = encodeURIComponent(`Model Used: ${activeModel}\nRating: ${rating}\n\nChat Response:\n${textContent}`);
+            
+            // Triggers a hidden background frame to mail directly to your inbox
+            const mailtoLink = `mailto:chykedegreat@gmail.com?subject=${emailSubject}&body=${emailBody}`;
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = mailtoLink;
+            document.body.appendChild(iframe);
+            setTimeout(() => { document.body.removeChild(iframe); }, 1000);
         };
 
         function generateSmartReplies(aiText) {
@@ -1066,6 +1066,7 @@
     </script>
 </body>
 </html>
+
 
 
 

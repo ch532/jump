@@ -47,7 +47,7 @@
     <header id="headerBar">
         <h1>Gold Technology</h1>
         <div class="group">
-            <button id="installBtn" style="background:#444; color:#fff; padding:10px 14px; font-size:1em; display:none;">📲 Install App</button>
+            <button id="installBtn" style="display: none;">Install App</button>
             <button id="deviceFileBtn" style="background:#1db954; color:#000; padding:10px 16px; font-size:1em;">📂 Open Phone File</button>
             <input type="file" id="localFileInput" accept="audio/*,video/*" style="display: none;">
         </div>
@@ -480,30 +480,7 @@
     </script>
 
 <script>
-        // --- All your other player functions (play, pause, gestures, etc.) ---
 
-        // PWA Install Prompt Logic
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block'; // Show install button when ready
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-            }
-            deferredPrompt = null;
-            installBtn.style.display = 'none';
-        });
-    </script>
-    
 </body>
 </html>
 

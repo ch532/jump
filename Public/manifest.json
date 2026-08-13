@@ -1,5 +1,5 @@
 {
-  "background_color": "#ffffff",
+  "background_color": "#0f0101",
   "dir": "ltr",
   "display": "standalone",
   "name": "Goldprotechnology",
@@ -7,7 +7,32 @@
   "scope": "/",
   "short_name": "Goldtech",
   "start_url": "/",
-  "theme_color": "#1db954",
-  "id": "/?source=pwa",
-  "description": "A fast and lightweight web video player to watch your favorite videos offline."
+  "theme_color": "#000000",
+  "lang": "en",
+  "shortcuts": [
+    {
+      "name": "Recent ",
+      "url": "/?page=history",
+      "description": "View your recently watched videos"
+    }
+  ],
+  "categories": [
+    "video"
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+player",
+      "url": "/?open=%s"
+    }
+  ],
+  "share_target": {
+    "method": "GET",
+    "action": "/?share=video",
+    "params": {
+      "title": "Title",
+      "text": "Text",
+      "url": "url"
+    }
+  },
+  "description": "A fast and lightweight video player to watch your favorite videos offline."
 }

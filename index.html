@@ -2,354 +2,500 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>SkyIPworld - Updates and information about events, tools & geospatial node</title>
-    
-    <meta name="description" content="SkyIPworld Geospatial Node Terminal - Access custom analytical navigation models, interactive mapping tools, integrated custom Google Search indices, and regional live RSS intelligence tracking streams.">
-    <meta name="keywords" content="SkyIPworld, Geospatial Node Terminal, coordinate tracking, custom web search console, regional news tracker, live RSS feed aggregator, web data terminal, data visualization hub">
-    <meta name="author" content="SkyIPworld">
-    
-    <!-- FAVICON & APP LOGOS -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://chyke.online/connectgold_2.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://chyke.online/connectgold_2.png">
-    <link rel="shortcut icon" href="https://chyke.online/connectgold_2.png" type="image/png">
-
-    <!-- VERIFICATION META TAGS -->
-    <meta name="google-adsense-account" content="ca-pub-7103045303312963">
-    <meta name="google-site-verification" content="AxO_bs7tBOMhjX5DGp_VT_DYxNCvRf3inf0HQ7NqvvE" />
-    <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
-    <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
-
-    <!-- EZMOB TAG -->
-    <script type="text/javascript" src="https://ezmob-site.sfo3.digitaloceanspaces.com/prebid.js" async></script>
-    <script>
-	var pbjs = pbjs || {};
-	pbjs.que = pbjs.que || [];
-
-	pbjs.que.push(function() {
-        var adUnits = [
-		{
-            code: 'container1',
-			mediaTypes: {
-            banner: {
-                sizes: [300, 250]
-				}
-        },
-			bids: [{
-            bidder: 'adkernel',
-				params: {
-                zoneId: 396126,
-				  host: 'cpm.ezmob.com'
-				}
-			}]
-		}];
-		pbjs.addAdUnits(adUnits);
-		pbjs.requestBids({
-			bidsBackHandler: handleBids
-		});
-	});
-
-	function handleBids() {
-        var winners = pbjs.getHighestCpmBids();
-        for (winner of winners) {
-            var ifrmEl = document.createElement('iframe');
-            ifrmEl.scrolling = 'no';
-			document.getElementById(winner.adUnitCode).appendChild(ifrmEl);
-			pbjs.renderAd(ifrmEl.contentDocument || ifrmEl.contentWindow.document, winner.adId);
-		}
-    }
-    </script>
-    <div id="container1"></div>
-    
-    <!-- EXTERNAL TRACKING SDKs -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7103045303312963" crossorigin="anonymous"></script>
-    <meta name="5bd3ec8bed34f000aecdd0914f46945b8dfe3bd6" content="5bd3ec8bed34f000aecdd0914f46945b8dfe3bd6" />
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ES9LVEGT6"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-9ES9LVEGT6');
-    </script>
-    
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110805897', 'ym');
-
-        ym(110805897, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/110805897" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
- 
-    <!-- Clarity tracking code -->
-    <script>
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "xn3kzenf61");
-    </script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Pro Media Engine 8x</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1db954">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; min-width: 1200px; }
-        .top-nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; }
-        .nav-brand { color: #f8fafc; font-weight: bold; font-size: 20px; text-decoration: none; }
-        .nav-brand span { color: #38bdf8; }
-        .nav-links { display: flex; gap: 20px; flex-wrap: nowrap; }
-        .nav-item { color: #94a3b8; text-decoration: none; font-size: 15px; font-weight: 500; }
-        .nav-item.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #030303; color: #fff; font-family: sans-serif; overflow: hidden; display: flex; flex-direction: column; }
+        header { background: #0f0f0f; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; z-index: 10; transition: opacity 0.3s ease; }
+        header.hidden { opacity: 0; pointer-events: none; }
+        header h1 { font-size: 1.4em; color: #1db954; margin: 0; font-weight: bold; }
         
-        .main-layout { max-width: 1100px; margin: 30px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 25px; }
+        .workspace { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; background: #000; overflow: hidden; touch-action: none; }
+        video, audio { width: 100%; height: 100%; object-fit: contain; transform-origin: center; transition: transform 0.05s ease-out; }
         
-        .editorial-hub { background: #fff; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .editorial-hub h1 { color: #1e293b; margin-top: 0; }
-        .editor-summary { color: #475569; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; }
+        canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; pointer-events: none; opacity: 0.35; z-index: 5; }
 
-        .large-ad-slot {
-            width: 100%;
-            min-height: 280px;
-            margin: 30px 0;
-            padding: 15px;
-            background: #ffffff;
-            border: 1px dashed #cbd5e1;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-        }
+        .control-deck { position: absolute; bottom: 0; width: 100%; background: rgba(10, 10, 10, 0.96); backdrop-filter: blur(12px); padding: 18px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; z-index: 20; border-top: 1px solid #333; transition: opacity 0.3s ease, transform 0.3s ease; }
+        .control-deck.hidden { opacity: 0; pointer-events: none; transform: translateY(20px); }
+        
+        .timeline-container { display: flex; align-items: center; gap: 14px; font-size: 1em; color: #ddd; font-weight: bold; }
+        input[type="range"] { flex: 1; accent-color: #1db954; height: 10px; cursor: pointer; }
 
-        .infeed-ad-wrapper {
-            width: 100%;
-            margin-bottom: 25px;
-            background: #ffffff;
-            border: 1px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 15px;
-            box-sizing: border-box;
-        }
+        .button-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+        .group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        
+        button, select { background: #1a1a1a; color: #fff; border: 2px solid #555; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-size: 1.1em; font-weight: bold; min-height: 52px; min-width: 52px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        button:hover { background: #333; border-color: #1db954; }
+        button.active { background: #1db954; color: #000; border-color: #1db954; }
 
-        .news-item { background: #fff; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .modal { display: none; position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); background: #181818; border: 2px solid #555; padding: 20px; border-radius: 12px; z-index: 30; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .modal.open { display: block; }
+        .modal h3 { margin-top: 0; color: #1db954; font-size: 1.2em; display: flex; justify-content: space-between; }
+        .modal h3 span { cursor: pointer; color: #888; }
+        .slider-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; font-size: 1em; }
 
-        .native-ad-card {
-            display: none;
-            background: #ffffff;
-            border: 1px solid #38bdf8;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-            transition: opacity 0.5s ease-in-out;
-        }
-        .native-ad-badge {
-            background: #f59e0b;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        .native-media-frame {
-            width: 100%;
-            max-height: 320px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin: 12px 0;
-        }
+        #status { font-size: 0.9em; color: #1db954; text-align: right; font-family: monospace; }
+        
+        .gesture-toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #1db954; padding: 12px 24px; border-radius: 24px; font-weight: bold; font-size: 1.2em; z-index: 40; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; border: 1px solid #1db954; }
+        .gesture-toast.show { opacity: 1; }
     </style>
 </head>
 <body>
 
-<header>
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">Sky<span>IP</span>world</a>
-        <div class="nav-links">
-            <a href="index.html" class="nav-item active">Dashboard</a>
-            <a href="page1.html" class="nav-item">Page 1</a>
-            <a href="page2.html" class="nav-item">Page 2</a>
-            <a href="page3.html" class="nav-item">Page 3</a>
-            <a href="about.html" class="nav-item">About</a>
-            <a href="privacy.html" class="nav-item">Privacy</a>
-            <a href="support.html" class="nav-item">Support</a>
+    <header id="headerBar">
+        <h1>8x Elite PWA Engine</h1>
+        <div class="group">
+            <button id="installBtn" style="background:#444; color:#fff; padding:10px 14px; font-size:1em; display:none;">📲 Install App</button>
+            <button id="deviceFileBtn" style="background:#1db954; color:#000; padding:10px 16px; font-size:1em;">📂 Open Phone File</button>
+            <input type="file" id="localFileInput" accept="audio/*,video/*" style="display: none;">
         </div>
-    </nav>
-</header>
+    </header>
 
-<main class="main-layout" data-sdk-feature="Dashboard">
-
-    <!-- ADMOB NATIVE AD SLOT WITH MEDIA DISPLAY -->
-    <div id="admob-native-container" class="native-ad-card">
-        <span class="native-ad-badge">Sponsored</span>
-        <h3 id="native-headline" style="margin-top: 5px; color: #1e293b;"></h3>
-        <img id="native-media" class="native-media-frame" style="display:none;" />
-        <p id="native-body" style="color: #475569; font-size: 14px;"></p>
-        <button id="native-cta" style="padding: 10px 18px; background: #0284c7; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"></button>
+    <div class="workspace" id="workspace">
+        <div class="gesture-toast" id="toast">Gesture Action</div>
+        <canvas id="visualizer"></canvas>
+        <video id="videoPlayer" crossorigin="anonymous">
+            <track id="subTrack" kind="subtitles" src="" srclang="en" label="English">
+        </video>
+        <audio id="audioPlayer"></audio>
     </div>
 
-    <!-- LARGE AD SPACE 1 -->
-    <div class="large-ad-slot">
-        <ins class="adsbygoogle"
-             style="display:block; width:100%;"
-             data-ad-client="ca-pub-7728035806961877"
-             data-ad-slot="1228301234"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+    <div class="modal" id="proModal">
+        <h3>Advanced Studio Controls <span id="closeModal">✕</span></h3>
+        <div class="slider-group">
+            <label>Sub-Bass (60Hz): <span id="val60">0dB</span></label>
+            <input type="range" id="eq60" min="-20" max="20" value="0">
+        </div>
+        <div class="slider-group">
+            <label>Audio Stereo Pan: <span id="valPan">Center</span></label>
+            <input type="range" id="panSlider" min="-1" max="1" step="0.1" value="0">
+        </div>
+        <div class="slider-group">
+            <label>Display Brightness: <span id="valBright">100%</span></label>
+            <input type="range" id="brightSlider" min="50" max="150" value="100">
+        </div>
+        <div class="slider-group">
+            <label>Display Contrast: <span id="valContrast">100%</span></label>
+            <input type="range" id="contrastSlider" min="50" max="150" value="100">
+        </div>
+        <button id="bookmarkBtn" style="width:100%; margin-top:8px; background:#1db954; color:#000; font-size:1.1em; padding:14px;">📌 Drop Bookmark Marker</button>
     </div>
 
-    <!-- EDITORIAL CONTENT HUB -->
-    <section class="editorial-hub" data-sdk-feature="Event Intelligence">
-        <h1>Event Intelligence & Regional Updates</h1>
-        <div class="editor-summary">
-            <strong>Editor's Note:</strong> This terminal aggregates live regional event data and intelligence. We curate these feeds to provide a consolidated view of ongoing developments, serving as a primary resource for event tracking and information analysis.
+    <div class="control-deck" id="controlDeck">
+        <div class="timeline-container">
+            <span id="currentTime">00:00</span>
+            <input type="range" id="seekBar" value="0" max="100" step="0.1">
+            <span id="duration">00:00</span>
         </div>
-    </section>
 
-    <!-- GOOGLE CUSTOM SEARCH -->
-    <script async src="https://cse.google.com/cse.js?cx=c1a8085d72f824bf3"></script>
-    <div class="gcse-search" data-sdk-feature="Site Search"></div>
+        <div class="button-row">
+            <div class="group">
+                <button id="playPauseBtn">▶ Play</button>
+                <button id="stopBtn">⏹ Stop</button>
+                <button id="skipBack">⏪ -10s</button>
+                <button id="skipAhead">+10s ⏩</button>
+            </div>
 
-    <!-- LIVE NEWS RSS FEED CONTAINER -->
-    <section id="my-native-feed" data-sdk-feature="Live News Feed">Loading feed...</section>
+            <div class="group">
+                <button id="proMenuBtn">🎛 Studio</button>
+                <button id="speedBtn">⚡ 1.0x</button>
+                <button id="loopBtn">🔁 Loop</button>
+                <button id="pipBtn">📺 PiP</button>
+            </div>
 
-</main>
+            <div class="group">
+                <button id="zoomBtn">🔍 Zoom</button>
+                <button id="subBtn">💬 Subs</button>
+                <button id="fsBtn">🛜 Full</button>
+            </div>
+        </div>
+        <div id="status">PWA Native Storage Access Ready</div>
+    </div>
 
-<script>
-async function loadFeed() {
-    const proxyUrl = "https://delicate-violet-862d.trustconnect713.workers.dev/feed";
-    
-    try {
-        const response = await fetch(proxyUrl);
-        const xmlText = await response.text();
-        
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-
-        const feedContainer = document.getElementById('my-native-feed');
-        feedContainer.innerHTML = ''; 
-
-        if (items.length === 0) {
-            feedContainer.innerHTML = "No items found in RSS feed.";
-            return;
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('PWA Service Worker Registered'))
+                .catch((err) => console.log('SW registration failed', err));
         }
 
-        items.forEach((item, index) => {
-            const title = item.querySelector("title")?.textContent || "No Title";
-            const link = item.querySelector("link")?.textContent || "#";
-            const description = item.querySelector("description")?.textContent || "";
+        const deviceFileBtn = document.getElementById('deviceFileBtn');
+        const localFileInput = document.getElementById('localFileInput');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const skipBack = document.getElementById('skipBack');
+        const skipAhead = document.getElementById('skipAhead');
+        const seekBar = document.getElementById('seekBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const proMenuBtn = document.getElementById('proMenuBtn');
+        const proModal = document.getElementById('proModal');
+        const closeModal = document.getElementById('closeModal');
+        const speedBtn = document.getElementById('speedBtn');
+        const loopBtn = document.getElementById('loopBtn');
+        const pipBtn = document.getElementById('pipBtn');
+        const zoomBtn = document.getElementById('zoomBtn');
+        const subBtn = document.getElementById('subBtn');
+        const fsBtn = document.getElementById('fsBtn');
+        const workspace = document.getElementById('workspace');
+        const headerBar = document.getElementById('headerBar');
+        const controlDeck = document.getElementById('controlDeck');
+        const toast = document.getElementById('toast');
+        const canvas = document.getElementById('visualizer');
+        const canvasCtx = canvas.getContext('2d');
 
-            const div = document.createElement('div');
-            div.className = 'news-item';
-            div.innerHTML = `
-                <h3 style="margin-top:0; color:#1e293b;">${title}</h3>
-                <p style="color:#475569; font-size:14px;">${description}</p>
-                <a href="${link}" target="_blank" rel="noopener" class="article-link" style="color:#0284c7; text-decoration:none; font-weight:bold; font-size:13px;">Read Full Article →</a>
-            `;
-            feedContainer.appendChild(div);
+        const panSlider = document.getElementById('panSlider');
+        const brightSlider = document.getElementById('brightSlider');
+        const contrastSlider = document.getElementById('contrastSlider');
+        const bookmarkBtn = document.getElementById('bookmarkBtn');
+
+        let activePlayer = videoPlayer;
+        let speeds = [0.5, 1.0, 1.25, 1.5, 2.0, 3.0];
+        let speedIdx = 1;
+        let currentZoom = 1;
+        let isLooping = false;
+        let currentBrightness = 100;
+        let currentVolume = 1.0;
+
+        function showToast(msg) {
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1200);
+        }
+
+        // Open native phone storage picker
+        deviceFileBtn.addEventListener('click', () => {
+            localFileInput.click();
         });
 
-        attachAdListenersToLinks();
-    } catch (e) {
-        console.error("RSS Loader Error:", e);
-        document.getElementById('my-native-feed').innerHTML = "Unable to load RSS feed.";
-    }
-}
+        localFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const fileUrl = URL.createObjectURL(file);
 
-function attachAdListenersToLinks() {
-    const links = document.querySelectorAll('.nav-links a, .article-link');
-    links.forEach(link => {
-        link.addEventListener('click', function() {
-            if (window.AndroidApp && typeof window.AndroidApp.showInterstitial === 'function') {
-                window.AndroidApp.showInterstitial();
+            if (file.type.startsWith('audio/')) {
+                videoPlayer.style.display = 'none';
+                audioPlayer.style.display = 'block';
+                audioPlayer.src = fileUrl;
+                activePlayer = audioPlayer;
+                audioPlayer.play();
+                initAudioPipeline(audioPlayer);
+            } else {
+                audioPlayer.style.display = 'none';
+                videoPlayer.style.display = 'block';
+                videoPlayer.src = fileUrl;
+                activePlayer = videoPlayer;
+                videoPlayer.play();
+                initAudioPipeline(videoPlayer);
+            }
+            playPauseBtn.innerText = '⏸ Pause';
+            showToast(`📂 Playing: ${file.name}`);
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            resetHideTimer();
+        });
+
+        let hideTimer;
+        function resetHideTimer() {
+            headerBar.classList.remove('hidden');
+            controlDeck.classList.remove('hidden');
+            clearTimeout(hideTimer);
+            if (!activePlayer.paused) {
+                hideTimer = setTimeout(() => {
+                    headerBar.classList.add('hidden');
+                    controlDeck.classList.add('hidden');
+                }, 3000);
+            }
+        }
+        window.addEventListener('mousemove', resetHideTimer);
+        window.addEventListener('touchstart', resetHideTimer);
+
+        let lastTap = 0;
+        workspace.addEventListener('touchend', (e) => {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                const rect = workspace.getBoundingClientRect();
+                const x = e.changedTouches[0].clientX - rect.left;
+                if (x < rect.width / 2) {
+                    activePlayer.currentTime -= 5;
+                    showToast('⏪ -5s Rewind');
+                } else {
+                    activePlayer.currentTime += 5;
+                    showToast('⏩ +5s Forward');
+                }
+            }
+            lastTap = currentTime;
+        });
+
+        let touchStartY = null;
+        let touchSide = null;
+
+        workspace.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                touchStartY = e.touches[0].clientY;
+                const rect = workspace.getBoundingClientRect();
+                const touchX = e.touches[0].clientX - rect.left;
+                touchSide = touchX < rect.width / 2 ? 'left' : 'right';
             }
         });
-    });
-}
 
-loadFeed();
-</script>
+        workspace.addEventListener('touchmove', (e) => {
+            if (touchStartY === null || e.touches.length !== 1) return;
+            const currentY = e.touches[0].clientY;
+            const diffY = touchStartY - currentY;
 
-<!-- FIREBASE SDK LOGIC -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyAkEwctSLriZQrHSkX6aJDTf4zH9mTsAeQ",
-    authDomain: "air-skye.firebaseapp.com",
-    projectId: "air-skye",
-    storageBucket: "air-skye.appspot.com",
-    messagingSenderId: "46181700573",
-    appId: "1:46181700573:web:1b5d21e443067bba26dc34",
-    measurementId: "G-K4Z4GJ2JLN"
-  };
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+            if (Math.abs(diffY) > 15) {
+                if (touchSide === 'left') {
+                    currentBrightness = Math.min(Math.max(50, currentBrightness + (diffY > 0 ? 3 : -3)), 150);
+                    brightSlider.value = currentBrightness;
+                    videoPlayer.style.filter = `brightness(${currentBrightness}%) contrast(${contrastSlider.value}%)`;
+                    showToast(`☀️ Brightness: ${currentBrightness}%`);
+                } else {
+                    currentVolume = Math.min(Math.max(0, currentVolume + (diffY > 0 ? 0.03 : -0.03)), 1);
+                    activePlayer.volume = currentVolume;
+                    showToast(`🔊 Volume: ${Math.round(currentVolume * 100)}%`);
+                }
+                touchStartY = currentY;
+            }
+        });
 
-<!-- Cloudflare Web Analytics -->
-<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a6442443561a472eb9da07de19ed2848"}'></script>
+        workspace.addEventListener('touchend', () => {
+            touchStartY = null;
+            touchSide = null;
+        });
 
-<!-- ANDROID ADMOB INTERFACE BRIDGE -->
-<script>
-  function renderAppNativeAd(headline, body, cta, mediaUrl) {
-    const container = document.getElementById('admob-native-container');
-    if (container) {
-      document.getElementById('native-headline').innerText = headline;
-      document.getElementById('native-body').innerText = body;
-      document.getElementById('native-cta').innerText = cta;
-      
-      const mediaImg = document.getElementById('native-media');
-      if (mediaUrl && mediaUrl.length > 0) {
-        mediaImg.src = mediaUrl;
-        mediaImg.style.display = 'block';
-      } else {
-        mediaImg.style.display = 'none';
-      }
+        let previousPinchDist = null;
+        workspace.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                const currentDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                if (previousPinchDist !== null) {
+                    const distanceDelta = currentDist - previousPinchDist;
+                    if (Math.abs(distanceDelta) > 2) {
+                        const zoomFactor = distanceDelta > 0 ? 0.04 : -0.04;
+                        currentZoom = Math.min(Math.max(1, currentZoom + zoomFactor), 4);
+                        videoPlayer.style.transform = `scale(${currentZoom})`;
+                        showToast(`🔍 Zoom: ${currentZoom.toFixed(1)}x`);
+                    }
+                }
+                previousPinchDist = currentDist;
+            }
+        });
+        workspace.addEventListener('touchend', () => { previousPinchDist = null; });
 
-      container.style.opacity = '0';
-      container.style.display = 'block';
-      setTimeout(() => { container.style.opacity = '1'; }, 50);
-    }
-  }
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                playPauseBtn.click();
+            } else if (e.code === 'ArrowRight') {
+                activePlayer.currentTime += 5;
+                showToast('⏩ +5s');
+            } else if (e.code === 'ArrowLeft') {
+                activePlayer.currentTime -= 5;
+                showToast('⏪ -5s');
+            } else if (e.code === 'KeyF') {
+                fsBtn.click();
+            } else if (e.code === 'KeyL') {
+                loopBtn.click();
+            }
+        });
 
-  document.addEventListener('DOMContentLoaded', function() {
-    attachAdListenersToLinks();
+        let audioCtx, sourceNode, analyser, stereoPanner, filters = {};
+        function initAudioPipeline(element) {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                sourceNode = audioCtx.createMediaElementSource(element);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64;
 
-    if (window.AndroidApp && typeof window.AndroidApp.requestNativeAd === 'function') {
-      window.AndroidApp.requestNativeAd();
-    }
-  });
-</script>
+                if (audioCtx.createStereoPanner) {
+                    stereoPanner = audioCtx.createStereoPanner();
+                }
 
+                let filter = audioCtx.createBiquadFilter();
+                filter.type = 'peaking';
+                filter.frequency.value = 60;
+                filter.gain.value = 0;
+                filters['60'] = filter;
+
+                sourceNode.connect(filter);
+                let nextNode = filter;
+
+                if (stereoPanner) {
+                    nextNode.connect(stereoPanner);
+                    nextNode = stereoPanner;
+                }
+                nextNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                drawVisualizer();
+            } catch(e) {
+                console.log('Audio pipeline active', e);
+            }
+        }
+
+        function drawVisualizer() {
+            requestAnimationFrame(drawVisualizer);
+            if (!analyser) return;
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / bufferLength) * 2.5;
+            let x = 0;
+            for(let i = 0; i < bufferLength; i++) {
+                const barHeight = (dataArray[i] / 255) * canvas.height;
+                canvasCtx.fillStyle = '#1db954';
+                canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (activePlayer.paused) {
+                activePlayer.play();
+                playPauseBtn.innerText = '⏸ Pause';
+                if(audioCtx) audioCtx.resume();
+                resetHideTimer();
+            } else {
+                activePlayer.pause();
+                playPauseBtn.innerText = '▶ Play';
+                headerBar.classList.remove('hidden');
+                controlDeck.classList.remove('hidden');
+                clearTimeout(hideTimer);
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            activePlayer.pause();
+            activePlayer.currentTime = 0;
+            playPauseBtn.innerText = '▶ Play';
+        });
+
+        skipBack.addEventListener('click', () => { activePlayer.currentTime -= 10; });
+        skipAhead.addEventListener('click', () => { activePlayer.currentTime += 10; });
+
+        activePlayer.addEventListener('timeupdate', () => {
+            if(!isNaN(activePlayer.duration)) {
+                seekBar.value = (activePlayer.currentTime / activePlayer.duration) * 100;
+                currentTimeEl.innerText = formatTime(activePlayer.currentTime);
+                durationEl.innerText = formatTime(activePlayer.duration);
+            }
+        });
+
+        seekBar.addEventListener('input', (e) => {
+            if(!isNaN(activePlayer.duration)) {
+                activePlayer.currentTime = (e.target.value / 100) * activePlayer.duration;
+            }
+        });
+
+        proMenuBtn.addEventListener('click', () => { proModal.classList.toggle('open'); });
+        closeModal.addEventListener('click', () => { proModal.classList.remove('open'); });
+
+        document.getElementById('eq60').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('val60').innerText = val + 'dB';
+            if(filters['60']) filters['60'].gain.value = val;
+        });
+
+        panSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('valPan').innerText = val === 0 ? 'Center' : (val < 0 ? `Left ${Math.abs(val)}` : `Right ${val}`);
+            if(stereoPanner) stereoPanner.pan.value = val;
+        });
+
+        function updateVideoFilters() {
+            const b = brightSlider.value;
+            const c = contrastSlider.value;
+            currentBrightness = parseInt(b);
+            document.getElementById('valBright').innerText = b + '%';
+            document.getElementById('valContrast').innerText = c + '%';
+            videoPlayer.style.filter = `brightness(${b}%) contrast(${c}%)`;
+        }
+        brightSlider.addEventListener('input', updateVideoFilters);
+        contrastSlider.addEventListener('input', updateVideoFilters);
+
+        bookmarkBtn.addEventListener('click', () => {
+            const t = formatTime(activePlayer.currentTime);
+            showToast(`📌 Saved: ${t}`);
+        });
+
+        speedBtn.addEventListener('click', () => {
+            speedIdx = (speedIdx + 1) % speeds.length;
+            activePlayer.playbackRate = speeds[speedIdx];
+            speedBtn.innerText = `⚡ ${speeds[speedIdx]}x`;
+        });
+
+        loopBtn.addEventListener('click', () => {
+            isLooping = !isLooping;
+            activePlayer.loop = isLooping;
+            loopBtn.classList.toggle('active', isLooping);
+            loopBtn.innerText = isLooping ? '🔁 Loop: On' : '🔁 Loop';
+        });
+
+        pipBtn.addEventListener('click', async () => {
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else if (document.pictureInPictureEnabled && activePlayer === videoPlayer) {
+                    await videoPlayer.requestPictureInPicture();
+                } else {
+                    showToast('PiP active for video only');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        zoomBtn.addEventListener('click', () => {
+            currentZoom = currentZoom === 1 ? 1.5 : (currentZoom === 1.5 ? 2 : (currentZoom === 2 ? 3 : 1));
+            videoPlayer.style.transform = `scale(${currentZoom})`;
+            zoomBtn.innerText = `🔍 ${currentZoom}x`;
+            zoomBtn.classList.toggle('active', currentZoom > 1);
+        });
+
+        fsBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                workspace.requestFullscreen().catch(err => alert(err.message));
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+    </script>
 </body>
 </html>
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
 
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block'; // Show install button when ready
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+    }
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});

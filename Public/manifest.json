@@ -2,6 +2,14 @@
   "background_color": "#0f0101",
   "dir": "ltr",
   "display": "standalone",
+  "icons": [
+    {
+      "src": "https://www.chyke.online/connectgold_2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
   "name": "Goldprotechnology",
   "orientation": "any",
   "scope": "/",
@@ -11,7 +19,7 @@
   "lang": "en",
   "shortcuts": [
     {
-      "name": "Recent ",
+      "name": "Recent",
       "url": "/?page=history",
       "description": "View your recently watched videos"
     }
@@ -29,8 +37,8 @@
     "method": "GET",
     "action": "/?share=video",
     "params": {
-      "title": "Title",
-      "text": "Text",
+      "title": "title",
+      "text": "text",
       "url": "url"
     }
   },

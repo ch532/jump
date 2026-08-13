@@ -2,7 +2,7 @@
   "name": "Gold Technology",
   "short_name": "Goldtech",
   "start_url": "/",
-  "display": "fullscreen",
+  "display": "standalone",
   "background_color": "#030303",
   "theme_color": "#1db954",
   "icons": [

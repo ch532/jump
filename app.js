@@ -1,2 +1,39 @@
-const inputEl = document.getElementById("input"); const outputEl = document.getElementById("output"); const statusEl = document.getElementById("status"); const summarizeBtn = document.getElementById("summarize"); const cancelBtn = document.getElementById("cancel"); const SYSTEM_PROMPT = "You are a helpful summarizer. Respond in two sentences or fewer."; const INPUT_MAX_LENGTH = 50_000; const SESSION_TIMEOUT_MS = 30_000; let controller = null; let isRunning = false; /** * Returns a promise that races `promise` against a timeout. * Rejects with a descriptive error if the timeout fires first. */ function withTimeout(promise, ms, label) { const timer = new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms) ); return Promise.race([promise, timer]); } async function init() { if (!("LanguageModel" in self)) { statusEl.textContent = "Prompt API not supported. Enable flags in chrome://flags."; return; } try { const availability = await LanguageModel.availability(); if (availability === "available") { statusEl.textContent = "Model ready."; summarizeBtn.disabled = false; } else if (availability === "downloadable" || availability === "downloading") { statusEl.textContent = `Model status: ${availability}. Please wait for the download to finish, then refresh this page.`; } else { statusEl.textContent = "Model unavailable on this device."; } } catch (err) { console.error("LanguageModel.availability() failed:", err); statusEl.textContent = "Could not check model status. Reload the page to retry."; } } async function summarize() { if (isRunning) return; isRunning = true; const text = inputEl.value.trim(); if (!text || text.length > INPUT_MAX_LENGTH) { outputEl.textContent = text.length > INPUT_MAX_LENGTH ? "Input too large. Please shorten your text." : ""; isRunning = false; return; }
-summarizeBtn.disabled = true; cancelBtn.hidden = false; outputEl.textContent = ""; const localController = new AbortController(); controller = localController; let session = null; try { session = await withTimeout( LanguageModel.create({ systemPrompt: SYSTEM_PROMPT, signal: localController.signal }), SESSION_TIMEOUT_MS, "Session creation" ); const tokenCount = await session.countPromptTokens(text); statusEl.textContent = `Input tokens: ${tokenCount} | Budget: ${session.tokensLeft} remaining`; if (tokenCount > session.tokensLeft) { outputEl.textContent = "Input exceeds token budget. Please shorten your text."; return; } const stream = session.promptStreaming(`Summarize this: ${text}`, { signal: localController.signal }); let accumulated = ""; let isCumulative = null; let chunkIndex = 0; for await (const chunk of stream) { chunkIndex++; if (chunkIndex === 2) { isCumulative = chunk.startsWith(accumulated); } if (isCumulative === false) { accumulated += chunk; outputEl.textContent = accumulated; } else { outputEl.textContent = chunk; accumulated = chunk; } } const used = session.tokensSoFar; const max = session.maxTokens; statusEl.textContent = `Tokens used: ${used} / ${max}`; } catch (err) { if (err.name === "AbortError") { outputEl.textContent = "[Generation cancelled]"; } else { console.error("Summarization failed:", err); outputEl.textContent = "Something went wrong. Check the console for details."; } statusEl.textContent = "Ready."; } finally { if (session) { session.destroy(); } isRunning = false; summarizeBtn.disabled = false; cancelBtn.hidden = true; controller = null; } } summarizeBtn.addEventListener("click", summarize); cancelBtn.addEventListener("click", () => controller?.abort()); init();
+let deferredPrompt; 
+const installBtn = document.getElementById('installBtn');
+
+// 1. Listen for the browser's install availability event
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the default mini-infobar from appearing on mobile
+  e.preventDefault();
+  
+  // Save the event so it can be triggered later
+  deferredPrompt = e;
+  
+  // Unhide your custom install button
+  installBtn.style.display = 'block';
+});
+
+// 2. Trigger the prompt when the user clicks your button
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  
+  // Show the native browser install prompt
+  deferredPrompt.prompt();
+  
+  // Wait for the user to respond to the prompt
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(`User response to install prompt: ${outcome}`);
+  
+  // Clean up memory; the prompt can only be used once
+  deferredPrompt = null;
+  
+  // Hide your install button again
+  installBtn.style.display = 'none';
+});
+
+// 3. Optional: Hide button if the app is successfully installed
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was successfully installed!');
+  deferredPrompt = null;
+  installBtn.style.display = 'none';
+});

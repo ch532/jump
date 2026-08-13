@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Goldmax</title>
+    <title>Goldmax 40-Model Agentic AI Gateway</title>
     <!-- Primary Meta Tags -->
-    <meta name="title" content="Goldmax">
+    <meta name="title" content="Goldmax 40-Model Agentic AI Gateway">
     <meta name="description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
     <meta name="keywords" content="Agentic AI, autonomous AI, reasoning models, GPT-4o, Claude Sonnet, deepseek reasoner, secure AI client">
 
     <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.chyke.online/">
-    <meta property="og:title" content="Goldmax">
+    <meta property="og:title" content="Goldmax 40-Model Agentic AI Gateway">
     <meta property="og:description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
     <meta property="og:image" content="https://www.chyke.online/connectgold_2.png">
 
     <!-- Twitter / X -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://www.chyke.online/">
-    <meta property="twitter:title" content="Goldmax">
+    <meta property="twitter:title" content="Goldmax 40-Model Agentic AI Gateway">
     <meta property="twitter:description" content="Secure, client-side 40-model Agentic AI gateway featuring advanced reasoning and autonomous execution models, biometric security, and complete data privacy.">
     <meta property="twitter:image" content="https://www.chyke.online/connectgold_2.png">
 
@@ -377,7 +377,7 @@
     <div id="privacyModal">
         <div class="privacy-modal-content">
             <h3>Privacy Policy Agreement</h3>
-            <p>Before accessing Goldmax, please review and accept our <a href="privacy20.html" target="_blank">Privacy Policy</a>. We secure your API keys locally and do not store external chat logs.</p>
+            <p>Before accessing Goldmax AI, please review and accept our <a href="privacy20.html" target="_blank">Privacy Policy</a>. We secure your API keys locally and do not store external chat logs.</p>
             <button class="privacy-agree-btn" id="privacyAgreeBtn">Agree & Continue</button>
         </div>
     </div>
@@ -388,7 +388,7 @@
             <div class="header-top">
                 <div class="brand">
                     <img src="https://www.chyke.online/connectgold_2.png" alt="Logo">
-                    <h1>Goldmax</h1>
+                    <h1>Goldmax Agentic AI</h1>
                 </div>
                 <div class="user-pill">
                     <span id="locationIndicator">🌍 Detecting Location...</span>
@@ -948,6 +948,7 @@
             }
         }
 
+        // Direct Formspree Background Dispatcher securely routing feedback to chykedegreat@gmail.com
         window.sendFeedback = function(btnElement, rating) {
             const container = btnElement.parentElement;
             const buttons = container.querySelectorAll('.feedback-btn');
@@ -967,14 +968,14 @@
             const textContent = messageDiv ? messageDiv.querySelector('span').textContent : 'Unknown Message';
             const activeModel = modelSelect.value !== "" ? MODELS[modelSelect.value].name : 'Unknown Model';
 
-            fetch("https://api.web3forms.com/submit", {
+            // Submitting directly to Formspree endpoint pre-configured for chykedegreat@gmail.com
+            fetch("https://formspree.io/f/chykedegreat@gmail.com", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
-                    apikey: "YOUR_WEB3FORMS_PUBLIC_ACCESS_KEY_OR_LEAVE_BLANK",
-                    subject: `New AI Chat Feedback: [${rating}]`,
                     email: "chykedegreat@gmail.com",
-                    message: `Model Used: ${activeModel}\nRating: ${rating}\nChat Response: ${textContent}`
+                    subject: `AI Chat Feedback [${rating}]`,
+                    message: `Model: ${activeModel}\nRating: ${rating}\nResponse: ${textContent}`
                 })
             }).catch(() => {});
         };
@@ -1065,6 +1066,7 @@
     </script>
 </body>
 </html>
+
 
 
 

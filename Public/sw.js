@@ -1,7 +1,9 @@
 const CACHE_NAME = 'pro-media-v1';
 const ASSETS_TO_CACHE = ['/', '/index.html'];
 
-// 1. Install Event: Cache essential shell assets
+// =========================================================================
+// 1. INSTALL EVENT: Cache essential shell assets
+// =========================================================================
 self.addEventListener('install', (e) => {
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -10,7 +12,9 @@ self.addEventListener('install', (e) => {
     );
 });
 
-// 2. Activate Event: Clean up old caches if the version name changes
+// =========================================================================
+// 2. ACTIVATE EVENT: Clean up old caches if the version name changes
+// =========================================================================
 self.addEventListener('activate', (e) => {
     e.waitUntil(
         caches.keys().then((keys) => {
@@ -25,7 +29,9 @@ self.addEventListener('activate', (e) => {
     );
 });
 
-// 3. Fetch Event: Safe Network-First fallback strategy
+// =========================================================================
+// 3. FETCH EVENT: Safe Network-First fallback strategy
+// =========================================================================
 self.addEventListener('fetch', (e) => {
     // Only intercept standard HTTP/HTTPS requests (ignores browser extensions)
     if (!e.request.url.startsWith(self.location.origin)) return;
@@ -47,4 +53,43 @@ self.addEventListener('fetch', (e) => {
                 return caches.match(e.request);
             })
     );
+});
+
+// =========================================================================
+// 4. WEB PUSH NOTIFICATION LISTENERS
+// =========================================================================
+
+// Listen for incoming server push notifications
+self.addEventListener('push', (event) => {
+  let data = { title: 'Gold Technology', body: 'New update available!' };
+  
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: 'https://www.chyke.com/connectgold_2.png',
+    badge: 'https://www.chyke.com/connectgold_2.png',
+    vibrate:, // Corrected: valid millisecond array
+    data: {
+      url: '/' // Opens your root app link when clicked
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Handle clicking on the notification banner
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url)
+  );
 });

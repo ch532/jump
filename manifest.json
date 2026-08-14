@@ -40,6 +40,22 @@
       "purpose": "any maskable"
     }
   ],
+  "screenshots": [
+    {
+      "src": "icon/goldpro.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Goldtech Video Player Desktop View"
+    },
+    {
+      "src": "icon/goldpro_1.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Goldtech Video Player Mobile View"
+    }
+  ],
   "categories": [
     "video"
   ],
@@ -93,6 +109,24 @@
   "edge_side_panel": {
     "preferred_width": 400
   },
+  "widgets": [
+    {
+      "name": "Goldtech Quick Player",
+      "description": "Quickly access recent videos and controls.",
+      "tag": "player-widget",
+      "template": "widgets/player-template.json",
+      "ms_ac_template": "widgets/player-adaptive-card.json",
+      "data": "widgets/player-data.json",
+      "type": "application/json",
+      "icons": [
+        {
+          "src": "icon/launchericon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "prefer_related_applications": false,
   "related_applications": [],
   "iarc_rating_id": ""

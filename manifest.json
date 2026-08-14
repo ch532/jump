@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "Goldpro Technolology",
   "short_name": "Goldtech",
   "description": "A fast and lightweight video player to watch your favorite videos offline.",
@@ -42,18 +43,18 @@
   ],
   "screenshots": [
     {
-      "src": "icon/goldpro.png",
+      "src": "icon/goldpro.jpg",
       "sizes": "1280x720",
-      "type": "image/png",
+      "type": "image/jpg",
       "form_factor": "wide",
-      "label": "Goldtech Video Player Desktop View"
+      "label": "Goldtech Video Player"
     },
     {
-      "src": "icon/goldpro_1.png",
+      "src": "icon/goldpro_1.jpg",
       "sizes": "720x1280",
-      "type": "image/png",
+      "type": "image/jpg",
       "form_factor": "narrow",
-      "label": "Goldtech Video Player Mobile View"
+      "label": "Goldtech Video Player"
     }
   ],
   "categories": [
@@ -131,3 +132,4 @@
   "related_applications": [],
   "iarc_rating_id": ""
 }
+

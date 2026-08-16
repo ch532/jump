@@ -95,10 +95,6 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .card.full-width {
-            grid-column: 1 / -1;
-        }
-
         h2 {
             font-size: 1.1rem;
             margin-top: 0;
@@ -145,29 +141,14 @@
             margin-left: 2px;
         }
 
-        .ai-box {
-            background: rgba(15, 23, 42, 0.8);
-            border-left: 4px solid var(--accent-color);
-            padding: 16px;
-            border-radius: 4px;
-            font-style: italic;
-            line-height: 1.5;
-            color: #e2e8f0;
-        }
-
         .status-bar {
             font-size: 0.8rem;
             color: var(--text-muted);
             margin-top: 16px;
             text-align: right;
+            grid-column: 1 / -1;
         }
     </style>
-
-    <!-- Import WebLLM from official CDN (No API Key Required) -->
-    <script type="module">
-        import * as webllm from "https://esm.run/@mlc-ai/web-llm";
-        window.webllm = webllm;
-    </script>
 </head>
 <body>
 
@@ -193,18 +174,12 @@
                 <ul id="offPhoneList" class="vector-list"></ul>
             </div>
 
-            <!-- AI Analytics Card -->
-            <div class="card full-width">
-                <h2>Edge LLM Assessment (Client-Side WebGPU)</h2>
-                <div id="aiAnalysis" class="ai-box">Initializing local browser AI engine (Llama-3)...</div>
-                <div id="statusBar" class="status-bar">Status: Loading model weights...</div>
-            </div>
+            <div id="statusBar" class="status-bar">Status: Idle</div>
         </div>
     </div>
 
     <script>
         const WORKER_URL = "https://odd-mouse-0ed0.trustconnect713.workers.dev/";
-        let engine = null;
 
         const inPhoneConfig = [
             { label: "Net Jitter", unit: "ms" },
@@ -232,23 +207,6 @@
             { label: "Ion Density", unit: "cm³" }
         ];
 
-        // Initialize local WebLLM engine on page load
-        async function initLocalAI() {
-            try {
-                const selectedModel = "Llama-3-8B-Instruct-q4f32_1-MLC";
-                engine = await window.webllm.CreateEngine(selectedModel, {
-                    initProgressCallback: (report) => {
-                        document.getElementById('aiAnalysis').textContent = report.text;
-                    }
-                });
-                document.getElementById('aiAnalysis').textContent = "Local AI Engine Ready. Query mesh to analyze.";
-                fetchTelemetry();
-            } catch (err) {
-                document.getElementById('aiAnalysis').textContent = "WebGPU not supported or initialization failed. Falling back to metric display only.";
-                console.error(err);
-            }
-        }
-
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
                 fetchTelemetry();
@@ -269,21 +227,6 @@
                 
                 const data = await response.json();
                 renderTelemetry(data);
-
-                // Run Local AI generation if engine is loaded
-                if (engine) {
-                    statusBar.textContent = `Status: Running local AI inference for ${data.location}...`;
-                    const prompt = `Analyze telemetry for ${data.location}. In-Phone: [${data.inPhone.join(', ')}]. Off-Phone: [${data.offPhone.join(', ')}]. Provide a brief 2-sentence secure enclave environment assessment.`;
-                    
-                    const reply = await engine.chat.completions.create({
-                        messages: [{ role: "user", content: prompt }],
-                        temperature: 0.7,
-                        max_tokens: 100
-                    });
-
-                    document.getElementById('aiAnalysis').textContent = reply.choices[0].message.content;
-                }
-
                 statusBar.textContent = `Status: Synced ${data.location} at ${new Date(data.timestamp).toLocaleTimeString()}`;
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -317,11 +260,11 @@
             });
         }
 
-        // Boot local AI on window load
-        window.onload = initLocalAI;
+        window.onload = fetchTelemetry;
     </script>
 </body>
 </html>
+
 
 
 

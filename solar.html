@@ -36,6 +36,8 @@
             margin-bottom: 24px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         h1 {
@@ -51,18 +53,26 @@
             align-items: center;
         }
 
-        select, button {
+        input[type="text"], button {
             background-color: var(--card-bg);
             color: var(--text-main);
             border: 1px solid var(--border-color);
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 0.9rem;
-            cursor: pointer;
         }
 
-        button:hover, select:hover {
+        input[type="text"] {
+            outline: none;
+            width: 180px;
+        }
+
+        input[type="text"]:focus, button:hover {
             border-color: var(--accent-color);
+        }
+
+        button {
+            cursor: pointer;
         }
 
         .grid {
@@ -159,13 +169,8 @@
         <header>
             <h1>SOLTAIC TELEMETRY</h1>
             <div class="controls">
-                <select id="locationSelect" onchange="fetchTelemetry()">
-                    <option value="Abuja">Abuja</option>
-                    <option value="Lagos">Lagos</option>
-                    <option value="London">London</option>
-                    <option value="New York">New York</option>
-                </select>
-                <button onclick="fetchTelemetry()">Refresh Mesh</button>
+                <input type="text" id="locationInput" value="Abuja" placeholder="Enter city/country..." onkeypress="handleKeyPress(event)">
+                <button onclick="fetchTelemetry()">Query Mesh</button>
             </div>
         </header>
 
@@ -194,7 +199,6 @@
     <script>
         const WORKER_URL = "https://odd-mouse-0ed0.trustconnect713.workers.dev/";
 
-        // Explicit Labels and Units Configuration
         const inPhoneConfig = [
             { label: "Net Jitter", unit: "ms" },
             { label: "Heap Alloc", unit: "MB" },
@@ -221,21 +225,27 @@
             { label: "Ion Density", unit: "cm³" }
         ];
 
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                fetchTelemetry();
+            }
+        }
+
         async function fetchTelemetry() {
-            const location = document.getElementById('locationSelect').value;
+            const location = document.getElementById('locationInput').value.trim() || "Abuja";
             const statusBar = document.getElementById('statusBar');
-            statusBar.textContent = "Status: Polling edge worker...";
+            statusBar.textContent = `Status: Resolving mesh for ${location}...`;
 
             try {
                 const jitter = (Math.random() * 0.8 + 1.0).toFixed(3);
                 const heap = (Math.random() * 10 + 30).toFixed(2);
 
-                const response = await fetch(`${WORKER_URL}?location=${location}&jitter=${jitter}&heap=${heap}`);
+                const response = await fetch(`${WORKER_URL}?location=${encodeURIComponent(location)}&jitter=${jitter}&heap=${heap}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const data = await response.json();
                 renderTelemetry(data);
-                statusBar.textContent = `Status: Synced at ${new Date(data.timestamp).toLocaleTimeString()}`;
+                statusBar.textContent = `Status: Synced ${data.location} at ${new Date(data.timestamp).toLocaleTimeString()}`;
             } catch (err) {
                 console.error("Fetch error:", err);
                 statusBar.textContent = "Status: Error syncing with edge node.";
@@ -243,7 +253,6 @@
         }
 
         function renderTelemetry(data) {
-            // Render In-Phone Vectors with labels & units
             const inPhoneContainer = document.getElementById('inPhoneList');
             inPhoneContainer.innerHTML = '';
             data.inPhone.forEach((val, index) => {
@@ -256,7 +265,6 @@
                 `;
             });
 
-            // Render Off-Phone Vectors with labels & units
             const offPhoneContainer = document.getElementById('offPhoneList');
             offPhoneContainer.innerHTML = '';
             data.offPhone.forEach((val, index) => {
@@ -269,7 +277,6 @@
                 `;
             });
 
-            // Render AI Analysis string
             document.getElementById('aiAnalysis').textContent = data.aiAnalysis;
         }
 
@@ -277,5 +284,6 @@
     </script>
 </body>
 </html>
+
 
 

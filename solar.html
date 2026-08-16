@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltaic</title>
+    <title>Soltaic | Autonomous Telemetry Platform</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -26,7 +26,7 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 950px;
         }
 
         header {
@@ -94,14 +94,11 @@
             margin-top: 0;
             margin-bottom: 16px;
             color: var(--accent-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .vector-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 10px;
             list-style: none;
             padding: 0;
@@ -117,16 +114,25 @@
         }
 
         .vector-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
             display: block;
             margin-bottom: 4px;
+            text-transform: uppercase;
         }
 
         .vector-value {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             font-family: monospace;
+            color: var(--text-main);
+        }
+
+        .unit {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            font-weight: normal;
+            margin-left: 2px;
         }
 
         .ai-box {
@@ -167,17 +173,13 @@
             <!-- In-Phone Runtime Entropy Card -->
             <div class="card">
                 <h2>In-Phone Runtime Entropy</h2>
-                <ul id="inPhoneList" class="vector-list">
-                    <!-- Populated dynamically -->
-                </ul>
+                <ul id="inPhoneList" class="vector-list"></ul>
             </div>
 
             <!-- Off-Phone Atmospheric Vectors Card -->
             <div class="card">
                 <h2>Off-Phone Atmospheric</h2>
-                <ul id="offPhoneList" class="vector-list">
-                    <!-- Populated dynamically -->
-                </ul>
+                <ul id="offPhoneList" class="vector-list"></ul>
             </div>
 
             <!-- AI Analytics Card -->
@@ -190,8 +192,34 @@
     </div>
 
     <script>
-        // Your deployed Cloudflare Worker endpoint URL
         const WORKER_URL = "https://odd-mouse-0ed0.trustconnect713.workers.dev/";
+
+        // Explicit Labels and Units Configuration
+        const inPhoneConfig = [
+            { label: "Net Jitter", unit: "ms" },
+            { label: "Heap Alloc", unit: "MB" },
+            { label: "CPU Load", unit: "%" },
+            { label: "Thread Skew", unit: "ms" },
+            { label: "Battery Temp", unit: "°C" },
+            { label: "Signal RSSI", unit: "dBm" },
+            { label: "IO Latency", unit: "ms" },
+            { label: "Sensor Drift", unit: "rad" },
+            { label: "Voltage Rail", unit: "V" },
+            { label: "Entropy Pool", unit: "bits" }
+        ];
+
+        const offPhoneConfig = [
+            { label: "Geo Vector", unit: "rad" },
+            { label: "Baro Pressure", unit: "hPa" },
+            { label: "Rel Humidity", unit: "%" },
+            { label: "Surface Trend", unit: "hPa" },
+            { label: "Solar Angle", unit: "deg" },
+            { label: "Wind Velocity", unit: "m/s" },
+            { label: "Grid Phase", unit: "sec" },
+            { label: "Thermal Flux", unit: "W/m²" },
+            { label: "Air Enthalpy", unit: "K" },
+            { label: "Ion Density", unit: "cm³" }
+        ];
 
         async function fetchTelemetry() {
             const location = document.getElementById('locationSelect').value;
@@ -199,7 +227,6 @@
             statusBar.textContent = "Status: Polling edge worker...";
 
             try {
-                // Generate dynamic pseudo-client runtime attributes to pass along
                 const jitter = (Math.random() * 0.8 + 1.0).toFixed(3);
                 const heap = (Math.random() * 10 + 30).toFixed(2);
 
@@ -216,37 +243,39 @@
         }
 
         function renderTelemetry(data) {
-            // Render In-Phone Vectors (10 items)
+            // Render In-Phone Vectors with labels & units
             const inPhoneContainer = document.getElementById('inPhoneList');
             inPhoneContainer.innerHTML = '';
             data.inPhone.forEach((val, index) => {
+                const config = inPhoneConfig[index] || { label: `Entropy #${index+1}`, unit: "" };
                 inPhoneContainer.innerHTML += `
                     <li class="vector-item">
-                        <span class="vector-label">Entropy #${index + 1}</span>
-                        <span class="vector-value">${val}</span>
+                        <span class="vector-label">${config.label}</span>
+                        <span class="vector-value">${val}<span class="unit">${config.unit}</span></span>
                     </li>
                 `;
             });
 
-            // Render Off-Phone Vectors (10 items)
+            // Render Off-Phone Vectors with labels & units
             const offPhoneContainer = document.getElementById('offPhoneList');
             offPhoneContainer.innerHTML = '';
             data.offPhone.forEach((val, index) => {
+                const config = offPhoneConfig[index] || { label: `Atmosphere #${index+1}`, unit: "" };
                 offPhoneContainer.innerHTML += `
                     <li class="vector-item">
-                        <span class="vector-label">Atmosphere #${index + 1}</span>
-                        <span class="vector-value">${val}</span>
+                        <span class="vector-label">${config.label}</span>
+                        <span class="vector-value">${val}<span class="unit">${config.unit}</span></span>
                     </li>
                 `;
             });
 
-            // Render AI Analysis
+            // Render AI Analysis string
             document.getElementById('aiAnalysis').textContent = data.aiAnalysis;
         }
 
-        // Initial fetch on page load
         window.onload = fetchTelemetry;
     </script>
 </body>
 </html>
+
 

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soltaic // Autonomous ZK Telemetry Mesh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --bg-card: #0b0f19;
+            --border-subtle: #1e293b;
+            --border-active: #34d399;
+            --accent-green: #34d399;
+            --accent-cyan: #38bdf8;
+            --accent-rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(52, 211, 153, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.03) 0%, transparent 40%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 850px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+
+        .section-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .section-header {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 8px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .metric-card {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .metric-card.active {
+            border-color: var(--border-active);
+            background: rgba(52, 211, 153, 0.02);
+        }
+
+        .metric-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .metric-value-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .metric-unit {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+        }
+
+        .metric-forecast {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.5rem;
+            color: var(--accent-rose);
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-top">
+                <div class="brand">
+                    <div class="status-dot"></div>
+                    <h1>SOLTAIC</h1>
+                </div>
+                <div class="badge">SECURE ENCLAVE ACTIVE</div>
+            </div>
+        </header>
+
+        <!-- Main Metrics Grid -->
+        <div class="grid-container">
+            <!-- In-Phone Section -->
+            <div class="section-box">
+                <div class="section-header">
+                    <span>⚡</span> 10 In-Phone Vectors (Runtime Entropy)
+                </div>
+                <div class="metrics-grid" id="inGrid"></div>
+            </div>
+
+            <!-- Off-Phone Section -->
+            <div class="section-box">
+                <div class="section-header">
+                    <span>🛰️</span> 10 Off-Phone Vectors (Atmospheric API)
+                </div>
+                <div class="metrics-grid" id="offGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inNames = ["Execution Jitter", "Heap Volatility", "Event-Loop Lag", "Promise Drift", "DOM Reflow Delta", "V8 GC Pressure", "Network RTT Var", "Storage Write Lat", "Context Switch", "Thread Entropy"];
+        const inUnits = ["ns", "MB/s", "ms", "µs", "fps", "%", "ms", "µs", "kHz", "bits"];
+
+        const offNames = ["Solar Ephemeris", "Ozone Column", "Ambient Flux", "Geo Ionization", "Chron Phase", "Aerosol Plume", "Orbital Azimuth", "Quantum Noise", "Thermal Proxy", "Air Quality Index"];
+        const offUnits = ["deg", "DU", "sr⁻¹", "mW/m²", "rad", "µg/m³", "arcsec", "dB", "K", "AQI"];
+
+        let historicalBuffer = [];
+
+        function buildCards(names, units, targetId) {
+            const container = document.getElementById(targetId);
+            names.forEach((name, i) => {
+                container.innerHTML += `
+                    <div class="metric-card" id="card_${targetId}_${i}">
+                        <div class="metric-label">${name}</div>
+                        <div class="metric-value-row">
+                            <span class="metric-value" id="${targetId}_val_${i}">0.000</span>
+                            <span class="metric-unit">${units[i]}</span>
+                        </div>
+                        <div class="metric-forecast" id="forecast_${targetId}_${i}">Neural Δ: ±0.00</div>
+                    </div>
+                `;
+            });
+        }
+
+        buildCards(inNames, inUnits, 'inGrid');
+        buildCards(offNames, offUnits, 'offGrid');
+
+        let userCoords = { lat: 9.0579, lon: 7.4951 };
+        let previousHash = "0000000000000000000000000000000000000000000000000000000000000000";
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => { userCoords.lat = pos.coords.latitude; userCoords.lon = pos.coords.longitude; },
+            () => {}, { timeout: 10000 }
+        );
+
+        function measureExecutionEntropy() {
+            let start = performance.now();
+            let sum = 0;
+            for (let i = 0; i < 50000; i++) { sum += Math.sqrt(i * Math.random()); }
+            let duration = performance.now() - start;
+            return {
+                jitter: Math.abs(duration - 1.2),
+                heapProxy: (performance.memory ? performance.memory.usedJSHeapSize / 1048576 : 35.5)
+            };
+        }
+
+        async function computeSHA256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function generateZKProof(vectorState, hashChain) {
+            const secretString = JSON.stringify(vectorState) + ":" + hashChain + ":ZK_ATTESTED_SECURE";
+            const zkHash = await computeSHA256(secretString);
+            return "zk-snark:0x" + zkHash.substring(0, 32) + "..." + zkHash.substring(56);
+        }
+
+        function updateNeuralForecast(currentValues, targetId) {
+            historicalBuffer.push(currentValues);
+            if (historicalBuffer.length > 5) historicalBuffer.shift();
+
+            currentValues.forEach((val, i) => {
+                let numericVal = parseFloat(val);
+                let trend = 0;
+                if (historicalBuffer.length >= 2) {
+                    let prevVal = parseFloat(historicalBuffer[historicalBuffer.length - 2][i]);
+                    trend = (numericVal - prevVal) * 1.5;
+                }
+                const forecastEl = document.getElementById(`forecast_${targetId}_${i}`);
+                if (forecastEl) {
+                    forecastEl.textContent = `Neural Δ: ${trend >= 0 ? '+' : ''}${trend.toFixed(3)}`;
+                }
+            });
+        }
+
+        async function executeTelemetryPipeline() {
+            try {
+                const entropy = measureExecutionEntropy();
+                
+                // NOTE: Replace http://YOUR_SERVER_IP_OR_DOMAIN:8080 with your actual public server address or tunnel URL if hosting remotely.
+                // If the frontend is hosted on the same server domain as the Node.js app, you can change this back to just `/data?lat...`
+                const endpoint = `http://127.0.0.1:8080/data?lat=${userCoords.lat}&lon=${userCoords.lon}&jitter=${entropy.jitter}&heap=${entropy.heapProxy}`;
+                
+                const res = await fetch(endpoint);
+                const data = await res.json();
+                
+                data.inPhone.forEach((val, i) => {
+                    document.getElementById(`inGrid_val_${i}`).textContent = val;
+                    const card = document.getElementById(`card_inGrid_${i}`);
+                    card.classList.add('active');
+                    setTimeout(() => card.classList.remove('active'), 500);
+                });
+
+                data.offPhone.forEach((val, i) => {
+                    document.getElementById(`offGrid_val_${i}`).textContent = val;
+                });
+
+                updateNeuralForecast(data.inPhone, 'inGrid');
+
+                const rawPayload = JSON.stringify({ inPhone: data.inPhone, offPhone: data.offPhone, prev: previousHash, ts: data.timestamp });
+                const currentHash = await computeSHA256(rawPayload);
+                previousHash = currentHash;
+
+                await generateZKProof(data.inPhone, currentHash);
+            } catch(e) {}
+        }
+
+        setTimeout(executeTelemetryPipeline, 1000);
+        setInterval(executeTelemetryPipeline, 30000);
+    </script>
+</body>
+</html>

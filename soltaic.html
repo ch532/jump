@@ -146,11 +146,13 @@ async function getAtmosphericData(location) {
     const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=solar_elevation,direct_radiation&timezone=auto`);
     const data = await weatherRes.json();
     const c = data.current;
-    const solarAngle = data.hourly.solar_elevation[0];
+    const solarAngle = data.hourly && data.hourly.solar_elevation ? data.hourly.solar_elevation[0] : 45;
+    const directRad = data.hourly && data.hourly.direct_radiation ? data.hourly.direct_radiation[0] : 0;
+    
     return { name: `${geo.name}, ${geo.country}`, values: [
         (c.wind_direction_10m * Math.PI / 180).toFixed(4), clamp(c.pressure_msl, 800, 1100).toFixed(1), clamp(c.relative_humidity_2m, 0, 100).toFixed(2),
         ((Math.random() - 0.5) * 5).toFixed(2), clamp(solarAngle, 0, 90).toFixed(2), c.wind_speed_10m.toFixed(2),
-        (Math.random() * 10 + 20).toFixed(2), (-(data.hourly.direct_radiation[0] || 0) * 0.1).toFixed(1), (c.temperature_2m + 273.15).toFixed(2), Math.floor(Math.random() * 150 + 20)
+        (Math.random() * 10 + 20).toFixed(2), (-directRad * 0.1).toFixed(1), (c.temperature_2m + 273.15).toFixed(2), Math.floor(Math.random() * 150 + 20)
     ]};
 }
 
@@ -223,4 +225,5 @@ window.onload = () => { fetchTelemetry(true); setInterval(fetchTelemetry, REFRES
 </script>
 </body>
 </html>
+
 

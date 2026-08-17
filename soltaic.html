@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raregem Technology</title>
+    <title>Raregem Technology | Global Environmental Intelligence Engine</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet Map CSS -->
@@ -12,8 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        #map { height: 320px; border-radius: 0.75rem; }
-        /* Custom scrollbar for parameter selector */
+        #map { height: 300px; border-radius: 0.75rem; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
@@ -26,7 +25,7 @@
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img src="https://www.chyke.online/connectgold_2.png" alt="Raregem Logo" class="h-10 w-10 object-contain rounded-lg bg-slate-800 p-1">
+                <img src="https://www.chyke.com/connectgold_2.png" alt="Raregem Logo" class="h-10 w-10 object-contain rounded-lg bg-slate-800 p-1">
                 <div>
                     <h1 class="font-bold text-lg tracking-tight text-white">Raregem Technology</h1>
                     <p class="text-xs text-slate-400">Global Real-Time Environmental Intelligence</p>
@@ -73,27 +72,44 @@
                 </div>
             </div>
 
-            <!-- Parameter Filter Panel -->
+            <!-- Full 150-Parameter Matrix Selector -->
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-xl">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Parameter Matrix Selector</h3>
-                    <button onclick="toggleAllParams(true)" class="text-xs text-emerald-400 hover:underline">Select All</button>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">150-Conditions Swarm Matrix</h3>
+                    <div class="space-x-2">
+                        <button onclick="toggleAllParams(true)" class="text-xs text-emerald-400 hover:underline">All</button>
+                        <span class="text-slate-600">|</span>
+                        <button onclick="toggleAllParams(false)" class="text-xs text-slate-400 hover:underline">None</button>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-400 mb-3">Choose which parameters to display in your active snapshot grid:</p>
+                <p class="text-xs text-slate-400 mb-3">Select parameters to display in the live snapshot grid:</p>
                 
-                <div class="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs text-slate-300" id="parameterCheckboxes">
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="temperature_2m" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Temperature (2m)</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="relative_humidity_2m" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Relative Humidity</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="pressure_msl" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Air Pressure (MSL)</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="pm2_5" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Particulate Matter (PM2.5)</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="apparent_temperature" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Apparent Temperature</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="precipitation" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Precipitation</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="wind_speed_10m" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Wind Speed (10m)</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="uv_index" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>UV Index</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="pm10" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Particulate Matter (PM10)</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="carbon_monoxide" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Carbon Monoxide</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="surface_solar_radiation" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Surface Solar Radiation</span></label>
-                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="soil_moisture_0_1cm" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Soil Moisture (0-1cm)</span></label>
+                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 text-xs text-slate-300" id="parameterCheckboxes">
+                    
+                    <!-- Atmospheric & Meteorological Parameters -->
+                    <div>
+                        <span class="font-bold text-emerald-400 uppercase tracking-wide block mb-1">Atmospheric & Meteorological (1-35)</span>
+                        <div class="space-y-1 pl-2 border-l border-slate-800" id="group-atmos"></div>
+                    </div>
+
+                    <!-- Air Quality & Composition Parameters -->
+                    <div>
+                        <span class="font-bold text-cyan-400 uppercase tracking-wide block mb-1">Air Quality & Composition (36-70)</span>
+                        <div class="space-y-1 pl-2 border-l border-slate-800" id="group-air"></div>
+                    </div>
+
+                    <!-- Soil Profiles & Terrestrial Parameters -->
+                    <div>
+                        <span class="font-bold text-amber-400 uppercase tracking-wide block mb-1">Soil Profiles & Terrestrial (71-110)</span>
+                        <div class="space-y-1 pl-2 border-l border-slate-800" id="group-soil"></div>
+                    </div>
+
+                    <!-- NASA Agro-Meteorological & Advanced Parameters -->
+                    <div>
+                        <span class="font-bold text-purple-400 uppercase tracking-wide block mb-1">NASA Agro & Deep Metrics (111-150)</span>
+                        <div class="space-y-1 pl-2 border-l border-slate-800" id="group-nasa"></div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -163,7 +179,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>&copy; 2026 Raregem Technology</p>
+        <p>&copy; 2026 Raregem Technology. Built with Cloudflare Edge Workers & Workers AI.</p>
     </footer>
 
     <!-- Leaflet JS -->
@@ -171,6 +187,188 @@
     <script>
         const WORKER_URL = "https://bitter-paper-31ae.trustconnect713.workers.dev/";
         let globalTelemetryData = null;
+
+        // Full 150 Parameter Definition Database
+        const paramDefinitions = [
+            // Atmosphere & Meteorology (1 - 35)
+            { id: 'temperature_2m', label: 'Temperature (2m)', unit: '°C', group: 'group-atmos', default: true },
+            { id: 'relative_humidity_2m', label: 'Relative Humidity', unit: '%', group: 'group-atmos', default: true },
+            { id: 'dew_point_2m', label: 'Dew Point (2m)', unit: '°C', group: 'group-atmos' },
+            { id: 'apparent_temperature', label: 'Apparent Temp', unit: '°C', group: 'group-atmos', default: true },
+            { id: 'precipitation', label: 'Precipitation', unit: 'mm', group: 'group-atmos', default: true },
+            { id: 'rain', label: 'Rain', unit: 'mm', group: 'group-atmos' },
+            { id: 'showers', label: 'Showers', unit: 'mm', group: 'group-atmos' },
+            { id: 'snowfall', label: 'Snowfall', unit: 'cm', group: 'group-atmos' },
+            { id: 'weather_code', label: 'Weather Code', unit: '', group: 'group-atmos' },
+            { id: 'cloud_cover', label: 'Cloud Cover (Total)', unit: '%', group: 'group-atmos' },
+            { id: 'cloud_cover_low', label: 'Cloud Cover Low', unit: '%', group: 'group-atmos' },
+            { id: 'cloud_cover_mid', label: 'Cloud Cover Mid', unit: '%', group: 'group-atmos' },
+            { id: 'cloud_cover_high', label: 'Cloud Cover High', unit: '%', group: 'group-atmos' },
+            { id: 'pressure_msl', label: 'Air Pressure (MSL)', unit: 'hPa', group: 'group-atmos', default: true },
+            { id: 'surface_pressure', label: 'Surface Pressure', unit: 'hPa', group: 'group-atmos' },
+            { id: 'wind_speed_10m', label: 'Wind Speed (10m)', unit: 'm/s', group: 'group-atmos' },
+            { id: 'wind_speed_80m', label: 'Wind Speed (80m)', unit: 'm/s', group: 'group-atmos' },
+            { id: 'wind_speed_120m', label: 'Wind Speed (120m)', unit: 'm/s', group: 'group-atmos' },
+            { id: 'wind_direction_10m', label: 'Wind Direction (10m)', unit: '°', group: 'group-atmos' },
+            { id: 'wind_direction_80m', label: 'Wind Direction (80m)', unit: '°', group: 'group-atmos' },
+            { id: 'wind_direction_120m', label: 'Wind Direction (120m)', unit: '°', group: 'group-atmos' },
+            { id: 'wind_gusts_10m', label: 'Wind Gusts (10m)', unit: 'm/s', group: 'group-atmos' },
+            { id: 'et0_fao_evapotranspiration', label: 'Evapotranspiration (ET0)', unit: 'mm', group: 'group-atmos' },
+            { id: 'vapour_pressure_deficit', label: 'Vapour Pressure Deficit', unit: 'kPa', group: 'group-atmos' },
+            { id: 'elevation', label: 'Terrain Elevation', unit: 'm', group: 'group-atmos' },
+            { id: 'timezone_offset', label: 'Timezone Offset', unit: 'sec', group: 'group-atmos' },
+            { id: 'atmospheric_density', label: 'Atmospheric Density', unit: 'kg/m³', group: 'group-atmos' },
+            { id: 'solar_elevation', label: 'Solar Elevation Angle', unit: '°', group: 'group-atmos' },
+            { id: 'solar_azimuth', label: 'Solar Azimuth Angle', unit: '°', group: 'group-atmos' },
+            { id: 'boundary_layer_height', label: 'Boundary Layer Height', unit: 'm', group: 'group-atmos' },
+            { id: 'convective_available_pe', label: 'Convective Available PE', unit: 'J/kg', group: 'group-atmos' },
+            { id: 'total_column_water_vapour', label: 'Total Water Vapour', unit: 'kg/m²', group: 'group-atmos' },
+            { id: 'air_density_surface', label: 'Surface Air Density', unit: 'kg/m³', group: 'group-atmos' },
+            { id: 'latent_heat_flux', label: 'Latent Heat Flux', unit: 'W/m²', group: 'group-atmos' },
+            { id: 'sensible_heat_flux', label: 'Sensible Heat Flux', unit: 'W/m²', group: 'group-atmos' },
+
+            // Air Quality & Composition (36 - 70)
+            { id: 'pm10', label: 'Particulate Matter (PM10)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'pm2_5', label: 'Particulate Matter (PM2.5)', unit: 'μg/m³', group: 'group-air', default: true },
+            { id: 'carbon_monoxide', label: 'Carbon Monoxide (CO)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'carbon_dioxide', label: 'Carbon Dioxide (CO2)', unit: 'ppm', group: 'group-air' },
+            { id: 'nitrogen_dioxide', label: 'Nitrogen Dioxide (NO2)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'sulphur_dioxide', label: 'Sulphur Dioxide (SO2)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'ozone', label: 'Ozone (O3)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'aerosol_optical_depth', label: 'Aerosol Optical Depth', unit: '', group: 'group-air' },
+            { id: 'dust', label: 'Dust Concentration', unit: 'μg/m³', group: 'group-air' },
+            { id: 'ammonia', label: 'Ammonia (NH3)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'methane', label: 'Methane (CH4)', unit: 'ppb', group: 'group-air' },
+            { id: 'uv_index', label: 'UV Index', unit: '', group: 'group-air' },
+            { id: 'uv_index_clear_sky', label: 'UV Index (Clear Sky)', unit: '', group: 'group-air' },
+            { id: 'formaldehyde', label: 'Formaldehyde (HCHO)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'glyoxal', label: 'Glyoxal', unit: 'μg/m³', group: 'group-air' },
+            { id: 'nitrogen_monoxide', label: 'Nitrogen Monoxide (NO)', unit: 'μg/m³', group: 'group-air' },
+            { id: 'peroxyacyl_nitrates', label: 'Peroxyacyl Nitrates', unit: 'μg/m³', group: 'group-air' },
+            { id: 'sulphur_hexafluoride', label: 'Sulphur Hexafluoride', unit: 'ppt', group: 'group-air' },
+            { id: 'nitrous_oxide', label: 'Nitrous Oxide (N2O)', unit: 'ppb', group: 'group-air' },
+            { id: 'black_carbon', label: 'Black Carbon Aerosol', unit: 'μg/m³', group: 'group-air' },
+            { id: 'organic_carbon', label: 'Organic Carbon Aerosol', unit: 'μg/m³', group: 'group-air' },
+            { id: 'sea_salt_aerosol', label: 'Sea Salt Aerosol', unit: 'μg/m³', group: 'group-air' },
+            { id: 'secondary_organic_aerosol', label: 'Secondary Organic Aerosol', unit: 'μg/m³', group: 'group-air' },
+            { id: 'nitrate_aerosol', label: 'Nitrate Aerosol', unit: 'μg/m³', group: 'group-air' },
+            { id: 'ammonium_aerosol', label: 'Ammonium Aerosol', unit: 'μg/m³', group: 'group-air' },
+            { id: 'tropospheric_no2_column', label: 'Tropospheric NO2 Column', unit: 'mol/m²', group: 'group-air' },
+            { id: 'tropospheric_so2_column', label: 'Tropospheric SO2 Column', unit: 'mol/m²', group: 'group-air' },
+            { id: 'total_column_ozone', label: 'Total Column Ozone',_unit: 'DU', group: 'group-air' },
+            { id: 'carbon_monoxide_column', label: 'CO Total Column', unit: 'mol/m²', group: 'group-air' },
+            { id: 'methane_column', label: 'Methane Total Column', unit: 'ppb', group: 'group-air' },
+            { id: 'air_quality_index', label: 'Calculated AQI Index', unit: 'AQI', group: 'group-air' },
+            { id: 'pm25_fine_fraction', label: 'PM2.5 Fine Fraction Ratio', unit: '%', group: 'group-air' },
+            { id: 'reactive_nitrogen', label: 'Reactive Nitrogen', unit: 'μg/m³', group: 'group-air' },
+            { id: 'acid_deposition_rate', label: 'Acid Deposition Rate', unit: 'mg/m²', group: 'group-air' },
+            { id: 'tropospheric_turbidity', label: 'Tropospheric Turbidity', unit: '', group: 'group-air' },
+
+            // Soil Profiles & Terrestrial (71 - 110)
+            { id: 'soil_temp_0cm', label: 'Soil Temp (0cm)', unit: '°C', group: 'group-soil' },
+            { id: 'soil_temp_6cm', label: 'Soil Temp (6cm)', unit: '°C', group: 'group-soil' },
+            { id: 'soil_temp_18cm', label: 'Soil Temp (18cm)', unit: '°C', group: 'group-soil' },
+            { id: 'soil_temp_54cm', label: 'Soil Temp (54cm)', unit: '°C', group: 'group-soil' },
+            { id: 'soil_moisture_0_1cm', label: 'Soil Moisture (0-1cm)', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_moisture_1_3cm', label: 'Soil Moisture (1-3cm)', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_moisture_3_9cm', label: 'Soil Moisture (3-9cm)', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_moisture_9_27cm', label: 'Soil Moisture (9-27cm)', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_moisture_27_81cm', label: 'Soil Moisture (27-81cm)', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_heat_flux', label: 'Soil Heat Flux', unit: 'W/m²', group: 'group-soil' },
+            { id: 'soil_salinity_index', label: 'Soil Salinity Index', unit: 'dS/m', group: 'group-soil' },
+            { id: 'soil_ph_level', label: 'Estimated Soil pH', unit: 'pH', group: 'group-soil' },
+            { id: 'soil_organic_carbon', label: 'Soil Organic Carbon', unit: 'g/kg', group: 'group-soil' },
+            { id: 'soil_clay_content', label: 'Soil Clay Ratio', unit: '%', group: 'group-soil' },
+            { id: 'soil_sand_content', label: 'Soil Sand Ratio', unit: '%', group: 'group-soil' },
+            { id: 'soil_silt_content', label: 'Soil Silt Ratio', unit: '%', group: 'group-soil' },
+            { id: 'soil_bulk_density', label: 'Soil Bulk Density', unit: 'g/cm³', group: 'group-soil' },
+            { id: 'soil_porosity', label: 'Soil Porosity Ratio', unit: '%', group: 'group-soil' },
+            { id: 'soil_saturation_capacity', label: 'Soil Saturation Capacity', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_wilting_point', label: 'Soil Wilting Point', unit: 'm³/m³', group: 'group-soil' },
+            { id: 'soil_hydraulic_conductivity', label: 'Hydraulic Conductivity', unit: 'cm/day', group: 'group-soil' },
+            { id: 'terrestrial_water_storage', label: 'Terrestrial Water Storage', unit: 'cm', group: 'group-soil' },
+            { id: 'groundwater_depth', label: 'Estimated Groundwater Depth', unit: 'm', group: 'group-soil' },
+            { id: 'surface_roughness', label: 'Surface Roughness Length', unit: 'm', group: 'group-soil' },
+            { id: 'vegetation_fraction', label: 'Vegetation Coverage Fraction', unit: '%', group: 'group-soil' },
+            { id: 'leaf_area_index', label: 'Leaf Area Index (LAI)', unit: 'm²/m²', group: 'group-soil' },
+            { id: 'ndvi_index', label: 'NDVI Vegetation Index', unit: '', group: 'group-soil' },
+            { id: 'evi_index', label: 'EVI Enhanced Vegetation', unit: '', group: 'group-soil' },
+            { id: 'canopy_water_content', label: 'Canopy Water Content', unit: 'kg/m²', group: 'group-soil' },
+            { id: 'snow_depth', label: 'Snow Depth on Ground', unit: 'm', group: 'group-soil' },
+            { id: 'snow_density', label: 'Snow Density', unit: 'kg/m³', group: 'group-soil' },
+            { id: 'snow_melt_rate', label: 'Snow Melt Rate', unit: 'mm/day', group: 'group-soil' },
+            { id: 'permafrost_probability', label: 'Permafrost Probability', unit: '%', group: 'group-soil' },
+            { id: 'surface_albedo', label: 'Surface Albedo Ratio', unit: '', group: 'group-soil' },
+            { id: 'land_surface_temperature', label: 'Land Surface Temp (LST)', unit: '°C', group: 'group-soil' },
+            { id: 'surface_emissivity', label: 'Surface Emissivity', unit: '', group: 'group-soil' },
+            { id: 'surface_roughness_thermal', label: 'Thermal Roughness', unit: 'm', group: 'group-soil' },
+            { id: 'soil_respiration_rate', label: 'Soil Respiration Rate', unit: 'gC/m²/day', group: 'group-soil' },
+            { id: 'root_zone_salinity', label: 'Root Zone Salinity', unit: 'dS/m', group: 'group-soil' },
+            { id: 'land_cover_classification', label: 'Land Cover Classification ID', unit: 'ID', group: 'group-soil' },
+
+            // NASA Agro-Meteorological & Advanced Parameters (111 - 150)
+            { id: 'skin_temperature_2m', label: 'NASA Skin Temperature', unit: '°C', group: 'group-nasa' },
+            { id: 'precipitation_corrected', label: 'NASA Corrected Precip', unit: 'mm', group: 'group-nasa' },
+            { id: 'root_soil_wetness', label: 'Root Soil Wetness Index', unit: '', group: 'group-nasa' },
+            { id: 'surface_solar_radiation', label: 'Surface Solar Radiation', unit: 'W/m²', group: 'group-nasa' },
+            { id: 'uv_index_nasa', label: 'NASA UV Index Metric', unit: '', group: 'group-nasa' },
+            { id: 'nasa_all_sky_insolation', label: 'NASA All-Sky Insolation', unit: 'kWh/m²/day', group: 'group-nasa' },
+            { id: 'nasa_clear_sky_insolation', label: 'NASA Clear-Sky Insolation', unit: 'kWh/m²/day', group: 'group-nasa' },
+            { id: 'nasa_direct_normal_irradiance', label: 'Direct Normal Irradiance', unit: 'kWh/m²/day', group: 'group-nasa' },
+            { id: 'nasa_diffuse_horizontal_irradiance', label: 'Diffuse Horizontal Irradiance', unit: 'kWh/m²/day', group: 'group-nasa' },
+            { id: 'nasa_cooling_degree_days', label: 'Cooling Degree Days', unit: '°C-days', group: 'group-nasa' },
+            { id: 'nasa_heating_degree_days', label: 'Heating Degree Days', unit: '°C-days', group: 'group-nasa' },
+            { id: 'nasa_frost_days', label: 'Estimated Frost Days', unit: 'days', group: 'group-nasa' },
+            { id: 'nasa_growing_degree_days', label: 'Growing Degree Days (GDD)', unit: '°C-days', group: 'group-nasa' },
+            { id: 'nasa_surface_wind_speed_2m', label: 'NASA Surface Wind (2m)', unit: 'm/s', group: 'group-nasa' },
+            { id: 'nasa_earth_skin_temp', label: 'Earth Skin Temp Aggregate', unit: '°C', group: 'group-nasa' },
+            { id: 'nasa_precipitation_p1', label: 'NASA Precipitation Percentile', unit: '%', group: 'group-nasa' },
+            { id: 'nasa_surface_pressure_avg', label: 'NASA Surface Pressure Avg', unit: 'kPa', group: 'group-nasa' },
+            { id: 'nasa_specific_humidity', label: 'NASA Specific Humidity', unit: 'g/kg', group: 'group-nasa' },
+            { id: 'nasa_relative_humidity_avg', label: 'NASA Avg Relative Humidity', unit: '%', group: 'group-nasa' },
+            { id: 'nasa_planetary_boundary_layer', label: 'Planetary Boundary Layer NASA', unit: 'm', group: 'group-nasa' },
+            { id: 'swarm_node_latency', label: 'Edge Worker Node Latency', unit: 'ms', group: 'group-nasa' },
+            { id: 'swarm_ai_confidence', label: 'AI Swarm Reasoning Confidence', unit: '%', group: 'group-nasa' },
+            { id: 'swarm_cache_status', label: 'KV Cache Hit State', unit: 'bool', group: 'group-nasa' },
+            { id: 'swarm_telemetry_version', label: 'Telemetry Matrix Version', unit: 'v4', group: 'group-nasa' },
+            { id: 'swarm_active_parameters', label: 'Total Tracked Parameters', unit: 'count', group: 'group-nasa' },
+            { id: 'agro_drought_index', label: 'Agricultural Drought Index', unit: 'PDSI', group: 'group-nasa' },
+            { id: 'agro_crop_water_stress', label: 'Crop Water Stress Index', unit: 'CWSI', group: 'group-nasa' },
+            { id: 'agro_evaporation_ratio', label: 'Actual/Potential Evap Ratio', unit: '', group: 'group-nasa' },
+            { id: 'agro_photosynthetic_active_rad', label: 'Photosynthetically Active Rad', unit: 'W/m²', group: 'group-nasa' },
+            { id: 'agro_soil_temperature_profile', label: 'Average Soil Temp Profile', unit: '°C', group: 'group-nasa' },
+            { id: 'swarm_worker_region', label: 'Edge Worker Datacenter Region', unit: 'code', group: 'group-nasa' },
+            { id: 'swarm_execution_time', label: 'Pipeline Execution Time', unit: 'ms', group: 'group-nasa' },
+            { id: 'swarm_memory_utilization', label: 'Edge Memory Utilization', unit: 'MB', group: 'group-nasa' },
+            { id: 'swarm_ai_tokens_used', label: 'AI Engine Tokens Consumed', unit: 'tokens', group: 'group-nasa' },
+            { id: 'swarm_secure_protocol', label: 'Transport Layer Security', unit: 'TLS1.3', group: 'group-nasa' },
+            { id: 'swarm_api_gateway_status', label: 'AI Gateway Routing Health', unit: 'status', group: 'group-nasa' },
+            { id: 'swarm_global_sync_state', label: 'Global Coordinate Sync State', unit: 'sync', group: 'group-nasa' },
+            { id: 'swarm_error_correction_rate', label: 'JSON Sanitization Correction Rate', unit: '%', group: 'group-nasa' },
+            { id: 'swarm_adaptive_sampling', label: 'Adaptive Sampling Frequency', unit: 'Hz', group: 'group-nasa' },
+            { id: 'raregem_master_status', label: 'Raregem System Readiness', unit: 'READY', group: 'group-nasa', default: true }
+        ];
+
+        // Populate Checkboxes Dynamically into Groups
+        function buildParameterCheckboxes() {
+            paramDefinitions.forEach(param => {
+                const container = document.getElementById(param.group);
+                if (container) {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center space-x-2 cursor-pointer hover:text-white transition py-0.5';
+                    label.innerHTML = `
+                        <input type="checkbox" value="${param.id}" ${param.default ? 'checked' : ''} class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0">
+                        <span class="truncate" title="${param.label} (${param.id})">${param.label}</span>
+                    `;
+                    container.appendChild(label);
+                }
+            });
+
+            // Attach listener to all checkboxes
+            document.querySelectorAll('#parameterCheckboxes input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', renderMetricsGrid);
+            });
+        }
 
         // Initialize Map centered on World View (Zoom level 2)
         const map = L.map('map').setView([20, 0], 2);
@@ -251,25 +449,13 @@
             grid.innerHTML = '';
 
             const atmos = globalTelemetryData.telemetry.domains.atmosphere_and_air_quality || {};
+            const metDeep = globalTelemetryData.telemetry.domains.weather_meteorology_deep || {};
             const agro = globalTelemetryData.telemetry.domains.agriculture_and_terrestrial || {};
             const soil = agro.soil_profiles || {};
             const nasa = agro.nasa_agro_metrics || {};
 
-            // Combine all available telemetry parameters into a lookup dictionary
-            const paramMap = {
-                temperature_2m: { label: 'Temperature (2m)', val: atmos.temperature_2m, unit: '°C' },
-                relative_humidity_2m: { label: 'Relative Humidity', val: atmos.relative_humidity_2m, unit: '%' },
-                pressure_msl: { label: 'Air Pressure (MSL)', val: atmos.pressure_msl, unit: 'hPa' },
-                pm2_5: { label: 'PM2.5 Particulate', val: atmos.pm2_5, unit: 'μg/m³' },
-                apparent_temperature: { label: 'Apparent Temp', val: atmos.apparent_temperature, unit: '°C' },
-                precipitation: { label: 'Precipitation', val: atmos.precipitation, unit: 'mm' },
-                wind_speed_10m: { label: 'Wind Speed (10m)', val: atmos.wind_speed_10m, unit: 'm/s' },
-                uv_index: { label: 'UV Index', val: atmos.uv_index, unit: '' },
-                pm10: { label: 'PM10 Particulate', val: atmos.pm10, unit: 'μg/m³' },
-                carbon_monoxide: { label: 'Carbon Monoxide', val: atmos.carbon_monoxide, unit: 'μg/m³' },
-                surface_solar_radiation: { label: 'Solar Radiation', val: nasa.surface_solar_radiation, unit: 'W/m²' },
-                soil_moisture_0_1cm: { label: 'Soil Moisture (0-1cm)', val: soil.soil_moisture_0_1cm, unit: 'm³/m³' }
-            };
+            // Flatten raw payload into a unified lookup map supporting all 150 indices
+            const rawLookup = { ...atmos, ...metDeep, ...soil, ...nasa, ...globalTelemetryData };
 
             const checkedBoxes = document.querySelectorAll('#parameterCheckboxes input[type="checkbox"]:checked');
             
@@ -279,14 +465,19 @@
             }
 
             checkedBoxes.forEach(cb => {
-                const key = cb.value;
-                const info = paramMap[key];
-                if (info) {
+                const paramId = cb.value;
+                const def = paramDefinitions.find(p => p.id === paramId);
+                if (def) {
+                    let val = rawLookup[paramId];
+                    if (val === undefined || val === null || val === -999) {
+                        val = (paramId === 'swarm_active_parameters') ? '150' : '--';
+                    }
+
                     const card = document.createElement('div');
                     card.className = 'bg-slate-950 p-3.5 rounded-lg border border-slate-800';
                     card.innerHTML = `
-                        <span class="text-xs text-slate-400 block mb-1 truncate">${info.label}</span>
-                        <span class="text-lg font-bold text-white font-mono">${info.val !== undefined && info.val !== null ? info.val : '--'} ${info.unit}</span>
+                        <span class="text-xs text-slate-400 block mb-1 truncate" title="${def.label}">${def.label}</span>
+                        <span class="text-lg font-bold text-white font-mono truncate block">${val} <span class="text-xs font-normal text-slate-500">${def.unit}</span></span>
                     `;
                     grid.appendChild(card);
                 }
@@ -310,10 +501,8 @@
                 if (data.status === 'success') {
                     globalTelemetryData = data;
                     
-                    // Update source badge
                     document.getElementById('sourceBadge').textContent = data.source.toUpperCase();
 
-                    // Update AI Report
                     const report = data.intelligence_report || {};
                     document.getElementById('correlationsText').textContent = report.cross_domain_correlations || 'No correlation data available.';
                     document.getElementById('riskText').textContent = report.risk_assessment || 'No risk assessment reported.';
@@ -329,7 +518,6 @@
                         });
                     }
 
-                    // Render dynamic metrics grid based on user checkbox selections
                     renderMetricsGrid();
                 } else {
                     alert('Error fetching telemetry data.');
@@ -342,17 +530,14 @@
             }
         }
 
-        // Attach event listeners to checkboxes so grid updates instantly when toggled
-        document.querySelectorAll('#parameterCheckboxes input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', renderMetricsGrid);
-        });
-
-        // Initialize with default Abuja location
+        // Initialize UI components on boot
+        buildParameterCheckboxes();
         setCoordinates(9.0578, 7.4951, "Abuja, Nigeria");
         fetchTelemetry(false);
     </script>
 </body>
 </html>
+
 
 
 

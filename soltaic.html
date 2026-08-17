@@ -12,7 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        #map { height: 400px; border-radius: 0.75rem; }
+        #map { height: 320px; border-radius: 0.75rem; }
+        /* Custom scrollbar for parameter selector */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
@@ -21,7 +26,7 @@
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img src="https://www.chyke.online/connectgold_2.png" alt="Raregem Logo" class="h-10 w-10 object-contain rounded-lg bg-slate-800 p-1">
+                <img src="https://www.chyke.com/connectgold_2.png" alt="Raregem Logo" class="h-10 w-10 object-contain rounded-lg bg-slate-800 p-1">
                 <div>
                     <h1 class="font-bold text-lg tracking-tight text-white">Raregem Technology</h1>
                     <p class="text-xs text-slate-400">Global Real-Time Environmental Intelligence</p>
@@ -42,15 +47,15 @@
         <div class="space-y-6 lg:col-span-1">
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-xl">
                 <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Global Location Selector</h2>
-                <p class="text-xs text-slate-400 mb-4">Click anywhere on the world map or search/type a city name to query 150+ real-time environmental conditions.</p>
+                <p class="text-xs text-slate-400 mb-4">Click anywhere on the world map or search a location name.</p>
                 
                 <div id="map" class="mb-4 border border-slate-700"></div>
 
                 <div class="mb-4 relative">
-                    <label class="block text-xs text-slate-400 mb-1">Target Location Name or Coordinates</label>
+                    <label class="block text-xs text-slate-400 mb-1">Target Location Name</label>
                     <div class="flex space-x-2">
                         <input type="text" id="locationInput" value="Abuja, Nigeria" placeholder="e.g. London, Tokyo, Abuja" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
-                        <button onclick="searchLocation()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-sm transition border border-slate-700" title="Geocode Location">Find</button>
+                        <button onclick="searchLocation()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-sm transition border border-slate-700">Find</button>
                     </div>
                 </div>
 
@@ -68,22 +73,27 @@
                 </div>
             </div>
 
-            <!-- Quick Stats Summary Box -->
+            <!-- Parameter Filter Panel -->
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-xl">
-                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">System Metrics</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between border-b border-slate-800 pb-2">
-                        <span class="text-slate-400">Data Source Pipeline</span>
-                        <span id="sourceBadge" class="text-emerald-400 font-mono">--</span>
-                    </div>
-                    <div class="flex justify-between border-b border-slate-800 pb-2">
-                        <span class="text-slate-400">Parameters Tracked</span>
-                        <span class="text-white font-mono">150+ Conditions</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-slate-400">Backend Infrastructure</span>
-                        <span class="text-white font-mono">Cloudflare Edge</span>
-                    </div>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Parameter Matrix Selector</h3>
+                    <button onclick="toggleAllParams(true)" class="text-xs text-emerald-400 hover:underline">Select All</button>
+                </div>
+                <p class="text-xs text-slate-400 mb-3">Choose which parameters to display in your active snapshot grid:</p>
+                
+                <div class="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs text-slate-300" id="parameterCheckboxes">
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="temperature_2m" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Temperature (2m)</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="relative_humidity_2m" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Relative Humidity</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="pressure_msl" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Air Pressure (MSL)</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="pm2_5" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Particulate Matter (PM2.5)</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="apparent_temperature" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Apparent Temperature</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="precipitation" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Precipitation</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="wind_speed_10m" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Wind Speed (10m)</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="uv_index" checked class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>UV Index</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="pm10" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Particulate Matter (PM10)</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="carbon_monoxide" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Carbon Monoxide</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="surface_solar_radiation" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Surface Solar Radiation</span></label>
+                    <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" value="soil_moisture_0_1cm" class="rounded bg-slate-950 border-slate-700 text-emerald-600 focus:ring-0"> <span>Soil Moisture (0-1cm)</span></label>
                 </div>
             </div>
         </div>
@@ -101,6 +111,17 @@
             <!-- Intelligence Report Box -->
             <div id="resultsContainer" class="space-y-6">
                 
+                <!-- Live Parameter Matrix Grid -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Selected Telemetry Parameters Matrix</h3>
+                        <span id="sourceBadge" class="text-emerald-400 font-mono text-xs bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">--</span>
+                    </div>
+                    <div id="metricsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <!-- Dynamically populated parameter cards -->
+                    </div>
+                </div>
+
                 <!-- AI Intelligence Report Card -->
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -135,29 +156,6 @@
                     </div>
                 </div>
 
-                <!-- Live Parameter Matrix Grid -->
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-xl">
-                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Telemetry Parameter Matrix Snapshot</h3>
-                    <div id="metricsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                            <span class="text-xs text-slate-400 block">Temperature (2m)</span>
-                            <span id="metricTemp" class="text-lg font-bold text-white font-mono">-- °C</span>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                            <span class="text-xs text-slate-400 block">Relative Humidity</span>
-                            <span id="metricHumidity" class="text-lg font-bold text-white font-mono">-- %</span>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                            <span class="text-xs text-slate-400 block">Air Pressure (MSL)</span>
-                            <span id="metricPressure" class="text-lg font-bold text-white font-mono">-- hPa</span>
-                        </div>
-                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                            <span class="text-xs text-slate-400 block">Particulate Matter (PM2.5)</span>
-                            <span id="metricPm25" class="text-lg font-bold text-white font-mono">-- µg/m³</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
@@ -165,13 +163,14 @@
 
     <!-- Footer -->
     <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>&copy; 2026 Raregem Technology</p>
+        <p>&copy; 2026 Raregem Technology. Built with Cloudflare Edge Workers & Workers AI.</p>
     </footer>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const WORKER_URL = "https://bitter-paper-31ae.trustconnect713.workers.dev/";
+        let globalTelemetryData = null;
 
         // Initialize Map centered on World View (Zoom level 2)
         const map = L.map('map').setView([20, 0], 2);
@@ -240,6 +239,60 @@
             }
         });
 
+        function toggleAllParams(select) {
+            const checkboxes = document.querySelectorAll('#parameterCheckboxes input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = select);
+            if (globalTelemetryData) renderMetricsGrid();
+        }
+
+        function renderMetricsGrid() {
+            if (!globalTelemetryData) return;
+            const grid = document.getElementById('metricsGrid');
+            grid.innerHTML = '';
+
+            const atmos = globalTelemetryData.telemetry.domains.atmosphere_and_air_quality || {};
+            const agro = globalTelemetryData.telemetry.domains.agriculture_and_terrestrial || {};
+            const soil = agro.soil_profiles || {};
+            const nasa = agro.nasa_agro_metrics || {};
+
+            // Combine all available telemetry parameters into a lookup dictionary
+            const paramMap = {
+                temperature_2m: { label: 'Temperature (2m)', val: atmos.temperature_2m, unit: '°C' },
+                relative_humidity_2m: { label: 'Relative Humidity', val: atmos.relative_humidity_2m, unit: '%' },
+                pressure_msl: { label: 'Air Pressure (MSL)', val: atmos.pressure_msl, unit: 'hPa' },
+                pm2_5: { label: 'PM2.5 Particulate', val: atmos.pm2_5, unit: 'μg/m³' },
+                apparent_temperature: { label: 'Apparent Temp', val: atmos.apparent_temperature, unit: '°C' },
+                precipitation: { label: 'Precipitation', val: atmos.precipitation, unit: 'mm' },
+                wind_speed_10m: { label: 'Wind Speed (10m)', val: atmos.wind_speed_10m, unit: 'm/s' },
+                uv_index: { label: 'UV Index', val: atmos.uv_index, unit: '' },
+                pm10: { label: 'PM10 Particulate', val: atmos.pm10, unit: 'μg/m³' },
+                carbon_monoxide: { label: 'Carbon Monoxide', val: atmos.carbon_monoxide, unit: 'μg/m³' },
+                surface_solar_radiation: { label: 'Solar Radiation', val: nasa.surface_solar_radiation, unit: 'W/m²' },
+                soil_moisture_0_1cm: { label: 'Soil Moisture (0-1cm)', val: soil.soil_moisture_0_1cm, unit: 'm³/m³' }
+            };
+
+            const checkedBoxes = document.querySelectorAll('#parameterCheckboxes input[type="checkbox"]:checked');
+            
+            if (checkedBoxes.length === 0) {
+                grid.innerHTML = '<p class="text-xs text-slate-500 col-span-full text-center py-4">No parameters selected from the matrix selector.</p>';
+                return;
+            }
+
+            checkedBoxes.forEach(cb => {
+                const key = cb.value;
+                const info = paramMap[key];
+                if (info) {
+                    const card = document.createElement('div');
+                    card.className = 'bg-slate-950 p-3.5 rounded-lg border border-slate-800';
+                    card.innerHTML = `
+                        <span class="text-xs text-slate-400 block mb-1 truncate">${info.label}</span>
+                        <span class="text-lg font-bold text-white font-mono">${info.val !== undefined && info.val !== null ? info.val : '--'} ${info.unit}</span>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
+        }
+
         async function fetchTelemetry(forceFresh = false) {
             const lat = document.getElementById('latInput').value;
             const lon = document.getElementById('lonInput').value;
@@ -255,11 +308,13 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
+                    globalTelemetryData = data;
+                    
                     // Update source badge
                     document.getElementById('sourceBadge').textContent = data.source.toUpperCase();
 
                     // Update AI Report
-                    const report = data.intelligence_report;
+                    const report = data.intelligence_report || {};
                     document.getElementById('correlationsText').textContent = report.cross_domain_correlations || 'No correlation data available.';
                     document.getElementById('riskText').textContent = report.risk_assessment || 'No risk assessment reported.';
                     document.getElementById('forecastText').textContent = report.predictive_forecast || 'No forecast data available.';
@@ -274,12 +329,8 @@
                         });
                     }
 
-                    // Update Snapshot Metrics
-                    const atmos = data.telemetry.domains.atmosphere_and_air_quality;
-                    document.getElementById('metricTemp').textContent = `${atmos.temperature_2m ?? '--'} °C`;
-                    document.getElementById('metricHumidity').textContent = `${atmos.relative_humidity_2m ?? '--'} %`;
-                    document.getElementById('metricPressure').textContent = `${atmos.pressure_msl ?? '--'} hPa`;
-                    document.getElementById('metricPm25').textContent = `${atmos.pm2_5 ?? '--'} µg/m³`;
+                    // Render dynamic metrics grid based on user checkbox selections
+                    renderMetricsGrid();
                 } else {
                     alert('Error fetching telemetry data.');
                 }
@@ -291,12 +342,18 @@
             }
         }
 
+        // Attach event listeners to checkboxes so grid updates instantly when toggled
+        document.querySelectorAll('#parameterCheckboxes input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', renderMetricsGrid);
+        });
+
         // Initialize with default Abuja location
         setCoordinates(9.0578, 7.4951, "Abuja, Nigeria");
         fetchTelemetry(false);
     </script>
 </body>
 </html>
+
 
 
 

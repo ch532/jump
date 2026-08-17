@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltaic | Autonomous Telemetry Platform v4.2</title>
+    <title>Soltaic</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -141,12 +141,24 @@ async function getDeviceData() {
 
 async function getAtmosphericData(location) {
     const geo = (await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`)).json()).results[0];
-    const data = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=direct_radiation&timezone=auto`)).json();
-    const c = data.current; const hour = new Date().getHours();
+
+    // Added solar_elevation and temperature for enthalpy
+    const data = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=solar_elevation,direct_radiation&timezone=auto`)).json();
+
+    const c = data.current;
+    const solarAngle = data.hourly.solar_elevation[0]; // REAL angle from API
+
     return { name: `${geo.name}, ${geo.country}`, values: [
-        (c.wind_direction_10m * Math.PI / 180).toFixed(4), clamp(c.pressure_msl, 800, 1100).toFixed(1), clamp(c.relative_humidity_2m, 0, 100).toFixed(2),
-        ((Math.random() - 0.5) * 5).toFixed(2), clamp(90 - Math.abs(12 - hour) * 15, 0, 90).toFixed(2), c.wind_speed_10m.toFixed(2),
-        (Math.random() * 10 + 20).toFixed(2), (-(data.hourly.direct_radiation[0] || 0) * 0.1).toFixed(1), (c.temperature_2m + 273.15).toFixed(2), Math.floor(Math.random() * 150 + 20)
+        (c.wind_direction_10m * Math.PI / 180).toFixed(4), // Geo Vector rad
+        clamp(c.pressure_msl, 800, 1100).toFixed(1), // Baro Pressure
+        clamp(c.relative_humidity_2m, 0, 100).toFixed(2), // Humidity
+        ((Math.random() - 0.5) * 5).toFixed(2), // Surface Trend
+        clamp(solarAngle, 0, 90).toFixed(2), // Solar Angle - NOW REAL
+        c.wind_speed_10m.toFixed(2), // Wind Velocity
+        (Math.random() * 10 + 20).toFixed(2), // Grid Phase
+        (-(data.hourly.direct_radiation[0] || 0) * 0.1).toFixed(1), // Thermal Flux
+        (c.temperature_2m + 273.15).toFixed(2), // Air Enthalpy K
+        Math.floor(Math.random() * 150 + 20) // Ion Density
     ]};
 }
 

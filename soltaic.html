@@ -3,42 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltaic</title>
+    <title>Soltaic | Autonomous Telemetry Platform v4.2</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #0f172a; --card-bg: #1e293b; --accent-color: #38bdf8;
             --text-main: #f8fafc; --text-muted: #94a3b8; --border-color: #334155;
             --alert-color: #f87171; --ok-color: #4ade80; --warn-color: #fbbf24;
+            --anomaly-color: #a78bfa;
         }
         body { font-family: system-ui; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; }
-     .container { width: 100%; max-width: 1200px; }
+   .container { width: 100%; max-width: 1200px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; flex-wrap: wrap; gap: 15px; }
-        h1 { font-size: 1.5rem; margin: 0; color: var(--accent-color); }
-     .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+   .brand { display: flex; align-items: center; gap: 12px; }
+   .brand-logo { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: var(--card-bg); border: 1px solid var(--border-color); }
+        h1 { font-size: 1.5rem; margin: 0; color: var(--accent-color); letter-spacing: 0.05em; }
+   .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         input, button { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
         button { cursor: pointer; font-weight: 600; } button:hover { border-color: var(--accent-color); }
-     .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+   .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) {.grid { grid-template-columns: 1fr 1fr; } }
-     .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
+   .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
         h2 { font-size: 1.1rem; margin: 0 0 16px 0; color: var(--accent-color); }
-     .vector-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
-     .vector-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
-     .vector-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
-     .vector-value { font-size: 0.95rem; font-weight: 600; font-family: monospace; }
-     .unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
-     .status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
-     .status-bar.alert { color: var(--alert-color); font-weight: 700; }
-     .analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
-     .risk-high { color: var(--alert-color); font-weight: 700; }.risk-medium { color: var(--warn-color); font-weight: 700; }.risk-low { color: var(--ok-color); font-weight: 700; }
+   .vector-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+   .vector-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
+   .vector-item.anomaly { border-color: var(--anomaly-color); box-shadow: 0 0 10px rgba(167,139,250,0.4); }
+   .vector-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+   .vector-value { font-size: 0.95rem; font-weight: 600; font-family: monospace; }
+   .unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
+   .status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
+   .status-bar.alert { color: var(--alert-color); font-weight: 700; }
+   .analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
+   .risk-high { color: var(--alert-color); font-weight: 700; }.risk-medium { color: var(--warn-color); font-weight: 700; }.risk-low { color: var(--ok-color); font-weight: 700; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>SOLTAIC TELEMETRY <span style="color:var(--ok-color)">● LIVE</span></h1>
+            <div class="brand">
+                <img src="https://www.chyke.online/connectgold_2.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+                <h1>SOLTAIC TELEMETRY <span style="color:var(--ok-color)">● LIVE</span></h1>
+            </div>
             <div class="controls">
                 <input type="text" id="locationInput" value="Abuja">
+                <button onclick="toggleVoice()"><span id="voiceBtn">🔊 Voice ON</span></button>
                 <button onclick="exportCSV()">Export CSV</button>
                 <button onclick="fetchTelemetry(true)">Force Sync</button>
             </div>
@@ -46,15 +54,15 @@
 
         <div class="grid">
             <div class="card"><h2>In-Phone Runtime Entropy</h2><ul id="inPhoneList" class="vector-list"></ul></div>
-            <div class="card"><h2>Off-Phone Atmospheric</h2><ul id="offPhoneList" class="vector-list"></ul></div>
+            <div class="card"><h2>Off-Phone Atmospheric + Anomaly</h2><ul id="offPhoneList" class="vector-list"></ul></div>
 
             <div class="card" style="grid-column: 1 / -1;">
-                <h2>Engineering Analysis - Rule Based</h2>
+                <h2>Engineering Analysis + Anomaly Report</h2>
                 <div id="analysisBox" class="analysis-box">Initializing...</div>
             </div>
 
             <div class="card" style="grid-column: 1 / -1;">
-                <h2>History: Battery Temp + Pressure + CPU</h2>
+                <h2>History: Battery Temp + Pressure + Humidity</h2>
                 <canvas id="historyChart"></canvas>
             </div>
 
@@ -63,10 +71,12 @@
     </div>
 
 <script>
+// SAME JS AS v4.0 - Voice + Anomaly + CSV + Charts
 const REFRESH_MS = 10000;
-let history = { labels: [], batteryTemp: [], pressure: [], cpu: [] };
+let history = { labels: [], batteryTemp: [], pressure: [], humidity: [] };
 let csvData = [];
-let audioCtx;
+let voiceEnabled = true;
+let baseline = {};
 
 const inPhoneConfig = [
     { label: "Net Jitter", unit: "ms" }, { label: "Heap Alloc", unit: "MB" },
@@ -85,38 +95,39 @@ const offPhoneConfig = [
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
-// CHART
 const ctx = document.getElementById('historyChart').getContext('2d');
 const historyChart = new Chart(ctx, {
     type: 'line',
     data: { labels: [], datasets: [
         { label: 'Battery Temp °C', data: [], borderColor: '#f87171', tension: 0.3 },
         { label: 'Pressure hPa', data: [], borderColor: '#38bdf8', tension: 0.3 },
-        { label: 'CPU %', data: [], borderColor: '#4ade80', tension: 0.3 }
+        { label: 'Humidity %', data: [], borderColor: '#a78bfa', tension: 0.3 }
     ]},
     options: { responsive: true, scales: { y: { beginAtZero: false } } }
 });
 
-// SOUND ALERT
-function playAlert() {
-    if(!audioCtx) audioCtx = new AudioContext();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.frequency.value = 900; gain.gain.value = 0.3;
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+function speak(text) {
+    if(!voiceEnabled ||!'speechSynthesis' in window) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1.1; utter.pitch = 1;
+    window.speechSynthesis.speak(utter);
+}
+function toggleVoice() {
+    voiceEnabled =!voiceEnabled;
+    document.getElementById('voiceBtn').innerText = voiceEnabled? "🔊 Voice ON" : "🔇 Voice OFF";
 }
 
-// FETCH
 async function fetchTelemetry(manual = false) {
     const location = document.getElementById('locationInput').value.trim() || "Abuja";
     try {
         const [inPhone, atmospheric] = await Promise.all([getDeviceData(), getAtmosphericData(location)]);
-        renderList('inPhoneList', inPhone, inPhoneConfig);
-        renderList('offPhoneList', atmospheric.values, offPhoneConfig);
-        updateHistory(inPhone[4], atmospheric.values[1], inPhone[2]);
+        const anomalies = detectAnomalies(atmospheric.values);
+        renderList('inPhoneList', inPhone, inPhoneConfig, []);
+        renderList('offPhoneList', atmospheric.values, offPhoneConfig, anomalies);
+        updateHistory(inPhone[4], atmospheric.values[1], atmospheric.values[2]);
         csvData.push({ timestamp: new Date().toISOString(), location,...Object.fromEntries(inPhoneConfig.map((c,i)=>[c.label, inPhone[i]])),...Object.fromEntries(offPhoneConfig.map((c,i)=>[c.label, atmospheric.values[i]])) });
-        runEngineeringAnalysis(inPhone, atmospheric.values);
+        runEngineeringAnalysis(inPhone, atmospheric.values, anomalies);
         document.getElementById('statusBar').innerText = `Status: Synced ${atmospheric.name} at ${new Date().toLocaleTimeString()}`;
     } catch (err) { document.getElementById('statusBar').innerText = `Status: Error - ${err.message}`; }
 }
@@ -139,49 +150,61 @@ async function getAtmosphericData(location) {
     ]};
 }
 
-function renderList(containerId, values, config) {
+function renderList(containerId, values, config, anomalies) {
     document.getElementById(containerId).innerHTML = values.map((val, i) => `
-        <li class="vector-item"><span class="vector-label">${config[i].label}</span>
-        <span class="vector-value">${val}<span class="unit">${config[i].unit}</span></span></li>`).join('');
+        <li class="vector-item ${anomalies.includes(i)? 'anomaly' : ''}">
+            <span class="vector-label">${config[i].label}</span>
+            <span class="vector-value">${val}<span class="unit">${config[i].unit}</span></span>
+        </li>`).join('');
 }
 
-function updateHistory(temp, pressure, cpu) {
+function updateHistory(temp, pressure, humidity) {
     const time = new Date().toLocaleTimeString();
-    history.labels.push(time); history.batteryTemp.push(temp); history.pressure.push(pressure); history.cpu.push(cpu);
-    if(history.labels.length > 20) { history.labels.shift(); history.batteryTemp.shift(); history.pressure.shift(); history.cpu.shift(); }
+    history.labels.push(time); history.batteryTemp.push(temp); history.pressure.push(pressure); history.humidity.push(humidity);
+    if(history.labels.length > 20) { history.labels.shift(); history.batteryTemp.shift(); history.pressure.shift(); history.humidity.shift(); }
     historyChart.data.labels = history.labels;
     historyChart.data.datasets[0].data = history.batteryTemp;
     historyChart.data.datasets[1].data = history.pressure;
-    historyChart.data.datasets[2].data = history.cpu;
+    historyChart.data.datasets[2].data = history.humidity;
     historyChart.update();
 }
 
-// RULE-BASED ENGINEERING ANALYSIS - 100% ACCURATE
-function runEngineeringAnalysis(inPhone, offPhone) {
+function detectAnomalies(offPhone) {
+    const indices = [1, 2, 5, 7];
+    let anomalies = [];
+    indices.forEach(i => {
+        const val = parseFloat(offPhone[i]);
+        if(!baseline[i]) baseline[i] = { vals: [] };
+        baseline[i].vals.push(val);
+        if(baseline[i].vals.length > 30) baseline[i].vals.shift();
+        if(baseline[i].vals.length > 10) {
+            const mean = baseline[i].vals.reduce((a,b)=>a+b)/baseline[i].vals.length;
+            const std = Math.sqrt(baseline[i].vals.map(x=>Math.pow(x-mean,2)).reduce((a,b)=>a+b)/baseline[i].vals.length);
+            if(Math.abs(val - mean) > 2.5 * std) anomalies.push(i);
+        }
+    });
+    return anomalies;
+}
+
+function runEngineeringAnalysis(inPhone, offPhone, anomalies) {
     const batteryTemp = parseFloat(inPhone[4]); const voltage = parseFloat(inPhone[8]); const cpu = parseFloat(inPhone[2]);
     const humidity = parseFloat(offPhone[2]); const pressure = parseFloat(offPhone[1]); const wind = parseFloat(offPhone[5]);
-
-    let risks = []; let recommendations = [];
-
-    // HARD RULES
-    if(batteryTemp > 55) { risks.push("Battery Overheat"); recommendations.push("Reduce CPU load. Stop charging."); }
-    if(voltage < 3.2) { risks.push("Critical Low Voltage"); recommendations.push("Connect charger immediately."); }
-    if(cpu > 85) { risks.push("High CPU Load"); recommendations.push("Close background apps."); }
-    if(humidity > 90) { risks.push("Extreme Humidity"); recommendations.push("Risk of condensation on hardware."); }
-    if(pressure < 850) { risks.push("Low Atmospheric Pressure"); recommendations.push("Possible storm/low altitude."); }
-    if(wind > 15) { risks.push("High Wind"); recommendations.push("Secure outdoor equipment."); }
-
+    let risks = []; let voiceMsgs = [];
+    if(batteryTemp > 55) { risks.push("Battery Overheat"); voiceMsgs.push("Warning: Battery Overheat"); }
+    if(voltage < 3.2) { risks.push("Critical Low Voltage"); voiceMsgs.push("Alert: Critical Low Voltage"); }
+    if(cpu > 85) { risks.push("High CPU Load"); voiceMsgs.push("Warning: High CPU Load"); }
+    if(humidity > 90) { risks.push("Extreme Humidity"); voiceMsgs.push("Warning: Extreme Humidity Detected"); }
+    if(pressure < 850) { risks.push("Low Atmospheric Pressure"); voiceMsgs.push("Alert: Low Pressure System"); }
+    if(wind > 15) { risks.push("High Wind"); voiceMsgs.push("Warning: High Wind Velocity"); }
+    anomalies.forEach(i => { const label = offPhoneConfig[i].label; risks.push(`Anomaly: ${label}`); voiceMsgs.push(`Anomaly detected: ${label}`); });
     const riskLevel = risks.length > 1? "HIGH" : risks.length === 1? "MEDIUM" : "LOW";
-    if(riskLevel!== "LOW") playAlert();
-
+    if(riskLevel!== "LOW") speak(voiceMsgs.join(". "));
     let html = `Risk Level: <span class="risk-${riskLevel.toLowerCase()}">${riskLevel}</span><br><br>`;
-    html += risks.length > 0? `<b>Detected:</b> ${risks.join(', ')}<br>` : `<b>Status:</b> All systems nominal<br>`;
-    html += recommendations.length > 0? `<b>Action:</b> ${recommendations.join(' ')}` : `<b>Action:</b> Continue monitoring`;
-
+    html += risks.length > 0? `<b>Detected:</b> ${risks.join(', ')}` : `<b>Status:</b> All systems nominal`;
+    if(anomalies.length > 0) html += `<br><b>Anomalies:</b> Off-phone data deviating from 5min baseline`;
     document.getElementById('analysisBox').innerHTML = html;
 }
 
-// CSV EXPORT
 function exportCSV() {
     if(csvData.length === 0) return alert("No data yet");
     const headers = Object.keys(csvData[0]).join(",");

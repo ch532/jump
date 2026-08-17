@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltaic</title>
+    <title>Autonomous Telemetry Platform v4.6</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -13,28 +13,27 @@
             --anomaly-color: #a78bfa;
         }
         body { font-family: system-ui; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; }
-  .container { width: 100%; max-width: 1200px; }
+.container { width: 100%; max-width: 1200px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; flex-wrap: wrap; gap: 15px; }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-logo { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: var(--card-bg); border: 1px solid var(--border-color); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: var(--card-bg); border: 1px solid var(--border-color); }
         h1 { font-size: 1.5rem; margin: 0; color: var(--accent-color); letter-spacing: 0.05em; }
-  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         input, button { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
         button { cursor: pointer; font-weight: 600; } button:hover { border-color: var(--accent-color); }
-  .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+.grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) {.grid { grid-template-columns: 1fr 1fr; } }
-  .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
+.card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
         h2 { font-size: 1.1rem; margin: 0 0 16px 0; color: var(--accent-color); }
-  .vector-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
-  .vector-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
-  .vector-item.anomaly { border-color: var(--anomaly-color); box-shadow: 0 0 10px rgba(167,139,250,0.4); }
-  .vector-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
-  .vector-value { font-size: 0.95rem; font-weight: 600; font-family: monospace; }
-  .unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
-  .status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
-  .status-bar.alert { color: var(--alert-color); font-weight: 700; }
-  .analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
-  .risk-high { color: var(--alert-color); font-weight: 700; }.risk-medium { color: var(--warn-color); font-weight: 700; }.risk-low { color: var(--ok-color); font-weight: 700; }
+.vector-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+.vector-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
+.vector-item.anomaly { border-color: var(--anomaly-color); box-shadow: 0 0 10px rgba(167,139,250,0.4); }
+.vector-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+.vector-value { font-size: 0.95rem; font-weight: 600; font-family: monospace; }
+.unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
+.status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
+.analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
+.risk-high { color: var(--alert-color); font-weight: 700; }.risk-medium { color: var(--warn-color); font-weight: 700; }.risk-low { color: var(--ok-color); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -94,6 +93,7 @@ const offPhoneConfig = [
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
+// CHART: ONLY 3 DATASETS. NO SOLAR
 const ctx = document.getElementById('historyChart').getContext('2d');
 const historyChart = new Chart(ctx, {
     type: 'line',
@@ -102,7 +102,7 @@ const historyChart = new Chart(ctx, {
         { label: 'Pressure hPa', data: [], borderColor: '#38bdf8', tension: 0.3 },
         { label: 'Humidity %', data: [], borderColor: '#a78bfa', tension: 0.3 }
     ]},
-    options: { responsive: true, scales: { y: { beginAtZero: false } } }
+    options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8' } } }, scales: { y: { beginAtZero: false, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } } }
 });
 
 function speak(text) {
@@ -124,7 +124,7 @@ async function fetchTelemetry(manual = false) {
         const anomalies = detectAnomalies(atmospheric.values);
         renderList('inPhoneList', inPhone, inPhoneConfig, []);
         renderList('offPhoneList', atmospheric.values, offPhoneConfig, anomalies);
-        updateHistory(inPhone[4], atmospheric.values[1], atmospheric.values[2]);
+        updateHistory(inPhone[4], atmospheric.values[1], atmospheric.values[2]); // Still only 3
         csvData.push({ timestamp: new Date().toISOString(), location,...Object.fromEntries(inPhoneConfig.map((c,i)=>[c.label, inPhone[i]])),...Object.fromEntries(offPhoneConfig.map((c,i)=>[c.label, atmospheric.values[i]])) });
         runEngineeringAnalysis(inPhone, atmospheric.values, anomalies);
         document.getElementById('statusBar').innerText = `Status: Synced ${atmospheric.name} at ${new Date().toLocaleTimeString()}`;
@@ -138,24 +138,15 @@ async function getDeviceData() {
     return [(Math.random() * 0.8 + 1.0).toFixed(3), heap, (Math.random() * 4).toFixed(2), (Math.random() * 0.5 + 0.4).toFixed(3), batteryTemp.toFixed(1), (-70).toFixed(1), (Math.random() * 1.5).toFixed(2), (Math.random() * 2).toFixed(2), voltage, (Math.random() * 80 + 100).toFixed(0)];
 }
 
-// FIXED: REAL SOLAR ANGLE FROM API
 async function getAtmosphericData(location) {
     const geo = (await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`)).json()).results[0];
     const data = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=solar_elevation,direct_radiation&timezone=auto`)).json();
     const c = data.current;
-    const solarAngle = data.hourly.solar_elevation[0]; // REAL SUN POSITION
-
+    const solarAngle = data.hourly.solar_elevation[0];
     return { name: `${geo.name}, ${geo.country}`, values: [
-        (c.wind_direction_10m * Math.PI / 180).toFixed(4), // Geo Vector
-        clamp(c.pressure_msl, 800, 1100).toFixed(1), // Baro Pressure
-        clamp(c.relative_humidity_2m, 0, 100).toFixed(2), // Humidity
-        ((Math.random() - 0.5) * 5).toFixed(2), // Surface Trend
-        clamp(solarAngle, 0, 90).toFixed(2), // Solar Angle - NOW REAL
-        c.wind_speed_10m.toFixed(2), // Wind Velocity
-        (Math.random() * 10 + 20).toFixed(2), // Grid Phase
-        (-(data.hourly.direct_radiation[0] || 0) * 0.1).toFixed(1), // Thermal Flux
-        (c.temperature_2m + 273.15).toFixed(2), // Air Enthalpy
-        Math.floor(Math.random() * 150 + 20) // Ion Density
+        (c.wind_direction_10m * Math.PI / 180).toFixed(4), clamp(c.pressure_msl, 800, 1100).toFixed(1), clamp(c.relative_humidity_2m, 0, 100).toFixed(2),
+        ((Math.random() - 0.5) * 5).toFixed(2), clamp(solarAngle, 0, 90).toFixed(2), c.wind_speed_10m.toFixed(2), // Solar still tracked
+        (Math.random() * 10 + 20).toFixed(2), (-(data.hourly.direct_radiation[0] || 0) * 0.1).toFixed(1), (c.temperature_2m + 273.15).toFixed(2), Math.floor(Math.random() * 150 + 20)
     ]};
 }
 
@@ -179,7 +170,7 @@ function updateHistory(temp, pressure, humidity) {
 }
 
 function detectAnomalies(offPhone) {
-    const indices = [1, 2, 4, 5, 7]; // Added Solar Angle index 4
+    const indices = [1, 2, 4, 5, 7]; // Solar Angle index 4 still has anomaly detection
     let anomalies = [];
     indices.forEach(i => {
         const val = parseFloat(offPhone[i]);
@@ -221,7 +212,7 @@ function exportCSV() {
     const rows = csvData.map(r => Object.values(r).join(",")).join("\n");
     const blob = new Blob([headers + "\n" + rows], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `soltaic_${Date.now()}.csv`; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = `telemetry_${Date.now()}.csv`; a.click();
 }
 
 window.onload = () => { fetchTelemetry(true); setInterval(fetchTelemetry, REFRESH_MS); };

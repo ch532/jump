@@ -13,27 +13,27 @@
             --anomaly-color: #a78bfa;
         }
         body { font-family: system-ui; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; display: flex; justify-content: center; }
-.container { width: 100%; max-width: 1200px; }
+        .container { width: 100%; max-width: 1200px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; flex-wrap: wrap; gap: 15px; }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand-logo { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: var(--card-bg); border: 1px solid var(--border-color); }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-logo { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: var(--card-bg); border: 1px solid var(--border-color); }
         h1 { font-size: 1.5rem; margin: 0; color: var(--accent-color); letter-spacing: 0.05em; }
-.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         input, button { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
         button { cursor: pointer; font-weight: 600; } button:hover { border-color: var(--accent-color); }
-.grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) {.grid { grid-template-columns: 1fr 1fr; } }
-.card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
         h2 { font-size: 1.1rem; margin: 0 0 16px 0; color: var(--accent-color); }
-.vector-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
-.vector-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
-.vector-item.anomaly { border-color: var(--anomaly-color); box-shadow: 0 0 10px rgba(167,139,250,0.4); }
-.vector-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
-.vector-value { font-size: 0.95rem; font-weight: 600; font-family: monospace; }
-.unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
-.status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
-.analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
-.risk-high { color: var(--alert-color); font-weight: 700; }.risk-medium { color: var(--warn-color); font-weight: 700; }.risk-low { color: var(--ok-color); font-weight: 700; }
+        .vector-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+        .vector-item { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center; }
+        .vector-item.anomaly { border-color: var(--anomaly-color); box-shadow: 0 0 10px rgba(167,139,250,0.4); }
+        .vector-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .vector-value { font-size: 0.95rem; font-weight: 600; font-family: monospace; }
+        .unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
+        .status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
+        .analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
+        .risk-high { color: var(--alert-color); font-weight: 700; } .risk-medium { color: var(--warn-color); font-weight: 700; } .risk-low { color: var(--ok-color); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -76,14 +76,14 @@ let csvData = [];
 let voiceEnabled = true;
 let baseline = {};
 
-const Phone data = [
+const inPhoneConfig = [
     { label: "Net Jitter", unit: "ms" }, { label: "Heap Alloc", unit: "MB" },
     { label: "CPU Load", unit: "%" }, { label: "Thread Skew", unit: "ms" },
     { label: "Battery Temp", unit: "°C" }, { label: "Signal RSSI", unit: "dBm" },
     { label: "IO Latency", unit: "ms" }, { label: "Sensor Drift", unit: "rad" },
     { label: "Voltage Rail", unit: "V" }, { label: "Entropy Pool", unit: "bits" }
 ];
-const Environment data = [
+const offPhoneConfig = [
     { label: "Geo Vector", unit: "rad" }, { label: "Baro Pressure", unit: "hPa" },
     { label: "Rel Humidity", unit: "%" }, { label: "Surface Trend", unit: "hPa" },
     { label: "Solar Angle", unit: "deg" }, { label: "Wind Velocity", unit: "m/s" },
@@ -93,7 +93,6 @@ const Environment data = [
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
-// CHART: ONLY 3 DATASETS. NO SOLAR
 const ctx = document.getElementById('historyChart').getContext('2d');
 const historyChart = new Chart(ctx, {
     type: 'line',
@@ -106,15 +105,15 @@ const historyChart = new Chart(ctx, {
 });
 
 function speak(text) {
-    if(!voiceEnabled ||!'speechSynthesis' in window) return;
+    if(!voiceEnabled || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.rate = 1.1; utter.pitch = 1;
     window.speechSynthesis.speak(utter);
 }
 function toggleVoice() {
-    voiceEnabled =!voiceEnabled;
-    document.getElementById('voiceBtn').innerText = voiceEnabled? "🔊 Voice ON" : "🔇 Voice OFF";
+    voiceEnabled = !voiceEnabled;
+    document.getElementById('voiceBtn').innerText = voiceEnabled ? "🔊 Voice ON" : "🔇 Voice OFF";
 }
 
 async function fetchTelemetry(manual = false) {
@@ -124,35 +123,40 @@ async function fetchTelemetry(manual = false) {
         const anomalies = detectAnomalies(atmospheric.values);
         renderList('inPhoneList', inPhone, inPhoneConfig, []);
         renderList('offPhoneList', atmospheric.values, offPhoneConfig, anomalies);
-        updateHistory(inPhone[4], atmospheric.values[1], atmospheric.values[2]); // Still only 3
-        csvData.push({ timestamp: new Date().toISOString(), location,...Object.fromEntries(inPhoneConfig.map((c,i)=>[c.label, inPhone[i]])),...Object.fromEntries(offPhoneConfig.map((c,i)=>[c.label, atmospheric.values[i]])) });
+        updateHistory(inPhone[4], atmospheric.values[1], atmospheric.values[2]);
+        csvData.push({ timestamp: new Date().toISOString(), location, ...Object.fromEntries(inPhoneConfig.map((c,i)=>[c.label, inPhone[i]])), ...Object.fromEntries(offPhoneConfig.map((c,i)=>[c.label, atmospheric.values[i]])) });
         runEngineeringAnalysis(inPhone, atmospheric.values, anomalies);
         document.getElementById('statusBar').innerText = `Status: Synced ${atmospheric.name} at ${new Date().toLocaleTimeString()}`;
     } catch (err) { document.getElementById('statusBar').innerText = `Status: Error - ${err.message}`; }
 }
 
 async function getDeviceData() {
-    let batteryTemp = 38 + Math.random()*3; let voltage = 3.85;
+    let batteryTemp = 38 + Math.random() * 3; let voltage = 3.85;
     if (navigator.getBattery) { const b = await navigator.getBattery(); voltage = (3.2 + b.level * 1.0).toFixed(2); if(b.charging) batteryTemp += 8; }
-    let heap = performance.memory? (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) : "32.10";
+    let heap = performance.memory ? (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) : "32.10";
     return [(Math.random() * 0.8 + 1.0).toFixed(3), heap, (Math.random() * 4).toFixed(2), (Math.random() * 0.5 + 0.4).toFixed(3), batteryTemp.toFixed(1), (-70).toFixed(1), (Math.random() * 1.5).toFixed(2), (Math.random() * 2).toFixed(2), voltage, (Math.random() * 80 + 100).toFixed(0)];
 }
 
 async function getAtmosphericData(location) {
-    const geo = (await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`)).json()).results[0];
-    const data = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=solar_elevation,direct_radiation&timezone=auto`)).json();
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`);
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) throw new Error("Location not found");
+    const geo = geoData.results[0];
+    
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=solar_elevation,direct_radiation&timezone=auto`);
+    const data = await weatherRes.json();
     const c = data.current;
     const solarAngle = data.hourly.solar_elevation[0];
     return { name: `${geo.name}, ${geo.country}`, values: [
         (c.wind_direction_10m * Math.PI / 180).toFixed(4), clamp(c.pressure_msl, 800, 1100).toFixed(1), clamp(c.relative_humidity_2m, 0, 100).toFixed(2),
-        ((Math.random() - 0.5) * 5).toFixed(2), clamp(solarAngle, 0, 90).toFixed(2), c.wind_speed_10m.toFixed(2), // Solar still tracked
+        ((Math.random() - 0.5) * 5).toFixed(2), clamp(solarAngle, 0, 90).toFixed(2), c.wind_speed_10m.toFixed(2),
         (Math.random() * 10 + 20).toFixed(2), (-(data.hourly.direct_radiation[0] || 0) * 0.1).toFixed(1), (c.temperature_2m + 273.15).toFixed(2), Math.floor(Math.random() * 150 + 20)
     ]};
 }
 
 function renderList(containerId, values, config, anomalies) {
     document.getElementById(containerId).innerHTML = values.map((val, i) => `
-        <li class="vector-item ${anomalies.includes(i)? 'anomaly' : ''}">
+        <li class="vector-item ${anomalies.includes(i) ? 'anomaly' : ''}">
             <span class="vector-label">${config[i].label}</span>
             <span class="vector-value">${val}<span class="unit">${config[i].unit}</span></span>
         </li>`).join('');
@@ -170,7 +174,7 @@ function updateHistory(temp, pressure, humidity) {
 }
 
 function detectAnomalies(offPhone) {
-    const indices = [1, 2, 4, 5, 7]; // Solar Angle index 4 still has anomaly detection
+    const indices = [1, 2, 4, 5, 7];
     let anomalies = [];
     indices.forEach(i => {
         const val = parseFloat(offPhone[i]);
@@ -198,11 +202,11 @@ function runEngineeringAnalysis(inPhone, offPhone, anomalies) {
     if(wind > 15) { risks.push("High Wind"); voiceMsgs.push("Warning: High Wind Velocity"); }
     if(solar < 5 && new Date().getHours() > 10 && new Date().getHours() < 15) { risks.push("Solar Anomaly"); voiceMsgs.push("Anomaly: Solar Angle too low"); }
     anomalies.forEach(i => { const label = offPhoneConfig[i].label; risks.push(`Anomaly: ${label}`); voiceMsgs.push(`Anomaly detected: ${label}`); });
-    const riskLevel = risks.length > 1? "HIGH" : risks.length === 1? "MEDIUM" : "LOW";
-    if(riskLevel!== "LOW") speak(voiceMsgs.join(". "));
+    const riskLevel = risks.length > 1 ? "HIGH" : risks.length === 1 ? "MEDIUM" : "LOW";
+    if(riskLevel !== "LOW") speak(voiceMsgs.join(". "));
     let html = `Risk Level: <span class="risk-${riskLevel.toLowerCase()}">${riskLevel}</span><br><br>`;
-    html += risks.length > 0? `<b>Detected:</b> ${risks.join(', ')}` : `<b>Status:</b> All systems nominal`;
-    if(anomalies.length > 0) html += `<br><b>Anomalies:</b> Off-phone data deviating from 5min baseline`;
+    html += risks.length > 0 ? `<b>Detected:</b> ${risks.join(', ')}` : `<b>Status:</b> All systems nominal`;
+    if(anomalies.length > 0) html += `<br><b>Anomalies:</b> Off-phone data deviating from baseline`;
     document.getElementById('analysisBox').innerHTML = html;
 }
 
@@ -219,3 +223,4 @@ window.onload = () => { fetchTelemetry(true); setInterval(fetchTelemetry, REFRES
 </script>
 </body>
 </html>
+

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Telemetry Platform v4.6</title>
+    <title>Soltaic</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -76,14 +76,14 @@ let csvData = [];
 let voiceEnabled = true;
 let baseline = {};
 
-const inPhoneConfig = [
+const Phone data = [
     { label: "Net Jitter", unit: "ms" }, { label: "Heap Alloc", unit: "MB" },
     { label: "CPU Load", unit: "%" }, { label: "Thread Skew", unit: "ms" },
     { label: "Battery Temp", unit: "°C" }, { label: "Signal RSSI", unit: "dBm" },
     { label: "IO Latency", unit: "ms" }, { label: "Sensor Drift", unit: "rad" },
     { label: "Voltage Rail", unit: "V" }, { label: "Entropy Pool", unit: "bits" }
 ];
-const offPhoneConfig = [
+const Environment data = [
     { label: "Geo Vector", unit: "rad" }, { label: "Baro Pressure", unit: "hPa" },
     { label: "Rel Humidity", unit: "%" }, { label: "Surface Trend", unit: "hPa" },
     { label: "Solar Angle", unit: "deg" }, { label: "Wind Velocity", unit: "m/s" },

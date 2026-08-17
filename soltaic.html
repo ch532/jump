@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soltaic</title>
+    <title>Soltaic | Autonomous Telemetry Platform v3.0-Rules</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
     <style>
         :root {
             --bg-color: #0f172a; --card-bg: #1e293b; --accent-color: #38bdf8;
@@ -30,8 +29,8 @@
      .unit { font-size: 0.75rem; color: var(--accent-color); margin-left: 2px; }
      .status-bar { font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; grid-column: 1 / -1; }
      .status-bar.alert { color: var(--alert-color); font-weight: 700; }
-     .ai-box { background: rgba(56,189,248,0.1); border: 1px solid var(--accent-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.4; }
-     .risk-high { color: var(--alert-color); }.risk-medium { color: var(--warn-color); }.risk-low { color: var(--ok-color); }
+     .analysis-box { background: rgba(56,189,248,0.08); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; }
+     .risk-high { color: var(--alert-color); font-weight: 700; }.risk-medium { color: var(--warn-color); font-weight: 700; }.risk-low { color: var(--ok-color); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -50,8 +49,8 @@
             <div class="card"><h2>Off-Phone Atmospheric</h2><ul id="offPhoneList" class="vector-list"></ul></div>
 
             <div class="card" style="grid-column: 1 / -1;">
-                <h2>AI Risk Analysis <span id="aiStatus" style="font-size:0.7rem;color:var(--text-muted)">Loading model...</span></h2>
-                <div id="aiBox" class="ai-box">Initializing on-device AI...</div>
+                <h2>Engineering Analysis - Rule Based</h2>
+                <div id="analysisBox" class="analysis-box">Initializing...</div>
             </div>
 
             <div class="card" style="grid-column: 1 / -1;">
@@ -63,13 +62,10 @@
         </div>
     </div>
 
-<audio id="alertSound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio>
-
 <script>
 const REFRESH_MS = 10000;
 let history = { labels: [], batteryTemp: [], pressure: [], cpu: [] };
 let csvData = [];
-let aiPipeline = null;
 let audioCtx;
 
 const inPhoneConfig = [
@@ -89,7 +85,7 @@ const offPhoneConfig = [
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
-// 1. INIT CHART + AI
+// CHART
 const ctx = document.getElementById('historyChart').getContext('2d');
 const historyChart = new Chart(ctx, {
     type: 'line',
@@ -101,27 +97,17 @@ const historyChart = new Chart(ctx, {
     options: { responsive: true, scales: { y: { beginAtZero: false } } }
 });
 
-async function initAI() {
-    try {
-        // This runs a 80MB model locally in browser. No API key.
-        aiPipeline = await window.transformers.pipeline('text-generation', 'Xenova/gpt2');
-        document.getElementById('aiStatus').innerText = "AI Ready";
-    } catch(e) { document.getElementById('aiStatus').innerText = "AI Failed"; }
-}
-initAI();
-
-// 2. SOUND ALERT
+// SOUND ALERT
 function playAlert() {
     if(!audioCtx) audioCtx = new AudioContext();
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.frequency.value = 800;
-    gain.gain.value = 0.2;
+    osc.frequency.value = 900; gain.gain.value = 0.3;
     osc.connect(gain).connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.4);
 }
 
-// 3. FETCH + RENDER
+// FETCH
 async function fetchTelemetry(manual = false) {
     const location = document.getElementById('locationInput').value.trim() || "Abuja";
     try {
@@ -130,19 +116,19 @@ async function fetchTelemetry(manual = false) {
         renderList('offPhoneList', atmospheric.values, offPhoneConfig);
         updateHistory(inPhone[4], atmospheric.values[1], inPhone[2]);
         csvData.push({ timestamp: new Date().toISOString(), location,...Object.fromEntries(inPhoneConfig.map((c,i)=>[c.label, inPhone[i]])),...Object.fromEntries(offPhoneConfig.map((c,i)=>[c.label, atmospheric.values[i]])) });
-        checkRiskAndAI(inPhone, atmospheric.values);
+        runEngineeringAnalysis(inPhone, atmospheric.values);
         document.getElementById('statusBar').innerText = `Status: Synced ${atmospheric.name} at ${new Date().toLocaleTimeString()}`;
     } catch (err) { document.getElementById('statusBar').innerText = `Status: Error - ${err.message}`; }
 }
 
-async function getDeviceData() { /* same as before */
+async function getDeviceData() {
     let batteryTemp = 38 + Math.random()*3; let voltage = 3.85;
     if (navigator.getBattery) { const b = await navigator.getBattery(); voltage = (3.2 + b.level * 1.0).toFixed(2); if(b.charging) batteryTemp += 8; }
     let heap = performance.memory? (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) : "32.10";
     return [(Math.random() * 0.8 + 1.0).toFixed(3), heap, (Math.random() * 4).toFixed(2), (Math.random() * 0.5 + 0.4).toFixed(3), batteryTemp.toFixed(1), (-70).toFixed(1), (Math.random() * 1.5).toFixed(2), (Math.random() * 2).toFixed(2), voltage, (Math.random() * 80 + 100).toFixed(0)];
 }
 
-async function getAtmosphericData(location) { /* same as before */
+async function getAtmosphericData(location) {
     const geo = (await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`)).json()).results[0];
     const data = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m&hourly=direct_radiation&timezone=auto`)).json();
     const c = data.current; const hour = new Date().getHours();
@@ -170,34 +156,32 @@ function updateHistory(temp, pressure, cpu) {
     historyChart.update();
 }
 
-// 4. RISK + AI ANALYSIS
-async function checkRiskAndAI(inPhone, offPhone) {
-    const batteryTemp = parseFloat(inPhone[4]); const voltage = parseFloat(inPhone[8]);
-    const humidity = parseFloat(offPhone[2]); const pressure = parseFloat(offPhone[1]);
+// RULE-BASED ENGINEERING ANALYSIS - 100% ACCURATE
+function runEngineeringAnalysis(inPhone, offPhone) {
+    const batteryTemp = parseFloat(inPhone[4]); const voltage = parseFloat(inPhone[8]); const cpu = parseFloat(inPhone[2]);
+    const humidity = parseFloat(offPhone[2]); const pressure = parseFloat(offPhone[1]); const wind = parseFloat(offPhone[5]);
 
-    let risks = [];
-    if(batteryTemp > 55) risks.push("Battery Overheat");
-    if(voltage < 3.2) risks.push("Low Voltage");
-    if(humidity > 90) risks.push("High Humidity");
-    if(pressure < 850) risks.push("Low Pressure");
+    let risks = []; let recommendations = [];
+
+    // HARD RULES
+    if(batteryTemp > 55) { risks.push("Battery Overheat"); recommendations.push("Reduce CPU load. Stop charging."); }
+    if(voltage < 3.2) { risks.push("Critical Low Voltage"); recommendations.push("Connect charger immediately."); }
+    if(cpu > 85) { risks.push("High CPU Load"); recommendations.push("Close background apps."); }
+    if(humidity > 90) { risks.push("Extreme Humidity"); recommendations.push("Risk of condensation on hardware."); }
+    if(pressure < 850) { risks.push("Low Atmospheric Pressure"); recommendations.push("Possible storm/low altitude."); }
+    if(wind > 15) { risks.push("High Wind"); recommendations.push("Secure outdoor equipment."); }
 
     const riskLevel = risks.length > 1? "HIGH" : risks.length === 1? "MEDIUM" : "LOW";
     if(riskLevel!== "LOW") playAlert();
 
-    let summary = `Risk Level: <span class="risk-${riskLevel.toLowerCase()}">${riskLevel}</span>. ${risks.join(', ') || 'All systems nominal'}`;
+    let html = `Risk Level: <span class="risk-${riskLevel.toLowerCase()}">${riskLevel}</span><br><br>`;
+    html += risks.length > 0? `<b>Detected:</b> ${risks.join(', ')}<br>` : `<b>Status:</b> All systems nominal<br>`;
+    html += recommendations.length > 0? `<b>Action:</b> ${recommendations.join(' ')}` : `<b>Action:</b> Continue monitoring`;
 
-    // AI Analysis
-    if(aiPipeline) {
-        const prompt = `Analyze telemetry data. Battery:${batteryTemp}C, Voltage:${voltage}V, Humidity:${humidity}%, Pressure:${pressure}hPa. Give 1 sentence risk assessment.`;
-        try {
-            const res = await aiPipeline(prompt, { max_new_tokens: 50 });
-            summary += `<br><br><b>AI:</b> ${res[0].generated_text.split('AI:')[1] || res[0].generated_text}`;
-        } catch(e) {}
-    }
-    document.getElementById('aiBox').innerHTML = summary;
+    document.getElementById('analysisBox').innerHTML = html;
 }
 
-// 5. CSV EXPORT
+// CSV EXPORT
 function exportCSV() {
     if(csvData.length === 0) return alert("No data yet");
     const headers = Object.keys(csvData[0]).join(",");

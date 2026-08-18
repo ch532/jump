@@ -303,7 +303,7 @@ class GameScene extends Phaser.Scene {
     this.enemies = this.physics.add.group();
     this.drops = this.physics.add.group();
 
-    this.player = this.physics.add.sprite(w * 0.3, h * 0.2, 'player_tex').setCollideWorldBounds(true);
+    this.player = this.physics.add.sprite(w * 0.5, h * 0.35, 'player_tex').setCollideWorldBounds(true);
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.wasd = this.input.keyboard.addKeys({
@@ -396,26 +396,26 @@ class GameScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
 
-    const gap = 150;
-    const padX = 220;
-    const padY = h - 480;
+    const padX = 75;
+    const padY = h - 90;
+    const gap = 45;
 
     this.createTouchBtn(padX, padY - gap, '▲', () => this.moveState.up = true, () => this.moveState.up = false);
     this.createTouchBtn(padX, padY + gap, '▼', () => this.moveState.down = true, () => this.moveState.down = false);
     this.createTouchBtn(padX - gap, padY, '◄', () => this.moveState.left = true, () => this.moveState.left = false);
     this.createTouchBtn(padX + gap, padY, '►', () => this.moveState.right = true, () => this.moveState.right = false);
 
-    const fireBtn = this.add.circle(w - 200, padY, 120, 0xff0055, 0.95).setInteractive({ useHandCursor: true });
-    fireBtn.setStrokeStyle(6, 0xffffff);
-    this.add.text(w - 200, padY, 'FIRE', { fontSize: '42px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
+    const fireBtn = this.add.circle(w - 70, h - 90, 48, 0xff0055, 0.9).setInteractive({ useHandCursor: true });
+    fireBtn.setStrokeStyle(3, 0xffffff);
+    this.add.text(w - 70, h - 90, 'FIRE', { fontSize: '18px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
 
     fireBtn.on('pointerdown', () => this.fireAtClosestEnemy());
   }
 
   createTouchBtn(x, y, symbol, onDown, onUp) {
-    const btn = this.add.rectangle(x, y, 140, 140, 0x1e293b, 0.95).setInteractive({ useHandCursor: true });
-    btn.setStrokeStyle(5, 0x00f0ff);
-    this.add.text(x, y, symbol, { fontSize: '64px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    const btn = this.add.rectangle(x, y, 42, 42, 0x1e293b, 0.9).setInteractive({ useHandCursor: true });
+    btn.setStrokeStyle(2, 0x00f0ff);
+    const txt = this.add.text(x, y, symbol, { fontSize: '20px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
 
     btn.on('pointerdown', () => { btn.setFillStyle(0x334155); onDown(); });
     btn.on('pointerup', () => { btn.setFillStyle(0x1e293b); onUp(); });
@@ -469,8 +469,8 @@ class GameScene extends Phaser.Scene {
     const maxActiveEnemies = Math.min(4 + Math.floor(GameData.currentLevel * 0.8), 20);
 
     if (currentEnemyCount < maxActiveEnemies) {
-      const x = Phaser.Math.Between(w * 0.4, w - 40);
-      const y = Phaser.Math.Between(60, h * 0.25);
+      const x = Phaser.Math.Between(w * 0.2, w * 0.8);
+      const y = Phaser.Math.Between(50, h * 0.3);
 
       const roll = Math.random();
       let texKey = 'enemy_std';
@@ -558,12 +558,12 @@ class GameScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
 
-    const portalX = Phaser.Math.Between(100, w - 100);
-    const portalY = Phaser.Math.Between(100, h * 0.25);
+    const portalX = Phaser.Math.Between(80, w - 80);
+    const portalY = Phaser.Math.Between(80, h * 0.3);
 
     this.portal = this.physics.add.sprite(portalX, portalY, 'portal_tex');
     this.physics.add.overlap(this.player, this.portal, this.enterPortal, null, this);
-    this.add.text(portalX, portalY - 40, 'PORTAL OPEN!', { fontSize: '16px', fill: '#a855f7', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(portalX, portalY - 30, 'PORTAL OPEN!', { fontSize: '14px', fill: '#a855f7', fontStyle: 'bold' }).setOrigin(0.5);
     this.updateHUD();
   }
 
@@ -604,15 +604,23 @@ class GameScene extends Phaser.Scene {
 
   createHUD() {
     const w = this.scale.width;
-    this.hudText = this.add.text(12, 12, '', { fontSize: '14px', fill: '#00f0ff', fontStyle: 'bold' });
+    this.hudText = this.add.text(10, 10, '', { 
+      fontSize: '11px', 
+      fill: '#00f0ff', 
+      fontStyle: 'bold' 
+    });
     
-    this.menuBtn = this.add.text(w - 240, 10, '[ MENU ]', { fontSize: '22px', fill: '#00f0ff', fontStyle: 'bold' })
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.scene.start('MenuScene'));
+    this.menuBtn = this.add.text(w - 75, 8, '[MENU]', { 
+      fontSize: '13px', 
+      fill: '#00f0ff', 
+      fontStyle: 'bold' 
+    }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.scene.start('MenuScene'));
 
-    this.pauseBtn = this.add.text(w - 110, 10, '[ PAUSE ]', { fontSize: '22px', fill: '#ffea00', fontStyle: 'bold' })
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.togglePauseMenu());
+    this.pauseBtn = this.add.text(w - 75, 26, '[PAUSE]', { 
+      fontSize: '13px', 
+      fill: '#ffea00', 
+      fontStyle: 'bold' 
+    }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.togglePauseMenu());
 
     this.updateHUD();
   }
@@ -620,7 +628,7 @@ class GameScene extends Phaser.Scene {
   updateHUD() {
     const wpn = this.weapons[this.currentWeaponIndex].name;
     const portalStatus = this.portalSpawned ? 'OPEN 🟣' : `${this.killsThisLevel}/${this.requiredKills}`;
-    this.hudText.setText(`LVL: ${GameData.currentLevel}/${GameData.totalLevels} | HP: ${this.playerHealth} | KILLS: ${portalStatus} | WPN: ${wpn} | COINS: ${GameData.inventory.coins}`);
+    this.hudText.setText(`LVL: ${GameData.currentLevel}/${GameData.totalLevels}\nHP: ${this.playerHealth} | COINS: ${GameData.inventory.coins}\nKILLS: ${portalStatus} | WPN: ${wpn}`);
   }
 
   update() {
@@ -810,5 +818,6 @@ const game = new Phaser.Game(config);
 </script>
 </body>
 </html>
+
 
 

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Superpro: Dungeon Chronicles</title>
   <script src="phaser.min.js"></script>
+  <script type="text/javascript" src="https://cdn.applixir.com/applixir.app.v6.1.0.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -19,12 +20,27 @@
     #game-container {
       width: 100vw;
       height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    #some-id {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      display: none;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
 
 <div id="game-container"></div>
+<div id="some-id"></div>
 
 <script>
 // --- WEB AUDIO SYNTHESIZER ---
@@ -124,6 +140,47 @@ const GameData = {
   }
 };
 
+// --- APPLIXIR INITIALIZATION & REWARD WRAPPER ---
+function triggerApplixirRewardedAd(onRewardSuccess) {
+  const adElement = document.getElementById("some-id");
+  adElement.style.display = "block";
+
+  const options = {
+    apiKey: "b2f0b902-b4df-4ddd-9b6b-fa01f5374582",
+    injectionElementId: "some-id",
+    adStatusCallbackFn: (status) => {
+      console.log("OUTSIDE Ad status: ", status);
+      if (status === "ad-watched" || status === "fb-watched") {
+        if (typeof onRewardSuccess === "function") {
+          onRewardSuccess();
+        }
+      }
+      if (
+        status === "ad-block" ||
+        status === "ad-interrupted" ||
+        status === "ad-watched" ||
+        status === "fb-watched" ||
+        status === "sys-closing"
+      ) {
+        adElement.style.display = "none";
+      }
+    },
+    adErrorCallbackFn: (error) => {
+      console.log("Error: ", error?.getError ? error.getError().data : error);
+      adElement.style.display = "none";
+    }
+  };
+
+  if (typeof initializeAndOpenPlayer === "function") {
+    initializeAndOpenPlayer(options);
+  } else if (typeof invokeApplixirVideoUnit === "function") {
+    invokeApplixirVideoUnit(options);
+  } else {
+    adElement.style.display = "none";
+    alert("Ad network is currently loading or unavailable.");
+  }
+}
+
 // --- SCENE 0: SPLASH / LOGO INTRO SCENE ---
 class SplashScene extends Phaser.Scene {
   constructor() { super('SplashScene'); }
@@ -134,7 +191,6 @@ class SplashScene extends Phaser.Scene {
 
     this.add.rectangle(w / 2, h / 2, w, h, 0x05050a);
 
-    // Dynamic Graphic Emblem Logo
     const emblem = this.add.graphics();
     emblem.lineStyle(6, 0x00f0ff, 1);
     emblem.strokeCircle(w / 2, h * 0.38, 70);
@@ -143,7 +199,6 @@ class SplashScene extends Phaser.Scene {
     emblem.fillStyle(0xffea00, 1);
     emblem.fillCircle(w / 2, h * 0.38, 12);
 
-    // Animated Title Text
     const logoText = this.add.text(w / 2, h * 0.58, 'SUPERPRO', {
       fontSize: '56px',
       fill: '#00f0ff',
@@ -161,7 +216,6 @@ class SplashScene extends Phaser.Scene {
       fill: '#8899ac'
     }).setOrigin(0.5);
 
-    // Pulse animation for logo and text
     this.tweens.add({
       targets: [logoText, emblem],
       scaleX: 1.08,
@@ -207,7 +261,7 @@ class MenuScene extends Phaser.Scene {
   createButton(x, y, label, callback) {
     const btn = this.add.rectangle(x, y, 280, 55, 0x1e293b).setInteractive({ useHandCursor: true });
     btn.setStrokeStyle(2, 0x00f0ff);
-    const txt = this.add.text(x, y, label, { fontSize: '20px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(x, y, label, { fontSize: '20px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
 
     btn.on('pointerdown', callback);
     btn.on('pointerover', () => btn.setFillStyle(0x334155));
@@ -358,7 +412,7 @@ class GameScene extends Phaser.Scene {
   createTouchBtn(x, y, symbol, onDown, onUp) {
     const btn = this.add.rectangle(x, y, 140, 140, 0x1e293b, 0.95).setInteractive({ useHandCursor: true });
     btn.setStrokeStyle(5, 0x00f0ff);
-    const txt = this.add.text(x, y, symbol, { fontSize: '64px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(x, y, symbol, { fontSize: '64px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
 
     btn.on('pointerdown', () => { btn.setFillStyle(0x334155); onDown(); });
     btn.on('pointerup', () => { btn.setFillStyle(0x1e293b); onUp(); });
@@ -638,7 +692,22 @@ class StoreScene extends Phaser.Scene {
     this.add.text(w / 2, 45, 'ARMORY & STORE', { fontSize: '26px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
     this.coinText = this.add.text(w / 2, 85, `Available Balance: ${GameData.inventory.coins} COINS 💰`, { fontSize: '18px', fill: '#ffea00' }).setOrigin(0.5);
 
-    let startY = 140;
+    // Watch ad to earn coins
+    const adBtn = this.add.rectangle(w / 2, 125, 260, 34, 0xa855f7).setInteractive({ useHandCursor: true });
+    adBtn.setStrokeStyle(2, 0x00f0ff);
+    this.add.text(w / 2, 125, '📺 WATCH AD (+100 COINS)', { fontSize: '14px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    adBtn.on('pointerdown', () => {
+      triggerApplixirRewardedAd(() => {
+        GameData.inventory.coins += 100;
+        GameData.save();
+        AudioFX.playPickup();
+        alert('Reward Claimed! +100 Coins');
+        this.scene.restart();
+      });
+    });
+
+    let startY = 185;
     GameData.premiumCatalog.forEach((wpn) => {
       const isOwned = GameData.inventory.ownedWeapons.includes(wpn.name);
       
@@ -650,7 +719,7 @@ class StoreScene extends Phaser.Scene {
         this.add.text(w * 0.8, startY, 'UNLOCKED', { fontSize: '16px', fill: '#00ff66', fontStyle: 'bold' }).setOrigin(0.5);
       } else {
         const buyBtn = this.add.rectangle(w * 0.8, startY, 110, 36, 0x00f0ff).setInteractive({ useHandCursor: true });
-        const buyTxt = this.add.text(w * 0.8, startY, `${wpn.price} C`, { fontSize: '15px', fill: '#000', fontStyle: 'bold' }).setOrigin(0.5);
+        this.add.text(w * 0.8, startY, `${wpn.price} C`, { fontSize: '15px', fill: '#000', fontStyle: 'bold' }).setOrigin(0.5);
 
         buyBtn.on('pointerdown', () => {
           if (GameData.inventory.coins >= wpn.price) {
@@ -660,11 +729,11 @@ class StoreScene extends Phaser.Scene {
             alert(`Unlocked ${wpn.name}!`);
             this.scene.restart();
           } else {
-            alert('Not enough coins! Play levels to earn more.');
+            alert('Not enough coins! Play levels or watch ads to earn more.');
           }
         });
       }
-      startY += 75;
+      startY += 70;
     });
 
     const backBtn = this.add.rectangle(w / 2, h - 50, 220, 48, 0x1e293b).setInteractive({ useHandCursor: true });
@@ -731,7 +800,6 @@ const config = {
     default: 'arcade',
     arcade: { gravity: { y: 0 }, debug: false }
   },
-  // Added SplashScene first in scene array!
   scene: [SplashScene, MenuScene, GameScene, StoreScene, SettingsScene]
 };
 
@@ -739,3 +807,4 @@ const game = new Phaser.Game(config);
 </script>
 </body>
 </html>
+

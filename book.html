@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connectgold Library</title>
+  <title>Google Books Embedded Viewer</title>
   <style>
     body {
       background-color: #f8f9fa;
@@ -21,6 +21,22 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       max-width: 650px;
       width: 100%;
+    }
+    .app-branding {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .app-branding img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .app-branding h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #1a73e8;
     }
     .control-group {
       margin-bottom: 20px;
@@ -78,6 +94,12 @@
 <body>
 
   <div class="viewer-card">
+    <!-- App Branding & Logo -->
+    <div class="app-branding">
+      <img src="https://www.chyke.online/connectgold_2.png" alt="App Logo">
+      <h2>Developer Book Library</h2>
+    </div>
+
     <div class="control-group">
       <label for="bookSelect">Select a Book to Preview:</label>
       <select id="bookSelect" onchange="loadSelectedBook()">

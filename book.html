@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connectgold Library</title>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .viewer-card {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 650px;
+      width: 100%;
+    }
+    .control-group {
+      margin-bottom: 20px;
+    }
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #3c4043;
+    }
+    .control-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      font-size: 14px;
+      background-color: #fff;
+    }
+    #viewerCanvas {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+    }
+  </style>
+
+  <!-- 1. Include the Google Books API Loader script -->
+  <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
+  
+  <script type="text/javascript">
+    google.books.load();
+
+    let viewer;
+
+    function initialize() {
+      // 2. Initialize the viewer bound to the canvas div
+      viewer = new google.books.DefaultViewer(document.getElementById('viewerCanvas'));
+      
+      // Load default selected book
+      loadSelectedBook();
+    }
+
+    function loadSelectedBook() {
+      const selectElement = document.getElementById('bookSelect');
+      const isbn = selectElement.value;
+      if (viewer) {
+        viewer.load(isbn);
+      }
+    }
+
+    // 3. Set callback when API loads
+    google.books.setOnLoadCallback(initialize);
+  </script>
+</head>
+<body>
+
+  <div class="viewer-card">
+    <div class="control-group">
+      <label for="bookSelect">Select a Book to Preview:</label>
+      <select id="bookSelect" onchange="loadSelectedBook()">
+        <option value="ISBN:9780132350884">Clean Code - Robert C. Martin</option>
+        <option value="ISBN:9780201616224">The Pragmatic Programmer - Andrew Hunt & David Thomas</option>
+        <option value="ISBN:9780596517748">JavaScript: The Good Parts - Douglas Crockford</option>
+        <option value="ISBN:9780201633610">Design Patterns - Erich Gamma et al.</option>
+        <option value="ISBN:9780135957059">The Pragmatic Programmer (20th Anniversary Edition)</option>
+        <option value="ISBN:9780321125217">Domain-Driven Design - Eric Evans</option>
+        <option value="ISBN:9780596007126">Head First Design Patterns - Eric Freeman</option>
+        <option value="ISBN:9780134494166">Clean Architecture - Robert C. Martin</option>
+        <option value="ISBN:9780137081073">The Clean Coder - Robert C. Martin</option>
+        <option value="ISBN:9781449373325">Designing Data-Intensive Applications - Martin Kleppmann</option>
+      </select>
+    </div>
+
+    <!-- 4. Viewer Canvas Container -->
+    <div id="viewerCanvas"></div>
+  </div>
+
+</body>
+</html>

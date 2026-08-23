@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Service Direct Redirect</title>
+  <title>Connectgold Services</title>
   
   <!-- Oswald Font Link -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
       align-items: center;
     }
     .redirect-card {
-      max-width: 500px;
+      max-width: 550px;
       width: 100%;
       padding: 30px;
       background: #ffffff;
@@ -91,25 +91,79 @@
       <img src="https://www.chyke.online/connectgold_2.png" alt="App Logo">
     </div>
     
-    <h2 class="oswald-title">Google Direct Redirect</h2>
+    <h2 class="oswald-title">Global Redirect Hub</h2>
     
     <div class="control-group">
-      <label for="serviceSelect">Select Google Tool:</label>
+      <label for="serviceSelect">Select Platform / Tool:</label>
       <select id="serviceSelect">
-        <option value="lens">Google Lens (Image URL)</option>
-        <option value="shopping">Google Shopping</option>
-        <option value="images">Google Images</option>
-        <option value="play_movies">Google Play Movies</option>
-        <option value="play_games">Google Play Store / Games</option>
+        <!-- Amazon & Apple -->
+        <option value="amazon_search">Amazon Search</option>
+        <option value="amazon_product">Amazon Product</option>
+        <option value="amazon_autocomplete">Amazon Autocomplete</option>
+        <option value="apple_app_store">Apple App Store</option>
+
+        <!-- Baidu, Bing & Brave -->
+        <option value="baidu_search">Baidu Search</option>
+        <option value="bing_search">Bing Search</option>
+        <option value="bing_product">Bing Product</option>
+        <option value="bing_news">Bing News</option>
+        <option value="bing_maps">Bing Maps</option>
+        <option value="bing_copilot">Bing Copilot</option>
+        <option value="brave_ai">Brave AI Mode</option>
+
+        <!-- DuckDuckGo & eBay -->
+        <option value="ddg_search">DuckDuckGo Search</option>
+        <option value="ddg_light">DuckDuckGo Light</option>
+        <option value="ddg_maps">DuckDuckGo Maps</option>
+        <option value="ebay_search">eBay Search</option>
+        <option value="ebay_product">eBay Product</option>
+
+        <!-- Google Ecosystem -->
+        <option value="google_ads">Google Ads</option>
+        <option value="google_ai_mode">Google AI Mode</option>
+        <option value="google_ai_overview">Google AI Overview</option>
+        <option value="google_autocomplete">Google Autocomplete</option>
+        <option value="google_events">Google Events</option>
+        <option value="google_finance">Google Finance</option>
+        <option value="google_flights_auto">Google Flights Autocomplete</option>
+        <option value="google_hotels_auto">Google Hotels Autocomplete</option>
+        <option value="google_hotels_reviews">Google Hotels Reviews</option>
+        <option value="google_images">Google Images</option>
+        <option value="google_jobs">Google Jobs</option>
+        <option value="google_lens">Google Lens (Image URL)</option>
+        <option value="google_local">Google Local</option>
+        <option value="google_local_services">Google Local Services</option>
+        <option value="google_maps_auto">Google Maps Autocomplete</option>
+        <option value="google_maps_reviews">Google Maps Reviews</option>
+        <option value="google_maps_contrib">Google Maps Contributor Reviews</option>
+        <option value="google_maps_posts">Google Maps Posts</option>
+        <option value="google_play_games">Google Play Games / Apps</option>
+        <option value="google_play_product">Google Play Product</option>
+        <option value="google_play_movies">Google Play Movies</option>
+        <option value="google_scholar">Google Scholar</option>
+        <option value="google_shopping">Google Shopping</option>
+        <option value="google_sports">Google Sports</option>
+        <option value="google_travel_explore">Google Travel Explore</option>
+        <option value="google_trend_auto">Google Trend Autocomplete</option>
+        <option value="google_trend_trending">Google Trend Trending Now</option>
+
+        <!-- Naver, Walmart, Yahoo, Yandex & YouTube -->
+        <option value="naver_ai">Naver AI Overview</option>
+        <option value="walmart_search">Walmart Search</option>
+        <option value="walmart_product">Walmart Product</option>
+        <option value="yahoo_search">Yahoo Search</option>
+        <option value="yandex_search">Yandex Search</option>
+        <option value="youtube_search">YouTube Search</option>
+        <option value="youtube_video">YouTube Video</option>
       </select>
     </div>
 
     <div class="control-group">
-      <label for="inputData">Search Term or Public Image URL:</label>
-      <input type="text" id="inputData" placeholder="Enter query or direct image link..." value="https://www.chyke.online/connectgold_2.png">
+      <label for="inputData">Search Term, Keyword, or URL:</label>
+      <input type="text" id="inputData" placeholder="Enter query or link..." value="Connectgold">
     </div>
 
-    <button class="redirect-btn" onclick="executeRedirect()">Launch Direct Tool</button>
+    <button class="redirect-btn" onclick="executeRedirect()">Launch Platform</button>
   </div>
 
   <script>
@@ -122,22 +176,65 @@
       let targetUrl = '';
 
       switch(service) {
-        case 'lens':
-          // Google Lens direct upload-by-url structure
-          targetUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(data)}`;
-          break;
-        case 'shopping':
-          targetUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(data)}`;
-          break;
-        case 'images':
-          targetUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(data)}`;
-          break;
-        case 'play_movies':
-          targetUrl = `https://play.google.com/store/movies/search?q=${encodeURIComponent(data)}`;
-          break;
-        case 'play_games':
-          targetUrl = `https://play.google.com/store/search?q=${encodeURIComponent(data)}&c=apps`;
-          break;
+        // Amazon & Apple
+        case 'amazon_search': targetUrl = `https://www.amazon.com/s?k=${encodeURIComponent(data)}`; break;
+        case 'amazon_product': targetUrl = `https://www.amazon.com/dp/${encodeURIComponent(data)}`; break;
+        case 'amazon_autocomplete': targetUrl = `https://completion.amazon.com/api/2017/suggestions?prefix=${encodeURIComponent(data)}`; break;
+        case 'apple_app_store': targetUrl = `https://www.apple.com/us/search/${encodeURIComponent(data)}?src=globalnav`; break;
+
+        // Baidu, Bing, Brave
+        case 'baidu_search': targetUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(data)}`; break;
+        case 'bing_search': targetUrl = `https://www.bing.com/search?q=${encodeURIComponent(data)}`; break;
+        case 'bing_product': targetUrl = `https://www.bing.com/shop?q=${encodeURIComponent(data)}`; break;
+        case 'bing_news': targetUrl = `https://www.bing.com/news/search?q=${encodeURIComponent(data)}`; break;
+        case 'bing_maps': targetUrl = `https://www.bing.com/maps?q=${encodeURIComponent(data)}`; break;
+        case 'bing_copilot': targetUrl = `https://www.bing.com/chat?q=${encodeURIComponent(data)}`; break;
+        case 'brave_ai': targetUrl = `https://search.brave.com/search?q=${encodeURIComponent(data)}&source=summarizer`; break;
+
+        // DuckDuckGo & eBay
+        case 'ddg_search': targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(data)}`; break;
+        case 'ddg_light': targetUrl = `https://lite.duckduckgo.com/lite/`; break;
+        case 'ddg_maps': targetUrl = `https://duckduckgo.com/?q=${encodeURIComponent(data)}&ia=maps`; break;
+        case 'ebay_search': targetUrl = `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(data)}`; break;
+        case 'ebay_product': targetUrl = `https://www.ebay.com/itm/${encodeURIComponent(data)}`; break;
+
+        // Google Ecosystem
+        case 'google_ads': targetUrl = `https://ads.google.com`; break;
+        case 'google_ai_mode': targetUrl = `https://www.google.com/search?q=${encodeURIComponent(data)}&udm=24`; break;
+        case 'google_ai_overview': targetUrl = `https://www.google.com/search?q=${encodeURIComponent(data)}`; break;
+        case 'google_autocomplete': targetUrl = `https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(data)}`; break;
+        case 'google_events': targetUrl = `https://www.google.com/search?q=${encodeURIComponent(data)}&ibp=htl;events`; break;
+        case 'google_finance': targetUrl = `https://www.google.com/finance/quote/${encodeURIComponent(data)}`; break;
+        case 'google_flights_auto': targetUrl = `https://www.google.com/travel/flights?q=${encodeURIComponent(data)}`; break;
+        case 'google_hotels_auto': targetUrl = `https://www.google.com/travel/hotels/${encodeURIComponent(data)}`; break;
+        case 'google_hotels_reviews': targetUrl = `https://www.google.com/travel/hotels`; break;
+        case 'google_images': targetUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(data)}`; break;
+        case 'google_jobs': targetUrl = `https://www.google.com/search?q=${encodeURIComponent(data)}&ibp=htl;jobs`; break;
+        case 'google_lens': targetUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(data)}`; break;
+        case 'google_local': targetUrl = `https://www.google.com/maps/search/${encodeURIComponent(data)}`; break;
+        case 'google_local_services': targetUrl = `https://ads.google.com/local-services-ads/`; break;
+        case 'google_maps_auto': targetUrl = `https://www.google.com/maps/search/${encodeURIComponent(data)}`; break;
+        case 'google_maps_reviews': targetUrl = `https://www.google.com/maps`; break;
+        case 'google_maps_contrib': targetUrl = `https://www.google.com/maps`; break;
+        case 'google_maps_posts': targetUrl = `https://www.google.com/maps`; break;
+        case 'google_play_games': targetUrl = `https://play.google.com/store/search?q=${encodeURIComponent(data)}&c=apps`; break;
+        case 'google_play_product': targetUrl = `https://play.google.com/store/apps/details?id=${encodeURIComponent(data)}`; break;
+        case 'google_play_movies': targetUrl = `https://play.google.com/store/movies/search?q=${encodeURIComponent(data)}`; break;
+        case 'google_scholar': targetUrl = `https://scholar.google.com/scholar?q=${encodeURIComponent(data)}`; break;
+        case 'google_shopping': targetUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(data)}`; break;
+        case 'google_sports': targetUrl = `https://www.google.com/search?q=${encodeURIComponent(data)}+sports`; break;
+        case 'google_travel_explore': targetUrl = `https://www.google.com/travel/explore`; break;
+        case 'google_trend_auto': targetUrl = `https://trends.google.com/trends/api/autocomplete/${encodeURIComponent(data)}`; break;
+        case 'google_trend_trending': targetUrl = `https://trends.google.com/trending`; break;
+
+        // Naver, Walmart, Yahoo, Yandex, YouTube
+        case 'naver_ai': targetUrl = `https://search.naver.com/search.naver?query=${encodeURIComponent(data)}`; break;
+        case 'walmart_search': targetUrl = `https://www.walmart.com/search?q=${encodeURIComponent(data)}`; break;
+        case 'walmart_product': targetUrl = `https://www.walmart.com/ip/${encodeURIComponent(data)}`; break;
+        case 'yahoo_search': targetUrl = `https://search.yahoo.com/search?p=${encodeURIComponent(data)}`; break;
+        case 'yandex_search': targetUrl = `https://yandex.com/search/?text=${encodeURIComponent(data)}`; break;
+        case 'youtube_search': targetUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(data)}`; break;
+        case 'youtube_video': targetUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(data)}`; break;
       }
 
       if (targetUrl) {
@@ -148,3 +245,4 @@
 
 </body>
 </html>
+

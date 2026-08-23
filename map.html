@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connectgold Production</title>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .map-card {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .app-branding {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .app-branding img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .app-branding h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #1a73e8;
+    }
+    .app-branding p {
+      color: #5f6368;
+      font-size: 14px;
+      margin: 5px 0 0 0;
+    }
+    .map-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #dadce0;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="map-card">
+    <!-- App Branding & Logo -->
+    <div class="app-branding">
+      <img src="https://www.chyke.online/connectgold_2.png" alt="App Logo">
+      <h2>Global Developer Map</h2>
+      <p>Explore tech ecosystems, hubs, and communities worldwide.</p>
+    </div>
+
+    <!-- Embedded Google My Map -->
+    <div class="map-container">
+      <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1FPK5kWlSKD6ZmWxNL5uAp6ghHA3ioC0&ehbc=2E312F" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Service Direct Redirect</title>
+  
+  <!-- Oswald Font Link -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 40px 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .redirect-card {
+      max-width: 500px;
+      width: 100%;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .app-branding {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .app-branding img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .oswald-title {
+      font-family: "Oswald", sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      color: #1a73e8;
+      margin: 0 0 15px 0;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #3c4043;
+    }
+    .control-group select, .control-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .redirect-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+    .redirect-btn:hover {
+      background-color: #1557b0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="redirect-card">
+    <div class="app-branding">
+      <img src="https://www.chyke.online/connectgold_2.png" alt="App Logo">
+    </div>
+    
+    <h2 class="oswald-title">Google Direct Redirect</h2>
+    
+    <div class="control-group">
+      <label for="serviceSelect">Select Google Tool:</label>
+      <select id="serviceSelect">
+        <option value="lens">Google Lens (Image URL)</option>
+        <option value="shopping">Google Shopping</option>
+        <option value="images">Google Images</option>
+        <option value="play_movies">Google Play Movies</option>
+        <option value="play_games">Google Play Store / Games</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="inputData">Search Term or Public Image URL:</label>
+      <input type="text" id="inputData" placeholder="Enter query or direct image link..." value="https://www.chyke.online/connectgold_2.png">
+    </div>
+
+    <button class="redirect-btn" onclick="executeRedirect()">Launch Direct Tool</button>
+  </div>
+
+  <script>
+    function executeRedirect() {
+      const service = document.getElementById('serviceSelect').value;
+      const data = document.getElementById('inputData').value.trim();
+      
+      if (!data) return;
+
+      let targetUrl = '';
+
+      switch(service) {
+        case 'lens':
+          // Google Lens direct upload-by-url structure
+          targetUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(data)}`;
+          break;
+        case 'shopping':
+          targetUrl = `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(data)}`;
+          break;
+        case 'images':
+          targetUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(data)}`;
+          break;
+        case 'play_movies':
+          targetUrl = `https://play.google.com/store/movies/search?q=${encodeURIComponent(data)}`;
+          break;
+        case 'play_games':
+          targetUrl = `https://play.google.com/store/search?q=${encodeURIComponent(data)}&c=apps`;
+          break;
+      }
+
+      if (targetUrl) {
+        window.open(targetUrl, '_blank');
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectgold Enterprise | Huawei Enterprise Partner & Systems Engineering</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="connectgold_2.png">
+
+    <!-- Standard SEO Meta Tags -->
+    <meta name="description" content="Connectgold Enterprise is a registered Huawei Distribution Partner and systems engineering firm in Abuja, Nigeria, offering enterprise campus switches, AI firewalls, routers, and IT deployment services.">
+    <meta name="keywords" content="Connectgold Enterprise, Huawei Partner Nigeria, Abuja IT Systems Engineer, CloudEngine Switches, HiSecEngine AI Firewalls, NetEngine Routers, iMaster NCE-Campus">
+    <meta name="author" content="Connectgold Enterprise">
+    <link rel="canonical" href="https://www.chyke.online/">
+
+    <!-- Open Graph / Social Media Meta Tags (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.chyke.online/">
+    <meta property="og:title" content="Connectgold Enterprise | Huawei Enterprise Partner & Systems Engineering">
+    <meta property="og:description" content="Official Huawei Distribution Partner based in Abuja, Nigeria. Specializing in enterprise network infrastructure, CloudEngine switches, AI security firewalls, and systems engineering.">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="https://www.chyke.online/">
+    <meta name="twitter:title" content="Connectgold Enterprise | Huawei Enterprise Partner">
+    <meta name="twitter:description" content="Official Huawei Distribution Partner in Abuja, Nigeria. Enterprise campus switches, routers, and security solutions.">
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --accent-color: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Hero Section */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: var(--accent-glow);
+            color: var(--accent-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--accent-color);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 12px;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .product-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        ul.styled-list {
+            list-style-type: none;
+            margin-top: 10px;
+        }
+
+        ul.styled-list li {
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            position: relative;
+            padding-left: 20px;
+        }
+
+        ul.styled-list li::before {
+            content: "•";
+            color: var(--accent-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <div class="logo">Connectgold Enterprise</div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#management">Management & AI</a></li>
+                <li><a href="#switches">Switches</a></li>
+                <li><a href="#routers-security">Routers & Security</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+
+        <!-- Hero Header -->
+        <header>
+            <div class="badge-container">
+                <div class="badge">Huawei Enterprise Partner</div>
+                <div class="badge">Distribution Partner</div>
+                <div class="badge">Registered Installer</div>
+            </div>
+            <h1>Connectgold Enterprise</h1>
+            <p class="subtitle">Lead Systems Engineering, Autonomous Networks, and Formal Enterprise Solutions based in Abuja, Nigeria.</p>
+        </header>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <h2>About the Enterprise</h2>
+            <p>
+                Connectgold Enterprise is a fully registered independent business entity operating out of Abuja, Nigeria. We bridge advanced software engineering with formal enterprise technology distribution and infrastructure deployment. 
+            </p>
+        </section>
+
+        <!-- Management & AI Section -->
+        <section id="management" class="section">
+            <h2>Autonomous Network Management</h2>
+            <div class="grid">
+                <div class="card">
+                    <div>
+                        <h3>iMaster NCE-Campus</h3>
+                        <p>Huawei's next-generation autonomous driving network management and control system integrating management, control, analysis, and AI functions for full-lifecycle automation.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/bFuxGkMW" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CloudEngine Switches Section -->
+        <section id="switches" class="section">
+            <h2>CloudEngine Switches & Campus Hardware</h2>
+            <div class="grid">
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine 16804</h3>
+                        <p>Powered by an innovative iLossless algorithm that learns and trains network traffic in real-time, eliminating packet loss and maximizing throughput.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/7oZ6t9fn" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine 6863E-48S6CQ</h3>
+                        <p>High performance, high port density, and low latency switches built for cloud-oriented data center and aggregation layers.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/VabZvtTH" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine 6881-48T6CQ</h3>
+                        <p>High performance stacking technologies and flexible airflow capabilities for advanced cloud-oriented data center networks.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/FlsMbw17" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine 8850-64CQ-EI</h3>
+                        <p>High port density switches supporting high performance, low latency, and extensive SDN capabilities for core and aggregation layers.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/IRbXwvjV" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine S7703</h3>
+                        <p>High-end smart routing switches designed for next-generation enterprise campus networks and data centers with integrated wireless access.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/22fjIF8X" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine S7710</h3>
+                        <p>High-end smart routing switches designed for core/aggregation nodes providing integrated voice, video, and data services.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/fefy1w34" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>CloudEngine S7706</h3>
+                        <p>Advanced smart routing switch built for enterprise end-to-end integration and reliable campus infrastructure.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/zXUY0bdO" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Routers & Security Section -->
+        <section id="routers-security" class="section">
+            <h2>Routers & AI Security Firewalls</h2>
+            <div class="grid">
+                <div class="card">
+                    <div>
+                        <h3>NetEngine A821 E</h3>
+                        <p>Enterprise-side router offering easy deployment, simple O&M, network slicing, SRv6, and high-quality cloudification capabilities.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/kz3UANzQ" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>NetEngine 8000 M1C</h3>
+                        <p>All-service intelligent router platform using ultra-broadband pipes and SRv6 protocols to establish automated intelligent connections.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/ZQ4HSSsd" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>NetEngine 8000 M6</h3>
+                        <p>Intent-driven routing platform designed for full-lifecycle automation and proactive O&M in cloud-era enterprise deployments.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/nakxDCzZ" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>HiSecEngine USG6530F-D</h3>
+                        <p>Desktop AI firewall with a unique Content Detection Engine (CDE) to detect deep-layer hidden viruses and reduce OPEX.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/bquphQ6h" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>HiSecEngine USG6530F-DL</h3>
+                        <p>New-generation AI firewall for small enterprises and branch organizations offering unified network and security policy delivery.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/nypVQsjA" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+                <div class="card">
+                    <div>
+                        <h3>HiSecEngine USG6555F</h3>
+                        <p>Advanced AI firewall solution featuring multi-layer compression virus detection and unified controller management.</p>
+                    </div>
+                    <a href="https://efly.partner.huawei.com/smb/#/SG/qtWr4SyB" target="_blank" class="product-link">View Portal Reference &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <h2>Enterprise Inquiries</h2>
+            <p>For technical deployment requests, enterprise hardware supply, or systems partnership inquiries, reach out directly:</p>
+            <ul class="styled-list">
+                <li><strong>Location:</strong> Abuja, Federal Capital Territory, Nigeria</li>
+                <li><strong>Email:</strong> trustconnect713@gmail.com</li>
+                <li><strong>Phone:</strong> +234 706 174 0924</li>
+                <li><strong>Primary Domain:</strong> www.chyke.online</li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <div class="footer">
+            &copy; 2026 Connectgold Enterprise. All rights reserved. | <a href="privacy29.html">Privacy Policy</a>
+        </div>
+    </div>
+
+</body>
+</html>
+
+

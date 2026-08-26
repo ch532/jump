@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Superpro: Dungeon Chronicles</title>
+  <script src="phaser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #030308;
+      color: #fff;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+    }
+    #game-container {
+      width: 450px;
+      height: 800px;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container"></div>
+
+<script>
+// --- PERSISTENT GAME DATA ---
+const LocalState = JSON.parse(localStorage.getItem('SUPERPRO_SAVE')) || {};
+
+const GameData = {
+  currentLevel: LocalState.currentLevel || 1,
+  totalLevels: 700,
+  coinMultiplier: 1,
+  soundVolume: LocalState.soundVolume !== undefined ? LocalState.soundVolume : 0.8,
+  inventory: LocalState.inventory || {
+    coins: 0,
+    ownedWeapons: ['Pistol']
+  },
+  premiumCatalog: [
+    { name: 'Pistol', price: 0, damage: 35, speed: 700, tex: 'bullet_cyan', mode: 'single' },
+    { name: 'Shotgun', price: 4000, damage: 45, speed: 650, tex: 'bullet_yellow', mode: 'spread' },
+    { name: 'Plasma Gun', price: 8000, damage: 160, speed: 950, tex: 'bullet_green', mode: 'single' },
+    { name: 'Bomb Launcher', price: 15000, damage: 380, speed: 520, tex: 'bullet_red', mode: 'heavy' }
+  ],
+
+  save() {
+    localStorage.setItem('SUPERPRO_SAVE', JSON.stringify({
+      currentLevel: this.currentLevel,
+      soundVolume: this.soundVolume,
+      inventory: this.inventory
+    }));
+  },
+
+  clearStorage() {
+    localStorage.removeItem('SUPERPRO_SAVE');
+  }
+};
+
+// --- SYNTHESIZER ENGINE ---
+class SoundSynth {
+  constructor() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    this.ctx = AudioCtx ? new AudioCtx() : null;
+  }
+  ensureContext() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+  }
+  playShoot(type) {
+    if (!this.ctx || GameData.soundVolume <= 0) return;
+    this.ensureContext();
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    if (type === 'Shotgun') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.14);
+    } else if (type === 'Plasma Gun') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1100, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, this.ctx.currentTime + 0.09);
+    } else if (type === 'Bomb Launcher') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(35, this.ctx.currentTime + 0.22);
+    } else {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(750, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.12);
+    }
+
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.3, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.15);
+  }
+  playExplosion() {
+    if (!this.ctx || GameData.soundVolume <= 0) return;
+    this.ensureContext();
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(25, this.ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.45, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.3);
+  }
+  playHit() {
+    if (!this.ctx || GameData.soundVolume <= 0) return;
+    this.ensureContext();
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.25, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.08);
+  }
+  playPickup() {
+    if (!this.ctx || GameData.soundVolume <= 0) return;
+    this.ensureContext();
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
+    osc.frequency.setValueAtTime(739.99, this.ctx.currentTime + 0.07);
+    osc.frequency.setValueAtTime(880.00, this.ctx.currentTime + 0.14);
+    gain.gain.setValueAtTime(GameData.soundVolume * 0.35, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.22);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.22);
+  }
+}
+
+const AudioFX = new SoundSynth();
+
+// --- SCENE 0: SPLASH SCENE ---
+class SplashScene extends Phaser.Scene {
+  constructor() { super('SplashScene'); }
+  create() {
+    const w = 450;
+    const h = 800;
+
+    const bgG = this.add.graphics();
+    bgG.fillStyle(0x050510, 1);
+    bgG.fillRect(0, 0, w, h);
+    for (let i = 0; i < 45; i++) {
+      bgG.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.2, 0.8));
+      bgG.fillCircle(Phaser.Math.Between(0, w), Phaser.Math.Between(0, h), Phaser.Math.FloatBetween(1, 2));
+    }
+
+    const emblem = this.add.graphics();
+    emblem.lineStyle(4, 0x00f0ff, 1);
+    emblem.strokeCircle(w / 2, h * 0.40, 75);
+    emblem.lineStyle(2, 0xff0055, 0.8);
+    emblem.strokeRect(w / 2 - 40, h * 0.40 - 40, 80, 80);
+    emblem.fillStyle(0x00f0ff, 1);
+    emblem.fillTriangle(w / 2, h * 0.40 - 30, w / 2 - 25, h * 0.40 + 25, w / 2 + 25, h * 0.40 + 25);
+
+    this.tweens.add({
+      targets: emblem,
+      angle: 360,
+      duration: 18000,
+      repeat: -1
+    });
+
+    this.add.text(w / 2, h * 0.56, 'SUPERPRO', { 
+      fontSize: '44px', 
+      fill: '#00f0ff', 
+      fontStyle: '900',
+      letterSpacing: 4,
+      shadow: { blur: 15, color: '#00f0ff', fill: true }
+    }).setOrigin(0.5);
+
+    this.add.text(w / 2, h * 0.63, 'DUNGEON CHRONICLES', { 
+      fontSize: '17px', 
+      fill: '#ff0055', 
+      fontStyle: 'bold',
+      letterSpacing: 3 
+    }).setOrigin(0.5);
+
+    const tapText = this.add.text(w / 2, h * 0.84, '► TAP ANYWHERE TO ENTER ◄', { 
+      fontSize: '15px', 
+      fill: '#94a3b8',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    this.tweens.add({ targets: tapText, alpha: 0.25, duration: 600, yoyo: true, repeat: -1 });
+
+    this.input.on('pointerdown', () => {
+      AudioFX.playPickup();
+      this.scene.start('MenuScene');
+    });
+  }
+}
+
+// --- SCENE 1: MAIN MENU SCENE ---
+class MenuScene extends Phaser.Scene {
+  constructor() { super('MenuScene'); }
+  create() {
+    const w = 450;
+    const h = 800;
+
+    const bgG = this.add.graphics();
+    bgG.fillStyle(0x080816, 1);
+    bgG.fillRect(0, 0, w, h);
+    bgG.lineStyle(1, 0x1e293b, 0.4);
+    for (let x = 0; x < w; x += 30) bgG.lineBetween(x, 0, x, h);
+    for (let y = 0; y < h; y += 30) bgG.lineBetween(0, y, w, y);
+
+    const bannerSafeTop = 75;
+
+    this.add.text(w / 2, bannerSafeTop + 45, 'SUPERPRO', { 
+      fontSize: '36px', 
+      fill: '#00f0ff', 
+      fontStyle: '900',
+      shadow: { blur: 10, color: '#00f0ff', fill: true }
+    }).setOrigin(0.5);
+
+    this.add.text(w / 2, bannerSafeTop + 85, `Sector Clearance: ${GameData.currentLevel} / ${GameData.totalLevels}`, { 
+      fontSize: '13px', 
+      fill: '#94a3b8',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    let menuStartY = bannerSafeTop + 145;
+    const spacing = 52;
+
+    this.createButton(w / 2, menuStartY, '⚔️ ENTER DUNGEON', () => this.scene.start('GameScene'), '#00f0ff', 0x0284c7);
+    this.createButton(w / 2, menuStartY + spacing, '🏆 LEADERBOARDS', () => this.scene.start('LeaderboardScene'));
+    this.createButton(w / 2, menuStartY + spacing * 2, '🎖️ ACHIEVEMENTS', () => this.scene.start('AchievementsScene'));
+    this.createButton(w / 2, menuStartY + spacing * 3, '🛒 ARMORY & SHOP', () => this.scene.start('StoreScene'));
+    this.createButton(w / 2, menuStartY + spacing * 4, '⚙️ SETTINGS', () => this.scene.start('SettingsScene'));
+  }
+
+  createButton(x, y, label, callback, strokeColor = '#38bdf8', bgFill = 0x0f172a) {
+    const container = this.add.container(x, y);
+    const bg = this.add.rectangle(0, 0, 270, 42, bgFill, 0.95).setInteractive({ useHandCursor: true });
+    bg.setStrokeStyle(1.5, Phaser.Display.Color.HexStringToColor(strokeColor).color);
+
+    const txt = this.add.text(0, 0, label, { 
+      fontSize: '13px', 
+      fill: '#ffffff', 
+      fontStyle: 'bold' 
+    }).setOrigin(0.5);
+
+    container.add([bg, txt]);
+
+    bg.on('pointerdown', () => {
+      AudioFX.playPickup();
+      callback();
+    });
+    bg.on('pointerover', () => bg.setFillStyle(0x1e293b));
+    bg.on('pointerout', () => bg.setFillStyle(bgFill));
+    return container;
+  }
+}
+
+// --- SCENE 2: GAMEPLAY SCENE ---
+class GameScene extends Phaser.Scene {
+  constructor() { super('GameScene'); }
+
+  create() {
+    this.isPaused = false;
+    this.isTransitioning = false;
+    this.playerHealth = 100;
+    this.maxHealth = 100;
+    this.currentWeaponIndex = 0;
+    this.weaponDroppedThisLevel = false;
+
+    this.weapons = GameData.premiumCatalog.filter(w => GameData.inventory.ownedWeapons.includes(w.name));
+
+    this.killsThisLevel = 0;
+    this.requiredKills = Math.min(3 + (GameData.currentLevel * 2), 100);
+    this.portalSpawned = false;
+    this.moveState = { up: false, down: false, left: false, right: false };
+
+    const w = 450;
+    const h = 800;
+
+    this.createProceduralTextures();
+
+    this.bgTile = this.add.tileSprite(w / 2, h / 2, w, h, 'dungeon_floor');
+
+    this.bullets = this.physics.add.group();
+    this.enemyBullets = this.physics.add.group();
+    this.enemies = this.physics.add.group();
+    this.drops = this.physics.add.group();
+
+    this.player = this.physics.add.sprite(w * 0.5, h * 0.55, 'player_ship').setCollideWorldBounds(true);
+
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+
+    this.spawnTimer = this.time.addEvent({
+      delay: 1800,
+      callback: () => this.maintainEnemyPopulation(),
+      loop: true
+    });
+    this.maintainEnemyPopulation();
+
+    this.physics.add.overlap(this.bullets, this.enemies, this.hitEnemy, null, this);
+    this.physics.add.overlap(this.enemyBullets, this.player, this.hitPlayer, null, this);
+    this.physics.add.overlap(this.player, this.drops, this.pickupItem, null, this);
+
+    this.createHUD();
+    this.createOnScreenControls();
+
+    this.input.keyboard.on('keydown-P', () => this.togglePauseMenu());
+    this.input.keyboard.on('keydown-ESC', () => this.togglePauseMenu());
+  }
+
+  createProceduralTextures() {
+    if (!this.textures.exists('dungeon_floor')) {
+      const g = this.make.graphics({add: false});
+      g.fillStyle(0x060814, 1);
+      g.fillRect(0, 0, 64, 64);
+      g.lineStyle(1, 0x141e33, 0.8);
+      g.strokeRect(0, 0, 64, 64);
+      g.lineStyle(1, 0x0e1726, 0.4);
+      g.lineBetween(0, 0, 64, 64);
+      g.generateTexture('dungeon_floor', 64, 64);
+    }
+
+    if (!this.textures.exists('player_ship')) {
+      const p = this.make.graphics({add: false});
+      p.fillStyle(0x00f0ff, 0.9);
+      p.fillTriangle(18, 40, 14, 30, 22, 30);
+      p.fillStyle(0x0284c7, 1);
+      p.fillTriangle(18, 2, 2, 32, 34, 32);
+      p.fillStyle(0x00f0ff, 1);
+      p.fillTriangle(18, 6, 8, 28, 28, 28);
+      p.fillStyle(0xffffff, 1);
+      p.fillCircle(18, 18, 4);
+      p.generateTexture('player_ship', 36, 42);
+    }
+
+    if (!this.textures.exists('enemy_std')) {
+      const e = this.make.graphics({add: false});
+      e.fillStyle(0xff0055, 1);
+      e.fillTriangle(16, 32, 2, 4, 30, 4);
+      e.fillStyle(0xff5577, 1);
+      e.fillTriangle(16, 26, 6, 8, 26, 8);
+      e.fillStyle(0xffffff, 1);
+      e.fillCircle(16, 14, 3);
+      e.generateTexture('enemy_std', 32, 34);
+    }
+
+    if (!this.textures.exists('enemy_fast')) {
+      const ef = this.make.graphics({add: false});
+      ef.fillStyle(0xffea00, 1);
+      ef.fillTriangle(13, 28, 0, 0, 26, 0);
+      ef.fillStyle(0xff8800, 1);
+      ef.fillCircle(13, 10, 4);
+      ef.generateTexture('enemy_fast', 26, 28);
+    }
+
+    if (!this.textures.exists('enemy_tank')) {
+      const et = this.make.graphics({add: false});
+      et.fillStyle(0x7c3aed, 1);
+      et.fillRect(4, 4, 36, 36);
+      et.lineStyle(3, 0xa855f7, 1);
+      et.strokeRect(4, 4, 36, 36);
+      et.fillStyle(0xff0055, 1);
+      et.fillCircle(22, 22, 7);
+      et.generateTexture('enemy_tank', 44, 44);
+    }
+
+    if (!this.textures.exists('bullet_cyan')) {
+      const bc = this.make.graphics({add: false});
+      bc.fillStyle(0x00f0ff, 0.4);
+      bc.fillCircle(6, 6, 6);
+      bc.fillStyle(0xffffff, 1);
+      bc.fillCircle(6, 6, 3);
+      bc.generateTexture('bullet_cyan', 12, 12);
+
+      const by = this.make.graphics({add: false});
+      by.fillStyle(0xffea00, 0.4);
+      by.fillCircle(5, 5, 5);
+      by.fillStyle(0xffffff, 1);
+      by.fillCircle(5, 5, 2.5);
+      by.generateTexture('bullet_yellow', 10, 10);
+
+      const bg = this.make.graphics({add: false});
+      bg.fillStyle(0x00ff66, 0.4);
+      bg.fillRect(0, 0, 16, 6);
+      bg.fillStyle(0xffffff, 1);
+      bg.fillRect(3, 1, 10, 4);
+      bg.generateTexture('bullet_green', 16, 6);
+
+      const br = this.make.graphics({add: false});
+      br.fillStyle(0xff0055, 0.4);
+      br.fillCircle(8, 8, 8);
+      br.fillStyle(0xffa500, 1);
+      br.fillCircle(8, 8, 4.5);
+      br.generateTexture('bullet_red', 16, 16);
+    }
+
+    if (!this.textures.exists('drop_health')) {
+      const dh = this.make.graphics({add: false});
+      dh.fillStyle(0x059669, 1);
+      dh.fillRect(0, 0, 24, 24);
+      dh.lineStyle(1.5, 0x34d399, 1);
+      dh.strokeRect(0, 0, 24, 24);
+      dh.fillStyle(0xffffff, 1);
+      dh.fillRect(10, 4, 4, 16);
+      dh.fillRect(4, 10, 16, 4);
+      dh.generateTexture('drop_health', 24, 24);
+
+      const dw = this.make.graphics({add: false});
+      dw.fillStyle(0xd97706, 1);
+      dw.fillRect(0, 0, 24, 24);
+      dw.lineStyle(1.5, 0xfbbf24, 1);
+      dw.strokeRect(0, 0, 24, 24);
+      dw.fillStyle(0xffffff, 1);
+      dw.fillCircle(12, 12, 5);
+      dw.generateTexture('drop_weapon', 24, 24);
+
+      const pg = this.make.graphics({add: false});
+      pg.fillStyle(0x7c3aed, 0.8);
+      pg.fillCircle(25, 25, 24);
+      pg.lineStyle(3, 0x00f0ff, 1);
+      pg.strokeCircle(25, 25, 24);
+      pg.fillStyle(0xffffff, 0.9);
+      pg.fillCircle(25, 25, 10);
+      pg.generateTexture('portal_tex', 50, 50);
+    }
+  }
+
+  createOnScreenControls() {
+    const w = 450;
+    const h = 800;
+    const gap = 58;
+    const padX = 105;
+    const padY = h - 135;
+
+    this.createTouchBtn(padX, padY - gap, '▲', () => this.moveState.up = true, () => this.moveState.up = false);
+    this.createTouchBtn(padX, padY + gap, '▼', () => this.moveState.down = true, () => this.moveState.down = false);
+    this.createTouchBtn(padX - gap, padY, '◄', () => this.moveState.left = true, () => this.moveState.left = false);
+    this.createTouchBtn(padX + gap, padY, '►', () => this.moveState.right = true, () => this.moveState.right = false);
+
+    const fireContainer = this.add.container(w - 95, padY);
+    const fireOuter = this.add.circle(0, 0, 46, 0xff0055, 0.85).setInteractive({ useHandCursor: true });
+    fireOuter.setStrokeStyle(3, 0xffffff);
+    const fireLabel = this.add.text(0, 0, 'FIRE', { fontSize: '18px', fill: '#ffffff', fontStyle: '900' }).setOrigin(0.5);
+
+    fireContainer.add([fireOuter, fireLabel]);
+
+    fireOuter.on('pointerdown', () => {
+      fireOuter.setFillStyle(0xff3377);
+      this.fireAtClosestEnemy();
+    });
+    fireOuter.on('pointerup', () => fireOuter.setFillStyle(0xff0055));
+    fireOuter.on('pointerout', () => fireOuter.setFillStyle(0xff0055));
+  }
+
+  createTouchBtn(x, y, symbol, onDown, onUp) {
+    const btn = this.add.rectangle(x, y, 50, 50, 0x0f172a, 0.85).setInteractive({ useHandCursor: true });
+    btn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(x, y, symbol, { fontSize: '20px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+
+    btn.on('pointerdown', () => { btn.setFillStyle(0x1e293b); onDown(); });
+    btn.on('pointerup', () => { btn.setFillStyle(0x0f172a); onUp(); });
+    btn.on('pointerout', () => { btn.setFillStyle(0x0f172a); onUp(); });
+  }
+
+  fireAtClosestEnemy() {
+    if (this.isPaused || this.isTransitioning) return;
+
+    let targetX = this.player.x;
+    let targetY = this.player.y - 400;
+    let closestEnemy = null;
+    let minDist = 9999;
+
+    this.enemies.getChildren().forEach((enemy) => {
+      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
+      if (dist < minDist) {
+        minDist = dist;
+        closestEnemy = enemy;
+      }
+    });
+
+    if (closestEnemy) {
+      targetX = closestEnemy.x;
+      targetY = closestEnemy.y;
+    }
+
+    const activeWpn = this.weapons[this.currentWeaponIndex];
+    AudioFX.playShoot(activeWpn.name);
+
+    if (activeWpn.mode === 'spread') {
+      const baseAngle = Phaser.Math.Angle.Between(this.player.x, this.player.y, targetX, targetY);
+      [-0.18, 0, 0.18].forEach((spreadOffset) => {
+        const b = this.bullets.create(this.player.x, this.player.y, activeWpn.tex);
+        const angle = baseAngle + spreadOffset;
+        this.physics.velocityFromRotation(angle, activeWpn.speed, b.body.velocity);
+      });
+    } else {
+      const bullet = this.bullets.create(this.player.x, this.player.y, activeWpn.tex);
+      this.physics.moveTo(bullet, targetX, targetY, activeWpn.speed);
+    }
+  }
+
+  maintainEnemyPopulation() {
+    if (this.isPaused || this.isTransitioning) return;
+
+    const w = 450;
+    const currentEnemyCount = this.enemies.countActive();
+    const maxActiveEnemies = Math.min(3 + Math.floor(GameData.currentLevel * 0.7), 16);
+
+    if (currentEnemyCount < maxActiveEnemies) {
+      const x = Phaser.Math.Between(40, w - 40);
+      const y = Phaser.Math.Between(165, 300);
+
+      const roll = Math.random();
+      let texKey = 'enemy_std';
+      let speed = 110;
+      let hp = 35 + (GameData.currentLevel * 6);
+      let enemyRank = 1;
+
+      if (roll > 0.72) {
+        texKey = 'enemy_fast';
+        speed = 175;
+        hp = 20 + (GameData.currentLevel * 4);
+        enemyRank = 2;
+      } else if (roll < 0.22) {
+        texKey = 'enemy_tank';
+        speed = 70;
+        hp = 90 + (GameData.currentLevel * 14);
+        enemyRank = 3;
+      }
+
+      const enemy = this.enemies.create(x, y, texKey);
+      enemy.setCollideWorldBounds(true);
+      enemy.health = hp;
+      enemy.baseSpeed = speed;
+      enemy.rank = enemyRank;
+
+      enemy.shootTimer = this.time.addEvent({
+        delay: Math.max(900, 2400 - GameData.currentLevel * 15),
+        callback: () => this.enemyShoot(enemy),
+        loop: true
+      });
+    }
+  }
+
+  enemyShoot(enemy) {
+    if (!enemy.active || this.isPaused || this.isTransitioning) return;
+    const bullet = this.enemyBullets.create(enemy.x, enemy.y, 'bullet_yellow');
+    this.physics.moveToObject(bullet, this.player, 330);
+  }
+
+  hitEnemy(bullet, enemy) {
+    bullet.destroy();
+    const dmg = this.weapons[this.currentWeaponIndex].damage;
+    enemy.health -= dmg;
+
+    AudioFX.playHit();
+    this.showDamageText(enemy.x, enemy.y, `-${dmg}`, '#00f0ff');
+
+    if (enemy.health <= 0) {
+      if (enemy.shootTimer) enemy.shootTimer.remove();
+
+      AudioFX.playExplosion();
+      this.cameras.main.shake(120, 0.008);
+      this.createExplosionParticles(enemy.x, enemy.y);
+
+      const earnedCoins = 5 * GameData.coinMultiplier;
+      GameData.inventory.coins += earnedCoins;
+      GameData.save();
+
+      if (this.playerHealth < 40) {
+        const drop = this.drops.create(enemy.x, enemy.y, 'drop_health');
+        drop.dropType = 'HEALTH';
+      } else if (GameData.currentLevel % 5 === 0 && enemy.rank >= 2 && !this.weaponDroppedThisLevel) {
+        const drop = this.drops.create(enemy.x, enemy.y, 'drop_weapon');
+        drop.dropType = 'WEAPON';
+        this.weaponDroppedThisLevel = true;
+      }
+
+      enemy.destroy();
+      this.killsThisLevel++;
+      this.updateHUD();
+
+      if (this.killsThisLevel >= this.requiredKills && !this.portalSpawned) {
+        this.spawnLevelPortal();
+      }
+    }
+  }
+
+  showDamageText(x, y, message, color = '#ffffff') {
+    const txt = this.add.text(x, y - 10, message, {
+      fontSize: '13px',
+      fill: color,
+      fontStyle: '900'
+    }).setOrigin(0.5);
+
+    this.tweens.add({
+      targets: txt,
+      y: y - 35,
+      alpha: 0,
+      duration: 500,
+      onComplete: () => txt.destroy()
+    });
+  }
+
+  createExplosionParticles(x, y) {
+    for (let i = 0; i < 12; i++) {
+      const color = Phaser.Math.RND.pick([0x00f0ff, 0xff0055, 0xffea00]);
+      const p = this.add.circle(x, y, Phaser.Math.Between(2, 4), color);
+      this.physics.add.existing(p);
+      p.body.setVelocity(Phaser.Math.Between(-180, 180), Phaser.Math.Between(-180, 180));
+      this.tweens.add({ targets: p, alpha: 0, scale: 0.2, duration: 350, onComplete: () => p.destroy() });
+    }
+  }
+
+  spawnLevelPortal() {
+    this.portalSpawned = true;
+    AudioFX.playPickup();
+    const w = 450;
+
+    const portalX = Phaser.Math.Between(80, w - 80);
+    const portalY = Phaser.Math.Between(175, 300);
+
+    this.portal = this.physics.add.sprite(portalX, portalY, 'portal_tex');
+    this.physics.add.overlap(this.player, this.portal, () => this.enterPortal(), null, this);
+    
+    this.tweens.add({
+      targets: this.portal,
+      angle: 360,
+      scale: 1.1,
+      yoyo: true,
+      repeat: -1,
+      duration: 1200
+    });
+
+    this.add.text(portalX, portalY - 36, 'WARP READY', { fontSize: '13px', fill: '#a855f7', fontStyle: '900' }).setOrigin(0.5);
+    this.updateHUD();
+  }
+
+  enterPortal() {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+
+    this.physics.pause();
+    if (this.spawnTimer) this.spawnTimer.remove();
+
+    GameData.currentLevel++;
+    GameData.save();
+
+    this.time.delayedCall(300, () => {
+      this.isTransitioning = false;
+      if (GameData.currentLevel > GameData.totalLevels) {
+        this.scene.start('MenuScene');
+      } else {
+        this.scene.restart();
+      }
+    });
+  }
+
+  hitPlayer(player, bullet) {
+    if (this.isTransitioning) return;
+    bullet.destroy();
+    this.playerHealth -= 14;
+    AudioFX.playHit();
+    this.cameras.main.shake(100, 0.012);
+    this.showDamageText(player.x, player.y, '-14 HP', '#ff0055');
+    this.updateHUD();
+
+    if (this.playerHealth <= 0) {
+      this.isTransitioning = true;
+      this.physics.pause();
+      if (this.spawnTimer) this.spawnTimer.remove();
+
+      this.time.delayedCall(500, () => {
+        this.isTransitioning = false;
+        this.scene.restart();
+      });
+    }
+  }
+
+  pickupItem(player, drop) {
+    AudioFX.playPickup();
+    if (drop.dropType === 'HEALTH') {
+      this.playerHealth = Math.min(this.maxHealth, this.playerHealth + 40);
+      this.showDamageText(player.x, player.y, '+40 HP', '#00ff66');
+    } else if (drop.dropType === 'WEAPON') {
+      this.currentWeaponIndex = (this.currentWeaponIndex + 1) % this.weapons.length;
+      this.showDamageText(player.x, player.y, 'WEAPON UPGRADE!', '#ffea00');
+    }
+    drop.destroy();
+    this.updateHUD();
+  }
+
+  createHUD() {
+    const w = 450;
+    const safeTop = 15;
+
+    this.add.rectangle(w / 2, safeTop + 20, w, 44, 0x070b14, 0.95);
+
+    this.hpBarBg = this.add.rectangle(75, safeTop + 10, 100, 10, 0x1e293b).setOrigin(0, 0.5);
+    this.hpBar = this.add.rectangle(75, safeTop + 10, 100, 10, 0x00ff66).setOrigin(0, 0.5);
+    this.hpLabel = this.add.text(12, safeTop + 4, 'HP', { fontSize: '11px', fill: '#00ff66', fontStyle: '900' });
+
+    this.levelText = this.add.text(185, safeTop + 4, '', { fontSize: '11px', fill: '#00f0ff', fontStyle: 'bold' });
+    this.statusText = this.add.text(12, safeTop + 24, '', { fontSize: '11px', fill: '#94a3b8', fontStyle: 'bold' });
+
+    this.menuBtn = this.add.text(w - 105, safeTop + 4, '[ MENU ]', { 
+      fontSize: '11px', 
+      fill: '#00f0ff', 
+      fontStyle: 'bold',
+      backgroundColor: '#0f172a',
+      padding: { x: 5, y: 3 }
+    }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.pauseBtn = this.add.text(w - 48, safeTop + 4, '[ ❚❚ ]', { 
+      fontSize: '11px', 
+      fill: '#ffea00', 
+      fontStyle: 'bold',
+      backgroundColor: '#0f172a',
+      padding: { x: 5, y: 3 }
+    }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.togglePauseMenu());
+
+    this.updateHUD();
+  }
+
+  updateHUD() {
+    const wpn = this.weapons[this.currentWeaponIndex].name;
+    const portalStatus = this.portalSpawned ? 'WARP READY 🟣' : `KILLS: ${this.killsThisLevel}/${this.requiredKills}`;
+    
+    const hpPct = Math.max(0, this.playerHealth / this.maxHealth);
+    this.hpBar.width = 100 * hpPct;
+    this.hpBar.fillColor = hpPct > 0.4 ? 0x00ff66 : 0xff0055;
+
+    this.levelText.setText(`SECTOR ${GameData.currentLevel}/${GameData.totalLevels}`);
+    this.statusText.setText(`WPN: ${wpn}  |  COINS: ${GameData.inventory.coins}  |  ${portalStatus}`);
+  }
+
+  update() {
+    if (this.isPaused || this.isTransitioning) return;
+
+    this.bgTile.tilePositionY -= 0.8;
+
+    let vx = 0;
+    let vy = 0;
+    const speed = 240;
+
+    if (this.cursors.left.isDown || this.wasd.left.isDown || this.moveState.left) vx -= speed;
+    if (this.cursors.right.isDown || this.wasd.right.isDown || this.moveState.right) vx += speed;
+    if (this.cursors.up.isDown || this.wasd.up.isDown || this.moveState.up) vy -= speed;
+    if (this.cursors.down.isDown || this.wasd.down.isDown || this.moveState.down) vy += speed;
+
+    this.player.setVelocity(vx, vy);
+
+    if (this.player.y < 115) this.player.y = 115;
+
+    this.enemies.getChildren().forEach((enemy) => {
+      this.physics.moveToObject(enemy, this.player, enemy.baseSpeed + (GameData.currentLevel * 2));
+    });
+  }
+
+  togglePauseMenu() {
+    this.isPaused = !this.isPaused;
+    const w = 450;
+    const h = 800;
+
+    if (this.isPaused) {
+      this.physics.pause();
+      this.pauseOverlay = this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.85);
+      this.pauseTitle = this.add.text(w / 2, h * 0.28, 'TACTICAL PAUSE', { 
+        fontSize: '28px', 
+        fill: '#00f0ff', 
+        fontStyle: '900',
+        letterSpacing: 2
+      }).setOrigin(0.5);
+
+      this.resumeBtn = this.createPauseBtn(w / 2, h * 0.42, 'RESUME MISSION', () => this.togglePauseMenu());
+      this.restartBtn = this.createPauseBtn(w / 2, h * 0.54, 'RESTART SECTOR', () => this.scene.restart());
+      this.quitBtn = this.createPauseBtn(w / 2, h * 0.66, 'ABORT TO MENU', () => this.scene.start('MenuScene'));
+    } else {
+      this.physics.resume();
+      if (this.pauseOverlay) this.pauseOverlay.destroy();
+      if (this.pauseTitle) this.pauseTitle.destroy();
+      if (this.resumeBtn) this.resumeBtn.destroy();
+      if (this.restartBtn) this.restartBtn.destroy();
+      if (this.quitBtn) this.quitBtn.destroy();
+    }
+  }
+
+  createPauseBtn(x, y, label, callback) {
+    const container = this.add.container(x, y);
+    const bg = this.add.rectangle(0, 0, 220, 44, 0x0f172a).setInteractive({ useHandCursor: true });
+    bg.setStrokeStyle(1.5, 0x00f0ff);
+    const txt = this.add.text(0, 0, label, { fontSize: '14px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    container.add([bg, txt]);
+    bg.on('pointerdown', callback);
+    return container;
+  }
+}
+
+// --- SCENE 3: LEADERBOARD SCENE ---
+class LeaderboardScene extends Phaser.Scene {
+  constructor() { super('LeaderboardScene'); }
+
+  create() {
+    const w = 450;
+    const h = 800;
+    const topSafe = 35;
+
+    const bgG = this.add.graphics();
+    bgG.fillStyle(0x0a0a14, 1);
+    bgG.fillRect(0, 0, w, h);
+
+    const topBackBtn = this.add.rectangle(65, topSafe + 20, 90, 30, 0x0f172a).setInteractive({ useHandCursor: true });
+    topBackBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(65, topSafe + 20, '◄ MENU', { fontSize: '12px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    topBackBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.add.text(w / 2 + 30, topSafe + 20, 'HALL OF FAME', { fontSize: '18px', fill: '#00f0ff', fontStyle: '900' }).setOrigin(0.5);
+    this.add.text(w / 2, topSafe + 65, `Your Highest Sector: Level ${GameData.currentLevel}`, { fontSize: '13px', fill: '#ffea00', fontStyle: 'bold' }).setOrigin(0.5);
+
+    this.add.rectangle(w / 2, 435, w * 0.9, 410, 0x0f172a).setStrokeStyle(1, 0x1e293b);
+    
+    let startY = topSafe + 120;
+    const localRecords = [
+      { rank: 1, name: 'Commander Alpha', score: GameData.currentLevel }
+    ];
+
+    localRecords.forEach((entry, idx) => {
+      this.add.rectangle(w / 2, startY, w * 0.84, 38, 0x1e293b);
+      this.add.text(w * 0.12, startY, `🥇 ${entry.name}`, { fontSize: '12px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0, 0.5);
+      this.add.text(w * 0.88, startY, `Sector ${entry.score}`, { fontSize: '12px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(1, 0.5);
+    });
+
+    const backBtn = this.add.rectangle(w / 2, h - 50, 190, 36, 0x0f172a).setInteractive({ useHandCursor: true });
+    backBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(w / 2, h - 50, 'BACK TO MENU', { fontSize: '13px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+  }
+}
+
+// --- SCENE 4: ACHIEVEMENTS SCENE ---
+class AchievementsScene extends Phaser.Scene {
+  constructor() { super('AchievementsScene'); }
+
+  create() {
+    const w = 450;
+    const h = 800;
+    const topSafe = 35;
+
+    const bgG = this.add.graphics();
+    bgG.fillStyle(0x0a0a14, 1);
+    bgG.fillRect(0, 0, w, h);
+
+    const topBackBtn = this.add.rectangle(65, topSafe + 20, 90, 30, 0x0f172a).setInteractive({ useHandCursor: true });
+    topBackBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(65, topSafe + 20, '◄ MENU', { fontSize: '12px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    topBackBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.add.text(w / 2 + 30, topSafe + 20, 'HONORS & BADGES', { fontSize: '18px', fill: '#00f0ff', fontStyle: '900' }).setOrigin(0.5);
+
+    this.add.rectangle(w / 2, 430, w * 0.9, 440, 0x0f172a).setStrokeStyle(1, 0x1e293b);
+
+    const achList = [
+      { id: 'first_win', name: 'First Clearance', description: 'Conquer Sector 1', unlocked: GameData.currentLevel > 1 },
+      { id: 'level_10', name: 'Veteran Operator', description: 'Reach Sector 10', unlocked: GameData.currentLevel >= 10 }
+    ];
+
+    let startY = topSafe + 85;
+    achList.forEach(ach => {
+      const isUnlocked = ach.unlocked;
+      const cardBg = this.add.rectangle(w / 2, startY, w * 0.84, 60, isUnlocked ? 0x064e3b : 0x1e293b);
+      cardBg.setStrokeStyle(1, isUnlocked ? 0x34d399 : 0x334155);
+
+      const icon = isUnlocked ? '🎖️' : '🔒';
+      this.add.text(w * 0.12, startY - 10, `${icon} ${ach.name}`, { 
+        fontSize: '13px', 
+        fill: isUnlocked ? '#34d399' : '#ffffff', 
+        fontStyle: 'bold' 
+      });
+
+      this.add.text(w * 0.12, startY + 10, ach.description, { 
+        fontSize: '11px', 
+        fill: '#94a3b8' 
+      });
+
+      const statusLabel = isUnlocked ? 'UNLOCKED' : 'LOCKED';
+      this.add.text(w * 0.88, startY, statusLabel, { 
+        fontSize: '11px', 
+        fill: isUnlocked ? '#34d399' : '#64748b', 
+        fontStyle: 'bold' 
+      }).setOrigin(1, 0.5);
+
+      startY += 72;
+    });
+
+    const backBtn = this.add.rectangle(w / 2, h - 50, 190, 36, 0x0f172a).setInteractive({ useHandCursor: true });
+    backBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(w / 2, h - 50, 'BACK TO MENU', { fontSize: '13px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+  }
+}
+
+// --- SCENE 5: STORE SCENE ---
+class StoreScene extends Phaser.Scene {
+  constructor() { super('StoreScene'); }
+
+  create() {
+    const w = 450;
+    const h = 800;
+    const topSafe = 35;
+
+    const bgG = this.add.graphics();
+    bgG.fillStyle(0x0a0a14, 1);
+    bgG.fillRect(0, 0, w, h);
+
+    const topBackBtn = this.add.rectangle(65, topSafe + 20, 90, 30, 0x0f172a).setInteractive({ useHandCursor: true });
+    topBackBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(65, topSafe + 20, '◄ MENU', { fontSize: '12px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    topBackBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.add.text(w / 2 + 30, topSafe + 20, 'SECTOR REQUISITIONS', { fontSize: '18px', fill: '#00f0ff', fontStyle: '900' }).setOrigin(0.5);
+    this.coinText = this.add.text(w / 2, topSafe + 65, `Bank Credits: ${GameData.inventory.coins} 💰`, { fontSize: '13px', fill: '#ffea00', fontStyle: 'bold' }).setOrigin(0.5);
+
+    let startY = topSafe + 105;
+    GameData.premiumCatalog.forEach(wpn => {
+      const isOwned = GameData.inventory.ownedWeapons.includes(wpn.name);
+      
+      this.add.rectangle(w / 2, startY, w * 0.88, 42, 0x0f172a).setStrokeStyle(1, 0x1e293b);
+      this.add.text(w * 0.1, startY - 7, wpn.name, { fontSize: '13px', fill: '#ffffff', fontStyle: 'bold' });
+      this.add.text(w * 0.1, startY + 8, `DMG: ${wpn.damage} | VEL: ${wpn.speed}`, { fontSize: '10px', fill: '#94a3b8' });
+
+      if (isOwned) {
+        this.add.text(w * 0.8, startY, 'EQUIPPED', { fontSize: '11px', fill: '#34d399', fontStyle: 'bold' }).setOrigin(0.5);
+      } else {
+        const buyBtn = this.add.rectangle(w * 0.8, startY, 80, 24, 0x00f0ff).setInteractive({ useHandCursor: true });
+        this.add.text(w * 0.8, startY, `${wpn.price} C`, { fontSize: '11px', fill: '#000', fontStyle: '900' }).setOrigin(0.5);
+
+        buyBtn.on('pointerdown', () => {
+          if (GameData.inventory.coins >= wpn.price) {
+            AudioFX.playPickup();
+            GameData.inventory.coins -= wpn.price;
+            GameData.inventory.ownedWeapons.push(wpn.name);
+            GameData.save();
+            this.scene.restart();
+          }
+        });
+      }
+      startY += 52;
+    });
+
+    const backBtn = this.add.rectangle(w / 2, h - 50, 190, 36, 0x0f172a).setInteractive({ useHandCursor: true });
+    backBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(w / 2, h - 50, 'BACK TO MENU', { fontSize: '13px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+  }
+}
+
+// --- SCENE 6: SETTINGS SCENE ---
+class SettingsScene extends Phaser.Scene {
+  constructor() { super('SettingsScene'); }
+
+  create() {
+    const w = 450;
+    const h = 800;
+    const topSafe = 35;
+
+    const bgG = this.add.graphics();
+    bgG.fillStyle(0x0a0a14, 1);
+    bgG.fillRect(0, 0, w, h);
+
+    const topBackBtn = this.add.rectangle(65, topSafe + 20, 90, 30, 0x0f172a).setInteractive({ useHandCursor: true });
+    topBackBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(65, topSafe + 20, '◄ MENU', { fontSize: '12px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    topBackBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+
+    this.add.text(w / 2, topSafe + 65, 'SYSTEM AUDIO', { fontSize: '22px', fill: '#00f0ff', fontStyle: '900' }).setOrigin(0.5);
+
+    this.volText = this.add.text(w / 2, topSafe + 130, `Synthesizer Gain: ${Math.round(GameData.soundVolume * 100)}%`, { 
+      fontSize: '16px', 
+      fill: '#ffffff',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+
+    const minusBtn = this.add.rectangle(w / 2 - 75, topSafe + 200, 48, 48, 0x0f172a).setInteractive({ useHandCursor: true });
+    minusBtn.setStrokeStyle(2, 0xff0055);
+    this.add.text(w / 2 - 75, topSafe + 200, '-', { fontSize: '30px', fill: '#ff0055', fontStyle: 'bold' }).setOrigin(0.5);
+
+    const plusBtn = this.add.rectangle(w / 2 + 75, topSafe + 200, 48, 48, 0x0f172a).setInteractive({ useHandCursor: true });
+    plusBtn.setStrokeStyle(2, 0x34d399);
+    this.add.text(w / 2 + 75, topSafe + 200, '+', { fontSize: '30px', fill: '#34d399', fontStyle: 'bold' }).setOrigin(0.5);
+
+    minusBtn.on('pointerdown', () => {
+      GameData.soundVolume = Math.max(0, GameData.soundVolume - 0.1);
+      GameData.save();
+      this.volText.setText(`Synthesizer Gain: ${Math.round(GameData.soundVolume * 100)}%`);
+    });
+
+    plusBtn.on('pointerdown', () => {
+      GameData.soundVolume = Math.min(1, GameData.soundVolume + 0.1);
+      GameData.save();
+      AudioFX.playPickup();
+      this.volText.setText(`Synthesizer Gain: ${Math.round(GameData.soundVolume * 100)}%`);
+    });
+
+    const resetBtn = this.add.rectangle(w / 2, topSafe + 340, 220, 38, 0x450a0a).setInteractive({ useHandCursor: true });
+    resetBtn.setStrokeStyle(1.5, 0xff0055);
+    this.add.text(w / 2, topSafe + 340, 'WIPE OPERATIONAL DATA', { fontSize: '11px', fill: '#fca5a5', fontStyle: 'bold' }).setOrigin(0.5);
+    resetBtn.on('pointerdown', () => {
+      if (confirm("Reset all operational progress, coins, and records?")) {
+        GameData.clearStorage();
+        GameData.currentLevel = 1;
+        GameData.inventory = { coins: 0, ownedWeapons: ['Pistol'] };
+        this.scene.start('MenuScene');
+      }
+    });
+
+    const backBtn = this.add.rectangle(w / 2, h - 50, 190, 36, 0x0f172a).setInteractive({ useHandCursor: true });
+    backBtn.setStrokeStyle(1.5, 0x00f0ff);
+    this.add.text(w / 2, h - 50, 'BACK TO MENU', { fontSize: '13px', fill: '#00f0ff', fontStyle: 'bold' }).setOrigin(0.5);
+    backBtn.on('pointerdown', () => this.scene.start('MenuScene'));
+  }
+}
+
+// Phaser Configuration
+const config = {
+  type: Phaser.AUTO,
+  parent: 'game-container',
+  width: 450,
+  height: 800,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  physics: {
+    default: 'arcade',
+    arcade: { gravity: { y: 0 }, debug: false }
+  },
+  scene: [
+    SplashScene,
+    MenuScene,
+    GameScene,
+    LeaderboardScene,
+    AchievementsScene,
+    StoreScene,
+    SettingsScene
+  ]
+};
+
+const game = new Phaser.Game(config);
+</script>
+</body>
+</html>

@@ -1,1 +1,16 @@
-Enter a domain to generate a JSON file
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.atzec.app",
+      "sha256_cert_fingerprints": [
+        "B1:9E:4F:68:23:BA:8D:EB:5B:8F:0C:A4:43:AF:BE:E7:27:1E:DF:42:86:5A:B9:02:75:2E:36:CA:1D:72:D2:9E",
+        "D7:66:08:9E:4A:CC:16:AD:E1:A8:34:72:4F:66:D6:0E:02:5B:1E:2E:6F:8C:E9:07:55:6D:E6:66:4C:B1:E8:5F"
+      ]
+    }
+  }
+]

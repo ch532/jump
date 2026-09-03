@@ -96,3 +96,5 @@ video.unrulymedia.com, 905340553, RESELLER
 videoshakers.tv, 58204917364298, RESELLER, 819580c2afa8a3aa
 xandr.com, 13293, RESELLER, f5ab79cb980f11d1
 zetaglobal.net, 767, RESELLER
+
+google.com, pub-7728035806961877, DIRECT, f08c47fec0942fa0

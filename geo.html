@@ -442,9 +442,6 @@
 
     /*
      * Native ML Kit language detection.
-     *
-     * The function returns a Promise and waits for
-     * ATZECBridge.java to return the language.
      */
 
     function identifyLanguageWithAndroid(text) {
@@ -617,10 +614,6 @@
 
       };
 
-
-    /*
-     * Detect language from Cultural Markers.
-     */
 
     async function detectCulturalLanguage() {
 
@@ -985,6 +978,9 @@
 
     /*
      * Speech.
+     *
+     * Native Android Text-to-Speech is preferred.
+     * Browser speech synthesis is only a fallback.
      */
 
     function toggleSpeech() {
@@ -1009,12 +1005,30 @@
           : "Voice Output: OFF";
 
 
-      if (
-        !isSpeechEnabled &&
-        "speechSynthesis" in window
-      ) {
+      if (!isSpeechEnabled) {
 
-        Android.speakText(cleanText);
+        if (NATIVE_ANDROID) {
+
+          try {
+
+            Android.stopSpeaking();
+
+          } catch (error) {
+
+            console.error(
+              "Native TTS stop error:",
+              error
+            );
+
+          }
+
+        } else if (
+          "speechSynthesis" in window
+        ) {
+
+          window.speechSynthesis.cancel();
+
+        }
 
       }
 
@@ -1025,7 +1039,8 @@
 
       if (
         !isSpeechEnabled ||
-        !("speechSynthesis" in window)
+        !text ||
+        !String(text).trim()
       ) {
 
         return;
@@ -1033,13 +1048,8 @@
       }
 
 
-      window
-        .speechSynthesis
-        .cancel();
-
-
       const cleanText =
-        String(text || "")
+        String(text)
           .replace(
             /```[\s\S]*?```/g,
             ""
@@ -1051,33 +1061,82 @@
           .replace(
             /[*#_~]/g,
             ""
+          )
+          .trim();
+
+
+      if (!cleanText) {
+
+        return;
+
+      }
+
+
+      /*
+       * Native Android TTS.
+       */
+
+      if (NATIVE_ANDROID) {
+
+        try {
+
+          Android.speakText(
+            cleanText
+          );
+
+          return;
+
+        } catch (error) {
+
+          console.error(
+            "Native Android TTS error:",
+            error
+          );
+
+        }
+
+      }
+
+
+      /*
+       * Browser fallback.
+       */
+
+      if (
+        "speechSynthesis" in window
+      ) {
+
+        window
+          .speechSynthesis
+          .cancel();
+
+
+        const utterance =
+          new SpeechSynthesisUtterance(
+            cleanText
           );
 
 
-      const utterance =
-        new SpeechSynthesisUtterance(
-          cleanText
-        );
+        utterance.rate =
+          0.95;
 
 
-      utterance.rate =
-        0.95;
+        utterance.pitch =
+          1.0;
 
 
-      utterance.pitch =
-        1.0;
+        utterance.lang =
+          navigator.language ||
+          "en-US";
 
 
-      utterance.lang =
-        navigator.language ||
-        "en-US";
+        window
+          .speechSynthesis
+          .speak(
+            utterance
+          );
 
-
-      window
-        .speechSynthesis
-        .speak(
-          utterance
-        );
+      }
 
     }
 
@@ -1092,16 +1151,7 @@
 
 
     /*
-     * ============================================================
      * AI ENVIRONMENT EVALUATION
-     * ============================================================
-     *
-     * The critical part is:
-     *
-     * await identifyLanguageWithAndroid(...)
-     *
-     * This means the AI gateway is not contacted until
-     * ML Kit has returned the language.
      */
 
     async function evaluateEnvironment() {
@@ -1415,7 +1465,7 @@
 
 
     /*
-     * Escape HTML for error messages.
+     * Escape HTML.
      */
 
     function escapeHtml(value) {
@@ -1462,9 +1512,7 @@
   </script>
 
 
-  <!-- ============================================================
-       TRANSLATION
-       ============================================================ -->
+  <!-- TRANSLATION -->
 
   <script>
 

@@ -89,7 +89,6 @@
     </div>
   </header>
 
-
   <main class="flex-1 max-w-6xl w-full mx-auto p-4 flex flex-col md:flex-row gap-4">
 
     <div class="w-full md:w-1/2 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shadow-xl">
@@ -110,7 +109,6 @@
           </span>
 
         </div>
-
 
         <div class="grid grid-cols-2 gap-2 text-xs">
 
@@ -137,7 +135,6 @@
           </button>
 
         </div>
-
 
         <div
           id="customLocationRow"
@@ -171,7 +168,6 @@
 
       </div>
 
-
       <div class="grid grid-cols-2 gap-3 text-xs">
 
         <div>
@@ -190,7 +186,6 @@
           </select>
         </div>
 
-
         <div>
           <label class="text-slate-400 font-mono">
             ⚡ Avg Road Speed (km/h)
@@ -205,7 +200,6 @@
           >
         </div>
 
-
         <div>
           <label class="text-slate-400 font-mono">
             🏛️ Urban Zone Type
@@ -218,7 +212,6 @@
             class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1 focus:outline-none"
           >
         </div>
-
 
         <div>
           <label class="text-slate-400 font-mono">
@@ -236,7 +229,6 @@
           </select>
         </div>
 
-
         <div>
           <label class="text-slate-400 font-mono">
             🗣️ Local Sentiment
@@ -253,7 +245,6 @@
           </select>
         </div>
 
-
         <div>
           <label class="text-slate-400 font-mono">
             🎭 Cultural Markers
@@ -269,7 +260,6 @@
 
       </div>
 
-
       <div
         id="nativeLanguageCard"
         class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-400"
@@ -283,7 +273,6 @@
         </span>
       </div>
 
-
       <div
         id="liveStreamCard"
         class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-400"
@@ -294,7 +283,6 @@
 
         Open-Meteo Atmospheric Stream Ready
       </div>
-
 
       <div class="pt-1 flex gap-2">
 
@@ -316,7 +304,6 @@
 
     </div>
 
-
     <div class="w-full md:w-1/2 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col relative overflow-hidden shadow-xl min-h-[400px]">
 
       <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
@@ -334,7 +321,6 @@
 
       </div>
 
-
       <div
         id="responseArea"
         class="prose text-xs text-slate-200 flex-1 overflow-y-auto pr-1"
@@ -343,15 +329,6 @@
           Select a location and click "Run Global AI Inference"...
         </p>
       </div>
-
-
-      <button
-        onclick="speakLastResponse()"
-        class="mt-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition shrink-0"
-      >
-        🔊 Re-broadcast Voice Diagnostic
-      </button>
-
 
       <div
         id="loadingOverlay"
@@ -369,7 +346,6 @@
     </div>
 
   </main>
-
 
   <footer class="mt-auto border-t border-slate-800 bg-slate-900/90 p-6 text-center text-slate-400 text-xs font-sans">
 
@@ -413,20 +389,16 @@
 
   </footer>
 
-
   <script>
 
     const NATIVE_ANDROID =
       typeof Android !== "undefined";
 
-
     const ENVIRONMENT_WORKER_URL =
       "https://ancient-glade-cd13.trustconnect713.workers.dev/";
 
-
     const TRANSLATION_WORKER_URL =
       "https://proud-wildflower-99aa.trustconnect713.workers.dev";
-
 
     let nativeLanguageDetected = "auto";
 
@@ -440,10 +412,6 @@
     let selectedCoords = null;
 
 
-    /*
-     * Native ML Kit language detection.
-     */
-
     function identifyLanguageWithAndroid(text) {
 
       return new Promise((resolve) => {
@@ -456,7 +424,6 @@
 
           return;
         }
-
 
         if (!NATIVE_ANDROID) {
 
@@ -479,10 +446,8 @@
           return;
         }
 
-
         const requestId =
           ++nativeLanguageRequestId;
-
 
         window._resolveNativeLanguage =
           function(language) {
@@ -494,23 +459,18 @@
               return;
             }
 
-
             delete window._resolveNativeLanguage;
-
 
             const result =
               language || "und";
 
-
             nativeLanguageDetected =
               result;
-
 
             const status =
               document.getElementById(
                 "nativeLanguageStatus"
               );
-
 
             if (status) {
 
@@ -528,17 +488,14 @@
 
             }
 
-
             resolve(result);
 
           };
-
 
         const status =
           document.getElementById(
             "nativeLanguageStatus"
           );
-
 
         if (status) {
 
@@ -546,7 +503,6 @@
             "ML Kit analyzing language...";
 
         }
-
 
         try {
 
@@ -561,13 +517,10 @@
             error
           );
 
-
           delete window._resolveNativeLanguage;
-
 
           nativeLanguageDetected =
             "und";
-
 
           if (status) {
 
@@ -575,7 +528,6 @@
               "Native language identification unavailable";
 
           }
-
 
           resolve("und");
 
@@ -586,20 +538,14 @@
     }
 
 
-    /*
-     * Called by ATZECBridge.java.
-     */
-
     window.onNativeLanguageDetected =
       function(language) {
 
         const result =
           language || "und";
 
-
         nativeLanguageDetected =
           result;
-
 
         if (
           typeof window._resolveNativeLanguage ===
@@ -615,6 +561,73 @@
       };
 
 
+    /*
+     * Native TTS status callback.
+     */
+
+    window.onNativeTtsStatus =
+      function(status) {
+
+        console.log(
+          "Native TTS status:",
+          status
+        );
+
+        const speechStatus =
+          document.getElementById(
+            "speechStatusText"
+          );
+
+        if (!speechStatus) {
+          return;
+        }
+
+        if (status === "ready") {
+
+          speechStatus.innerText =
+            isSpeechEnabled
+              ? "Voice Output: ON"
+              : "Voice Output: OFF";
+
+        } else if (status === "initializing") {
+
+          speechStatus.innerText =
+            "Voice: Initializing...";
+
+        } else if (status === "speaking") {
+
+          speechStatus.innerText =
+            "Voice: Speaking";
+
+        } else if (status === "stopped") {
+
+          speechStatus.innerText =
+            isSpeechEnabled
+              ? "Voice Output: ON"
+              : "Voice Output: OFF";
+
+        } else if (
+          status === "language_unavailable"
+        ) {
+
+          speechStatus.innerText =
+            "Voice: Language unavailable";
+
+        } else if (status === "unavailable") {
+
+          speechStatus.innerText =
+            "Voice: TTS unavailable";
+
+        } else if (status === "error") {
+
+          speechStatus.innerText =
+            "Voice: TTS error";
+
+        }
+
+      };
+
+
     async function detectCulturalLanguage() {
 
       const input =
@@ -622,17 +635,12 @@
           "culturalMarkers"
         );
 
-
       if (!input) {
-
         return "auto";
-
       }
-
 
       const text =
         input.value.trim();
-
 
       if (!text) {
 
@@ -642,7 +650,6 @@
         return "auto";
 
       }
-
 
       return await identifyLanguageWithAndroid(
         text
@@ -660,7 +667,6 @@
             "culturalMarkers"
           );
 
-
         if (culturalInput) {
 
           culturalInput.addEventListener(
@@ -669,7 +675,6 @@
           );
 
         }
-
 
         if (NATIVE_ANDROID) {
 
@@ -683,10 +688,6 @@
     );
 
 
-    /*
-     * Location presets.
-     */
-
     function handlePresetChange() {
 
       const val =
@@ -694,18 +695,15 @@
           "locationPresets"
         ).value;
 
-
       const customRow =
         document.getElementById(
           "customLocationRow"
         );
 
-
       const badge =
         document.getElementById(
           "locationBadge"
         );
-
 
       if (val === "custom") {
 
@@ -723,7 +721,6 @@
         return;
       }
 
-
       customRow.classList.add(
         "hidden"
       );
@@ -731,7 +728,6 @@
       customRow.classList.remove(
         "flex"
       );
-
 
       if (val === "auto") {
 
@@ -743,7 +739,6 @@
         return;
       }
 
-
       const [
         lat,
         lon
@@ -752,22 +747,16 @@
           .split(",")
           .map(Number);
 
-
       selectedCoords = {
         lat,
         lon
       };
-
 
       badge.innerText =
         `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
 
     }
 
-
-    /*
-     * Custom location search.
-     */
 
     async function searchLocationName() {
 
@@ -779,33 +768,25 @@
           .value
           .trim();
 
-
       const status =
         document.getElementById(
           "geocodeStatus"
         );
-
 
       const badge =
         document.getElementById(
           "locationBadge"
         );
 
-
       if (!query) {
-
         return;
-
       }
-
 
       status.innerText =
         "Resolving location...";
 
-
       status.className =
         "text-[10px] font-mono text-amber-400";
-
 
       try {
 
@@ -814,10 +795,8 @@
             `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
           );
 
-
         const data =
           await response.json();
-
 
         if (
           data &&
@@ -829,31 +808,25 @@
               data[0].lat
             );
 
-
           const lon =
             parseFloat(
               data[0].lon
             );
-
 
           selectedCoords = {
             lat,
             lon
           };
 
-
           const displayName =
             data[0].display_name ||
             "Location";
 
-
           status.innerText =
             `Resolved: ${displayName.split(",")[0]} (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
 
-
           status.className =
             "text-[10px] font-mono text-emerald-400";
-
 
           badge.innerText =
             displayName.split(",")[0];
@@ -862,7 +835,6 @@
 
           status.innerText =
             "Location not found. Try a different region or city name.";
-
 
           status.className =
             "text-[10px] font-mono text-rose-400";
@@ -876,10 +848,8 @@
           error
         );
 
-
         status.innerText =
           "Geocoding error. Check network connection.";
-
 
         status.className =
           "text-[10px] font-mono text-rose-400";
@@ -888,10 +858,6 @@
 
     }
 
-
-    /*
-     * Device GPS.
-     */
 
     function requestDeviceGPS() {
 
@@ -904,7 +870,6 @@
         return;
 
       }
-
 
       navigator.geolocation.getCurrentPosition(
 
@@ -920,19 +885,16 @@
 
           };
 
-
           document.getElementById(
             "locationPresets"
           ).value =
             "auto";
-
 
           document.getElementById(
             "customLocationRow"
           ).classList.add(
             "hidden"
           );
-
 
           document.getElementById(
             "locationBadge"
@@ -941,7 +903,6 @@
 
         },
 
-
         function() {
 
           alert(
@@ -949,7 +910,6 @@
           );
 
         },
-
 
         {
 
@@ -970,24 +930,19 @@
 
 
     function getActiveLocation() {
-
       return selectedCoords;
-
     }
 
 
     /*
-     * Speech.
-     *
-     * Native Android Text-to-Speech is preferred.
-     * Browser speech synthesis is only a fallback.
+     * Native Android TTS is preferred.
+     * The ML Kit language is passed to Android.
      */
 
     function toggleSpeech() {
 
       isSpeechEnabled =
         !isSpeechEnabled;
-
 
       document.getElementById(
         "speechStatusIcon"
@@ -996,14 +951,12 @@
           ? "🔊"
           : "🔇";
 
-
       document.getElementById(
         "speechStatusText"
       ).innerText =
         isSpeechEnabled
           ? "Voice Output: ON"
           : "Voice Output: OFF";
-
 
       if (!isSpeechEnabled) {
 
@@ -1047,7 +1000,6 @@
 
       }
 
-
       const cleanText =
         String(text)
           .replace(
@@ -1064,13 +1016,9 @@
           )
           .trim();
 
-
       if (!cleanText) {
-
         return;
-
       }
-
 
       /*
        * Native Android TTS.
@@ -1081,7 +1029,8 @@
         try {
 
           Android.speakText(
-            cleanText
+            cleanText,
+            nativeLanguageDetected
           );
 
           return;
@@ -1097,7 +1046,6 @@
 
       }
 
-
       /*
        * Browser fallback.
        */
@@ -1110,25 +1058,20 @@
           .speechSynthesis
           .cancel();
 
-
         const utterance =
           new SpeechSynthesisUtterance(
             cleanText
           );
 
-
         utterance.rate =
           0.95;
-
 
         utterance.pitch =
           1.0;
 
-
         utterance.lang =
           navigator.language ||
           "en-US";
-
 
         window
           .speechSynthesis
@@ -1141,19 +1084,6 @@
     }
 
 
-    function speakLastResponse() {
-
-      speakText(
-        lastAiResponse
-      );
-
-    }
-
-
-    /*
-     * AI ENVIRONMENT EVALUATION
-     */
-
     async function evaluateEnvironment() {
 
       const responseArea =
@@ -1161,18 +1091,15 @@
           "responseArea"
         );
 
-
       const loadingOverlay =
         document.getElementById(
           "loadingOverlay"
         );
 
-
       const liveStreamCard =
         document.getElementById(
           "liveStreamCard"
         );
-
 
       const culturalInput =
         document
@@ -1182,7 +1109,6 @@
           .value
           .trim();
 
-
       const culturalMarkersArray =
         culturalInput
           .split(",")
@@ -1191,14 +1117,12 @@
           )
           .filter(Boolean);
 
-
       loadingOverlay.classList.remove(
         "hidden"
       );
 
-
       /*
-       * WAIT FOR NATIVE ML KIT.
+       * Wait for native ML Kit.
        */
 
       if (culturalInput) {
@@ -1214,16 +1138,10 @@
 
       }
 
-
-      /*
-       * Build payload only after language detection.
-       */
-
       const payload = {
 
         location:
           getActiveLocation(),
-
 
         traffic: {
 
@@ -1231,7 +1149,6 @@
             document.getElementById(
               "trafficIndex"
             ).value,
-
 
           avg_speed_kmh:
             parseFloat(
@@ -1242,7 +1159,6 @@
 
         },
 
-
         urban: {
 
           type:
@@ -1250,12 +1166,10 @@
               "urbanType"
             ).value,
 
-
           density_score:
             "High"
 
         },
-
 
         human_activity: {
 
@@ -1264,12 +1178,10 @@
               "footTraffic"
             ).value,
 
-
           mobility_trend:
             "Active Flow"
 
         },
-
 
         culture: {
 
@@ -1278,12 +1190,10 @@
               ? "auto"
               : nativeLanguageDetected,
 
-
           public_sentiment:
             document.getElementById(
               "publicSentiment"
             ).value,
-
 
           active_cultural_markers:
             culturalMarkersArray
@@ -1292,8 +1202,13 @@
 
       };
 
+      /*
+       * Only cancel browser speech when running
+       * outside the native Android environment.
+       */
 
       if (
+        !NATIVE_ANDROID &&
         "speechSynthesis" in window
       ) {
 
@@ -1302,7 +1217,6 @@
           .cancel();
 
       }
-
 
       try {
 
@@ -1329,7 +1243,6 @@
             }
           );
 
-
         if (!response.ok) {
 
           throw new Error(
@@ -1338,10 +1251,8 @@
 
         }
 
-
         const data =
           await response.json();
-
 
         if (data.error) {
 
@@ -1354,12 +1265,10 @@
             data.aiAnalysis ||
             "No AI analysis was returned.";
 
-
           responseArea.innerHTML =
             marked.parse(
               lastAiResponse
             );
-
 
           if (
             data.telemetryIngested &&
@@ -1372,12 +1281,10 @@
                 .telemetryIngested
                 .live_atmospheric_feed;
 
-
             const loc =
               data
                 .telemetryIngested
                 .location;
-
 
             if (
               loc &&
@@ -1394,7 +1301,6 @@
 
           }
 
-
           speakText(
             lastAiResponse
           );
@@ -1407,7 +1313,6 @@
           "Environment inference error:",
           error
         );
-
 
         responseArea.innerHTML =
           `<p class="text-rose-400 font-mono">Network Error: ${escapeHtml(error.message)}</p>`;
@@ -1423,10 +1328,6 @@
     }
 
 
-    /*
-     * High-risk simulation.
-     */
-
     function triggerSimulatedHazard() {
 
       document.getElementById(
@@ -1434,39 +1335,30 @@
       ).value =
         "Severe gridlock";
 
-
       document.getElementById(
         "avgSpeed"
       ).value =
         5;
-
 
       document.getElementById(
         "footTraffic"
       ).value =
         "Very Dense";
 
-
       document.getElementById(
         "publicSentiment"
       ).value =
         "Agitated";
-
 
       document.getElementById(
         "culturalMarkers"
       ).value =
         "Emergency Corridor, Demonstration";
 
-
       evaluateEnvironment();
 
     }
 
-
-    /*
-     * Escape HTML.
-     */
 
     function escapeHtml(value) {
 
@@ -1478,7 +1370,6 @@
         return "";
 
       }
-
 
       return String(value)
 
@@ -1510,7 +1401,6 @@
     }
 
   </script>
-
 
   <!-- TRANSLATION -->
 
@@ -1552,7 +1442,6 @@
             }
           );
 
-
         if (!response.ok) {
 
           throw new Error(
@@ -1561,10 +1450,8 @@
 
         }
 
-
         const data =
           await response.json();
-
 
         if (
           data.data &&
@@ -1579,12 +1466,10 @@
 
         }
 
-
         console.error(
           "Translation API Error:",
           data
         );
-
 
         return null;
 
@@ -1594,7 +1479,6 @@
           "Translation Worker Error:",
           error
         );
-
 
         return null;
 
@@ -1608,13 +1492,11 @@
       const originalText =
         "Hello, welcome to SkyIPworld!";
 
-
       const translatedText =
         await translateText(
           originalText,
           "ig"
         );
-
 
       console.log(
         "Translation result:",
@@ -1627,3 +1509,5 @@
 
 </body>
 </html>
+
+This version keeps your existing GPS, GeoIP, Nominatim, ML Kit, atmospheric feed, AI inference, translation worker, and voice toggle functionality while removing the Re-broadcast Voice Diagnostic button.

@@ -1,3 +1,5 @@
+google.com, pub-1171216593802007, DIRECT, f08c47fec0942fa0
+
 toponad.com, 64efca0f6c616352463a31a713fcce5d, DIRECT, 1d49fe424a1a456d
 adagio.io, 1050, RESELLER
 admanmedia.com, 2433, RESELLER

@@ -222,3 +222,5 @@ bid-matrix.com, f2c71a45ea149366, RESELLER
 brightcom.com, 23120, RESELLER
 connekt.ai, 5585919044, RESELLER
 insticator.com, cadff748-965f-4393-a76e-a8f902512bad, RESELLER, b3511ffcafb23a32
+
+google.com, pub-7103045303312963, DIRECT, f08c47fec0942fa0

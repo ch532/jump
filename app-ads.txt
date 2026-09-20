@@ -1,4 +1,11 @@
-google.com, pub-1171216593802007, DIRECT, f08c47fec0942fa0
+bigo.sg, adidz3dyfp, RESELLER
+bold-win.com, 1189, RESELLER, 71746737d0bab951
+e-planning.net, 79ded3cfca3d3b78, RESELLER, c1ba615865ed87b2
+lijit.com, 606973, RESELLER, fafdf38b16bf6b2b
+media.net, 8CAXEGFDP, RESELLER
+media.net, 8CU675N41, RESELLER
+pubmatic.com, 168244, RESELLER, 5d62403b186f2ace
+themediagrid.com, JVHG38, RESELLER, 9fac4a4a87c2a44f
 
 toponad.com, 64efca0f6c616352463a31a713fcce5d, DIRECT, 1d49fe424a1a456d
 adagio.io, 1050, RESELLER

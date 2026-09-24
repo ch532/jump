@@ -1,3 +1,6 @@
+google.com, pub-8877351541430254, DIRECT, f08c47fec0942fa0
+
+
 bigo.sg, adidz3dyfp, RESELLER
 bold-win.com, 1189, RESELLER, 71746737d0bab951
 e-planning.net, 79ded3cfca3d3b78, RESELLER, c1ba615865ed87b2

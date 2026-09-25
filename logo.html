@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connectgold Enterprise Retail OS</title>
+    <title>Connectgold Enterprise - Engineering Portfolio</title>
     
-    <!-- Open Graph Meta Tags for Portal Preview -->
-    <meta property="og:title" content="Connectgold Enterprise Retail OS">
-    <meta property="og:description" content="Cloud-native, AI-powered retail platform running on Google Cloud Run with Gemini AI, Maps Platform, and Workspace.">
+    <!-- Open Graph Meta Tags for Portal & Social Sharing -->
+    <meta property="og:title" content="Connectgold Enterprise - Engineering Portfolio">
+    <meta property="og:description" content="Verified software products, developer tooling, SDKs, and mobile applications built by Connectgold Enterprise.">
     <meta property="og:image" content="https://chyke.online/connectgold_2.png">
     <meta property="og:url" content="https://chyke.online">
     <meta property="og:type" content="website">
@@ -20,95 +20,168 @@
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: #f8f9fa;
+            color: #202124;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }
         .card {
             background: white;
-            padding: 40px;
+            padding: 40px 30px;
             border-radius: 16px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            max-width: 640px;
-            width: 90%;
+            max-width: 680px;
+            width: 100%;
             border: 1px solid #e8eaed;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
         }
         .card img {
             width: 100%;
-            max-width: 180px;
+            max-width: 140px;
             height: auto;
             border-radius: 12px;
+            margin-bottom: 15px;
         }
         h1 {
             font-size: 24px;
             color: #202124;
-            margin: 20px 0 10px;
+            margin: 0 0 10px;
         }
-        p {
+        p.subtitle {
             color: #5f6368;
             font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            line-height: 1.5;
+            margin: 0;
         }
         .badge {
             display: inline-block;
             background: #000;
             color: #d4af37;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-top: 15px;
             letter-spacing: 0.5px;
         }
-        .btn-group {
+        .link-list {
             display: flex;
+            flex-direction: column;
             gap: 12px;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            margin-top: 25px;
         }
-        .btn {
-            display: inline-block;
-            background: #4285F4;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
+        .link-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            padding: 14px 18px;
+            border-radius: 10px;
             text-decoration: none;
+            color: #202124;
+            transition: all 0.2s ease;
+        }
+        .link-item:hover {
+            background: #f1f3f4;
+            border-color: #bdc1c6;
+            transform: translateY(-1px);
+        }
+        .link-info .platform {
             font-weight: 600;
             font-size: 14px;
-            transition: background 0.2s ease;
+            color: #1a73e8;
+            display: block;
+            margin-bottom: 3px;
         }
-        .btn:hover {
-            background: #3367d6;
+        .link-info .desc {
+            font-size: 13px;
+            color: #5f6368;
         }
-        .btn-secondary {
-            background: #f1f3f4;
-            color: #3c4043;
+        .link-action {
+            font-size: 13px;
+            font-weight: 600;
+            color: #5f6368;
+            white-space: nowrap;
+            margin-left: 15px;
         }
-        .btn-secondary:hover {
-            background: #e8eaed;
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #80868b;
         }
     </style>
 </head>
 <body>
 
     <main class="card">
-        <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo" width="500" height="500">
-        <h1>Connectgold Enterprise Retail OS</h1>
-        <p>A cloud-native, AI-powered retail platform built in Abuja, powering stores nationwide on Google Cloud Run with Gemini AI, Google Maps Platform, and Workspace.</p>
-        
-        <div>
-            <span class="badge">GOOGLE CLOUD PARTNER ADVANTAGE</span>
+        <div class="header">
+            <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo" width="500" height="500">
+            <h1>Connectgold Enterprise</h1>
+            <p class="subtitle">Verified production software, mobile applications, enterprise SDKs, and developer toolchain distribution.</p>
+            <div>
+                <span class="badge">SOFTWARE & AI ENGINEERING PORTFOLIO</span>
+            </div>
         </div>
 
-        <div class="btn-group">
-            <a href="https://chyke.online" class="btn" target="_blank" rel="noopener noreferrer">Visit Platform</a>
-            <a href="https://cloud.google.com/find-a-partner/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Partner Finder</a>
+        <div class="link-list">
+            <!-- Google Play Store -->
+            <a href="https://play.google.com/store/apps/details?id=com.atzec.app" class="link-item" target="_blank" rel="noopener noreferrer">
+                <div class="link-info">
+                    <span class="platform">Google Play Store</span>
+                    <span class="desc">Protomax Mobile Application (com.atzec.app)</span>
+                </div>
+                <span class="link-action">View App &rarr;</span>
+            </a>
+
+            <!-- Xiaomi GetApps -->
+            <a href="https://global.app.mi.com/details?lo=AF&la=en_US&id=com.atzec.app" class="link-item" target="_blank" rel="noopener noreferrer">
+                <div class="link-info">
+                    <span class="platform">Xiaomi GetApps</span>
+                    <span class="desc">Protomax Global Ecosystem Distribution</span>
+                </div>
+                <span class="link-action">View App &rarr;</span>
+            </a>
+
+            <!-- JetBrains Marketplace -->
+            <a href="https://plugins.jetbrains.com/plugin/31464-java-adk-assistant/" class="link-item" target="_blank" rel="noopener noreferrer">
+                <div class="link-info">
+                    <span class="platform">JetBrains Marketplace</span>
+                    <span class="desc">Java ADK Assistant Plugin (ID: 31464)</span>
+                </div>
+                <span class="link-action">Install Plugin &rarr;</span>
+            </a>
+
+            <!-- Maven Central -->
+            <a href="https://repo1.maven.org/maven2/online/chyke/progold-sdk/1.0.1" class="link-item" target="_blank" rel="noopener noreferrer">
+                <div class="link-info">
+                    <span class="platform">Maven Central Repository</span>
+                    <span class="desc">Progold SDK v1.0.1 Enterprise Artifact</span>
+                </div>
+                <span class="link-action">View Artifact &rarr;</span>
+            </a>
+
+            <!-- JitPack -->
+            <a href="https://jitpack.io/#ch532/progold" class="link-item" target="_blank" rel="noopener noreferrer">
+                <div class="link-info">
+                    <span class="platform">JitPack Registry</span>
+                    <span class="desc">Ch532/Progold Source Dependency Pipeline</span>
+                </div>
+                <span class="link-action">View Repository &rarr;</span>
+            </a>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Connectgold Enterprise. All rights reserved.
         </div>
     </main>
 
 </body>
 </html>
+

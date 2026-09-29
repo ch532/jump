@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Future Edge Tech - Chyke Online</title>
+  <link>https://www.chyke.online/publisher.html</link>
+  <description>Future Edge Tech by Okoye Chibuike based in Abuja: Why AI matters from chatbot to agentic AI, future of software development on phone using Termux for frontend and CloudFlare for backend as examples, and solar energy for CCTV, solar hybrid phones and solar + UV + AI for oil industry revolution.</description>
+  <language>en-us</language>
+  <lastBuildDate>Tue, 13 May 2026 00:00:00 GMT</lastBuildDate>
+  <atom:link href="https://www.chyke.online/feed.xml" rel="self" type="application/rss+xml" />
+  <image>
+    <url>https://www.chyke.online/connectgold_2.png</url>
+    <title>Future Edge Tech</title>
+    <link>https://www.chyke.online/publisher.html</link>
+  </image>
+
+  <item>
+    <title>From Chatbot to Agentic AI: Why AI Won't Replace Humans, But Will Change How We Work Forever</title>
+    <link>https://www.chyke.online/publisher.html#ai</link>
+    <guid>https://www.chyke.online/publisher.html#ai-1</guid>
+    <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+    <author>Okoye Chibuike</author>
+    <category>Why AI Matters</category>
+    <description><![CDATA[AI has evolved from chatbot that replies to agentic AI that acts. It's powerful but risky — it can access and hack personal data if not handled well. And AI cannot replace human beings because humans create and manage it. Based in Abuja.]]></description>
+  </item>
+
+  <item>
+    <title>Why The Desktop Era Is Fading: The Future of Software Development Is Now Done on Phone</title>
+    <link>https://www.chyke.online/publisher.html#mobile</link>
+    <guid>https://www.chyke.online/publisher.html#mobile-2</guid>
+    <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+    <author>Okoye Chibuike</author>
+    <category>Phone Dev Trend</category>
+    <description><![CDATA[The era of doing everything on desktop is fading. The future of software development is now done on phone. Developers can build apps, create SDKs and more with phone — solving electricity and location problems for Africa. Case study example: Okoye Chibuike based in Abuja used Termux for frontend and CloudFlare for backend as examples. Termux and CloudFlare is not the only thing used, it is an example.]]></description>
+  </item>
+
+  <item>
+    <title>Beyond Panels: Solar Energy for CCTV Security, Solar Hybrid Phones, and How Solar + UV + AI Will Revolutionize the Oil Industry</title>
+    <link>https://www.chyke.online/publisher.html#solar</link>
+    <guid>https://www.chyke.online/publisher.html#solar-3</guid>
+    <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+    <author>Okoye Chibuike</author>
+    <category>Solar &amp; UV Trend</category>
+    <description><![CDATA[Solar energy is a very rich resource. Useful for CCTV security, solar hybrid phones revolution in phone industry and large source of revenue, and for oil companies using UV rays combined with solar for analysing oil products will positively influence quality and increase production, solving oil economy problem. Solar + UV + AI will be game changer.]]></description>
+  </item>
+
+</channel>
+</rss>

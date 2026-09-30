@@ -6,7 +6,7 @@ const articles = [
     title: "From Chatbot to Agentic AI: Why AI Won't Replace Humans, But Will Change How We Work Forever",
     excerpt: "AI has evolved from a simple chatbot that replies to an agentic AI that acts. It's powerful but risky — it can access and hack personal data if not handled well. And despite the fear, AI cannot replace human beings because humans create and manage it.",
     date: "2026-05-13",
-    image: "https://www.chyke.online/connectgold_2.png",
+    image: "https://chyke.online/connectgold_2.png",
     content: `
       <p>In 2022, AI meant ChatGPT. You typed a question, it typed an answer. In 2026, AI means something completely different. You give it a goal — "publish my SDK update, monitor my solar battery, and reply to my customers" — and it does it.</p>
       <p>This shift from <b>Chatbot AI to Agentic AI</b> is the most important technology transformation of our time. At Future Edge Tech, we believe understanding this shift is more important than learning how to write prompts.</p>
@@ -88,7 +88,7 @@ const articles = [
 
       <hr/>
       <p><b>Author:</b> Chibuike Okoye — Based in Abuja | Founder, Future Edge Tech | Builder, online.chyke SDK | 502+ Maven Downloads | www.chyke.online</p>
-      <img src="https://www.chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd" alt="ConnectGold Logo" />
+      <img src="https://chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd" alt="ConnectGold Logo" />
     `
   },
   {
@@ -98,7 +98,7 @@ const articles = [
     title: "Why The Desktop Era Is Fading: The Future of Software Development Is Now Done on Phone",
     excerpt: "The era of doing everything on desktop and system is fading out gradually. The future of software development is now done on phone. Developers can build apps, create SDKs and more with phone — solving electricity and location problems for Africa.",
     date: "2026-05-13",
-    image: "https://www.chyke.online/connectgold_2.png",
+    image: "https://chyke.online/connectgold_2.png",
     content: `
       <p>For over three decades, software development had a fixed image. A developer in an office, sitting in front of a desktop system, with 24/7 electricity, a big monitor, fast WiFi, and a heavy laptop that never leaves the table.</p>
       <p>That image is fading out gradually. That era is ending.</p>
@@ -151,7 +151,7 @@ const articles = [
 
       <hr/>
       <p><b>Publication:</b> Future Edge Tech | Case Study Example: Okoye Chibuike based in Abuja | Example Stack: Termux (frontend example) + CloudFlare (backend example) | www.chyke.online</p>
-      <img src="https://www.chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd"/>
+      <img src="https://chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd"/>
     `
   },
   {
@@ -161,7 +161,7 @@ const articles = [
     title: "Beyond Panels: Solar Energy for CCTV Security, Solar Hybrid Phones, and How Solar + UV + AI Will Revolutionize the Oil Industry",
     excerpt: "Solar energy is a very rich resource. Beyond electricity, it powers CCTV security, can create solar hybrid phones — a revolution for the phone industry — and combined with ultraviolet rays and AI, will be a game changer for oil production and economy.",
     date: "2026-05-13",
-    image: "https://www.chyke.online/connectgold_2.png",
+    image: "https://chyke.online/connectgold_2.png",
     content: `
       <p>Solar energy is a very rich resource. When most people hear solar, they think of just one thing — solar panels for light. That thinking is too small. Solar is not just for light. Solar is a platform for building the next generation of technology.</p>
       <p>In this article on Future Edge Tech, we will look at three areas where solar will change everything: security technology like CCTV, the phone industry with solar hybrid phones, and the oil industry with ultraviolet rays combined with solar and AI.</p>
@@ -221,7 +221,7 @@ const articles = [
 
       <hr/>
       <p><b>Author:</b> Okoye Chibuike | Based in Abuja | Future Edge Tech | Focus: Why AI Matters, Phone Dev, Solar & UV | www.chyke.online</p>
-      <img src="https://www.chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd" alt="ConnectGold Logo"/>
+      <img src="https://chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd" alt="ConnectGold Logo"/>
     `
   }
 ];

@@ -220,7 +220,7 @@ const articles = [
       <p>Combining solar with ultraviolet rays and AI will be a game changer for the oil industry. It should be something worth looking into.</p>
 
       <hr/>
-      <p><b>Author:</b> Okoye Chibuike | Based in Abuja | Future Edge Tech | Focus: Why AI Matters, Phone Dev, Solar & UV | www.chyke.online</p>
+      <p><b>Author:</b> Okoye Chibuike | Based in Abuja | Future Edge Tech | Focus: Why AI Matters, Phone Dev, Solar & UV | chyke.online</p>
       <img src="https://chyke.online/connectgold_2.png" width="110" style="border-radius:12px; background:#fff; padding:8px; border:1px solid #ddd" alt="ConnectGold Logo"/>
     `
   }

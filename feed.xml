@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>Future Edge Tech - Chyke Online</title>
-  <link>https://chyke.online/publisher.html</link>
+  <link>https://www.chyke.online/publisher.html</link>
   <description>Future Edge Tech by Okoye Chibuike based in Abuja: Why AI matters from chatbot to agentic AI, future of software development on phone using Termux for frontend and CloudFlare for backend as examples, and solar energy for CCTV, solar hybrid phones and solar + UV + AI for oil industry revolution.</description>
   <language>en-us</language>
   <lastBuildDate>Tue, 13 May 2026 00:00:00 GMT</lastBuildDate>
   <atom:link href="https://chyke.online/feed.xml" rel="self" type="application/rss+xml" />
   <image>
-    <url>https://chyke.online/connectgold_2.png</url>
+    <url>https://www.chyke.online/connectgold_2.png</url>
     <title>Future Edge Tech</title>
-    <link>https://chyke.online/publisher.html</link>
+    <link>https://www.chyke.online/publisher.html</link>
   </image>
 
   <item>
     <title>From Chatbot to Agentic AI: Why AI Won't Replace Humans, But Will Change How We Work Forever</title>
-    <link>https://chyke.online/publisher.html#ai</link>
-    <guid>https://chyke.online/publisher.html#ai-1</guid>
+    <link>https://www.chyke.online/publisher.html#ai</link>
+    <guid>https://www.chyke.online/publisher.html#ai-1</guid>
     <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
     <author>Okoye Chibuike</author>
     <category>Why AI Matters</category>
@@ -25,8 +25,8 @@
 
   <item>
     <title>Why The Desktop Era Is Fading: The Future of Software Development Is Now Done on Phone</title>
-    <link>https://chyke.online/publisher.html#mobile</link>
-    <guid>https://chyke.online/publisher.html#mobile-2</guid>
+    <link>https://www.chyke.online/publisher.html#mobile</link>
+    <guid>https://www.chyke.online/publisher.html#mobile-2</guid>
     <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
     <author>Okoye Chibuike</author>
     <category>Phone Dev Trend</category>
@@ -35,8 +35,8 @@
 
   <item>
     <title>Beyond Panels: Solar Energy for CCTV Security, Solar Hybrid Phones, and How Solar + UV + AI Will Revolutionize the Oil Industry</title>
-    <link>https://chyke.online/publisher.html#solar</link>
-    <guid>https://chyke.online/publisher.html#solar-3</guid>
+    <link>https://www.chyke.online/publisher.html#solar</link>
+    <guid>https://www.chyke.online/publisher.html#solar-3</guid>
     <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
     <author>Okoye Chibuike</author>
     <category>Solar &amp; UV Trend</category>

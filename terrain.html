@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>NIPOST Geo-Spatial AI Monitoring Terminal</title>
   
-  <!-- Leaflet Map Engine Style Sheet Dependency -->
+  <!-- Leaflet Map Engine CSS Styles Dependency -->
   <link rel="stylesheet" href="https://unpkg.com" crossorigin="" />
   
   <style>
@@ -222,7 +222,7 @@
 </head>
 <body>
 
-  <!-- Dashboard Top Operational Control Bar Navigation -->
+  <!-- Controls Header Panel -->
   <header>
     <h1>NIPOST Spatial Radar</h1>
     <div class="tracking-inputs">
@@ -235,127 +235,122 @@
     </div>
   </header>
 
-  <!-- Main Mapping Interface Body Layout -->
+  <!-- Interactive Map and Sidebar Workspace -->
   <div class="container">
     <div id="tracking-map-canvas"></div>
 
     <div class="sidebar">
       <div class="log-title">Telemetry Routing History</div>
       <ul class="tracking-timeline" id="tracking-timeline-output">
-        <!-- Javascript injects active log nodes array strings content tracking properties here -->
+        <div class="tracking-loading">Initialize radar scan to load spatial telemetry logs...</div>
       </ul>
     </div>
   </div>
 
-  <!-- Map Leaflet Core JavaScript Engine CDN Dependency Scripts -->
+  <!-- Leaflet Core JavaScript Engine CDN Dependency Scripts -->
   <script src="https://unpkg.com" crossorigin=""></script>
-  
+
   <script>
-  // 1. Core Configuration: Points directly to your deployed Cloudflare serverless proxy edge link channel
-  const WORKER_AI_API_URL = "https://small-fire-08e0.trustconnect713.workers.dev/";
+    // Configured connection endpoint pointing straight to your Cloudflare Worker proxy link
+    const WORKER_AI_API_URL = "https://small-fire-08e0.trustconnect713.workers.dev/";
 
-  // 2. Global variables to manage dynamic map canvas polyline vector layer properties
-  let mapInstance = null;
-  let pathVectorLine = null;
-  let circleMarkersArray = [];
+    let mapInstance = null;
+    let pathVectorLine = null;
+    let circleMarkersArray = [];
 
-  // Global Map View Port Generation Framework Initialization
-  function initTrackerMap() {
-    // Centering navigation arrays coordinates over the center of Nigeria default boundaries
-    mapInstance = L.map('tracking-map-canvas').setView([9.0820, 8.6753], 6);
-    
-    // Injecting CartoDB dark theme basemap tiles to maintain modern tracking screen dashboard grid aesthetics
-    L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }).addTo(mapInstance);
-  }
-
-  // 3. Asynchronous execution handler connecting straight with your Mistral cloud endpoint matrix
-  async function executeTelemetryQuery() {
-    const mailId = document.getElementById('mail-id-input').value.trim();
-    const terrain = document.getElementById('terrain-select').value;
-    const timelineOutput = document.getElementById('tracking-timeline-output');
-    
-    if (!mailId) return alert("Please type a valid Mail Tracking Identification number string layout parameter.");
-    
-    // Trigger loading spinner layout text status info
-    timelineOutput.innerHTML = '<div class="tracking-loading">Querying serverless AI edge channels... Please wait.</div>';
-
-    // Completely strip down existing vector path configurations layer lines if present on map session
-    if (pathVectorLine) mapInstance.removeLayer(pathVectorLine);
-    circleMarkersArray.forEach(marker => mapInstance.removeLayer(marker));
-    circleMarkersArray = [];
-
-    try {
-      // Appending format=json explicitly to force the Worker script loop code to bypass HTML and return database streams
-      const queryTarget = `${WORKER_AI_API_URL}?terrain=${terrain}&mail_id=${mailId}&format=json`;
+    // Map Setup Configuration Engine
+    function initTrackerMap() {
+      mapInstance = L.map('tracking-map-canvas').setView([9.0820, 8.6753], 6);
       
-      const apiResponse = await fetch(queryTarget);
-      if (!apiResponse.ok) throw new Error("Cloud network edge refused tracking database initialization call sequence loop.");
+      // Load and stitch dark-mode geographic tiles seamlessly
+      L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 20
+      }).addTo(mapInstance);
+    }
+
+    // Connects asynchronously with your active Worker API to pull telemetry data
+    async function executeTelemetryQuery() {
+      const mailId = document.getElementById('mail-id-input').value.trim();
+      const terrain = document.getElementById('terrain-select').value;
+      const timelineOutput = document.getElementById('tracking-timeline-output');
       
-      const trackingHistoryArray = await apiResponse.json();
-      timelineOutput.innerHTML = ""; // Clear active loader animation scripts
+      if (!mailId) return alert("Please type a valid Mail Tracking Identification string context.");
+      
+      timelineOutput.innerHTML = '<div class="tracking-loading">Querying serverless AI edge channels... Please wait.</div>';
 
-      const pathPointsArray = [];
+      // Clear previous map vector overlays layers from the canvas viewport
+      if (pathVectorLine) mapInstance.removeLayer(pathVectorLine);
+      circleMarkersArray.forEach(marker => mapInstance.removeLayer(marker));
+      circleMarkersArray = [];
 
-      // 4. Ingest and parse data telemetry matrix payload logs block arrays
-      trackingHistoryArray.forEach((eventLog, index) => {
-        const latLngPair = eventLog.geospatial_coordinates.split(',').map(coord => parseFloat(coord.trim()));
-        pathPointsArray.push(latLngPair);
+      try {
+        // Appending format=json to command the worker to bypass HTML rendering and return raw code strings arrays
+        const queryTarget = `${WORKER_AI_API_URL}?terrain=${terrain}&mail_id=${mailId}&format=json`;
+        
+        const apiResponse = await fetch(queryTarget);
+        if (!apiResponse.ok) throw new Error("Cloud network edge refused tracking database call.");
+        
+        const trackingHistoryArray = await apiResponse.json();
+        timelineOutput.innerHTML = ""; // Wipe active loader text
 
-        const isFinalDestination = index === trackingHistoryArray.length - 1;
+        const pathPointsArray = [];
 
-        // Render chronological text tracking rows to the sidebar dashboard listing element
-        const logElement = document.createElement('li');
-        logElement.className = 'tracking-item' + (isFinalDestination ? ' delivered' : '');
-        logElement.innerHTML = `
-          <div class="tracking-time">${new Date(eventLog.timestamp).toLocaleString()}</div>
-          <div class="tracking-coords">GPS Anchor: ${eventLog.geospatial_coordinates}</div>
-          <div class="tracking-desc">${eventLog.status_description}</div>
-        `;
-        timelineOutput.appendChild(logElement);
+        trackingHistoryArray.forEach((eventLog, index) => {
+          const latLngPair = eventLog.geospatial_coordinates.split(',').map(coord => parseFloat(coord.trim()));
+          pathPointsArray.push(latLngPair);
 
-        // Render physical coordinate anchor nodes directly to leaf map panel container arrays viewport bounds
-        const geographicPointPin = L.circleMarker(latLngPair, {
-          radius: isFinalDestination ? 9 : 5,
-          fillColor: isFinalDestination ? '#10b981' : '#3b82f6',
-          color: '#fff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.8
+          const isFinalDestination = index === trackingHistoryArray.length - 1;
+
+          // Render matching textual logs directly onto the sidebar element rows
+          const logElement = document.createElement('li');
+          logElement.className = 'tracking-item' + (isFinalDestination ? ' delivered' : '');
+          logElement.innerHTML = `
+            <div class="tracking-time">${new Date(eventLog.timestamp).toLocaleString()}</div>
+            <div class="tracking-coords">GPS Anchor: ${eventLog.geospatial_coordinates}</div>
+            <div class="tracking-desc">${eventLog.status_description}</div>
+          `;
+          timelineOutput.appendChild(logElement);
+
+          // Plot distinct markers overlays on the mapping layers framework
+          const geographicPointPin = L.circleMarker(latLngPair, {
+            radius: isFinalDestination ? 9 : 5,
+            fillColor: isFinalDestination ? '#10b981' : '#3b82f6',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+          }).addTo(mapInstance);
+
+          geographicPointPin.bindPopup(`<b>Log Segment Alert:</b><br>${eventLog.status_description}`);
+          circleMarkersArray.push(geographicPointPin);
+        });
+
+        // Bridge coordinate anchors together using dotted path lines vectors
+        pathVectorLine = L.polyline(pathPointsArray, {
+          color: '#3b82f6',
+          weight: 3,
+          opacity: 0.8,
+          dashArray: '6, 6'
         }).addTo(mapInstance);
 
-        geographicPointPin.bindPopup(`<b>Node Segment Alert:</b><br>${eventLog.status_description}`);
-        circleMarkersArray.push(geographicPointPin);
-      });
+        // Zoom the view camera matrix to encapsulate the path boundaries automatically
+        mapInstance.fitBounds(pathVectorLine.getBounds(), { padding: });
 
-      // 5. Draw path tracking route layout polylines across your layout matrix mapping lines
-      pathVectorLine = L.polyline(pathPointsArray, {
-        color: '#3b82f6',
-        weight: 3,
-        opacity: 0.8,
-        dashArray: '6, 6'
-      }).addTo(mapInstance);
-
-      // Fit map camera tracking window grid dimensions perfectly to wrap the trace limits properties parameters
-      mapInstance.fitBounds(pathVectorLine.getBounds(), { padding: [50, 50] });
-
-    } catch (processingError) {
-      timelineOutput.innerHTML = `
-        <div class="tracking-loading" style="color: #ef4444;">
-          Error connecting to radar telemetry arrays: ${processingError.message}
-        </div>`;
+      } catch (processingError) {
+        timelineOutput.innerHTML = `
+          <div class="tracking-loading" style="color: #ef4444;">
+            Error connecting to radar telemetry arrays: ${processingError.message}
+          </div>`;
+      }
     }
-  }
 
-  // Hook automated map workspace loading configurations directly onto DOM lifecycle completeness event handles
-  window.addEventListener('DOMContentLoaded', () => {
-    initTrackerMap();
-    executeTelemetryQuery(); // Execute automatic baseline sweep generation loop on first query scan run
-  });
-</script>
-
+    // Automatically trigger startup map layers configuration loops on screen load completeness
+    window.addEventListener('DOMContentLoaded', () => {
+      initTrackerMap();
+      executeTelemetryQuery();
+    });
+  </script>
 </body>
 </html>

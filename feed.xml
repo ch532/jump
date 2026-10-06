@@ -1,47 +1,100 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 <channel>
-  <title>Future Edge Tech - Chyke Online</title>
-  <link>https://chyke.online/pub.html</link>
-  <description>Future Edge Tech by Okoye Chibuike based in Abuja: Why AI matters from chatbot to agentic AI, future of software development on phone using Termux for frontend and CloudFlare for backend as examples, and solar energy for CCTV, solar hybrid phones and solar + UV + AI for oil industry revolution.</description>
-  <language>en-us</language>
-  <lastBuildDate>Tue, 13 May 2026 00:00:00 GMT</lastBuildDate>
-  <atom:link href="https://chyke.online/feed.xml" rel="self" type="application/rss+xml" />
-  <image>
-    <url>https://www.chyke.online/connectgold_2.png</url>
-    <title>Future Edge Tech</title>
-    <link>https://chyke.online/pub.html</link>
-  </image>
-
-  <item>
-    <title>From Chatbot to Agentic AI: Why AI Won't Replace Humans, But Will Change How We Work Forever</title>
-    <link>https://chyke.online/publ.html#ai</link>
-    <guid>https://chyke.online/pub.html#ai-1</guid>
-    <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
-    <author>Okoye Chibuike</author>
-    <category>Why AI Matters</category>
-    <description><![CDATA[AI has evolved from chatbot that replies to agentic AI that acts. It's powerful but risky — it can access and hack personal data if not handled well. And AI cannot replace human beings because humans create and manage it. Based in Abuja.]]></description>
-  </item>
-
-  <item>
-    <title>Why The Desktop Era Is Fading: The Future of Software Development Is Now Done on Phone</title>
-    <link>https://chyke.online/pub.html#mobile</link>
-    <guid>https://chyke.online/pub.html#mobile-2</guid>
-    <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
-    <author>Okoye Chibuike</author>
-    <category>Phone Dev Trend</category>
-    <description><![CDATA[The era of doing everything on desktop is fading. The future of software development is now done on phone. Developers can build apps, create SDKs and more with phone — solving electricity and location problems for Africa. Case study example: Okoye Chibuike based in Abuja used Termux for frontend and CloudFlare for backend as examples. Termux and CloudFlare is not the only thing used, it is an example.]]></description>
-  </item>
-
-  <item>
-    <title>Beyond Panels: Solar Energy for CCTV Security, Solar Hybrid Phones, and How Solar + UV + AI Will Revolutionize the Oil Industry</title>
-    <link>https://chyke.online/pub.html#solar</link>
-    <guid>https://.chyke.online/pub.html#solar-3</guid>
-    <pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
-    <author>Okoye Chibuike</author>
-    <category>Solar &amp; UV Trend</category>
-    <description><![CDATA[Solar energy is a very rich resource. Useful for CCTV security, solar hybrid phones revolution in phone industry and large source of revenue, and for oil companies using UV rays combined with solar for analysing oil products will positively influence quality and increase production, solving oil economy problem. Solar + UV + AI will be game changer.]]></description>
-  </item>
-
+<title>Connectgold Media | chyke.online</title>
+<link>https://chyke.online/pub.html</link>
+<description>Connectgold Media - 5 topics on technology, energy, economy, sports and education in Nigeria</description>
+<language>en-us</language>
+<lastBuildDate>Tue, 13 May 2026 00:00:00 GMT</lastBuildDate>
+<atom:link href="https://chyke.online/connectgold-feed.xml" rel="self" type="application/rss+xml"/>
+<item>
+<title>Extra Storage Options in Desktop</title>
+<link>https://chyke.online/pub.html#hardware-1</link>
+<guid>https://chyke.online/pub.html#hardware-1</guid>
+<pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+<description><![CDATA[ Modular expandable storage slots for desktops without buying new hard disk.
+<br/><br/>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></description>
+<content:encoded><![CDATA[
+<p>Most desktop users face storage full. Provide modular M.2 and SATA slots, stackable cartridges, unified pool. Cheaper, reduces waste.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></content:encoded>
+</item>
+<item>
+<title>Generating Electricity with Flood Water in Southern Nigeria</title>
+<link>https://chyke.online/pub.html#energy-2</link>
+<guid>https://chyke.online/pub.html#energy-2</guid>
+<pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+<description><![CDATA[ Use flood water for hydroelectricity, reduce dependence on gas.
+<br/><br/>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></description>
+<content:encoded><![CDATA[
+<p>Southern Nigeria flood water can be controlled via reservoirs, dams, used for small hydro plants, reducing gas dependence.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></content:encoded>
+</item>
+<item>
+<title>Expansion and Growth of Local Manufacturing Industries in Nigeria</title>
+<link>https://chyke.online/pub.html#economy-3</link>
+<guid>https://chyke.online/pub.html#economy-3</guid>
+<pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+<description><![CDATA[ Expand local manufacturing to reduce imports, increase exports, stop naira devaluation.
+<br/><br/>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></description>
+<content:encoded><![CDATA[
+<p>High import rate weakens naira. Local manufacturing reduces dollar demand, export increases dollar supply, stabilizes naira.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></content:encoded>
+</item>
+<item>
+<title>Privatisation of Football Clubs in Nigeria</title>
+<link>https://chyke.online/pub.html#sports-4</link>
+<guid>https://chyke.online/pub.html#sports-4</guid>
+<pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+<description><![CDATA[ Private ownership will boost NPFL funding, management, infrastructure.
+<br/><br/>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></description>
+<content:encoded><![CDATA[
+<p>Government-owned clubs depend on budget allocations. Private owners invest, professional management, own stadiums, increase competition.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></content:encoded>
+</item>
+<item>
+<title>Education System Reform: Practical Training Schools</title>
+<link>https://chyke.online/pub.html#education-5</link>
+<guid>https://chyke.online/pub.html#education-5</guid>
+<pubDate>Tue, 13 May 2026 00:00:00 GMT</pubDate>
+<description><![CDATA[ Instead of more universities teaching same thing, create practical schools for actors, footballers, traders.
+<br/><br/>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></description>
+<content:encoded><![CDATA[
+<p>Many universities teach same theory. Need specialized practical schools for footballers, traders, actors etc. One public + one private per state.</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7728035806961877" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="+25+rv+x-4w+75" data-ad-client="ca-pub-7728035806961877" data-ad-slot="7362464742"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+]]></content:encoded>
+</item>
 </channel>
 </rss>

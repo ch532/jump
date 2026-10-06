@@ -14,6 +14,7 @@
       --panel-dark: #1f2937;
       --accent-blue: #3b82f6;
       --accent-green: #10b981;
+      --accent-red: #ef4444;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
     }
@@ -117,6 +118,7 @@
     #tracking-map-canvas {
       flex: 1;
       height: 100%;
+      min-height: 350px;
       background: var(--bg-dark);
     }
 
@@ -218,11 +220,22 @@
       font-weight: bold;
       font-size: 0.95rem;
     }
+
+    .error-alert-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--accent-red);
+      color: #fca5a5;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Controls Header Panel -->
+  <!-- Controls Panel Shell -->
   <header>
     <h1>NIPOST Spatial Radar</h1>
     <div class="tracking-inputs">
@@ -235,7 +248,7 @@
     </div>
   </header>
 
-  <!-- Interactive Map and Sidebar Workspace -->
+  <!-- Interactive Map view pane layout -->
   <div class="container">
     <div id="tracking-map-canvas"></div>
 
@@ -247,22 +260,23 @@
     </div>
   </div>
 
-  <!-- Leaflet Core JavaScript Engine CDN Dependency Scripts -->
+  <!-- Leaflet Core JavaScript Mapping Engine CDN Scripts -->
   <script src="https://unpkg.com" crossorigin=""></script>
 
   <script>
-    // Configured connection endpoint pointing straight to your Cloudflare Worker proxy link
-    const WORKER_AI_API_URL = "https://small-fire-08e0.trustconnect713.workers.dev/";
+    // Explicit network address endpoint targeting your Cloudflare Worker profile securely
+    const WORKER_AI_API_URL = "https://workers.dev";
 
     let mapInstance = null;
     let pathVectorLine = null;
     let circleMarkersArray = [];
 
-    // Map Setup Configuration Engine
+    // Map Panel Initialization procedures
     function initTrackerMap() {
+      // Establish map anchor positioning parameters focused cleanly over Nigeria
       mapInstance = L.map('tracking-map-canvas').setView([9.0820, 8.6753], 6);
       
-      // Load and stitch dark-mode geographic tiles seamlessly
+      // Injecting professional dark theme map tile vectors directly to match dashboard layout rules
       L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO',
         subdomains: 'abcd',
@@ -270,31 +284,45 @@
       }).addTo(mapInstance);
     }
 
-    // Connects asynchronously with your active Worker API to pull telemetry data
+    // Connects asynchronously to clear data streams loops directly from the cloud edge proxy links
     async function executeTelemetryQuery() {
       const mailId = document.getElementById('mail-id-input').value.trim();
       const terrain = document.getElementById('terrain-select').value;
       const timelineOutput = document.getElementById('tracking-timeline-output');
       
-      if (!mailId) return alert("Please type a valid Mail Tracking Identification string context.");
+      if (!mailId) return alert("Please enter a valid Mail Tracking Identification number string layout parameter.");
       
+      // Engage on-screen dashboard visual status alerts configurations
       timelineOutput.innerHTML = '<div class="tracking-loading">Querying serverless AI edge channels... Please wait.</div>';
 
-      // Clear previous map vector overlays layers from the canvas viewport
+      // Clean down any matching overlay vectors layers if present from past tracking query events sessions
       if (pathVectorLine) mapInstance.removeLayer(pathVectorLine);
       circleMarkersArray.forEach(marker => mapInstance.removeLayer(marker));
       circleMarkersArray = [];
 
       try {
-        // Appending format=json to command the worker to bypass HTML rendering and return raw code strings arrays
+        // Appending the specific format query flags parameters so the worker spits back clean JSON arrays blocks
         const queryTarget = `${WORKER_AI_API_URL}?terrain=${terrain}&mail_id=${mailId}&format=json`;
         
-        const apiResponse = await fetch(queryTarget);
-        if (!apiResponse.ok) throw new Error("Cloud network edge refused tracking database call.");
+        // Network fetch invocation execution block
+        const apiResponse = await fetch(queryTarget, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        
+        // Critical Debug: Handle connection rejections with explicit layout output alerts
+        if (!apiResponse.ok) {
+          throw new Error(`Cloud network returned status code ${apiResponse.status}. Verify that your AI binding settings are properly active in the dashboard.`);
+        }
         
         const trackingHistoryArray = await apiResponse.json();
-        timelineOutput.innerHTML = ""; // Wipe active loader text
-
+        
+        // Secondary data validation check block to confirm the backend array has entries properties
+        if (!Array.isArray(trackingHistoryArray) || trackingHistoryArray.length === 0) {
+          throw new Error("The AI backend returned empty log properties matrices. The format schema parsing failed.");
+        }
+        
+        timelineOutput.innerHTML = ""; // Clear loader rows
         const pathPointsArray = [];
 
         trackingHistoryArray.forEach((eventLog, index) => {
@@ -303,7 +331,7 @@
 
           const isFinalDestination = index === trackingHistoryArray.length - 1;
 
-          // Render matching textual logs directly onto the sidebar element rows
+          // Render corresponding textual segments into your sidebar components dashboard layout container
           const logElement = document.createElement('li');
           logElement.className = 'tracking-item' + (isFinalDestination ? ' delivered' : '');
           logElement.innerHTML = `
@@ -313,7 +341,7 @@
           `;
           timelineOutput.appendChild(logElement);
 
-          // Plot distinct markers overlays on the mapping layers framework
+          // Plot distinct point circles overlay paths directly along the leaf map panel container arrays canvas coordinates
           const geographicPointPin = L.circleMarker(latLngPair, {
             radius: isFinalDestination ? 9 : 5,
             fillColor: isFinalDestination ? '#10b981' : '#3b82f6',
@@ -323,11 +351,11 @@
             fillOpacity: 0.8
           }).addTo(mapInstance);
 
-          geographicPointPin.bindPopup(`<b>Log Segment Alert:</b><br>${eventLog.status_description}`);
+          geographicPointPin.bindPopup(`<b>Radar Status Node:</b><br>${eventLog.status_description}`);
           circleMarkersArray.push(geographicPointPin);
         });
 
-        // Bridge coordinate anchors together using dotted path lines vectors
+        // Loop the points nodes map variables together with bold polylines routes assets layers vectors
         pathVectorLine = L.polyline(pathPointsArray, {
           color: '#3b82f6',
           weight: 3,
@@ -335,21 +363,24 @@
           dashArray: '6, 6'
         }).addTo(mapInstance);
 
-        // Zoom the view camera matrix to encapsulate the path boundaries automatically
-        mapInstance.fitBounds(pathVectorLine.getBounds(), { padding: });
+        // Auto snap the map viewfinder viewport dimensions to isolate the whole trail path flawlessly
+        mapInstance.fitBounds(pathVectorLine.getBounds(), { padding: [40, 40] });
 
       } catch (processingError) {
+        // Output explicit structural security details directly on the UI panel workspace container area
         timelineOutput.innerHTML = `
-          <div class="tracking-loading" style="color: #ef4444;">
-            Error connecting to radar telemetry arrays: ${processingError.message}
+          <div class="error-alert-box">
+            <b>Network Tracker Blocked:</b><br>
+            ${processingError.message}<br><br>
+            <i>Recommendation: If this message persists, a CORS block or a missing AI binding loop may be active on your cloud domain. Ensure your worker is running the updated script with CORSOPTIONS preflight support.</i>
           </div>`;
       }
     }
 
-    // Automatically trigger startup map layers configuration loops on screen load completeness
+    // Automatically trigger initial startup procedures on DOM lifecycle completing loading loops operations
     window.addEventListener('DOMContentLoaded', () => {
       initTrackerMap();
-      executeTelemetryQuery();
+      executeTelemetryQuery(); // Automatically sweep baseline queries parameters on first load sequence metrics
     });
   </script>
 </body>

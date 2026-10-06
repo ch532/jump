@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NIPOST Geo-Spatial AI Monitoring Terminal</title>
+  
+  <!-- Leaflet Map Engine Style Sheet Dependency -->
+  <link rel="stylesheet" href="https://unpkg.com" crossorigin="" />
+  
+  <style>
+    :root {
+      --bg-dark: #111827;
+      --panel-dark: #1f2937;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      background: var(--panel-dark);
+      padding: 15px 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent-blue);
+      z-index: 1000;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--accent-blue);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .tracking-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tracking-input-field {
+      background: #374151;
+      border: 1px solid #4b5563;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .tracking-select-field {
+      background: #374151;
+      border: 1px solid #4b5563;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .tracking-btn {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .tracking-btn:hover {
+      background: #2563eb;
+    }
+
+    .tracking-btn:active {
+      transform: scale(0.98);
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      position: relative;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+      }
+    }
+
+    #tracking-map-canvas {
+      flex: 1;
+      height: 100%;
+      background: var(--bg-dark);
+    }
+
+    .sidebar {
+      background: var(--panel-dark);
+      width: 100%;
+      max-height: 40vh;
+      overflow-y: auto;
+      box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 999;
+      border-top: 1px solid #374151;
+    }
+
+    @media (min-width: 768px) {
+      .sidebar {
+        width: 380px;
+        max-height: none;
+        border-top: none;
+        border-left: 1px solid #374151;
+      }
+    }
+
+    .log-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      border-bottom: 1px solid #374151;
+      padding-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .tracking-timeline {
+      position: relative;
+      padding-left: 20px;
+      list-style: none;
+      margin: 0;
+    }
+
+    .tracking-timeline::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 5px;
+      bottom: 5px;
+      width: 2px;
+      background: #4b5563;
+    }
+
+    .tracking-item {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .tracking-item::before {
+      content: '';
+      position: absolute;
+      left: -20px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 0 4px var(--panel-dark);
+      transition: background 0.3s;
+    }
+
+    .tracking-item.delivered::before {
+      background: var(--accent-green);
+    }
+
+    .tracking-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: monospace;
+      margin-bottom: 2px;
+    }
+
+    .tracking-coords {
+      font-size: 0.75rem;
+      color: var(--accent-blue);
+      font-family: monospace;
+      margin-bottom: 6px;
+    }
+
+    .tracking-desc {
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: #d1d5db;
+    }
+
+    .tracking-loading {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--accent-blue);
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dashboard Top Operational Control Bar Navigation -->
+  <header>
+    <h1>NIPOST Spatial Radar</h1>
+    <div class="tracking-inputs">
+      <input type="text" id="mail-id-input" class="tracking-input-field" value="NIPOST-TRK-713001" placeholder="Enter Mail ID" />
+      <select id="terrain-select" class="tracking-select-field">
+        <option value="delta">Niger Delta Creeks</option>
+        <option value="savanna">Northern Savanna</option>
+      </select>
+      <button class="tracking-btn" onclick="executeTelemetryQuery()">Scan Route</button>
+    </div>
+  </header>
+
+  <!-- Main Mapping Interface Body Layout -->
+  <div class="container">
+    <div id="tracking-map-canvas"></div>
+
+    <div class="sidebar">
+      <div class="log-title">Telemetry Routing History</div>
+      <ul class="tracking-timeline" id="tracking-timeline-output">
+        <!-- Javascript injects active log nodes array strings content tracking properties here -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Map Leaflet Core JavaScript Engine CDN Dependency Scripts -->
+  <script src="https://unpkg.com" crossorigin=""></script>
+  
+  <script>
+  // 1. Core Configuration: Points directly to your deployed Cloudflare serverless proxy edge link channel
+  const WORKER_AI_API_URL = "https://workers.dev";
+
+  // 2. Global variables to manage dynamic map canvas polyline vector layer properties
+  let mapInstance = null;
+  let pathVectorLine = null;
+  let circleMarkersArray = [];
+
+  // Global Map View Port Generation Framework Initialization
+  function initTrackerMap() {
+    // Centering navigation arrays coordinates over the center of Nigeria default boundaries
+    mapInstance = L.map('tracking-map-canvas').setView([9.0820, 8.6753], 6);
+    
+    // Injecting CartoDB dark theme basemap tiles to maintain modern tracking screen dashboard grid aesthetics
+    L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(mapInstance);
+  }
+
+  // 3. Asynchronous execution handler connecting straight with your Mistral cloud endpoint matrix
+  async function executeTelemetryQuery() {
+    const mailId = document.getElementById('mail-id-input').value.trim();
+    const terrain = document.getElementById('terrain-select').value;
+    const timelineOutput = document.getElementById('tracking-timeline-output');
+    
+    if (!mailId) return alert("Please type a valid Mail Tracking Identification number string layout parameter.");
+    
+    // Trigger loading spinner layout text status info
+    timelineOutput.innerHTML = '<div class="tracking-loading">Querying serverless AI edge channels... Please wait.</div>';
+
+    // Completely strip down existing vector path configurations layer lines if present on map session
+    if (pathVectorLine) mapInstance.removeLayer(pathVectorLine);
+    circleMarkersArray.forEach(marker => mapInstance.removeLayer(marker));
+    circleMarkersArray = [];
+
+    try {
+      // Appending format=json explicitly to force the Worker script loop code to bypass HTML and return database streams
+      const queryTarget = `${WORKER_AI_API_URL}?terrain=${terrain}&mail_id=${mailId}&format=json`;
+      
+      const apiResponse = await fetch(queryTarget);
+      if (!apiResponse.ok) throw new Error("Cloud network edge refused tracking database initialization call sequence loop.");
+      
+      const trackingHistoryArray = await apiResponse.json();
+      timelineOutput.innerHTML = ""; // Clear active loader animation scripts
+
+      const pathPointsArray = [];
+
+      // 4. Ingest and parse data telemetry matrix payload logs block arrays
+      trackingHistoryArray.forEach((eventLog, index) => {
+        const latLngPair = eventLog.geospatial_coordinates.split(',').map(coord => parseFloat(coord.trim()));
+        pathPointsArray.push(latLngPair);
+
+        const isFinalDestination = index === trackingHistoryArray.length - 1;
+
+        // Render chronological text tracking rows to the sidebar dashboard listing element
+        const logElement = document.createElement('li');
+        logElement.className = 'tracking-item' + (isFinalDestination ? ' delivered' : '');
+        logElement.innerHTML = `
+          <div class="tracking-time">${new Date(eventLog.timestamp).toLocaleString()}</div>
+          <div class="tracking-coords">GPS Anchor: ${eventLog.geospatial_coordinates}</div>
+          <div class="tracking-desc">${eventLog.status_description}</div>
+        `;
+        timelineOutput.appendChild(logElement);
+
+        // Render physical coordinate anchor nodes directly to leaf map panel container arrays viewport bounds
+        const geographicPointPin = L.circleMarker(latLngPair, {
+          radius: isFinalDestination ? 9 : 5,
+          fillColor: isFinalDestination ? '#10b981' : '#3b82f6',
+          color: '#fff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.8
+        }).addTo(mapInstance);
+
+        geographicPointPin.bindPopup(`<b>Node Segment Alert:</b><br>${eventLog.status_description}`);
+        circleMarkersArray.push(geographicPointPin);
+      });
+
+      // 5. Draw path tracking route layout polylines across your layout matrix mapping lines
+      pathVectorLine = L.polyline(pathPointsArray, {
+        color: '#3b82f6',
+        weight: 3,
+        opacity: 0.8,
+        dashArray: '6, 6'
+      }).addTo(mapInstance);
+
+      // Fit map camera tracking window grid dimensions perfectly to wrap the trace limits properties parameters
+      mapInstance.fitBounds(pathVectorLine.getBounds(), { padding: [50, 50] });
+
+    } catch (processingError) {
+      timelineOutput.innerHTML = `
+        <div class="tracking-loading" style="color: #ef4444;">
+          Error connecting to radar telemetry arrays: ${processingError.message}
+        </div>`;
+    }
+  }
+
+  // Hook automated map workspace loading configurations directly onto DOM lifecycle completeness event handles
+  window.addEventListener('DOMContentLoaded', () => {
+    initTrackerMap();
+    executeTelemetryQuery(); // Execute automatic baseline sweep generation loop on first query scan run
+  });
+</script>
+
+</body>
+</html>

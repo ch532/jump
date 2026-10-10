@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connectgold AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto;background:#f8fafc;color:#0f172a}
+header{display:flex;align-items:center;gap:14px;padding:16px 20px;background:#0f172a;color:#fff;position:sticky;top:0;z-index:10}
+header img{width:42px;height:42px;border-radius:10px;background:#fff;object-fit:contain;padding:4px}
+#app{display:flex;flex-direction:column;max-width:720px;margin:0 auto;height:100vh}
+#cg-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.cg-bubble{max-width:82%;padding:12px 14px;border-radius:18px;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.cg-user{background:#0f172a;color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.cg-ai{background:#fff;border:1px solid #e2e8f0;align-self:flex-start;border-bottom-left-radius:6px}
+#cg-bar{padding:12px;background:#fff;border-top:1px solid #e2e8f0;display:flex;gap:10px;align-items:center;position:sticky;bottom:0}
+#cg-input{flex:1;padding:12px 16px;border:1px solid #e2e8f0;border-radius:24px;outline:none;font-size:15px}
+.cg-icon{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px}
+#cg-send{background:#0f172a;color:#fff}
+#cg-voice{background:#f1f5f9}
+#cg-voice.recording{background:#ef4444;color:#fff;animation:pulse 1s infinite}
+#cg-attach{background:#f1f5f9}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+#info{font-size:11px;color:#64748b;text-align:center;padding:8px}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+<img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo">
+<div><div style="font-weight:700;font-size:18px">Connectgold</div><div style="font-size:12px;opacity:.7">AI Assistant • PDF, Image, Text • Voice Enabled</div></div>
+</header>
+
+<div id="cg-messages">
+<div class="cg-bubble cg-ai">Welcome to Connectgold 👋
+
+I'm your AI. You can:
+• Type your question
+• Tap 🎤 to speak (voice input)
+• Tap 📎 to upload PDF, JPG, TXT
+
+I will answer and speak back. Audio/Video file upload is disabled — use voice mic to talk.
+
+What can I do for you?</div>
+</div>
+
+<div id="info">Supports: PDF, JPG, PNG, TXT, CSV, JSON • No audio/video file upload • Voice mic available</div>
+
+<div id="cg-bar">
+<button id="cg-attach" class="cg-icon" title="Upload PDF/Image/TXT">📎</button>
+<input id="cg-input" placeholder="Type or tap mic to speak to Connectgold...">
+<button id="cg-voice" class="cg-icon" title="Tap to speak">🎤</button>
+<button id="cg-send" class="cg-icon">➤</button>
+<input type="file" id="cg-file" hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.csv,.json,.md,.html">
+</div>
+</div>
+
+<script>
+const WORKER = "https://small-fire-08e0.trustconnect713.workers.dev";
+const msgBox = document.getElementById('cg-messages');
+const input = document.getElementById('cg-input');
+
+function addBubble(text, who){
+  const d=document.createElement('div');
+  d.className=`cg-bubble cg-${who}`;
+  d.textContent=text;
+  msgBox.appendChild(d);
+  msgBox.scrollTop=msgBox.scrollHeight;
+  return d;
+}
+
+async function sendText(q){
+  if(!q.trim())return;
+  addBubble(q,'user');
+  input.value='';
+  const bubble=addBubble('⏳ Connectgold thinking...','ai');
+  try{
+    const res=await fetch(`${WORKER}/api/research`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query:q})
+    });
+    const data=await res.json();
+    bubble.textContent=data.answer||data.error||'No response';
+    speakOut(data.answer);
+  }catch(e){bubble.textContent='Error: '+e.message}
+}
+
+// Text
+document.getElementById('cg-send').onclick=()=>sendText(input.value);
+input.addEventListener('keydown',e=>{if(e.key==='Enter')sendText(input.value)});
+
+// File upload - NO audio/video
+document.getElementById('cg-attach').onclick=()=>document.getElementById('cg-file').click();
+document.getElementById('cg-file').onchange=async e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  if(/\.(mp3|wav|m4a|ogg|flac|aac|mp4|mov|avi|mkv|webm|3gp)$/i.test(file.name)){
+    alert('Audio/Video file upload is removed. Please use the 🎤 voice mic to speak.');
+    e.target.value='';
+    return;
+  }
+  addBubble(`📄 Uploading: ${file.name} (${(file.size/1024).toFixed(1)}KB)`,'user');
+  const b=addBubble('⏳ Reading file...','ai');
+  const fd=new FormData();
+  fd.append('file',file);
+  fd.append('query',input.value||'Extract all text and summarize clearly');
+  try{
+    const res=await fetch(`${WORKER}/api/upload-all`,{method:'POST',body:fd});
+    const data=await res.json();
+    b.textContent=data.result||data.error;
+    speakOut(data.result);
+  }catch(err){b.textContent='Upload failed: '+err.message}
+  e.target.value='';
+};
+
+// Voice: Type OR Speak option
+let recorder, chunks=[], isRec=false;
+const voiceBtn=document.getElementById('cg-voice');
+
+voiceBtn.onclick=async ()=>{
+  if(!isRec){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      recorder=new MediaRecorder(stream);
+      chunks=[];
+      recorder.ondataavailable=ev=>chunks.push(ev.data);
+      recorder.onstop=async ()=>{
+        const blob=new Blob(chunks,{type:'audio/webm'});
+        const fd=new FormData();
+        fd.append('audio',blob,'voice.webm');
+        addBubble('🎤 Voice message sent','user');
+        const b=addBubble('⏳ Transcribing voice...','ai');
+        try{
+          const res=await fetch(`${WORKER}/api/voice`,{method:'POST',body:fd});
+          const data=await res.json();
+          b.textContent=`🗣 You said: ${data.transcript}\n\n🤖 ${data.answer}`;
+          speakOut(data.answer);
+        }catch(e){b.textContent='Voice error: '+e.message}
+      };
+      recorder.start();
+      isRec=true;
+      voiceBtn.classList.add('recording');
+      voiceBtn.textContent='⏹';
+      addBubble('🔴 Recording... tap ⏹ to stop','ai');
+    }catch(e){alert('Microphone permission required')}
+  }else{
+    recorder.stop();
+    isRec=false;
+    voiceBtn.classList.remove('recording');
+    voiceBtn.textContent='🎤';
+  }
+};
+
+// Speaker - AI talks back
+function speakOut(text){
+  if(!text||!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text.slice(0,500));
+  u.rate=0.95;
+  u.pitch=1;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(v=>v.name.includes('Google')&&v.lang.startsWith('en'))||voices[0];
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+</script>
+</body>
+</html>

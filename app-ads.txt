@@ -1,4 +1,4 @@
-google.com, pub-8454889718297306, DIRECT, f08c47fec0942fa0
+google.com, pub-7728035806961877, DIRECT, f08c47fec0942fa0
 
 bigo.sg,l923qcx4u5,DIRECT
 adingenious.com, 70392, RESELLER

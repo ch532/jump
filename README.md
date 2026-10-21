@@ -1,6 +1,6 @@
 THE WEBSITE IS BUILT BY OKOYE CHIBUIKE 
 
-WEBSITE: https://skyl.name.ng
+WEBSITE: https://chyke.online/
 
 The purpose of the website is for getting information and knowledge from different sources.
 

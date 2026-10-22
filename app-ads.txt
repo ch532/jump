@@ -21597,6 +21597,7 @@ mobupps.com, c74d97b01eae257e44aa9d5bade97baf33149, DIRECT
 motionspots.com, 166484, RESELLER
 motorik.io, 100783, RESELLER
 munimob.com, 2100033154, RESELLER, 09fcf65f918716a4
+mgid.com, 528163, RESELLER, d4c29acad76ce94
 netaddiction.it, 1064, RESELLER
 netsvision.com, 9992301, RESELLER
 netsvision.com, 9992310, RESELLER

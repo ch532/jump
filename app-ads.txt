@@ -22080,3 +22080,4 @@ triplelift.com, 14793, RESELLER, 6c33edb13117fd86
 triplelift.com, 14829, RESELLER, 6c33edb13117fd86
 video.unrulymedia.com, 839999282, RESELLER, 98c21ef9a666c68b
 zetaglobal.net, 767, RESELLER
+mgid.com, 528163, RESELLER, d4c29acad76ce94f

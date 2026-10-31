@@ -226,7 +226,7 @@
         <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo" onerror="this.style.display='none'" />
         <h1>Connectgold Media</h1>
       </div>
-      <span class="status-badge" id="worker-status">Worker Ready</span>
+      <span class="status-badge" id="worker-status">Connected</span>
     </header>
 
     <div class="grid">
@@ -235,13 +235,8 @@
         <div class="card-title">📡 Camera & Optics Settings</div>
 
         <div class="form-group">
-          <label for="workerUrl">Cloudflare Worker Endpoint</label>
-          <input type="url" id="workerUrl" placeholder="https://your-worker.workers.dev" value="" />
-        </div>
-
-        <div class="form-group">
           <label for="streamUrl">Stream Source URL (RTSP Bridge / HTTP Snapshot)</label>
-          <input type="url" id="streamUrl" placeholder="http://192.168.1.50:1984/api/frame.jpeg?src=cam1" />
+          <input type="url" id="streamUrl" placeholder="Enter stream URL (e.g., http://192.168.1.50:1984/api/frame.jpeg?src=cam1)" value="" />
         </div>
 
         <div class="form-group">
@@ -291,22 +286,24 @@
   </div>
 
   <!-- Connectgold Media Footer -->
-<footer style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); color: var(--text-muted); font-size: 0.85rem;">
-  <p>© 2026 Connectgold Media. All rights reserved.</p>
-  <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
-    <a href="privacy31.html" style="color: var(--accent); text-decoration: none;">Privacy Policy</a>
-    <a href="terms6.html" style="color: var(--accent); text-decoration: none;">Terms of Use</a>
-  </div>
-</footer>
+  <footer style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); color: var(--text-muted); font-size: 0.85rem;">
+    <p>© 2026 Connectgold Media. All rights reserved.</p>
+    <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
+      <a href="privacy31.html" style="color: var(--accent); text-decoration: none;">Privacy Policy</a>
+      <a href="terms6.html" style="color: var(--accent); text-decoration: none;">Terms of Use</a>
+    </div>
+  </footer>
 
   <script>
+    // Hardcoded Worker Backend Endpoint (Runs in the background securely)
+    const WORKER_BASE_URL = "https://autumn-surf-7249.trustconnect713.workers.dev";
+
     function setZoom(val) {
       document.getElementById('zoomRange').value = val;
       document.getElementById('zoomVal').innerText = val + 'x';
     }
 
     async function triggerSnapshot() {
-      const workerUrl = document.getElementById('workerUrl').value.trim();
       const streamUrl = document.getElementById('streamUrl').value.trim();
       const zoom = document.getElementById('zoomRange').value;
       const model = document.getElementById('modelSelect').value;
@@ -317,8 +314,8 @@
       const previewImg = document.getElementById('framePreview');
       const previewPlaceholder = document.getElementById('previewPlaceholder');
 
-      if (!workerUrl) {
-        alert("Please enter your Cloudflare Worker URL first.");
+      if (!streamUrl) {
+        alert("Please enter a Stream Source URL first.");
         return;
       }
 
@@ -330,20 +327,18 @@
         const queryParams = new URLSearchParams({
           zoom: zoom,
           model: model,
-          prompt: prompt
+          prompt: prompt,
+          stream: streamUrl
         });
 
-        if (streamUrl) {
-          queryParams.append('stream', streamUrl);
-          // Show live snapshot in browser preview container if direct HTTP snapshot URL
-          if (streamUrl.startsWith('http')) {
-            previewImg.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-            previewImg.style.display = 'block';
-            previewPlaceholder.style.display = 'none';
-          }
+        // Show live snapshot in browser preview container if direct HTTP snapshot URL
+        if (streamUrl.startsWith('http')) {
+          previewImg.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+          previewImg.style.display = 'block';
+          previewPlaceholder.style.display = 'none';
         }
 
-        const targetEndpoint = `${workerUrl.replace(/\/$/, '')}/snap?${queryParams.toString()}`;
+        const targetEndpoint = `${WORKER_BASE_URL.replace(/\/$/, '')}/snap?${queryParams.toString()}`;
         const response = await fetch(targetEndpoint);
         const data = await response.json();
 
@@ -359,3 +354,4 @@
   </script>
 </body>
 </html>
+

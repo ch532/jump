@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connectgold Media</title>
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --card-bg: #151c2c;
+      --card-border: #232f48;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --gold: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .status-badge {
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: #0d1321;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .range-wrap input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .range-val {
+      font-weight: 700;
+      color: var(--gold);
+      width: 48px;
+      text-align: right;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: var(--accent-hover); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .preview-box {
+      width: 100%;
+      height: 220px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px dashed var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .placeholder-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    #result-box {
+      background: #090d16;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      max-height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid var(--card-border);
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .preset-btn {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      width: auto;
+    }
+
+    .preset-btn:hover {
+      background: #334155;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo" onerror="this.style.display='none'" />
+        <h1>Connectgold Media</h1>
+      </div>
+      <span class="status-badge" id="worker-status">Worker Ready</span>
+    </header>
+
+    <div class="grid">
+      <!-- Left Column: Controls & Configuration -->
+      <div class="card">
+        <div class="card-title">📡 Camera & Optics Settings</div>
+
+        <div class="form-group">
+          <label for="workerUrl">Cloudflare Worker Endpoint</label>
+          <input type="url" id="workerUrl" placeholder="https://your-worker.workers.dev" value="" />
+        </div>
+
+        <div class="form-group">
+          <label for="streamUrl">Stream Source URL (RTSP Bridge / HTTP Snapshot)</label>
+          <input type="url" id="streamUrl" placeholder="http://192.168.1.50:1984/api/frame.jpeg?src=cam1" />
+        </div>
+
+        <div class="form-group">
+          <label for="zoomRange">Optical / Digital Telephoto Zoom</label>
+          <div class="range-wrap">
+            <input type="range" id="zoomRange" min="1" max="24" value="24" oninput="document.getElementById('zoomVal').innerText = this.value + 'x'" />
+            <span class="range-val" id="zoomVal">24x</span>
+          </div>
+          <div class="preset-btns">
+            <button class="preset-btn" onclick="setZoom(1)">1x Wide</button>
+            <button class="preset-btn" onclick="setZoom(5)">5x Medium</button>
+            <button class="preset-btn" onclick="setZoom(12)">12x Far</button>
+            <button class="preset-btn" onclick="setZoom(24)">24x Extreme</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="modelSelect">Workers AI Vision Model</label>
+          <select id="modelSelect">
+            <option value="@cf/meta/llama-3.2-11b-vision-instruct">Llama 3.2 11B Vision Instruct (Recommended)</option>
+            <option value="@cf/meta/llama-3.2-3b-vision-instruct">Llama 3.2 3B Vision Instruct (Fast)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="aiPrompt">Vision AI Prompt</label>
+          <textarea id="aiPrompt" rows="3">Identify and describe the main subject in detail.</textarea>
+        </div>
+
+        <button id="snapBtn" onclick="triggerSnapshot()">Capture & AI Analyze</button>
+      </div>
+
+      <!-- Right Column: Live Feed & AI Analysis Output -->
+      <div class="card">
+        <div class="card-title">🔍 Visual Capture & Analysis</div>
+
+        <label>Captured Frame Preview</label>
+        <div class="preview-box" id="previewContainer">
+          <span class="placeholder-text" id="previewPlaceholder">No snapshot captured yet.</span>
+          <img id="framePreview" style="display: none;" alt="Camera Frame" />
+        </div>
+
+        <label>AI Analysis Result</label>
+        <div id="result-box">Awaiting capture request...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connectgold Media Footer -->
+<footer style="text-align: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); color: var(--text-muted); font-size: 0.85rem;">
+  <p>© 2026 Connectgold Media. All rights reserved.</p>
+  <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 1.5rem;">
+    <a href="privacy31.html" style="color: var(--accent); text-decoration: none;">Privacy Policy</a>
+    <a href="terms6.html" style="color: var(--accent); text-decoration: none;">Terms of Use</a>
+  </div>
+</footer>
+
+  <script>
+    function setZoom(val) {
+      document.getElementById('zoomRange').value = val;
+      document.getElementById('zoomVal').innerText = val + 'x';
+    }
+
+    async function triggerSnapshot() {
+      const workerUrl = document.getElementById('workerUrl').value.trim();
+      const streamUrl = document.getElementById('streamUrl').value.trim();
+      const zoom = document.getElementById('zoomRange').value;
+      const model = document.getElementById('modelSelect').value;
+      const prompt = document.getElementById('aiPrompt').value;
+      
+      const snapBtn = document.getElementById('snapBtn');
+      const resultBox = document.getElementById('result-box');
+      const previewImg = document.getElementById('framePreview');
+      const previewPlaceholder = document.getElementById('previewPlaceholder');
+
+      if (!workerUrl) {
+        alert("Please enter your Cloudflare Worker URL first.");
+        return;
+      }
+
+      snapBtn.disabled = true;
+      snapBtn.innerText = "Capturing Target...";
+      resultBox.innerText = "Requesting frame snapshot and running Workers AI model...";
+
+      try {
+        const queryParams = new URLSearchParams({
+          zoom: zoom,
+          model: model,
+          prompt: prompt
+        });
+
+        if (streamUrl) {
+          queryParams.append('stream', streamUrl);
+          // Show live snapshot in browser preview container if direct HTTP snapshot URL
+          if (streamUrl.startsWith('http')) {
+            previewImg.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+            previewImg.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+          }
+        }
+
+        const targetEndpoint = `${workerUrl.replace(/\/$/, '')}/snap?${queryParams.toString()}`;
+        const response = await fetch(targetEndpoint);
+        const data = await response.json();
+
+        resultBox.innerText = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        resultBox.innerText = "Error executing snapshot: " + err.message;
+      } finally {
+        snapBtn.disabled = false;
+        snapBtn.innerText = "Capture & AI Analyze";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,531 +1,351 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Connectgold Media</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Inter Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          colors: {
-            brand: {
-              50: '#f0f9ff',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-            }
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    :root {
+      --bg-main: #0b0f19;
+      --card-bg: #151c2c;
+      --card-border: #232f48;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --gold: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 1.5rem;
+      min-height: 100vh;
     }
-    ::-webkit-scrollbar-thumb {
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .status-badge {
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: #0d1321;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .range-wrap input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .range-val {
+      font-weight: 700;
+      color: var(--gold);
+      width: 48px;
+      text-align: right;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: var(--accent-hover); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .preview-box {
+      width: 100%;
+      height: 220px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px dashed var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .placeholder-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    #result-box {
+      background: #090d16;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      max-height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid var(--card-border);
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .preset-btn {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      width: auto;
+    }
+
+    .preset-btn:hover {
       background: #334155;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
-    
-    /* Crosshair overlay animation */
-    @keyframes pulse-ring {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.05); opacity: 0.4; }
-      100% { transform: scale(0.95); opacity: 0.8; }
-    }
-    .crosshair-target {
-      animation: pulse-ring 3s infinite ease-in-out;
+      color: var(--text-main);
     }
   </style>
 </head>
-<body class="h-full font-sans antialiased flex flex-col bg-slate-950 text-slate-100 selection:bg-sky-500 selection:text-white">
+<body>
 
-  <!-- Top Navigation Header -->
-  <header class="h-16 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
-    <div class="flex items-center space-x-3">
-      <!-- Custom Brand Logo -->
-      <div class="p-1.5 bg-slate-800/80 border border-slate-700/60 rounded-xl flex items-center justify-center shadow-md">
-        <img src="https://chyke.online/connectgold_2.png" 
-             alt="Logo" 
-             class="h-7 w-auto object-contain"
-             onerror="this.onerror=null; this.src='https://placehold.co/120x40/0ea5e9/ffffff?text=LOGO';">
+  <div class="container">
+    <header>
+      <div class="brand">
+        <img src="https://chyke.online/connectgold_2.png" alt="Connectgold Logo" onerror="this.style.display='none'" />
+        <h1>Connectgold Media</h1>
       </div>
-      <div>
-        <h1 class="font-bold text-base sm:text-lg tracking-tight text-white flex items-center gap-2">
-          TeleVision AI <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30">24x Zoom</span>
-        </h1>
-        <p class="text-xs text-slate-400 hidden sm:block">Remote Long-Range IP / PTZ Visual Inspection</p>
-      </div>
-    </div>
+      <span class="status-badge" id="worker-status">Worker Ready</span>
+    </header>
 
-    <!-- Status Indicators & Settings Trigger -->
-    <div class="flex items-center space-x-3 sm:space-x-4">
-      <div class="flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/50 text-xs">
-        <span class="relative flex h-2.5 w-2.5">
-          <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span id="statusDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-        </span>
-        <span id="statusText" class="font-medium text-slate-300">Camera Online</span>
-      </div>
+    <div class="grid">
+      <!-- Left Column: Controls & Configuration -->
+      <div class="card">
+        <div class="card-title">📡 Camera & Optics Settings</div>
 
-      <button id="toggleSettingsBtn" onclick="toggleSettingsModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-slate-700">
-        <i class="fa-solid fa-gear text-lg"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- Main Content Layout -->
-  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-
-    <!-- Left / Top: Viewport & Camera Canvas Container -->
-    <div class="flex-1 flex flex-col bg-slate-950 p-3 sm:p-5 overflow-y-auto">
-      
-      <!-- Video / Viewport Box -->
-      <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex items-center justify-center group">
-        
-        <!-- Live Simulated Image Canvas / Stream container -->
-        <div id="viewportContainer" class="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center">
-          <img id="cameraFeed" 
-               src="https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?q=80&w=1600&auto=format&fit=crop" 
-               alt="Camera Viewport" 
-               class="w-full h-full object-cover transition-transform duration-300 ease-out origin-center"
-               style="transform: scale(1);"
-               onerror="this.src='https://placehold.co/1200x800/0f172a/94a3b8?text=Camera+Feed+Offline';">
+        <div class="form-group">
+          <label for="workerUrl">Cloudflare Worker Endpoint</label>
+          <input type="url" id="workerUrl" placeholder="https://your-worker.workers.dev" value="" />
         </div>
 
-        <!-- Overlays / Optics Graphics -->
-        <!-- Target Reticle Grid -->
-        <div id="reticleOverlay" class="absolute inset-0 pointer-events-none flex items-center justify-center">
-          <div class="w-48 h-48 sm:w-64 sm:h-64 border border-sky-500/30 rounded-full crosshair-target flex items-center justify-center">
-            <div class="w-2 h-2 bg-sky-400/80 rounded-full"></div>
+        <div class="form-group">
+          <label for="streamUrl">Stream Source URL (RTSP Bridge / HTTP Snapshot)</label>
+          <input type="url" id="streamUrl" placeholder="http://192.168.1.50:1984/api/frame.jpeg?src=cam1" />
+        </div>
+
+        <div class="form-group">
+          <label for="zoomRange">Optical / Digital Telephoto Zoom</label>
+          <div class="range-wrap">
+            <input type="range" id="zoomRange" min="1" max="24" value="24" oninput="document.getElementById('zoomVal').innerText = this.value + 'x'" />
+            <span class="range-val" id="zoomVal">24x</span>
           </div>
-          <!-- Crosshair lines -->
-          <div class="absolute w-full h-[1px] bg-sky-500/20"></div>
-          <div class="absolute h-full w-[1px] bg-sky-500/20"></div>
-        </div>
-
-        <!-- OSD Info Overlay -->
-        <div class="absolute top-4 left-4 font-mono text-xs text-sky-400 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 space-y-1 select-none">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span class="font-bold text-white tracking-wider">LIVE 4K PTZ</span>
-          </div>
-          <div>MAG: <span id="osdZoom" class="text-sky-300 font-bold">1.0x</span></div>
-          <div>RES: 3840x2160</div>
-          <div id="osdLatency">LATENCY: ~42ms</div>
-        </div>
-
-        <!-- Preset Magnification Badges -->
-        <div class="absolute top-4 right-4 flex flex-col gap-1.5 sm:flex-row">
-          <button onclick="setZoom(1)" class="px-2.5 py-1 text-xs font-mono font-semibold bg-slate-900/80 hover:bg-sky-600 text-slate-300 hover:text-white rounded-md border border-slate-700/60 backdrop-blur-md transition-all">1x</button>
-          <button onclick="setZoom(5)" class="px-2.5 py-1 text-xs font-mono font-semibold bg-slate-900/80 hover:bg-sky-600 text-slate-300 hover:text-white rounded-md border border-slate-700/60 backdrop-blur-md transition-all">5x</button>
-          <button onclick="setZoom(12)" class="px-2.5 py-1 text-xs font-mono font-semibold bg-slate-900/80 hover:bg-sky-600 text-slate-300 hover:text-white rounded-md border border-slate-700/60 backdrop-blur-md transition-all">12x</button>
-          <button onclick="setZoom(24)" class="px-2.5 py-1 text-xs font-mono font-semibold bg-slate-900/80 hover:bg-sky-600 text-slate-300 hover:text-white rounded-md border border-slate-700/60 backdrop-blur-md transition-all">24x</button>
-        </div>
-
-        <!-- Bottom Action Bar Over Image -->
-        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <button onclick="toggleReticle()" class="p-2 bg-slate-900/80 hover:bg-slate-800 text-slate-300 rounded-lg border border-slate-700/60 backdrop-blur-md text-xs transition-all" title="Toggle Reticle">
-              <i class="fa-solid fa-crosshairs text-sky-400"></i>
-            </button>
-            <button onclick="reloadFeed()" class="p-2 bg-slate-900/80 hover:bg-slate-800 text-slate-300 rounded-lg border border-slate-700/60 backdrop-blur-md text-xs transition-all" title="Refresh Stream Frame">
-              <i class="fa-solid fa-arrows-rotate"></i>
-            </button>
-          </div>
-
-          <button onclick="triggerAiSnap()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg shadow-lg shadow-sky-600/30 flex items-center gap-2 text-sm transition-all transform active:scale-95">
-            <i class="fa-solid fa-bolt"></i>
-            <span>Snap & Analyze</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Zoom Control Panel -->
-      <div class="mt-4 bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xl space-y-4">
-        <div class="flex items-center justify-between">
-          <label for="zoomRange" class="text-sm font-semibold text-slate-200 flex items-center gap-2">
-            <i class="fa-solid fa-magnifying-glass text-sky-400"></i>
-            <span>Telephoto Zoom Control</span>
-          </label>
-          <span class="font-mono text-lg font-bold text-sky-400 bg-sky-500/10 px-3 py-0.5 rounded-lg border border-sky-500/20" id="zoomDisplay">1.0x</span>
-        </div>
-
-        <!-- Dual Slider / Fine Adjuster -->
-        <div class="flex items-center space-x-3">
-          <span class="text-xs font-mono text-slate-400">1x</span>
-          <input type="range" id="zoomRange" min="1" max="24" step="0.1" value="1" 
-                 oninput="handleZoomChange(this.value)"
-                 class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500 focus:outline-none">
-          <span class="text-xs font-mono text-slate-400">24x</span>
-        </div>
-
-        <!-- Quick Stepper Buttons -->
-        <div class="grid grid-cols-5 gap-2 pt-1">
-          <button onclick="adjustZoom(-1)" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700 transition-colors">-1.0x</button>
-          <button onclick="adjustZoom(-0.1)" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700 transition-colors">-0.1x</button>
-          <button onclick="setZoom(12)" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-400 text-xs font-semibold rounded-lg border border-slate-700 transition-colors">Mid (12x)</button>
-          <button onclick="adjustZoom(0.1)" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700 transition-colors">+0.1x</button>
-          <button onclick="adjustZoom(1)" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700 transition-colors">+1.0x</button>
-        </div>
-
-        <!-- Advanced Optics Fine Tuning (Exposure, Focus Blur, Contrast) -->
-        <div class="pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div>
-            <div class="flex justify-between text-slate-400 mb-1">
-              <span>Exposure</span>
-              <span id="exposureVal" class="font-mono text-sky-400">100%</span>
-            </div>
-            <input type="range" id="exposureRange" min="50" max="150" value="100" oninput="updateOpticsFilters()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500">
-          </div>
-          <div>
-            <div class="flex justify-between text-slate-400 mb-1">
-              <span>Contrast</span>
-              <span id="contrastVal" class="font-mono text-sky-400">100%</span>
-            </div>
-            <input type="range" id="contrastRange" min="50" max="180" value="100" oninput="updateOpticsFilters()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500">
-          </div>
-          <div>
-            <div class="flex justify-between text-slate-400 mb-1">
-              <span>Focus Adjustment</span>
-              <span id="focusVal" class="font-mono text-sky-400">Sharp</span>
-            </div>
-            <input type="range" id="focusRange" min="0" max="4" step="0.5" value="0" oninput="updateOpticsFilters()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500">
+          <div class="preset-btns">
+            <button class="preset-btn" onclick="setZoom(1)">1x Wide</button>
+            <button class="preset-btn" onclick="setZoom(5)">5x Medium</button>
+            <button class="preset-btn" onclick="setZoom(12)">12x Far</button>
+            <button class="preset-btn" onclick="setZoom(24)">24x Extreme</button>
           </div>
         </div>
-      </div>
 
-    </div>
-
-    <!-- Right Sidebar: AI Prompting & Workers Intelligence Analysis -->
-    <div class="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-slate-800 bg-slate-900/60 p-4 sm:p-5 flex flex-col justify-between shrink-0 space-y-4 overflow-y-auto">
-      
-      <div class="space-y-4">
-        <div>
-          <h2 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-brain text-sky-400"></i>
-            <span>Vision AI Inspector</span>
-          </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Powered by Cloudflare Workers AI Vision Models</p>
-        </div>
-
-        <!-- AI Model Selection -->
-        <div class="space-y-1">
-          <label class="text-xs font-medium text-slate-300">Workers AI Vision Model</label>
-          <select id="aiModelSelect" class="w-full bg-slate-950 border border-slate-800 text-xs text-slate-200 rounded-lg p-2.5 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none">
-            <option value="@cf/meta/llama-3.2-11b-vision-instruct" selected>Llama 3.2 11B Vision Instruct (Recommended)</option>
-            <option value="@cf/meta/llama-3.2-3b-vision-instruct">Llama 3.2 3B Vision Instruct (Faster)</option>
+        <div class="form-group">
+          <label for="modelSelect">Workers AI Vision Model</label>
+          <select id="modelSelect">
+            <option value="@cf/meta/llama-3.2-11b-vision-instruct">Llama 3.2 11B Vision Instruct (Recommended)</option>
+            <option value="@cf/meta/llama-3.2-3b-vision-instruct">Llama 3.2 3B Vision Instruct (Fast)</option>
           </select>
         </div>
 
-        <!-- Custom Prompt Selector/Input -->
-        <div class="space-y-2">
-          <label class="text-xs font-medium text-slate-300">Prompt Preset</label>
-          <select id="promptPreset" onchange="applyPresetPrompt()" class="w-full bg-slate-950 border border-slate-800 text-xs text-slate-200 rounded-lg p-2.5 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none">
-            <option value="Identify and describe the main subject in extreme detail.">🔍 Detailed Object Identification</option>
-            <option value="Read any visible license plates, serial numbers, or text printed on distant objects.">🏷️ OCR Text & Serial Number Reading</option>
-            <option value="Detect any potential security hazards, trespassers, or unusual activities.">🚨 Security & Hazard Scanning</option>
-            <option value="Analyze wildlife, bird species, or nature details captured in this far-away target.">🦅 Wildlife / Nature Inspection</option>
-            <option value="custom">✏️ Custom Prompt...</option>
-          </select>
-
-          <label class="text-xs font-medium text-slate-300 block pt-1">Active AI Prompt</label>
-          <textarea id="aiPrompt" rows="3" class="w-full bg-slate-950 border border-slate-800 text-xs text-slate-100 rounded-lg p-3 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none resize-none font-sans" placeholder="Enter instructions for the Cloudflare AI vision model..."></textarea>
+        <div class="form-group">
+          <label for="aiPrompt">Vision AI Prompt</label>
+          <textarea id="aiPrompt" rows="3">Identify and describe the main subject in detail.</textarea>
         </div>
 
-        <!-- Trigger Button -->
-        <button id="aiSnapBtn" onclick="triggerAiSnap()" class="w-full py-3 bg-gradient-to-r from-sky-600 to-brand-600 hover:from-sky-500 hover:to-brand-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-sky-600/20 flex items-center justify-center space-x-2 transition-all">
-          <i class="fa-solid fa-microchip"></i>
-          <span id="aiBtnText">Run 24x AI Snapshot</span>
-        </button>
-
-        <!-- AI Output Box -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-300">Analysis Output</span>
-            <button onclick="copyOutput()" class="text-xs text-sky-400 hover:text-sky-300 font-mono flex items-center gap-1">
-              <i class="fa-solid fa-copy"></i> Copy
-            </button>
-          </div>
-          
-          <div id="aiOutputContainer" class="min-h-[160px] max-h-[320px] bg-slate-950 border border-slate-800 rounded-xl p-3.5 overflow-y-auto font-mono text-xs leading-relaxed text-slate-300 relative">
-            <div id="aiPlaceholder" class="text-slate-500 italic text-center py-10">
-              <i class="fa-solid fa-robot text-2xl mb-2 block opacity-40"></i>
-              Snapshot response will appear here after analysis...
-            </div>
-            <div id="aiLoading" class="hidden text-center py-10 space-y-3">
-              <i class="fa-solid fa-circle-notch fa-spin text-2xl text-sky-400"></i>
-              <p class="text-slate-400 font-sans">Connecting to Worker Edge AI...</p>
-            </div>
-            <div id="aiTextResult" class="hidden whitespace-pre-wrap font-sans text-slate-200"></div>
-          </div>
-        </div>
+        <button id="snapBtn" onclick="triggerSnapshot()">Capture & AI Analyze</button>
       </div>
 
-      <!-- Quick Endpoint Status Footer -->
-      <div class="pt-3 border-t border-slate-800/80 text-[11px] font-mono text-slate-400 flex items-center justify-between">
-        <span class="truncate">Worker Endpoint:</span>
-        <span id="activeWorkerUrl" class="text-sky-400 truncate max-w-[150px]">/snap</span>
-      </div>
+      <!-- Right Column: Live Feed & AI Analysis Output -->
+      <div class="card">
+        <div class="card-title">🔍 Visual Capture & Analysis</div>
 
-    </div>
-
-  </main>
-
-  <!-- Settings Config Modal (Cloudflare Workers API Setup) -->
-  <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-sky-400"></i>
-          <span>Worker API Configuration</span>
-        </h3>
-        <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white text-lg">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="space-y-4 text-xs">
-        <div>
-          <label class="block font-medium text-slate-300 mb-1">Cloudflare Worker Endpoint URL</label>
-          <input type="text" id="workerUrlInput" class="w-full bg-slate-950 border border-slate-800 text-slate-100 rounded-lg p-2.5 font-mono focus:border-sky-500 outline-none" placeholder="https://your-worker.workers.dev/snap">
-          <p class="text-[11px] text-slate-400 mt-1">Leave as <code>/snap</code> if hosted directly inside the Worker script.</p>
+        <label>Captured Frame Preview</label>
+        <div class="preview-box" id="previewContainer">
+          <span class="placeholder-text" id="previewPlaceholder">No snapshot captured yet.</span>
+          <img id="framePreview" style="display: none;" alt="Camera Frame" />
         </div>
 
-        <div>
-          <label class="block font-medium text-slate-300 mb-1">Remote IP Camera Snapshot URL (Optional Direct Override)</label>
-          <input type="text" id="cameraUrlInput" class="w-full bg-slate-950 border border-slate-800 text-slate-100 rounded-lg p-2.5 font-mono focus:border-sky-500 outline-none" placeholder="https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45">
-        </div>
-
-        <div class="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-sky-300 text-[11px] space-y-1">
-          <div class="font-bold">💡 How this works:</div>
-          <p>The dashboard sends requests with the zoom parameter (1.0x to 24.0x) and prompt to your Cloudflare Worker backend. The worker queries your PTZ camera, crops/scales or fetches optical snapshot, and calls Workers AI Vision models.</p>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-end space-x-3 pt-2">
-        <button onclick="toggleSettingsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium text-xs">Cancel</button>
-        <button onclick="saveSettings()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-medium text-xs shadow-lg shadow-sky-600/30">Save Settings</button>
+        <label>AI Analysis Result</label>
+        <div id="result-box">Awaiting capture request...</div>
       </div>
     </div>
   </div>
 
-  <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 border border-slate-700 text-slate-100 text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
-    <span id="toastMsg">Configuration Saved</span>
-  </div>
-
-  <!-- Javascript Logic -->
   <script>
-    // State management
-    let currentZoom = 1.0;
-    let workerEndpoint = '/snap';
-    let overrideCameraUrl = '';
-    let reticleVisible = true;
-
-    // Preset Prompt Initializer
-    document.addEventListener('DOMContentLoaded', () => {
-      applyPresetPrompt();
-      updateZoomUI();
-    });
-
-    // Handle Zoom Adjustments
-    function handleZoomChange(val) {
-      currentZoom = parseFloat(val);
-      updateZoomUI();
-    }
-
     function setZoom(val) {
-      currentZoom = parseFloat(val);
-      document.getElementById('zoomRange').value = currentZoom;
-      updateZoomUI();
+      document.getElementById('zoomRange').value = val;
+      document.getElementById('zoomVal').innerText = val + 'x';
     }
 
-    function adjustZoom(delta) {
-      currentZoom = Math.max(1.0, Math.min(24.0, parseFloat((currentZoom + delta).toFixed(1))));
-      document.getElementById('zoomRange').value = currentZoom;
-      updateZoomUI();
-    }
+    async function triggerSnapshot() {
+      const workerUrl = document.getElementById('workerUrl').value.trim();
+      const streamUrl = document.getElementById('streamUrl').value.trim();
+      const zoom = document.getElementById('zoomRange').value;
+      const model = document.getElementById('modelSelect').value;
+      const prompt = document.getElementById('aiPrompt').value;
+      
+      const snapBtn = document.getElementById('snapBtn');
+      const resultBox = document.getElementById('result-box');
+      const previewImg = document.getElementById('framePreview');
+      const previewPlaceholder = document.getElementById('previewPlaceholder');
 
-    function updateZoomUI() {
-      const zoomText = `${currentZoom.toFixed(1)}x`;
-      document.getElementById('zoomDisplay').innerText = zoomText;
-      document.getElementById('osdZoom').innerText = zoomText;
-      updateOpticsFilters();
-    }
-
-    // Apply Live Optical Filters (Zoom, Brightness, Contrast, Blur)
-    function updateOpticsFilters() {
-      const cameraFeed = document.getElementById('cameraFeed');
-      const exposure = document.getElementById('exposureRange').value;
-      const contrast = document.getElementById('contrastRange').value;
-      const focusBlur = document.getElementById('focusRange').value;
-
-      document.getElementById('exposureVal').innerText = `${exposure}%`;
-      document.getElementById('contrastVal').innerText = `${contrast}%`;
-      document.getElementById('focusVal').innerText = focusBlur == 0 ? 'Sharp' : `${focusBlur}px`;
-
-      cameraFeed.style.transform = `scale(${currentZoom})`;
-      cameraFeed.style.filter = `brightness(${exposure}%) contrast(${contrast}%) blur(${focusBlur}px)`;
-    }
-
-    // Toggle crosshair graphic overlay
-    function toggleReticle() {
-      reticleVisible = !reticleVisible;
-      const overlay = document.getElementById('reticleOverlay');
-      overlay.style.display = reticleVisible ? 'flex' : 'none';
-    }
-
-    function reloadFeed() {
-      showToast('Camera feed refreshed', 'fa-arrows-rotate', 'text-sky-400');
-    }
-
-    // Prompt Presets
-    function applyPresetPrompt() {
-      const select = document.getElementById('promptPreset');
-      const textarea = document.getElementById('aiPrompt');
-      if (select.value !== 'custom') {
-        textarea.value = select.value;
-      }
-    }
-
-    // Trigger AI Capture Call
-    async function triggerAiSnap() {
-      const prompt = document.getElementById('aiPrompt').value.trim();
-      const placeholder = document.getElementById('aiPlaceholder');
-      const loading = document.getElementById('aiLoading');
-      const result = document.getElementById('aiTextResult');
-      const btn = document.getElementById('aiSnapBtn');
-      const btnText = document.getElementById('aiBtnText');
-
-      if (!prompt) {
-        showToast('Please enter an AI prompt', 'fa-triangle-exclamation', 'text-amber-400');
+      if (!workerUrl) {
+        alert("Please enter your Cloudflare Worker URL first.");
         return;
       }
 
-      // UI Loading state
-      placeholder.classList.add('hidden');
-      result.classList.add('hidden');
-      loading.classList.remove('hidden');
-      btn.disabled = true;
-      btnText.innerText = "Analyzing Frame...";
+      snapBtn.disabled = true;
+      snapBtn.innerText = "Capturing Target...";
+      resultBox.innerText = "Requesting frame snapshot and running Workers AI model...";
 
       try {
-        // Construct query parameters
-        const url = new URL(workerEndpoint, window.location.origin);
-        const selectedModel = document.getElementById('aiModelSelect').value;
-        url.searchParams.set('zoom', currentZoom.toString());
-        url.searchParams.set('prompt', prompt);
-        url.searchParams.set('model', selectedModel);
-        if (overrideCameraUrl) {
-          url.searchParams.set('camera_url', overrideCameraUrl);
-        }
-
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
+        const queryParams = new URLSearchParams({
+          zoom: zoom,
+          model: model,
+          prompt: prompt
         });
 
-        if (!response.ok) {
-          throw new Error(`Server returned status ${response.status}`);
+        if (streamUrl) {
+          queryParams.append('stream', streamUrl);
+          // Show live snapshot in browser preview container if direct HTTP snapshot URL
+          if (streamUrl.startsWith('http')) {
+            previewImg.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+            previewImg.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+          }
         }
 
+        const targetEndpoint = `${workerUrl.replace(/\/$/, '')}/snap?${queryParams.toString()}`;
+        const response = await fetch(targetEndpoint);
         const data = await response.json();
-        
-        // Extract analysis text
-        let outputText = "";
-        if (data.analysis) {
-          outputText = typeof data.analysis === 'string' ? data.analysis : JSON.stringify(data.analysis, null, 2);
-        } else {
-          outputText = JSON.stringify(data, null, 2);
-        }
 
-        loading.classList.add('hidden');
-        result.classList.remove('hidden');
-        result.innerText = outputText;
-        showToast('AI Snapshot Complete', 'fa-circle-check', 'text-emerald-400');
+        resultBox.innerText = JSON.stringify(data, null, 2);
 
       } catch (err) {
-        // Fallback demo response if endpoint isn't connected yet
-        loading.classList.add('hidden');
-        result.classList.remove('hidden');
-        
-        result.innerText = `[DEMO SIMULATION RESPONSE - Worker Connection Failed]\n\nTarget Magnification: ${currentZoom.toFixed(1)}x\nPrompt: "${prompt}"\n\nAI Visual Analysis:\nObject detected at high focal distance. Subject shows structural details matching urban building rooftop hardware / telecommunication array with high sharpness. No immediate anomalies detected.`;
-        
-        showToast('Simulated AI output loaded', 'fa-info-circle', 'text-sky-400');
+        resultBox.innerText = "Error executing snapshot: " + err.message;
       } finally {
-        btn.disabled = false;
-        btnText.innerText = "Run 24x AI Snapshot";
+        snapBtn.disabled = false;
+        snapBtn.innerText = "Capture & AI Analyze";
       }
-    }
-
-    // Modal & Toast Helpers
-    function toggleSettingsModal() {
-      const modal = document.getElementById('settingsModal');
-      modal.classList.toggle('hidden');
-    }
-
-    function saveSettings() {
-      const inputUrl = document.getElementById('workerUrlInput').value.trim();
-      const camUrl = document.getElementById('cameraUrlInput').value.trim();
-
-      if (inputUrl) {
-        workerEndpoint = inputUrl;
-        document.getElementById('activeWorkerUrl').innerText = workerEndpoint;
-      }
-      overrideCameraUrl = camUrl;
-
-      toggleSettingsModal();
-      showToast('Settings Saved', 'fa-sliders', 'text-sky-400');
-    }
-
-    function copyOutput() {
-      const text = document.getElementById('aiTextResult').innerText;
-      if (!text) return;
-      
-      const dummy = document.createElement("textarea");
-      document.body.appendChild(dummy);
-      dummy.value = text;
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
-
-      showToast('Copied to clipboard', 'fa-copy', 'text-sky-400');
-    }
-
-    function showToast(msg, iconClass = 'fa-circle-check', iconColor = 'text-emerald-400') {
-      const toast = document.getElementById('toast');
-      const toastMsg = document.getElementById('toastMsg');
-      const toastIcon = document.getElementById('toastIcon');
-
-      toastMsg.innerText = msg;
-      toastIcon.className = `fa-solid ${iconClass} ${iconColor} text-base`;
-
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
     }
   </script>
 </body>

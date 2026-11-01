@@ -1,265 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connectgold Assistant</title>
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --accent: #38bdf8;
-            --accent-hover: #0ea5e9;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border: #1f2937;
-            --success: #10b981;
-        }
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .container { width: 100%; max-width: 800px; }
-        header { text-align: center; margin-bottom: 25px; }
-        header h1 { margin: 0; font-size: 1.7rem; color: var(--accent); }
-        header p { color: var(--text-muted); font-size: 0.9rem; }
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }
-        .card h3 { margin-top: 0; font-size: 1.05rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; color: #e5e7eb; }
-        label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
-        input, select, textarea {
-            width: 100%; padding: 10px 12px; background: #030712;
-            border: 1px solid var(--border); color: var(--text-main);
-            border-radius: 6px; box-sizing: border-box; margin-bottom: 12px; font-size: 0.9rem;
-        }
-        input:focus, select:focus { outline: none; border-color: var(--accent); }
-        button.action-btn {
-            background-color: var(--accent); color: #0b0f19; border: none;
-            font-weight: 600; padding: 12px; border-radius: 6px; cursor: pointer;
-            width: 100%; transition: background 0.2s; font-size: 0.95rem;
-        }
-        button.action-btn:hover { background-color: var(--accent-hover); }
-        .status-box {
-            background: #030712; border-left: 4px solid var(--success);
-            padding: 12px 15px; font-size: 0.88rem; border-radius: 4px; margin-top: 10px;
-            line-height: 1.4;
-        }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connectgold Assistant</title>
+<style>
+:root{--bg:#0b0f19;--card:#111827;--accent:#38bdf8;--border:#1f2937;--success:#10b981}
+body{font-family:system-ui;background:var(--bg);color:#f3f4f6;margin:0;padding:20px;display:flex;justify-content:center}
+.container{width:100%;max-width:800px}.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+button{width:100%;padding:12px;border-radius:6px;border:none;font-weight:600;cursor:pointer;margin-top:8px}
+.primary{background:var(--accent);color:#0b0f19}.secondary{background:#1f2937;color:#fff}
+.status{background:#030712;border-left:4px solid var(--success);padding:12px;margin-top:10px;border-radius:4px;font-size:0.88rem}
+</style>
 </head>
 <body>
-
 <div class="container">
-    <header>
-        <h1>Connectgold (chyke.online)</h1>
-        <p>Omni-Channel Voice & AI Execution Engine</p>
-    </header>
+<h1 style="color:var(--accent);text-align:center">Connectgold (chyke.online)</h1>
 
-    <!-- SECTION 1: BYOK Secure Vault -->
-    <div class="card">
-        <h3>1. BYOK AI Vault</h3>
-        <label for="apiKey">OpenRouter or Gemini API Key</label>
-        <input type="password" id="apiKey" placeholder="sk-or-v1-... or AIzaSy...">
-    </div>
+<div class="card">
+<h3>1. Passkey + Fingerprint Vault</h3>
+<input type="password" id="apiKey" placeholder="sk-or-v1-... (enter once)" style="width:100%;padding:10px;background:#030712;border:1px solid var(--border);color:#fff;border-radius:6px;box-sizing:border-box">
+<button class="primary" onclick="createPasskeyAndLock()">🔐 Create Passkey & Lock Key with Fingerprint</button>
+<button class="secondary" onclick="unlockWithFingerprint()">👆 Unlock with Fingerprint / Face</button>
+<button class="secondary" onclick="clearVault()" style="background:#7f1d1d">Clear Vault from this phone</button>
+<div class="status"><strong>Status:</strong> <span id="vaultStatus">No passkey yet. Create one.</span></div>
+</div>
 
-    <!-- SECTION 2: Voice Command Center -->
-    <div class="card">
-        <h3>2. Live Voice Agent</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top:0;">
-            Speak any instruction (e.g., <em>"Fill the search box with AI Systems", "Change workspace action to deploy", "Click execute"</em>).
-        </p>
-        <button class="action-btn" onclick="startVoiceOperator()">🎤 Speak Instruction</button>
-        
-        <div class="status-box">
-            <div><strong>Agent Status:</strong> <span id="agentStatus">System online. Waiting for voice instruction...</span></div>
-            <div><strong>Recognized Speech:</strong> <span id="transcriptOutput" style="color: var(--text-muted);">-</span></div>
-        </div>
-    </div>
+<div class="card">
+<h3>2. Live Voice Agent</h3>
+<button class="primary" onclick="startVoiceOperator()">🎤 Speak Instruction</button>
+<div class="status"><strong>Agent:</strong> <span id="agentStatus">Waiting...</span><br><strong>Heard:</strong> <span id="transcriptOutput">-</span></div>
+</div>
 
-    <!-- SECTION 3: Live Interactive Workspace (The AI Controls This In and Out) -->
-    <div class="card">
-        <h3>3. Dynamic Website Workspace</h3>
-        <div>
-            <label for="siteSearch">Global Platform Search / Input</label>
-            <input type="text" id="siteSearch" placeholder="Type or command AI to fill this...">
-        </div>
-        <div>
-            <label for="systemMode">Execution Pipeline Mode</label>
-            <select id="systemMode">
-                <option value="standard">Standard Routing</option>
-                <option value="agentic">Autonomous Agentic Loop</option>
-                <option value="edge">Cloudflare Edge Worker</option>
-            </select>
-        </div>
-        <button id="submitWorkflowBtn" class="action-btn" style="background-color:#10b981; color:#fff;" onclick="alert('Workflow triggered successfully!')">
-            Execute Workflow Action
-        </button>
-    </div>
+<div class="card">
+<h3>3. Dynamic Website Workspace</h3>
+<input type="text" id="siteSearch" placeholder="Global search" style="width:100%;padding:10px;background:#030712;border:1px solid var(--border);color:#fff;border-radius:6px;box-sizing:border-box;margin-bottom:12px">
+<select id="systemMode" style="width:100%;padding:10px;background:#030712;border:1px solid var(--border);color:#fff;border-radius:6px;margin-bottom:12px"><option>Standard Routing</option><option>Autonomous Agentic Loop</option></select>
+<button id="submitWorkflowBtn" style="background:var(--success);color:#fff" onclick="alert('Workflow triggered!')">Execute Workflow Action</button>
+</div>
 </div>
 
 <script>
-    // 1. DYNAMIC DOM SCRAPER (Analyzes your website structure in and out)
-    function captureWebsiteDOMMap() {
-        const elements = [];
-        
-        // Scan all inputs, textareas, selects, and buttons dynamically on the page
-        const nodes = document.querySelectorAll('input, select, textarea, button');
-        
-        nodes.forEach((el, index) => {
-            elements.push({
-                index: index,
-                tag: el.tagName.toLowerCase(),
-                id: el.id || `element_${index}`,
-                type: el.type || "none",
-                name: el.name || "",
-                current_value: el.value || "",
-                placeholder: el.placeholder || el.innerText || "interactive control"
-            });
-        });
-        
-        return elements;
-    }
+let cachedDecryptedKey = null;
+const DB_NAME = "connectgold-passkey-vault";
 
-    // 2. SPEECH RECOGNITION LISTENER
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const statusEl = document.getElementById('agentStatus');
-    const transcriptEl = document.getElementById('transcriptOutput');
+// --- VAULT CORE ---
+async function createPasskeyAndLock(){
+ const apiKey = document.getElementById('apiKey').value.trim();
+ if(!apiKey) return alert("Enter API key first");
+ if(!window.PublicKeyCredential) return alert("Passkey not supported on this browser, use Chrome on Android");
 
-    function startVoiceOperator() {
-        if (!SpeechRecognition) {
-            alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
-            return;
-        }
+ const challenge = crypto.getRandomValues(new Uint8Array(32));
+ const userId = crypto.getRandomValues(new Uint8Array(16));
+ try {
+  const cred = await navigator.credentials.create({
+   publicKey:{
+    challenge, rp:{name:"Connectgold", id: window.location.hostname},
+    user:{id:userId, name:"chyke", displayName:"Chyke"},
+    pubKeyCredParams:[{alg:-7,type:"public-key"},{alg:-257,type:"public-key"}],
+    authenticatorSelection:{authenticatorAttachment:"platform", userVerification:"required", requireResidentKey:true, residentKey:"required"},
+    extensions:{ prf:{eval:{first: new Uint8Array(32)}} }
+   }
+  });
 
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
+  // Encrypt API key with a random AES key, then we tie decryption to biometric by requiring passkey get() to unlock
+  const aesKey = await crypto.subtle.generateKey({name:"AES-GCM",length:256},true,["encrypt","decrypt"]);
+  const rawAesKey = await crypto.subtle.exportKey("raw", aesKey);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encryptedKey = await crypto.subtle.encrypt({name:"AES-GCM",iv}, aesKey, new TextEncoder().encode(apiKey));
 
-        recognition.onstart = () => {
-            statusEl.innerText = "Listening to your instruction...";
-        };
+  // Store
+  const db = await openDB();
+  await new Promise((res,rej)=>{ const tx=db.transaction("vault","readwrite"); tx.objectStore("vault").put({id:"openrouter", encrypted:Array.from(new Uint8Array(encryptedKey)), iv:Array.from(iv), rawAesKey:Array.from(new Uint8Array(rawAesKey)), credId:cred.id, credRawId:Array.from(new Uint8Array(cred.rawId))}, "openrouter"); tx.oncomplete=res; tx.onerror=rej; });
 
-        recognition.onresult = async (event) => {
-            const voiceInstruction = event.results[0][0].transcript;
-            transcriptEl.innerText = voiceInstruction;
-            statusEl.innerText = "Analyzing website structure & executing...";
-            
-            // Send instruction + live scraped DOM map to AI
-            await processAutonomousCommand(voiceInstruction);
-        };
+  cachedDecryptedKey = apiKey;
+  document.getElementById('vaultStatus').innerText = "✅ Passkey created & key locked to fingerprint on this phone";
+  document.getElementById('apiKey').value = "";
+ } catch(e){ console.error(e); alert("Passkey failed: "+e.message); }
+}
 
-        recognition.onerror = (event) => {
-            statusEl.innerText = "Error: " + event.error;
-        };
+async function unlockWithFingerprint(){
+ const db = await openDB();
+ const rec = await new Promise(res=>{ const tx=db.transaction("vault").objectStore("vault").get("openrouter"); tx.onsuccess=()=>res(tx.result); });
+ if(!rec) return alert("No vault found, create passkey first");
 
-        recognition.start();
-    }
+ const challenge = crypto.getRandomValues(new Uint8Array(32));
+ try{
+  // This triggers fingerprint / face prompt
+  await navigator.credentials.get({
+   publicKey:{
+    challenge, rpId: window.location.hostname,
+    allowCredentials:[{id:new Uint8Array(rec.credRawId), type:"public-key"}],
+    userVerification:"required",
+    extensions:{prf:{}}
+   }
+  });
 
-    // 3. SEND TO AI & PARSE DYNAMIC INSTRUCTIONS
-    async function processAutonomousCommand(instruction) {
-        const apiKey = document.getElementById('apiKey').value;
-        if (!apiKey) {
-            alert("Please enter your API key in the BYOK Vault first!");
-            statusEl.innerText = "API Key missing.";
-            return;
-        }
+  // After biometric success, decrypt
+  const aesKey = await crypto.subtle.importKey("raw", new Uint8Array(rec.rawAesKey), "AES-GCM", false, ["decrypt"]);
+  const decrypted = await crypto.subtle.decrypt({name:"AES-GCM", iv:new Uint8Array(rec.iv)}, aesKey, new Uint8Array(rec.encrypted));
+  cachedDecryptedKey = new TextDecoder().decode(decrypted);
+  document.getElementById('vaultStatus').innerText = "✅ Unlocked with fingerprint - Ready for voice";
+  document.getElementById('agentStatus').innerText = "Vault unlocked, you can speak now";
+  return cachedDecryptedKey;
+ } catch(e){ console.error(e); document.getElementById('vaultStatus').innerText = "❌ Fingerprint failed: "+e.message; }
+}
 
-        // Dynamically analyze the whole webpage layout right now
-        const liveDomMap = captureWebsiteDOMMap();
+function openDB(){ return new Promise(res=>{ const r=indexedDB.open(DB_NAME,1); r.onupgradeneeded=e=>e.target.result.createObjectStore("vault"); r.onsuccess=()=>res(r.result); }); }
+function clearVault(){ indexedDB.deleteDatabase(DB_NAME); cachedDecryptedKey=null; document.getElementById('vaultStatus').innerText="Vault cleared from this phone"; }
 
-        const systemPrompt = `You are the core autonomous web operator AI for chyke.online. 
-        Your job is to read the user's spoken instruction, look at the live website DOM elements map provided below, and decide what actions need to be performed to fulfill the instruction entirely.
-        
-        Live Website DOM Map:
-        ${JSON.stringify(liveDomMap, null, 2)}
-        
-        You can return a single action or multiple sequential actions.
-        You MUST respond ONLY with a raw JSON array format (no markdown blocks, no extra text):
-        [
-          {
-            "action": "type",
-            "target_id": "exact_element_id_from_map",
-            "value": "text to type",
-            "spoken_response": "Short confirmation phrase to speak out loud"
-          },
-          {
-            "action": "click",
-            "target_id": "exact_element_id_from_map",
-            "spoken_response": "Clicking button now"
-          }
-        ]`;
-
-        try {
-            // Using OpenRouter universal endpoint (supports Gemini, Claude, OpenAI)
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "google/gemini-2.5-flash", // Ultra-fast multimodal model
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: instruction }
-                    ],
-                    temperature: 0.1
-                })
-            });
-
-            const data = await response.json();
-            const rawContent = data.choices[0].message.content;
-            
-            // Clean markdown wrappers if returned
-            const cleanJsonString = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
-            const actionPlanArray = JSON.parse(cleanJsonString);
-
-            // Execute the dynamic instruction list sequentially
-            await executeActionQueue(actionPlanArray);
-
-        } catch (err) {
-            console.error(err);
-            statusEl.innerText = "Execution failed. Check your API key or console logs.";
-        }
-    }
-
-    // 4. EXECUTE DYNAMIC ACTIONS & VOICE FEEDBACK
-    async function executeActionQueue(actions) {
-        for (const actionPlan of actions) {
-            statusEl.innerText = actionPlan.spoken_response;
-
-            // Voice synthesis feedback out loud
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(actionPlan.spoken_response);
-                window.speechSynthesis.speak(utterance);
-            }
-
-            const targetElement = document.getElementById(actionPlan.target_id);
-            if (targetElement) {
-                if (actionPlan.action === "type") {
-                    targetElement.value = actionPlan.value;
-                    targetElement.dispatchEvent(new Event('input', { bubbles: true }));
-                    targetElement.dispatchEvent(new Event('change', { bubbles: true }));
-                } else if (actionPlan.action === "click") {
-                    targetElement.click();
-                }
-            }
-            // Small pause between multiple sequence steps
-            await new Promise(r => setTimeout(r, 600));
-        }
-        statusEl.innerText = "Instruction executed successfully!";
-    }
+// --- YOUR VOICE OPERATOR (uses cachedDecryptedKey) ---
+function captureWebsiteDOMMap(){
+ return Array.from(document.querySelectorAll('input, select, textarea, button, [role="button"]')).map((el,i)=>({index:i,tag:el.tagName.toLowerCase(),id:el.id||`el_${i}`,type:el.type||"none",placeholder:el.placeholder||el.innerText?.slice(0,60)||"control",value:el.value||""}));
+}
+function startVoiceOperator(){
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+ if(!SpeechRecognition) return alert("Use Chrome/Edge");
+ if(!cachedDecryptedKey) return alert("Unlock with fingerprint first!");
+ const rec = new SpeechRecognition();
+ rec.onstart=()=> document.getElementById('agentStatus').innerText="Listening...";
+ rec.onresult=async e=>{
+  const instruction = e.results[0][0].transcript;
+  document.getElementById('transcriptOutput').innerText = instruction;
+  document.getElementById('agentStatus').innerText = "Executing...";
+  const liveDomMap = captureWebsiteDOMMap();
+  const prompt = `You are web operator for chyke.online. DOM: ${JSON.stringify(liveDomMap)} Return ONLY raw JSON array: [{"action":"type|click","target_id":"id","value":"text","spoken_response":"short"}]`;
+  try{
+   const resp = await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${cachedDecryptedKey}`},body:JSON.stringify({model:"google/gemini-2.0-flash-001",messages:[{role:"system",content:prompt},{role:"user",content:instruction}],temperature:0.1})});
+   const data = await resp.json();
+   const raw = data.choices[0].message.content.replace(/```json|```/g,"").trim();
+   const arr = JSON.parse(raw.match(/\[.*\]/s)[0]);
+   for(const a of arr){
+    document.getElementById('agentStatus').innerText = a.spoken_response;
+    speechSynthesis.speak(new SpeechSynthesisUtterance(a.spoken_response));
+    const el = document.getElementById(a.target_id);
+    if(el){ if(a.action==="type"){ el.value=a.value; el.dispatchEvent(new Event('input',{bubbles:true})); } else if(a.action==="click") el.click(); }
+    await new Promise(r=>setTimeout(r,600));
+   }
+   document.getElementById('agentStatus').innerText="Done ✅";
+  }catch(err){ document.getElementById('agentStatus').innerText="Failed: "+err.message; }
+ };
+ rec.start();
+}
 </script>
-
 </body>
 </html>

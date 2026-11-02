@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectgold Assistant </title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; }
+        
+        #operator-bar {
+            height: 90px;
+            background: #1e293b;
+            border-bottom: 2px solid #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            gap: 15px;
+            z-index: 9999;
+            position: relative;
+        }
+
+        #listenBtn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            font-weight: bold;
+            padding: 12px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        #listenBtn:hover {
+            background: #0ea5e9;
+        }
+
+        #listenBtn:active {
+            transform: scale(0.98);
+        }
+
+        #status-display {
+            flex-grow: 1;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            background: #0f172a;
+            padding: 10px 14px;
+            border-radius: 4px;
+            border-left: 3px solid #38bdf8;
+            line-height: 1.4;
+        }
+
+        #site-frame {
+            width: 100%;
+            height: calc(100vh - 90px);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP CONTROL BAR -->
+    <div id="operator-bar">
+        <button id="listenBtn" onclick="startVoiceOperator()">
+            🎤 Speak Command
+        </button>
+
+        <div id="status-display">
+            <strong>Status:</strong> <span id="agentStatus">System ready via Cloudflare Workers AI. No keys required.</span><br>
+            <strong>Instruction:</strong> <span id="lastTranscript" style="color: #94a3b8;">None</span>
+        </div>
+    </div>
+
+    <!-- TARGET WEBSITE IFRAME CONTAINER -->
+    <iframe id="site-frame" src="https://chyke.online"></iframe>
+
+    <script>
+        const statusEl = document.getElementById('agentStatus');
+        const transcriptEl = document.getElementById('lastTranscript');
+        const listenBtn = document.getElementById('listenBtn');
+        const frame = document.getElementById('site-frame');
+
+        // WORKER ENDPOINT
+        const WORKER_URL = "https://withered-block-9506.trustconnect713.workers.dev/";
+
+        // 1. ENHANCED LIVE DOM MAP SCANNER
+        function analyzeTargetSiteDOM() {
+            try {
+                const targetDoc = frame.contentDocument || frame.contentWindow.document;
+                const interactiveNodes = targetDoc.querySelectorAll('a, button, input, select, textarea, [onclick], [role="button"], nav li, header a');
+                const elementsMap = [];
+
+                interactiveNodes.forEach((node, idx) => {
+                    if (!node.id) {
+                        node.dataset.aiId = `ai_node_${idx}`;
+                    }
+                    elementsMap.push({
+                        selector: node.id ? `#${node.id}` : `[data-ai-id="${node.dataset.aiId}"]`,
+                        tag: node.tagName.toLowerCase(),
+                        type: node.type || "interactive",
+                        href: node.href || null,
+                        label: (node.innerText || node.placeholder || node.title || node.ariaLabel || "").trim().replace(/\s+/g, ' ').substring(0, 60)
+                    });
+                });
+                return elementsMap;
+            } catch (e) {
+                console.error("DOM Analysis Error:", e);
+                return [];
+            }
+        }
+
+        // 2. VOICE RECOGNITION (WEB SPEECH API)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        function startVoiceOperator() {
+            if (!SpeechRecognition) {
+                alert("Speech recognition requires Google Chrome, Edge, or a WebSpeech-compatible browser.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                listenBtn.disabled = true;
+                listenBtn.innerText = "🎙️ Listening...";
+                statusEl.innerText = "Listening for voice command...";
+            };
+
+            recognition.onresult = async (event) => {
+                const voiceInstruction = event.results[0][0].transcript;
+                transcriptEl.innerText = `"${voiceInstruction}"`;
+                statusEl.innerText = "Routing instruction to Cloudflare Worker AI...";
+                
+                await sendToCloudflareWorker(voiceInstruction);
+            };
+
+            recognition.onerror = (e) => {
+                console.error("Speech Recognition Error:", e);
+                statusEl.innerText = `Voice error: ${e.error}`;
+                resetButton();
+            };
+
+            recognition.onend = () => {
+                resetButton();
+            };
+
+            recognition.start();
+        }
+
+        function resetButton() {
+            listenBtn.disabled = false;
+            listenBtn.innerText = "🎤 Speak Command";
+        }
+
+        // 3. BACKEND ROUTING TO CLOUDFLARE WORKERS AI
+        async function sendToCloudflareWorker(instruction) {
+            const liveDomMap = analyzeTargetSiteDOM();
+
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({ 
+                        instruction: instruction, 
+                        domMap: liveDomMap 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Worker HTTP Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Parse GLM-4.7-Flash / Workers AI chat completion payload
+                let rawContent = "";
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    rawContent = data.choices[0].message.content;
+                } else if (data.response) {
+                    rawContent = data.response;
+                } else if (typeof data === 'string') {
+                    rawContent = data;
+                } else {
+                    rawContent = JSON.stringify(data);
+                }
+
+                // Strip any markdown code formatting wrapper (```json ... ```)
+                const cleanJson = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
+                const actionQueue = JSON.parse(cleanJson);
+
+                executeDOMActions(actionQueue);
+            } catch (err) {
+                console.error("Worker Execution Error:", err);
+                statusEl.innerText = "Execution failed. Check browser console or worker logs.";
+            }
+        }
+
+        // 4. ROBUST EXECUTION ENGINE (CLICK, TYPE, SCROLL, NAVIGATE)
+        function executeDOMActions(actions) {
+            const targetDoc = frame.contentDocument || frame.contentWindow.document;
+
+            if (!Array.isArray(actions) || actions.length === 0) {
+                statusEl.innerText = "No matching actions found for instruction.";
+                return;
+            }
+
+            actions.forEach(step => {
+                if (step.spoken_response) {
+                    statusEl.innerText = step.spoken_response;
+
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance(step.spoken_response);
+                        window.speechSynthesis.speak(utterance);
+                    }
+                }
+
+                // Handle direct URL navigation
+                if (step.action === "navigate" && step.url) {
+                    frame.src = step.url;
+                    return;
+                }
+
+                // Handle page scrolling
+                if (step.action === "scroll") {
+                    const scrollAmount = step.value === "down" ? 500 : -500;
+                    frame.contentWindow.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                    return;
+                }
+
+                // Handle element-level interactions (click / type)
+                const element = targetDoc.querySelector(step.selector);
+                if (element) {
+                    if (step.action === "type") {
+                        element.focus();
+                        element.value = step.value || "";
+                        element.dispatchEvent(new Event('input', { bubbles: true }));
+                        element.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else if (step.action === "click") {
+                        // Highlight target element visually for debugging
+                        const originalOutline = element.style.outline;
+                        element.style.outline = "3px solid #38bdf8";
+                        setTimeout(() => { element.style.outline = originalOutline; }, 1200);
+
+                        // Simulate full mouse interaction sequence for modern web frameworks
+                        element.focus();
+                        element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: frame.contentWindow }));
+                        element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: frame.contentWindow }));
+                        element.click();
+
+                        // Fallback href navigation if anchor click doesn't trigger standard load
+                        if (element.tagName.toLowerCase() === 'a' && element.href) {
+                            setTimeout(() => {
+                                try {
+                                    frame.src = element.href;
+                                } catch (err) {}
+                            }, 300);
+                        }
+                    }
+                } else {
+                    console.warn(`Target selector not found: ${step.selector}`);
+                    statusEl.innerText = `Element not found: ${step.selector}`;
+                }
+            });
+
+            setTimeout(() => {
+                statusEl.innerText = "Action executed successfully!";
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

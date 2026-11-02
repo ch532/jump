@@ -41,15 +41,20 @@
 <body>
 
     <!-- IMMERSIVE TARGET WEBSITE FRAME -->
-    <iframe id="site-frame" src="https://chyke.online/live2.html"></iframe>
+    <iframe id="site-frame"></iframe>
 
     <!-- UNIVERSAL ACCESSIBILITY & STATUS INDICATOR -->
     <div id="status-pill"><span>🎙️</span> <span id="pill-text">Connectgold AI: Initializing universal voice engine...</span></div>
 
     <script>
-        const statusPillText = document.getElementById('pill-text');
-        const frame = document.getElementById('site-frame');
+        // Dynamically extract target website from query string parameters (e.g. index.html?url=https://example.com)
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentTargetUrl = urlParams.get('url') || 'https://www.google.com';
 
+        const frame = document.getElementById('site-frame');
+        frame.src = currentTargetUrl;
+
+        const statusPillText = document.getElementById('pill-text');
         const WORKER_URL = "https://withered-block-9506.trustconnect713.workers.dev/";
 
         // 0. UNIVERSAL AUDIO FEEDBACK ENGINE (Chimes for accessibility & confirmation)
@@ -121,7 +126,7 @@
             recognition.lang = 'en-US';
 
             recognition.onstart = () => {
-                statusPillText.innerText = "Universal AI Ready: Listening hands-free...";
+                statusPillText.innerText = `Universal AI Ready (${currentTargetUrl}): Listening hands-free...`;
             };
 
             recognition.onresult = async (event) => {
@@ -169,7 +174,7 @@
                 const response = await fetch(WORKER_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ instruction, domMap: liveDomMap })
+                    body: JSON.stringify({ instruction, domMap: liveDomMap, targetUrl: currentTargetUrl })
                 });
 
                 if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
@@ -194,7 +199,7 @@
             } catch (err) {
                 console.error("Worker Execution Error:", err);
                 statusPillText.innerText = "Execution failed. Retrying...";
-                setTimeout(() => { statusPillText.innerText = "Universal AI Ready: Listening hands-free..."; }, 2000);
+                setTimeout(() => { statusPillText.innerText = `Universal AI Ready: Listening hands-free...`; }, 2000);
             }
         }
 
@@ -203,7 +208,7 @@
             const targetDoc = frame.contentDocument || frame.contentWindow.document;
 
             if (!Array.isArray(actions) || actions.length === 0) {
-                statusPillText.innerText = "Universal AI Ready: Listening hands-free...";
+                statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
                 return;
             }
 
@@ -219,6 +224,7 @@
 
                 if (step.action === "navigate" && step.url) {
                     frame.src = step.url;
+                    currentTargetUrl = step.url;
                     return;
                 }
 
@@ -246,7 +252,10 @@
 
                         if (element.tagName.toLowerCase() === 'a' && element.href) {
                             setTimeout(() => {
-                                try { frame.src = element.href; } catch (err) {}
+                                try { 
+                                    frame.src = element.href; 
+                                    currentTargetUrl = element.href;
+                                } catch (err) {}
                             }, 300);
                         }
                     }
@@ -254,7 +263,7 @@
             });
 
             setTimeout(() => {
-                statusPillText.innerText = "Universal AI Ready: Listening hands-free...";
+                statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
             }, 2500);
         }
 
@@ -265,7 +274,7 @@
             activationOverlay.innerHTML = `
                 <div style="background:#1e293b;padding:35px 45px;border-radius:16px;border:2px solid #38bdf8;text-align:center;box-shadow:0 15px 35px rgba(0,0,0,0.6);max-width:440px;">
                     <h2 style="margin-bottom:12px;color:#38bdf8;font-size:1.4rem;">Connectgold Universal Voice AI</h2>
-                    <p style="color:#94a3b8;margin-bottom:24px;font-size:0.95rem;line-height:1.5;">Empowering hands-free web navigation for everyone—built for universal accessibility and high-speed execution.</p>
+                    <p style="color:#94a3b8;margin-bottom:24px;font-size:0.95rem;line-height:1.5;">Empowering hands-free web navigation for any website—built for universal accessibility and high-speed execution.</p>
                     <button style="background:#38bdf8;color:#0f172a;border:none;padding:14px 28px;font-weight:bold;border-radius:8px;font-size:1rem;cursor:pointer;width:100%;">Enable Voice Control</button>
                 </div>
             `;
@@ -280,3 +289,4 @@
     </script>
 </body>
 </html>
+

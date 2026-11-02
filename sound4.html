@@ -49,7 +49,7 @@
     <script>
         // Dynamically extract target website from query string parameters (e.g. index.html?url=https://example.com)
         const urlParams = new URLSearchParams(window.location.search);
-        let currentTargetUrl = urlParams.get('url') || 'https://www.google.com';
+        let currentTargetUrl = urlParams.get('url') || 'https://chyke.online/lens.html';
 
         const frame = document.getElementById('site-frame');
         frame.src = currentTargetUrl;

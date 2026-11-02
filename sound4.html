@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectgold AI — Universal Voice-Native Web Operator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #0f172a; }
+        
+        /* Fullscreen immersive iframe view */
+        #site-frame {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+
+        /* Sleek, professional accessibility status pill */
+        #status-pill {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 10px 16px;
+            border-radius: 24px;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.8rem;
+            z-index: 99999;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- IMMERSIVE TARGET WEBSITE FRAME -->
+    <iframe id="site-frame"></iframe>
+
+    <!-- UNIVERSAL ACCESSIBILITY & STATUS INDICATOR -->
+    <div id="status-pill"><span>🎙️</span> <span id="pill-text">Connectgold AI: Initializing universal voice engine...</span></div>
+
+    <script>
+        // Dynamically extract target website from query string parameters (e.g. index.html?url=https://example.com)
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentTargetUrl = urlParams.get('url') || 'https://www.google.com';
+
+        const frame = document.getElementById('site-frame');
+        frame.src = currentTargetUrl;
+
+        const statusPillText = document.getElementById('pill-text');
+        const WORKER_URL = "https://withered-block-9506.trustconnect713.workers.dev/";
+
+        // 0. UNIVERSAL AUDIO FEEDBACK ENGINE (Chimes for accessibility & confirmation)
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playSuccess() {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(587.33, this.ctx.currentTime); // D5
+                    osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.15); // A5
+                    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.15);
+                } catch(e) {}
+            }
+        };
+
+        // 1. LIVE DOM MAP SCANNER
+        function analyzeTargetSiteDOM() {
+            try {
+                const targetDoc = frame.contentDocument || frame.contentWindow.document;
+                const interactiveNodes = targetDoc.querySelectorAll('a, button, input, select, textarea, [onclick], [role="button"], nav li, header a');
+                const elementsMap = [];
+
+                interactiveNodes.forEach((node, idx) => {
+                    if (!node.id) {
+                        node.dataset.aiId = `ai_node_${idx}`;
+                    }
+                    elementsMap.push({
+                        selector: node.id ? `#${node.id}` : `[data-ai-id="${node.dataset.aiId}"]`,
+                        tag: node.tagName.toLowerCase(),
+                        type: node.type || "interactive",
+                        href: node.href || null,
+                        label: (node.innerText || node.placeholder || node.title || node.ariaLabel || "").trim().replace(/\s+/g, ' ').substring(0, 60)
+                    });
+                });
+                return elementsMap;
+            } catch (e) {
+                console.error("DOM Analysis Error:", e);
+                return [];
+            }
+        }
+
+        // 2. CONTINUOUS BACKGROUND SPEECH LISTENER
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isProcessingCommand = false;
+
+        function initBackgroundListener() {
+            if (!SpeechRecognition) {
+                statusPillText.innerText = "Speech recognition requires Chrome or Edge browser.";
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;       
+            recognition.interimResults = false;  
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                statusPillText.innerText = `Universal AI Ready (${currentTargetUrl}): Listening hands-free...`;
+            };
+
+            recognition.onresult = async (event) => {
+                if (isProcessingCommand) return; 
+
+                const latestIndex = event.results.length - 1;
+                const transcript = event.results[latestIndex][0].transcript.trim();
+                
+                console.log("Universal Speech Input:", transcript);
+
+                isProcessingCommand = true;
+                statusPillText.innerText = `Executing intent: "${transcript}"`;
+                AudioFX.playSuccess();
+
+                await sendToCloudflareWorker(transcript);
+                isProcessingCommand = false;
+            };
+
+            recognition.onerror = (event) => {
+                console.warn("Speech recognition notice:", event.error);
+            };
+
+            recognition.onend = () => {
+                if (!isProcessingCommand) {
+                    setTimeout(() => {
+                        try {
+                            recognition.start();
+                        } catch (e) {}
+                    }, 500);
+                }
+            };
+
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error("Initialization error:", e);
+            }
+        }
+
+        // 3. BACKEND WORKER ROUTING
+        async function sendToCloudflareWorker(instruction) {
+            const liveDomMap = analyzeTargetSiteDOM();
+
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ instruction, domMap: liveDomMap, targetUrl: currentTargetUrl })
+                });
+
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+                const data = await response.json();
+                
+                let rawContent = "";
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    rawContent = data.choices[0].message.content;
+                } else if (data.response) {
+                    rawContent = data.response;
+                } else if (typeof data === 'string') {
+                    rawContent = data;
+                } else {
+                    rawContent = JSON.stringify(data);
+                }
+
+                const cleanJson = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
+                const actionQueue = JSON.parse(cleanJson);
+
+                executeDOMActions(actionQueue);
+            } catch (err) {
+                console.error("Worker Execution Error:", err);
+                statusPillText.innerText = "Execution failed. Retrying...";
+                setTimeout(() => { statusPillText.innerText = `Universal AI Ready: Listening hands-free...`; }, 2000);
+            }
+        }
+
+        // 4. EXECUTION ENGINE
+        function executeDOMActions(actions) {
+            const targetDoc = frame.contentDocument || frame.contentWindow.document;
+
+            if (!Array.isArray(actions) || actions.length === 0) {
+                statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
+                return;
+            }
+
+            actions.forEach(step => {
+                if (step.spoken_response) {
+                    statusPillText.innerText = step.spoken_response;
+
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance(step.spoken_response);
+                        window.speechSynthesis.speak(utterance);
+                    }
+                }
+
+                if (step.action === "navigate" && step.url) {
+                    frame.src = step.url;
+                    currentTargetUrl = step.url;
+                    return;
+                }
+
+                if (step.action === "scroll") {
+                    const scrollAmount = step.value === "down" ? 500 : -500;
+                    frame.contentWindow.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                    return;
+                }
+
+                const element = targetDoc.querySelector(step.selector);
+                if (element) {
+                    if (step.action === "type") {
+                        element.focus();
+                        element.value = step.value || "";
+                        element.dispatchEvent(new Event('input', { bubbles: true }));
+                        element.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else if (step.action === "click") {
+                        element.style.outline = "3px solid #38bdf8";
+                        setTimeout(() => { element.style.outline = ""; }, 1200);
+
+                        element.focus();
+                        element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: frame.contentWindow }));
+                        element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: frame.contentWindow }));
+                        element.click();
+
+                        if (element.tagName.toLowerCase() === 'a' && element.href) {
+                            setTimeout(() => {
+                                try { 
+                                    frame.src = element.href; 
+                                    currentTargetUrl = element.href;
+                                } catch (err) {}
+                            }, 300);
+                        }
+                    }
+                }
+            });
+
+            setTimeout(() => {
+                statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
+            }, 2500);
+        }
+
+        // Professional Launch Permission Overlay (Universal Inclusion)
+        window.addEventListener('load', () => {
+            const activationOverlay = document.createElement('div');
+            activationOverlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;color:#f8fafc;font-family:system-ui;cursor:pointer;";
+            activationOverlay.innerHTML = `
+                <div style="background:#1e293b;padding:35px 45px;border-radius:16px;border:2px solid #38bdf8;text-align:center;box-shadow:0 15px 35px rgba(0,0,0,0.6);max-width:440px;">
+                    <h2 style="margin-bottom:12px;color:#38bdf8;font-size:1.4rem;">Connectgold Universal Voice AI</h2>
+                    <p style="color:#94a3b8;margin-bottom:24px;font-size:0.95rem;line-height:1.5;">Empowering hands-free web navigation for any website—built for universal accessibility and high-speed execution.</p>
+                    <button style="background:#38bdf8;color:#0f172a;border:none;padding:14px 28px;font-weight:bold;border-radius:8px;font-size:1rem;cursor:pointer;width:100%;">Enable Voice Control</button>
+                </div>
+            `;
+            
+            document.body.appendChild(activationOverlay);
+
+            activationOverlay.addEventListener('click', () => {
+                activationOverlay.remove();
+                initBackgroundListener();
+            });
+        });
+    </script>
+</body>
+</html>

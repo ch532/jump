@@ -3,89 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connectgold Assistant </title>
+    <title>Connectgold Assistant</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html { width: 100%; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #0f172a; }
         
-        #operator-bar {
-            height: 90px;
-            background: #1e293b;
-            border-bottom: 2px solid #38bdf8;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            gap: 15px;
-            z-index: 9999;
-            position: relative;
-        }
-
-        #listenBtn {
-            background: #38bdf8;
-            color: #0f172a;
-            border: none;
-            font-weight: bold;
-            padding: 12px 22px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: background 0.2s ease, transform 0.1s ease;
-        }
-
-        #listenBtn:hover {
-            background: #0ea5e9;
-        }
-
-        #listenBtn:active {
-            transform: scale(0.98);
-        }
-
-        #status-display {
-            flex-grow: 1;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            background: #0f172a;
-            padding: 10px 14px;
-            border-radius: 4px;
-            border-left: 3px solid #38bdf8;
-            line-height: 1.4;
-        }
-
+        /* Fullscreen immersive iframe view */
         #site-frame {
             width: 100%;
-            height: calc(100vh - 90px);
+            height: 100vh;
             border: none;
+        }
+
+        /* Minimal, non-intrusive floating status pill for debugging/monitoring */
+        #status-pill {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.75rem;
+            z-index: 99999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-    <!-- TOP CONTROL BAR -->
-    <div id="operator-bar">
-        <button id="listenBtn" onclick="startVoiceOperator()">
-            🎤 Speak Command
-        </button>
-
-        <div id="status-display">
-            <strong>Status:</strong> <span id="agentStatus">System ready via Cloudflare Workers AI. No keys required.</span><br>
-            <strong>Instruction:</strong> <span id="lastTranscript" style="color: #94a3b8;">None</span>
-        </div>
-    </div>
-
-    <!-- TARGET WEBSITE IFRAME CONTAINER -->
+    <!-- IMMERSIVE TARGET WEBSITE FRAME -->
     <iframe id="site-frame" src="https://chyke.online"></iframe>
 
+    <!-- SUBTLE BACKGROUND STATUS INDICATOR -->
+    <div id="status-pill">🎙️ AI Engine: Initializing background listener...</div>
+
     <script>
-        const statusEl = document.getElementById('agentStatus');
-        const transcriptEl = document.getElementById('lastTranscript');
-        const listenBtn = document.getElementById('listenBtn');
+        const statusPill = document.getElementById('status-pill');
         const frame = document.getElementById('site-frame');
 
-        // WORKER ENDPOINT
         const WORKER_URL = "https://withered-block-9506.trustconnect713.workers.dev/";
 
-        // 1. ENHANCED LIVE DOM MAP SCANNER
+        // 1. LIVE DOM MAP SCANNER
         function analyzeTargetSiteDOM() {
             try {
                 const targetDoc = frame.contentDocument || frame.contentWindow.document;
@@ -111,75 +75,84 @@
             }
         }
 
-        // 2. VOICE RECOGNITION (WEB SPEECH API)
+        // 2. CONTINUOUS BACKGROUND SPEECH LISTENER
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isProcessingCommand = false;
 
-        function startVoiceOperator() {
+        function initBackgroundListener() {
             if (!SpeechRecognition) {
-                alert("Speech recognition requires Google Chrome, Edge, or a WebSpeech-compatible browser.");
+                statusPill.innerText = "⚠️ Speech recognition not supported in this browser.";
                 return;
             }
 
-            const recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;       // Keep listening continuously
+            recognition.interimResults = false;  // Only process complete phrases
             recognition.lang = 'en-US';
 
             recognition.onstart = () => {
-                listenBtn.disabled = true;
-                listenBtn.innerText = "🎙️ Listening...";
-                statusEl.innerText = "Listening for voice command...";
+                statusPill.innerText = "🟢 AI Engine: Listening in background...";
             };
 
             recognition.onresult = async (event) => {
-                const voiceInstruction = event.results[0][0].transcript;
-                transcriptEl.innerText = `"${voiceInstruction}"`;
-                statusEl.innerText = "Routing instruction to Cloudflare Worker AI...";
+                if (isProcessingCommand) return; // Prevent overlapping execution locks
+
+                const latestIndex = event.results.length - 1;
+                const transcript = event.results[latestIndex][0].transcript.trim();
                 
-                await sendToCloudflareWorker(voiceInstruction);
+                console.heard = transcript;
+                console.log("Heard User Speech:", transcript);
+
+                // Optional Wake-word filter (e.g. requires user to say "Assistant" or executes directly)
+                // For direct execution on any spoken command, we pass straight to the worker:
+                isProcessingCommand = true;
+                statusPill.innerText = `⚡ Executing: "${transcript}"`;
+
+                await sendToCloudflareWorker(transcript);
+                isProcessingCommand = false;
             };
 
-            recognition.onerror = (e) => {
-                console.error("Speech Recognition Error:", e);
-                statusEl.innerText = `Voice error: ${e.error}`;
-                resetButton();
+            recognition.onerror = (event) => {
+                console.warn("Speech recognition notice:", event.error);
+                // Handle common silent timeouts gracefully without breaking loop
             };
 
             recognition.onend = () => {
-                resetButton();
+                // Auto-restart loop to guarantee infinite background uptime
+                if (!isProcessingCommand) {
+                    setTimeout(() => {
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            // Already started or blocked
+                        }
+                    }, 500);
+                }
             };
 
-            recognition.start();
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error("Initialization error:", e);
+            }
         }
 
-        function resetButton() {
-            listenBtn.disabled = false;
-            listenBtn.innerText = "🎤 Speak Command";
-        }
-
-        // 3. BACKEND ROUTING TO CLOUDFLARE WORKERS AI
+        // 3. BACKEND WORKER ROUTING
         async function sendToCloudflareWorker(instruction) {
             const liveDomMap = analyzeTargetSiteDOM();
 
             try {
                 const response = await fetch(WORKER_URL, {
                     method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json" 
-                    },
-                    body: JSON.stringify({ 
-                        instruction: instruction, 
-                        domMap: liveDomMap 
-                    })
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ instruction, domMap: liveDomMap })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Worker HTTP Error: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
 
                 const data = await response.json();
                 
-                // Parse GLM-4.7-Flash / Workers AI chat completion payload
                 let rawContent = "";
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     rawContent = data.choices[0].message.content;
@@ -191,29 +164,29 @@
                     rawContent = JSON.stringify(data);
                 }
 
-                // Strip any markdown code formatting wrapper (```json ... ```)
                 const cleanJson = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
                 const actionQueue = JSON.parse(cleanJson);
 
                 executeDOMActions(actionQueue);
             } catch (err) {
                 console.error("Worker Execution Error:", err);
-                statusEl.innerText = "Execution failed. Check browser console or worker logs.";
+                statusPill.innerText = "❌ Execution failed";
+                setTimeout(() => { statusPill.innerText = "🟢 AI Engine: Listening in background..."; }, 2000);
             }
         }
 
-        // 4. ROBUST EXECUTION ENGINE (CLICK, TYPE, SCROLL, NAVIGATE)
+        // 4. EXECUTION ENGINE
         function executeDOMActions(actions) {
             const targetDoc = frame.contentDocument || frame.contentWindow.document;
 
             if (!Array.isArray(actions) || actions.length === 0) {
-                statusEl.innerText = "No matching actions found for instruction.";
+                statusPill.innerText = "🟢 AI Engine: Listening in background...";
                 return;
             }
 
             actions.forEach(step => {
                 if (step.spoken_response) {
-                    statusEl.innerText = step.spoken_response;
+                    statusPill.innerText = `🗣️ ${step.spoken_response}`;
 
                     if ('speechSynthesis' in window) {
                         const utterance = new SpeechSynthesisUtterance(step.spoken_response);
@@ -221,20 +194,17 @@
                     }
                 }
 
-                // Handle direct URL navigation
                 if (step.action === "navigate" && step.url) {
                     frame.src = step.url;
                     return;
                 }
 
-                // Handle page scrolling
                 if (step.action === "scroll") {
                     const scrollAmount = step.value === "down" ? 500 : -500;
                     frame.contentWindow.scrollBy({ top: scrollAmount, behavior: 'smooth' });
                     return;
                 }
 
-                // Handle element-level interactions (click / type)
                 const element = targetDoc.querySelector(step.selector);
                 if (element) {
                     if (step.action === "type") {
@@ -243,36 +213,48 @@
                         element.dispatchEvent(new Event('input', { bubbles: true }));
                         element.dispatchEvent(new Event('change', { bubbles: true }));
                     } else if (step.action === "click") {
-                        // Highlight target element visually for debugging
-                        const originalOutline = element.style.outline;
                         element.style.outline = "3px solid #38bdf8";
-                        setTimeout(() => { element.style.outline = originalOutline; }, 1200);
+                        setTimeout(() => { element.style.outline = ""; }, 1200);
 
-                        // Simulate full mouse interaction sequence for modern web frameworks
                         element.focus();
                         element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: frame.contentWindow }));
                         element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: frame.contentWindow }));
                         element.click();
 
-                        // Fallback href navigation if anchor click doesn't trigger standard load
                         if (element.tagName.toLowerCase() === 'a' && element.href) {
                             setTimeout(() => {
-                                try {
-                                    frame.src = element.href;
-                                } catch (err) {}
+                                try { frame.src = element.href; } catch (err) {}
                             }, 300);
                         }
                     }
-                } else {
-                    console.warn(`Target selector not found: ${step.selector}`);
-                    statusEl.innerText = `Element not found: ${step.selector}`;
                 }
             });
 
             setTimeout(() => {
-                statusEl.innerText = "Action executed successfully!";
-            }, 1500);
+                statusPill.innerText = "🟢 AI Engine: Listening in background...";
+            }, 2500);
         }
+
+        // Auto-start background engine on window load (requires one initial user click/tap to grant microphone permissions)
+        window.addEventListener('load', () => {
+            // Browsers require a user interaction context to unlock mic permissions
+            const activationOverlay = document.createElement('div');
+            activationOverlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;color:#f8fafc;font-family:system-ui;cursor:pointer;";
+            activationOverlay.innerHTML = `
+                <div style="background:#1e293b;padding:30px 40px;border-radius:12px;border:2px solid #38bdf8;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+                    <h2 style="margin-bottom:10px;color:#38bdf8;">Activate Voice AI Agent</h2>
+                    <p style="color:#94a3b8;margin-bottom:20px;font-size:0.9rem;">Click anywhere to enable background voice navigation for chyke.online</p>
+                    <button style="background:#38bdf8;color:#0f172a;border:none;padding:12px 24px;font-weight:bold;border-radius:6px;font-size:1rem;cursor:pointer;">Launch Agent</button>
+                </div>
+            `;
+            
+            document.body.appendChild(activationOverlay);
+
+            activationOverlay.addEventListener('click', () => {
+                activationOverlay.remove();
+                initBackgroundListener();
+            });
+        });
     </script>
 </body>
 </html>

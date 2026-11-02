@@ -57,7 +57,7 @@
         const statusPillText = document.getElementById('pill-text');
         const WORKER_URL = "https://withered-block-9506.trustconnect713.workers.dev/";
 
-        // 0. UNIVERSAL AUDIO FEEDBACK ENGINE (Chimes for accessibility & confirmation)
+        // 0. UNIVERSAL AUDIO FEEDBACK ENGINE
         const AudioFX = {
             ctx: null,
             init() {
@@ -126,7 +126,9 @@
             recognition.lang = 'en-US';
 
             recognition.onstart = () => {
-                statusPillText.innerText = `Universal AI Ready (${currentTargetUrl}): Listening hands-free...`;
+                if (!isProcessingCommand) {
+                    statusPillText.innerText = `Universal AI Ready (${currentTargetUrl}): Listening hands-free...`;
+                }
             };
 
             recognition.onresult = async (event) => {
@@ -142,7 +144,6 @@
                 AudioFX.playSuccess();
 
                 await sendToCloudflareWorker(transcript);
-                isProcessingCommand = false;
             };
 
             recognition.onerror = (event) => {
@@ -150,12 +151,11 @@
             };
 
             recognition.onend = () => {
+                // Automatically restart listening loop as long as session is active
                 if (!isProcessingCommand) {
-                    setTimeout(() => {
-                        try {
-                            recognition.start();
-                        } catch (e) {}
-                    }, 500);
+                    try {
+                        recognition.start();
+                    } catch (e) {}
                 }
             };
 
@@ -195,24 +195,27 @@
                 const cleanJson = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
                 const actionQueue = JSON.parse(cleanJson);
 
-                executeDOMActions(actionQueue);
+                await executeDOMActions(actionQueue);
             } catch (err) {
                 console.error("Worker Execution Error:", err);
-                statusPillText.innerText = "Execution failed. Retrying...";
-                setTimeout(() => { statusPillText.innerText = `Universal AI Ready: Listening hands-free...`; }, 2000);
+                statusPillText.innerText = "Execution failed. Resuming listener...";
+                isProcessingCommand = false;
+                try { recognition.start(); } catch (e) {}
             }
         }
 
-        // 4. EXECUTION ENGINE
-        function executeDOMActions(actions) {
+        // 4. EXECUTION ENGINE (Sequential & Multi-turn Ready)
+        async function executeDOMActions(actions) {
             const targetDoc = frame.contentDocument || frame.contentWindow.document;
 
             if (!Array.isArray(actions) || actions.length === 0) {
                 statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
+                isProcessingCommand = false;
+                try { recognition.start(); } catch (e) {}
                 return;
             }
 
-            actions.forEach(step => {
+            for (const step of actions) {
                 if (step.spoken_response) {
                     statusPillText.innerText = step.spoken_response;
 
@@ -225,13 +228,15 @@
                 if (step.action === "navigate" && step.url) {
                     frame.src = step.url;
                     currentTargetUrl = step.url;
-                    return;
+                    await new Promise(r => setTimeout(r, 1500));
+                    continue;
                 }
 
                 if (step.action === "scroll") {
                     const scrollAmount = step.value === "down" ? 500 : -500;
                     frame.contentWindow.scrollBy({ top: scrollAmount, behavior: 'smooth' });
-                    return;
+                    await new Promise(r => setTimeout(r, 600));
+                    continue;
                 }
 
                 const element = targetDoc.querySelector(step.selector);
@@ -251,31 +256,36 @@
                         element.click();
 
                         if (element.tagName.toLowerCase() === 'a' && element.href) {
-                            setTimeout(() => {
-                                try { 
-                                    frame.src = element.href; 
-                                    currentTargetUrl = element.href;
-                                } catch (err) {}
-                            }, 300);
+                            try { 
+                                frame.src = element.href; 
+                                currentTargetUrl = element.href;
+                                await new Promise(r => setTimeout(r, 1500));
+                            } catch (err) {}
                         }
                     }
                 }
-            });
+                
+                // Small delay between sequential multi-step sub-actions
+                await new Promise(r => setTimeout(r, 800));
+            }
 
-            setTimeout(() => {
-                statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
-            }, 2500);
+            // Finished complete command queue -> reset processing flag and resume listening for the NEXT instruction
+            statusPillText.innerText = `Universal AI Ready: Listening hands-free...`;
+            isProcessingCommand = false;
+            try {
+                recognition.start();
+            } catch (e) {}
         }
 
-        // Professional Launch Permission Overlay (Universal Inclusion)
+        // Professional Launch Permission Overlay
         window.addEventListener('load', () => {
             const activationOverlay = document.createElement('div');
             activationOverlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999999;color:#f8fafc;font-family:system-ui;cursor:pointer;";
             activationOverlay.innerHTML = `
                 <div style="background:#1e293b;padding:35px 45px;border-radius:16px;border:2px solid #38bdf8;text-align:center;box-shadow:0 15px 35px rgba(0,0,0,0.6);max-width:440px;">
                     <h2 style="margin-bottom:12px;color:#38bdf8;font-size:1.4rem;">Connectgold Universal Voice AI</h2>
-                    <p style="color:#94a3b8;margin-bottom:24px;font-size:0.95rem;line-height:1.5;">Empowering hands-free web navigation for any website—built for universal accessibility and high-speed execution.</p>
-                    <button style="background:#38bdf8;color:#0f172a;border:none;padding:14px 28px;font-weight:bold;border-radius:8px;font-size:1rem;cursor:pointer;width:100%;">Enable Voice Control</button>
+                    <p style="color:#94a3b8;margin-bottom:24px;font-size:0.95rem;line-height:1.5;">Empowering continuous hands-free web navigation—built for back-to-back multi-turn voice control.</p>
+                    <button style="background:#38bdf8;color:#0f172a;border:none;padding:14px 28px;font-weight:bold;border-radius:8px;font-size:1rem;cursor:pointer;width:100%;">Enable Continuous Voice Control</button>
                 </div>
             `;
             
@@ -289,3 +299,4 @@
     </script>
 </body>
 </html>
+

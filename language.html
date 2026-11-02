@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal 3,000+ Language Translator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        h2 {
+            color: #38bdf8;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0284c7;
+        }
+        .result-box {
+            margin-top: 20px;
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            min-height: 60px;
+            word-break: break-word;
+        }
+        .meta {
+            font-size: 12px;
+            color: #38bdf8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🌐 Universal Translation Mesh</h2>
+    
+    <label for="apiKey">Gemini API Key (BYOK)</label>
+    <input type="password" id="apiKey" placeholder="Enter your Gemini AQ... Key">
+
+    <label for="sourceText">Source Text (Any language)</label>
+    <textarea id="sourceText" placeholder="Type or paste text in any language..."></textarea>
+
+    <label for="targetLang">Target Language / Dialect</label>
+    <input type="text" id="targetLang" placeholder="e.g., Igala, Yoruba, Esperanto, Scottish Gaelic">
+
+    <button id="translateBtn" onclick="sendTranslationRequest()">Translate via Mesh</button>
+
+    <label>Translated Result:</label>
+    <div class="result-box" id="resultOutput">Ready...</div>
+    <div class="meta" id="providerOutput"></div>
+</div>
+
+<script>
+    const WORKER_URL = "https://withered-block-9506.trustconnect713.workers.dev/";
+
+    async function sendTranslationRequest() {
+        const apiKey = document.getElementById("apiKey").value.trim();
+        const text = document.getElementById("sourceText").value.trim();
+        const targetLang = document.getElementById("targetLang").value.trim();
+        
+        const resultDiv = document.getElementById("resultOutput");
+        const providerDiv = document.getElementById("providerOutput");
+        const btn = document.getElementById("translateBtn");
+
+        if (!apiKey || !text || !targetLang) {
+            alert("Please fill in your API key, source text, and target language!");
+            return;
+        }
+
+        resultDiv.textContent = "Translating across global models...";
+        providerDiv.textContent = "";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    text: text,
+                    targetLang: targetLang,
+                    geminiKey: apiKey
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to communicate with worker");
+            }
+
+            resultDiv.textContent = data.translatedText;
+            providerDiv.textContent = `Engine Used: ${data.provider}`;
+
+        } catch (err) {
+            resultDiv.textContent = "Error: " + err.message;
+            providerDiv.textContent = "";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>

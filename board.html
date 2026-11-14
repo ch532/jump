@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Connectgold - 1,000 Levels Gem Puzzle</title>
+  <!-- 1. Official GamePix HTML5 SDK v3 & Playgama Bridge SDK v2 -->
+  <script src="https://integration.gamepix.com/sdk/v3/gamepix.sdk.js"></script>
+  <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js"></script>
+  <style>
+    :root {
+      --bg-dark: #090b14;
+      --bg-panel: #13172b;
+      --bg-card: #1c223e;
+      --gold-primary: #f5b014;
+      --gold-glow: #ffd966;
+      --text-main: #f0f4ff;
+      --text-muted: #8c9bb7;
+      --accent-blue: #2979ff;
+      --accent-green: #00e676;
+      --accent-red: #ff1744;
+      --accent-purple: #d500f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-container {
+      width: 100%;
+      max-width: 490px;
+      height: 100%;
+      max-height: 940px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: radial-gradient(circle at 50% 20%, #171d38 0%, #090b14 82%);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.85), 0 0 1px rgba(245, 176, 20, 0.3);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 8px 12px 6px;
+      background: rgba(13, 17, 33, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .hud-row-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .badge.coins {
+      border-color: rgba(245, 176, 20, 0.4);
+      color: var(--gold-glow);
+    }
+
+    .badge.lives {
+      border-color: rgba(255, 23, 68, 0.3);
+      color: #ff5252;
+    }
+
+    .hud-btn {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .hud-btn:hover {
+      background: #252d52;
+      border-color: var(--gold-primary);
+    }
+
+    .notif-dot {
+      width: 7px;
+      height: 7px;
+      background: #ff1744;
+      border-radius: 50%;
+      position: absolute;
+      top: -2px;
+      right: -2px;
+    }
+
+    /* Quick Feature Bar (Daily Reward, Tasks, Achievements, Social, Cross-Promo) */
+    .quick-feature-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .feature-pill {
+      flex: 1;
+      background: rgba(28, 34, 62, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 9px;
+      padding: 4px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #e2e8f0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .feature-pill:hover {
+      border-color: var(--gold-primary);
+      background: #262f56;
+    }
+
+    .hud-row-game {
+      display: grid;
+      grid-template-columns: 92px 1fr 72px;
+      align-items: center;
+      gap: 6px;
+      background: rgba(19, 23, 43, 0.75);
+      padding: 5px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .hud-stat-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hud-stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .hud-stat-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .hud-stat-val.moves {
+      color: var(--gold-glow);
+      text-shadow: 0 0 10px rgba(245, 176, 20, 0.4);
+    }
+
+    .targets-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .target-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .target-pill.done {
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .target-gem-icon {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+    }
+
+    /* Multiplayer Live Race Bar */
+    #mp-hud-bar {
+      display: none;
+      background: linear-gradient(90deg, rgba(41, 121, 255, 0.2), rgba(213, 0, 249, 0.2));
+      border: 1px solid rgba(41, 121, 255, 0.4);
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #mp-hud-bar.active {
+      display: flex;
+    }
+
+    .score-progress-bar {
+      position: relative;
+      width: 100%;
+      height: 7px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .score-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff9100, #ffd600, #00e676);
+      transition: width 0.3s ease;
+    }
+
+    .score-stars-track {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 2px;
+      font-size: 10px;
+      margin-top: 1px;
+      color: var(--text-muted);
+    }
+
+    #canvas-wrapper {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      touch-action: none;
+    }
+
+    canvas {
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65), inset 0 0 2px rgba(255, 255, 255, 0.2);
+      background: transparent;
+      display: block;
+    }
+
+    footer {
+      padding: 8px 12px 12px;
+      background: rgba(13, 17, 33, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 9px 6px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.1s ease;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .btn-action:active {
+      transform: scale(0.96);
+    }
+
+    .btn-ai-hint {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .btn-pvp {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+
+    .btn-daily {
+      background: linear-gradient(135deg, #ec4899, #be185d);
+    }
+
+    .btn-levels {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    #coach-toast {
+      position: absolute;
+      top: 145px;
+      left: 14px;
+      right: 14px;
+      background: linear-gradient(90deg, #1e293b, #0f172a);
+      border: 1px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fef08a;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 45;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    #coach-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 8, 15, 0.86);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--bg-panel);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 18px;
+      padding: 18px 16px;
+      width: 100%;
+      max-width: 390px;
+      max-height: 86vh;
+      overflow-y: auto;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      text-align: center;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gold-glow);
+    }
+
+    .modal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .stars-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      font-size: 30px;
+    }
+
+    .star-gold { color: #ffd700; text-shadow: 0 0 12px rgba(255, 215, 0, 0.8); }
+    .star-dim { color: #3b4260; }
+
+    .stats-summary {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 9px 12px;
+      border-radius: 11px;
+      display: flex;
+      justify-content: space-around;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+    }
+
+    #level-grid-container {
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 4px 2px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .level-cell {
+      aspect-ratio: 1;
+      border-radius: 9px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .level-cell.unlocked {
+      background: linear-gradient(135deg, #1e3a8a, #172554);
+      border-color: rgba(96, 165, 250, 0.5);
+      color: #fff;
+    }
+
+    .level-cell.current {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border-color: #fef08a;
+      color: #fff;
+    }
+
+    .level-cell.locked {
+      background: #111422;
+      color: #4b5563;
+      cursor: not-allowed;
+    }
+
+    .level-stars {
+      font-size: 8px;
+      color: #ffd700;
+    }
+
+    .list-item-card {
+      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 11px;
+      padding: 9px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .daily-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .daily-day-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 7px 4px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .daily-day-box.active-day {
+      border-color: var(--gold-primary);
+      background: rgba(245, 176, 20, 0.18);
+    }
+
+    .daily-day-box.claimed-day {
+      opacity: 0.55;
+      border-color: var(--accent-green);
+    }
+
+    .floating-text {
+      position: absolute;
+      pointer-events: none;
+      font-weight: 900;
+      font-size: 19px;
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.85);
+      animation: floatUp 0.8s ease-out forwards;
+      z-index: 50;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+      50% { transform: translate(-50%, -100%) scale(1.15); }
+      100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <header>
+      <!-- Row 1: Player, Lives, Coins, Notifications, Sound, Settings -->
+      <div class="hud-row-top">
+        <div class="badge-group">
+          <div class="badge" id="btn-player-profile" title="Playgama Player Profile & Device">
+            <span>👤</span> <span id="player-name-badge">Guest</span>
+          </div>
+          <div class="badge lives" id="hud-lives" title="Lives">
+            <span>❤️</span> <span id="lives-count">5</span>
+          </div>
+          <div class="badge coins" id="hud-coins" title="Coins">
+            <span>🪙</span> <span id="coins-count">450</span>
+          </div>
+        </div>
+        <div class="badge-group">
+          <button class="hud-btn" id="btn-notifications" title="Notifications">
+            🔔 <span class="notif-dot" id="notif-dot"></span>
+          </button>
+          <button class="hud-btn" id="btn-sound" title="Toggle Sound">🔊</button>
+          <button class="hud-btn" id="btn-menu" title="Menu & Analytics">⚙️</button>
+        </div>
+      </div>
+
+      <!-- Row 2: Playgama Quick Feature Hub (Daily Reward, Tasks, Achievements, Social, Cross-Promo) -->
+      <div class="quick-feature-bar">
+        <button class="feature-pill" id="btn-open-daily-reward">🎁 Daily</button>
+        <button class="feature-pill" id="btn-open-tasks">📋 Tasks</button>
+        <button class="feature-pill" id="btn-open-achievements">🏆 Trophies</button>
+        <button class="feature-pill" id="btn-open-social">🌐 Social</button>
+        <button class="feature-pill" id="btn-open-crosspromo">🎮 Games</button>
+      </div>
+
+      <!-- Row 3: Level, 5-Level Difficulty Tier, Target Gems, Moves -->
+      <div class="hud-row-game">
+        <div class="hud-stat-box">
+          <span class="hud-stat-label" id="world-badge">Tier 1 • Gentle</span>
+          <span class="hud-stat-val" id="level-display">Lv 1</span>
+        </div>
+
+        <div class="targets-wrapper" id="targets-container"></div>
+
+        <div class="hud-stat-box">
+          <span class="hud-stat-label">Moves</span>
+          <span class="hud-stat-val moves" id="moves-display">26</span>
+        </div>
+      </div>
+
+      <!-- Live Multiplayer Race Bar (Visible during PvP match) -->
+      <div id="mp-hud-bar">
+        <span>⚔️ <span id="mp-opponent-name">Rival_88</span>: <b id="mp-opponent-score">0</b></span>
+        <span id="mp-room-tag" style="color: var(--gold-glow);">Room: #CG100</span>
+      </div>
+
+      <!-- Score Bar & Target -->
+      <div style="padding: 1px 2px 0;">
+        <div class="score-progress-bar">
+          <div class="score-progress-fill" id="score-fill"></div>
+        </div>
+        <div class="score-stars-track">
+          <span>Score: <b id="score-val" style="color: #fff;">0</b></span>
+          <span id="tier-step-info" style="color: #93c5fd;">Step +5 Lv Curve</span>
+          <span>Target: <b id="target-score-val" style="color: #ffd700;">780</b></span>
+        </div>
+      </div>
+    </header>
+
+    <div id="coach-toast">
+      <span>💡</span>
+      <span id="coach-toast-msg">Swap gems to match 3 or more!</span>
+    </div>
+
+    <div id="canvas-wrapper">
+      <canvas id="game-canvas"></canvas>
+    </div>
+
+    <footer>
+      <button class="btn-action btn-ai-hint" id="btn-ai-hint">
+        <span>💡 Hint</span>
+        <span id="hints-badge" style="background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 6px; font-size: 11px;">5</span>
+      </button>
+      <button class="btn-action btn-pvp" id="btn-multiplayer">
+        <span>⚔️ PvP</span>
+      </button>
+      <button class="btn-action btn-daily" id="btn-daily-challenge">
+        <span>👑 Crown</span>
+      </button>
+      <button class="btn-action btn-levels" id="btn-level-select">
+        <span>🗺️ Levels</span>
+      </button>
+    </footer>
+
+    <!-- 1. Level Select Modal -->
+    <div class="modal-overlay" id="modal-levels">
+      <div class="modal-card">
+        <div class="modal-title">Select Level (1 - 1000)</div>
+        <div class="modal-subtitle">Difficulty increases gradually every 5 levels!</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <button class="hud-btn" id="btn-page-prev">◀ Prev</button>
+          <span id="page-indicator" style="font-size: 12px; font-weight: 700; color: var(--gold-glow);">1 - 50</span>
+          <button class="hud-btn" id="btn-page-next">Next ▶</button>
+        </div>
+        <div id="level-grid-container"></div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-levels')">Close</button>
+      </div>
+    </div>
+
+    <!-- 2. Win Modal -->
+    <div class="modal-overlay" id="modal-win">
+      <div class="modal-card">
+        <div class="modal-title">🎉 Level Complete!</div>
+        <div class="modal-subtitle" id="win-subtitle">Great cascade combos!</div>
+        <div class="stars-row" id="win-stars"></div>
+        <div class="stats-summary">
+          <div><div class="hud-stat-label">Final Score</div><b id="win-final-score" style="color: #fff; font-size: 17px;">0</b></div>
+          <div><div class="hud-stat-label">Coins Won</div><b id="win-coins-earned" style="color: #ffd700; font-size: 17px;">+30 🪙</b></div>
+        </div>
+        <div class="modal-btn-row">
+          <button class="modal-btn btn-secondary" onclick="shareScoreAction()">📤 Share</button>
+          <button class="modal-btn btn-gold" id="btn-win-next">Next Level ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Fail Modal -->
+    <div class="modal-overlay" id="modal-fail">
+      <div class="modal-card">
+        <div class="modal-title" style="color: var(--accent-red);">Out of Moves!</div>
+        <div class="modal-subtitle">Almost there! Try matching 4 or 5 gems for Line Blasters.</div>
+        <div class="stats-summary">
+          <div><div class="hud-stat-label">Your Score</div><b id="fail-score" style="color: #fff; font-size: 17px;">0</b></div>
+          <div><div class="hud-stat-label">Lives Left</div><b id="fail-lives" style="color: #ff5252; font-size: 17px;">4 ❤️</b></div>
+        </div>
+        <div class="modal-btn-row">
+          <button class="modal-btn btn-secondary" onclick="closeModal('modal-fail')">Close</button>
+          <button class="modal-btn btn-gold" onclick="retryLevelWithLife()">Retry (1 ❤️)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Shop / In-App Products Modal -->
+    <div class="modal-overlay" id="modal-shop">
+      <div class="modal-card">
+        <div class="modal-title">💎 In-App Store & AI Coach</div>
+        <div class="modal-subtitle">First 5 AI Hints are free. Unlock bundles, coins, or watch rewarded ads!</div>
+        <div class="modal-btn-row">
+          <button class="modal-btn btn-gold" id="btn-buy-hints">Unlock 5 Hints (300 🪙)</button>
+          <button class="modal-btn btn-secondary" id="btn-watch-ad" style="border-color: var(--gold-primary);">📺 Ad (+10 🪙)</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+          <div class="list-item-card">
+            <div><div style="font-size:12px; font-weight:700;">🎁 Starter Gem Bundle</div><div style="font-size:11px; color:var(--text-muted);">+500 🪙, +5 💡 Hints & 5 ❤️ Lives</div></div>
+            <button class="hud-btn" onclick="buyInAppProduct('starter_bundle', 500, 5, 5)">$0.99</button>
+          </div>
+          <div class="list-item-card">
+            <div><div style="font-size:12px; font-weight:700;">💎 Gold Premium Pack</div><div style="font-size:11px; color:var(--text-muted);">+1,000 🪙 & +10 💡 Hints</div></div>
+            <button class="hud-btn" id="btn-buy-gold-premium" onclick="buyInAppProduct('gold_premium', 1000, 10, 0)">$1.99</button>
+          </div>
+          <div class="list-item-card">
+            <div><div style="font-size:12px; font-weight:700;">🪙 Pouch of 500 Coins</div><div style="font-size:11px; color:var(--text-muted);">Instant +500 Gold Coins</div></div>
+            <button class="hud-btn" onclick="buyInAppProduct('coins_pack_500', 500, 0, 0)">$0.99</button>
+          </div>
+          <div class="list-item-card">
+            <div><div style="font-size:12px; font-weight:700;">👑 Royal Chest (2,500 Coins)</div><div style="font-size:11px; color:var(--text-muted);">Best Value Treasury Pack</div></div>
+            <button class="hud-btn" onclick="buyInAppProduct('coins_pack_2500', 2500, 0, 0)">$3.99</button>
+          </div>
+          <div class="list-item-card">
+            <div><div style="font-size:12px; font-weight:700;">💡 15 AI Coach Hints Pack</div><div style="font-size:11px; color:var(--text-muted);">+15 Smart Board Analyses</div></div>
+            <button class="hud-btn" onclick="buyInAppProduct('ai_hints_15', 0, 15, 0)">$1.49</button>
+          </div>
+          <div class="list-item-card">
+            <div><div style="font-size:12px; font-weight:700;">❤️ Full Lives + 300 Coins</div><div style="font-size:11px; color:var(--text-muted);">Restore 5 Hearts + 300 🪙</div></div>
+            <button class="hud-btn" onclick="buyInAppProduct('unlimited_lives_pack', 300, 0, 5)">$0.99</button>
+          </div>
+        </div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-shop')">Close</button>
+      </div>
+    </div>
+
+    <!-- 5. Daily Reward 7-Day Streak Modal -->
+    <div class="modal-overlay" id="modal-daily-reward">
+      <div class="modal-card">
+        <div class="modal-title">🎁 7-Day Daily Reward</div>
+        <div class="modal-subtitle" id="daily-streak-subtitle">Log in daily for escalating coins & AI Hints!</div>
+        <div class="daily-grid" id="daily-reward-grid"></div>
+        <div class="modal-btn-row">
+          <button class="modal-btn btn-secondary" id="btn-claim-daily">Claim 1x</button>
+          <button class="modal-btn btn-gold" id="btn-claim-daily-2x">📺 Claim 2x (Ad)</button>
+        </div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-daily-reward')">Close</button>
+      </div>
+    </div>
+
+    <!-- 6. Playgama Tasks / Quests Modal -->
+    <div class="modal-overlay" id="modal-tasks">
+      <div class="modal-card">
+        <div class="modal-title">📋 Playgama Tasks</div>
+        <div class="modal-subtitle">Complete in-game missions to earn bonus coins and hints!</div>
+        <div id="tasks-list-container" style="display: flex; flex-direction: column; gap: 7px;"></div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-tasks')">Close</button>
+      </div>
+    </div>
+
+    <!-- 7. Playgama Achievements Modal -->
+    <div class="modal-overlay" id="modal-achievements">
+      <div class="modal-card">
+        <div class="modal-title">🏆 Playgama Achievements</div>
+        <div class="modal-subtitle">Synced with Playgama Bridge Achievements API</div>
+        <div id="achievements-list-container" style="display: flex; flex-direction: column; gap: 7px;"></div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-achievements')">Close</button>
+      </div>
+    </div>
+
+    <!-- 8. Playgama Social & Clipboard Modal -->
+    <div class="modal-overlay" id="modal-social">
+      <div class="modal-card">
+        <div class="modal-title">🌐 Social & Clipboard</div>
+        <div class="modal-subtitle">Share your progress, invite friends, and copy referral codes!</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px;">
+          <button class="hud-btn" onclick="playgama.shareGame()" style="padding: 10px; justify-content: center;">📤 Share Game</button>
+          <button class="hud-btn" onclick="playgama.inviteFriends()" style="padding: 10px; justify-content: center;">🤝 Invite Friends</button>
+          <button class="hud-btn" onclick="playgama.joinCommunity()" style="padding: 10px; justify-content: center;">💬 Community</button>
+          <button class="hud-btn" onclick="playgama.rateGame()" style="padding: 10px; justify-content: center;">⭐ Rate 5 Stars</button>
+          <button class="hud-btn" onclick="playgama.addToFavorites()" style="padding: 10px; justify-content: center;">🔖 Favorite</button>
+          <button class="hud-btn" onclick="playgama.addToHomeScreen()" style="padding: 10px; justify-content: center;">📲 Home Screen</button>
+        </div>
+        <div class="list-item-card">
+          <div>
+            <div style="font-size: 12px; font-weight: 700;">📋 Playgama Clipboard</div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="clipboard-preview">Copy your score & invite code</div>
+          </div>
+          <button class="hud-btn" onclick="playgama.copyShareCardToClipboard()">Copy</button>
+        </div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-social')">Close</button>
+      </div>
+    </div>
+
+    <!-- 9. Multiplayer PvP Arena Modal -->
+    <div class="modal-overlay" id="modal-multiplayer">
+      <div class="modal-card">
+        <div class="modal-title">⚔️ Multiplayer Arena</div>
+        <div class="modal-subtitle">Race an online opponent in real time or challenge a friend via Room Code!</div>
+        <button class="modal-btn btn-gold" onclick="startMultiplayerQuickMatch()">⚡ Quick Matchmaking</button>
+        <div class="list-item-card">
+          <div>
+            <div style="font-size: 12px; font-weight: 700;">Room Code: <span id="my-room-code" style="color: var(--gold-glow);">CG-4829</span></div>
+            <div style="font-size: 11px; color: var(--text-muted);">Share via Playgama Clipboard</div>
+          </div>
+          <button class="hud-btn" onclick="copyRoomCode()">📋 Copy</button>
+        </div>
+        <div class="list-item-card">
+          <input id="input-room-code" placeholder="Enter Friend Room Code..." style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 8px; border-radius: 8px; font-size: 12px; flex: 1;" />
+          <button class="hud-btn" onclick="pasteRoomCodeFromClipboard()">Paste</button>
+          <button class="hud-btn" onclick="joinRoomCodeMatch()">Join</button>
+        </div>
+        <button class="modal-btn btn-secondary" onclick="stopMultiplayerMatch()">Leave / Solo Mode</button>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-multiplayer')">Close</button>
+      </div>
+    </div>
+
+    <!-- 10. Cross-Promo Modal -->
+    <div class="modal-overlay" id="modal-crosspromo">
+      <div class="modal-card">
+        <div class="modal-title">🎮 Featured Playgama Games</div>
+        <div class="modal-subtitle">Try our partner games and earn +25 bonus coins!</div>
+        <div id="crosspromo-list" style="display: flex; flex-direction: column; gap: 7px;"></div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-crosspromo')">Close</button>
+      </div>
+    </div>
+
+    <!-- 11. Player Profile & Device Info Modal -->
+    <div class="modal-overlay" id="modal-player">
+      <div class="modal-card">
+        <div class="modal-title">👤 Player & Device Info</div>
+        <div class="list-item-card">
+          <div>
+            <div style="font-size: 13px; font-weight: 700;" id="profile-player-name">Guest Player</div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="profile-player-id">ID: local_player</div>
+          </div>
+          <button class="hud-btn" id="btn-authorize-player" onclick="playgama.authorizePlayer()">🔑 Sign In</button>
+        </div>
+        <div class="list-item-card">
+          <div>
+            <div style="font-size: 12px; font-weight: 700;">📱 Playgama Device & Platform</div>
+            <div style="font-size: 11px; color: var(--text-muted);" id="device-info-text">Device: desktop | Platform: playgama</div>
+          </div>
+          <button class="hud-btn" onclick="playgama.copyPlayerId()">📋 Copy ID</button>
+        </div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-player')">Close</button>
+      </div>
+    </div>
+
+    <!-- 12. Notifications Center Modal -->
+    <div class="modal-overlay" id="modal-notifications">
+      <div class="modal-card">
+        <div class="modal-title">🔔 Notifications</div>
+        <div class="modal-subtitle">Game alerts, life timers, and reward reminders</div>
+        <button class="hud-btn" onclick="requestBrowserNotifications()" style="justify-content: center; padding: 8px;">🔔 Enable Push / Browser Reminders</button>
+        <div id="notifications-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto;"></div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-notifications')">Close</button>
+      </div>
+    </div>
+
+    <!-- 13. Menu & Live Analytics Modal -->
+    <div class="modal-overlay" id="modal-menu">
+      <div class="modal-card">
+        <div class="modal-title">⚙️ Game Menu & Analytics</div>
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <button class="hud-btn" id="btn-menu-restart" style="padding: 10px; justify-content: center;">🔄 Restart Current Level</button>
+          <button class="hud-btn" id="btn-menu-sound-toggle" style="padding: 10px; justify-content: center;">🔊 Sound Effects: ON</button>
+          <button class="hud-btn" id="btn-menu-refill-lives" style="padding: 10px; justify-content: center; color: #ff5252;">❤️ Watch Ad / Refill Full 5 Lives</button>
+        </div>
+        <div style="text-align: left; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 10px; font-size: 11px;">
+          <div style="font-weight: 700; color: var(--gold-glow); margin-bottom: 4px;">📊 Playgama Analytics Telemetry Log:</div>
+          <div id="analytics-log-box" style="max-height: 95px; overflow-y: auto; font-family: monospace; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px;"></div>
+        </div>
+        <button class="modal-btn btn-secondary" onclick="closeModal('modal-menu')">Back to Game</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. ANALYTICS & NOTIFICATION TELEMETRY ENGINE
+       ========================================================================== */
+    class AnalyticsAndNotifications {
+      constructor() {
+        this.events = [];
+        this.notifications = [
+          { title: '🎁 Daily Login Gift Ready', body: 'Open the Daily Reward calendar to claim your streak bonus!', time: 'Just now' },
+          { title: '📈 Gradual 5-Level Scaling Active', body: 'Difficulty increases smoothly every 5 levels you beat!', time: 'System' }
+        ];
+      }
+
+      track(eventName, params = {}) {
+        const entry = `[${new Date().toLocaleTimeString()}] ${eventName} ${JSON.stringify(params)}`;
+        this.events.unshift(entry);
+        if (this.events.length > 30) this.events.pop();
+
+        const box = document.getElementById('analytics-log-box');
+        if (box) {
+          box.innerHTML = this.events.map(e => `<div>${e}</div>`).join('');
+        }
+      }
+
+      pushNotification(title, body) {
+        this.notifications.unshift({ title, body, time: new Date().toLocaleTimeString() });
+        const dot = document.getElementById('notif-dot');
+        if (dot) dot.style.display = 'block';
+        this.renderNotifications();
+
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try { new Notification(title, { body }); } catch (e) {}
+        }
+      }
+
+      renderNotifications() {
+        const list = document.getElementById('notifications-list');
+        if (!list) return;
+        list.innerHTML = this.notifications.map(n => `
+          <div class="list-item-card">
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #fff;">${n.title}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${n.body}</div>
+            </div>
+            <span style="font-size: 10px; color: #94a3b8;">${n.time}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    const telemetry = new AnalyticsAndNotifications();
+
+    /* ==========================================================================
+       2. SOUND SYNTHESIZER (Web Audio API)
+       ========================================================================== */
+    class SoundSynth {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.platformMuted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended' && !this.platformMuted) {
+          this.ctx.resume();
+        }
+      }
+
+      setPlatformMuted(muted) {
+        this.platformMuted = muted;
+        if (this.ctx) {
+          if (muted && this.ctx.state === 'running') this.ctx.suspend();
+          else if (!muted && this.enabled && this.ctx.state === 'suspended') this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.12, volume = 0.25) {
+        if (!this.enabled || this.platformMuted) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      match(combo = 1) {
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+        this.playTone(notes[Math.min(combo - 1, notes.length - 1)], 'triangle', 0.15, 0.3);
+      }
+
+      specialZap() {
+        this.playTone(680, 'sawtooth', 0.22, 0.3);
+      }
+
+      colorBomb() {
+        this.playTone(180, 'square', 0.3, 0.35);
+        setTimeout(() => this.playTone(720, 'sine', 0.35, 0.3), 90);
+      }
+
+      swap() { this.playTone(480, 'sine', 0.06, 0.15); }
+      invalid() { this.playTone(160, 'sawtooth', 0.15, 0.22); }
+
+      win() {
+        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'triangle', 0.24, 0.35), i * 105);
+        });
+      }
+
+      fail() {
+        [440, 415, 392, 349].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'sine', 0.2, 0.28), i * 125);
+        });
+      }
+    }
+
+    const sound = new SoundSynth();
+
+    /* ==========================================================================
+       3. PLAYGAMA BRIDGE FULL SUITE MANAGER
+       Covers: platform, player, device, clipboard, social, achievements,
+       advertisement, storage, payments, leaderboards.
+       ========================================================================== */
+    class PlaygamaManager {
+      constructor() {
+        this.isReady = false;
+        this.pendingRewardCallback = null;
+        this.deviceType = 'desktop';
+        this.platformId = 'standalone';
+        this.playerName = 'Guest';
+        this.playerId = 'local_guest';
+      }
+
+      async init() {
+        // Bind GamePix SDK v3 lifecycle hooks if running on GamePix
+        if (typeof GamePix !== 'undefined') {
+          this.platformId = 'gamepix';
+          GamePix.pause = () => {
+            sound.setPlatformMuted(true);
+            if (game) game.pausedByPlatform = true;
+          };
+          GamePix.resume = () => {
+            sound.setPlatformMuted(false);
+            if (game) game.pausedByPlatform = false;
+          };
+          telemetry.track('gamepix_sdk_detected', { lang: typeof GamePix.lang === 'function' ? GamePix.lang() : 'en' });
+        }
+
+        if (typeof bridge === 'undefined') {
+          this.updateProfileUI();
+          return;
+        }
+
+        try {
+          await bridge.initialize();
+          this.isReady = true;
+          this.platformId = bridge.platform?.id || 'playgama';
+          this.deviceType = bridge.device?.type || 'desktop';
+
+          if (bridge.player) {
+            this.playerName = bridge.player.name || (bridge.player.isAuthorized ? 'Player' : 'Guest');
+            this.playerId = bridge.player.id || 'pg_user';
+          }
+
+          this.updateProfileUI();
+          telemetry.track('playgama_initialized', { platform: this.platformId, device: this.deviceType });
+
+          if (bridge.platform.isAudioEnabled === false) sound.setPlatformMuted(true);
+
+          bridge.platform.on(bridge.EVENT_NAME.AUDIO_STATE_CHANGED, (enabled) => {
+            sound.setPlatformMuted(!enabled);
+          });
+
+          bridge.platform.on(bridge.EVENT_NAME.PAUSE_STATE_CHANGED, (paused) => {
+            sound.setPlatformMuted(paused);
+            if (game) game.pausedByPlatform = paused;
+          });
+
+          if (bridge.game && bridge.EVENT_NAME.VISIBILITY_STATE_CHANGED) {
+            bridge.game.on(bridge.EVENT_NAME.VISIBILITY_STATE_CHANGED, (state) => {
+              sound.setPlatformMuted(state === 'hidden');
+            });
+          }
+
+          bridge.advertisement.on(bridge.EVENT_NAME.INTERSTITIAL_STATE_CHANGED, (state) => {
+            telemetry.track('interstitial_state', { state });
+            if (state === 'opened') {
+              sound.setPlatformMuted(true);
+              this.sendGameplayStopped();
+            } else if (state === 'closed' || state === 'failed') {
+              sound.setPlatformMuted(false);
+              this.sendGameplayStarted();
+            }
+          });
+
+          bridge.advertisement.on(bridge.EVENT_NAME.REWARDED_STATE_CHANGED, (state) => {
+            telemetry.track('rewarded_state', { state });
+            if (state === 'opened') {
+              sound.setPlatformMuted(true);
+              this.sendGameplayStopped();
+            } else if (state === 'rewarded') {
+              if (typeof this.pendingRewardCallback === 'function') {
+                this.pendingRewardCallback();
+                this.pendingRewardCallback = null;
+              }
+            } else if (state === 'closed' || state === 'failed') {
+              sound.setPlatformMuted(false);
+              this.pendingRewardCallback = null;
+              this.sendGameplayStarted();
+            }
+          });
+
+          await storage.loadFromPlaygamaBridge();
+        } catch (err) {
+          this.updateProfileUI();
+        }
+      }
+
+      updateProfileUI() {
+        const badge = document.getElementById('player-name-badge');
+        if (badge) badge.textContent = this.playerName;
+        const pName = document.getElementById('profile-player-name');
+        if (pName) pName.textContent = this.playerName;
+        const pId = document.getElementById('profile-player-id');
+        if (pId) pId.textContent = `ID: ${this.playerId}`;
+        const devInfo = document.getElementById('device-info-text');
+        if (devInfo) devInfo.textContent = `Device: ${this.deviceType} | Platform: ${this.platformId}`;
+      }
+
+      // PLAYER MODULE (bridge.player)
+      async authorizePlayer() {
+        if (this.isReady && bridge.player && bridge.player.isAuthorizationSupported) {
+          try {
+            await bridge.player.authorize();
+            this.playerName = bridge.player.name || 'Authorized Player';
+            this.playerId = bridge.player.id || 'auth_user';
+            this.updateProfileUI();
+            await storage.loadFromPlaygamaBridge();
+            showCoachToast(`🔑 Signed in as ${this.playerName}!`);
+            incrementTaskProgress('auth_player', 1);
+            return;
+          } catch (e) {}
+        }
+        this.playerName = 'Commander_' + Math.floor(100 + Math.random() * 899);
+        this.updateProfileUI();
+        incrementTaskProgress('auth_player', 1);
+        showCoachToast(`🔑 Profile active: ${this.playerName}`);
+      }
+
+      // CLIPBOARD MODULE (bridge.clipboard)
+      async writeClipboard(text) {
+        telemetry.track('clipboard_write', { text });
+        if (this.isReady && bridge.clipboard && bridge.clipboard.isSupported) {
+          try {
+            await bridge.clipboard.write(text);
+            showCoachToast('📋 Copied via Playgama Clipboard!');
+            return;
+          } catch (e) {}
+        }
+        if (navigator.clipboard) {
+          try {
+            await navigator.clipboard.writeText(text);
+            showCoachToast('📋 Copied to Clipboard!');
+            return;
+          } catch (e) {}
+        }
+        showCoachToast(`📋 Code: ${text}`);
+      }
+
+      async readClipboard() {
+        if (this.isReady && bridge.clipboard && bridge.clipboard.isSupported) {
+          try { return await bridge.clipboard.read(); } catch (e) {}
+        }
+        if (navigator.clipboard) {
+          try { return await navigator.clipboard.readText(); } catch (e) {}
+        }
+        return '';
+      }
+
+      copyShareCardToClipboard() {
+        const lvl = storage.getHighestLevel();
+        const msg = `💎 Connectgold: I reached Level ${lvl}! Join room #${document.getElementById('my-room-code').textContent} at https://chyke.online`;
+        this.writeClipboard(msg);
+      }
+
+      copyPlayerId() {
+        this.writeClipboard(this.playerId);
+      }
+
+      // SOCIAL MODULE (bridge.social)
+      async shareGame() {
+        telemetry.track('social_share');
+        incrementTaskProgress('social_action', 1);
+        if (this.isReady && bridge.social && bridge.social.isShareSupported) {
+          try {
+            await bridge.social.share({ link: 'https://chyke.online' });
+            showCoachToast('📤 Shared via Playgama Social!');
+            return;
+          } catch (e) {}
+        }
+        this.copyShareCardToClipboard();
+      }
+
+      async inviteFriends() {
+        telemetry.track('social_invite');
+        incrementTaskProgress('social_action', 1);
+        if (this.isReady && bridge.social && bridge.social.isInviteFriendsSupported) {
+          try {
+            await bridge.social.inviteFriends();
+            showCoachToast('🤝 Friends invited!');
+            return;
+          } catch (e) {}
+        }
+        this.copyShareCardToClipboard();
+      }
+
+      async joinCommunity() {
+        telemetry.track('social_community');
+        if (this.isReady && bridge.social && bridge.social.isJoinCommunitySupported) {
+          try { await bridge.social.joinCommunity(); return; } catch (e) {}
+        }
+        showCoachToast('💬 Welcome to the Connectgold Community!');
+      }
+
+      async rateGame() {
+        telemetry.track('social_rate');
+        if (this.isReady && bridge.social && bridge.social.isRateSupported) {
+          try { await bridge.social.rate(); return; } catch (e) {}
+        }
+        showCoachToast('⭐ Thank you for rating Connectgold 5 Stars!');
+      }
+
+      async addToFavorites() {
+        if (this.isReady && bridge.social && bridge.social.isAddToFavoritesSupported) {
+          try { await bridge.social.addToFavorites(); return; } catch (e) {}
+        }
+        showCoachToast('🔖 Added to Favorites!');
+      }
+
+      async addToHomeScreen() {
+        if (this.isReady && bridge.social && bridge.social.isAddToHomeScreenSupported) {
+          try { await bridge.social.addToHomeScreen(); return; } catch (e) {}
+        }
+        showCoachToast('📲 Shortcut ready for Home Screen!');
+      }
+
+      // ACHIEVEMENTS MODULE (bridge.achievements)
+      async unlockAchievement(achId) {
+        if (storage.get(`ach_${achId}`, false)) return;
+        storage.set(`ach_${achId}`, true);
+        telemetry.track('achievement_unlocked', { achId });
+
+        const achObj = ACHIEVEMENTS_CATALOG.find(a => a.id === achId);
+        if (achObj) {
+          storage.setCoins(storage.getCoins() + achObj.rewardCoins);
+          if (game) game.updateHUD();
+          showCoachToast(`🏆 Unlocked: ${achObj.title} (+${achObj.rewardCoins} 🪙)`);
+          telemetry.pushNotification(`🏆 Achievement Unlocked!`, `${achObj.title} (+${achObj.rewardCoins} Coins)`);
+        }
+
+        if (this.isReady) {
+          try { bridge.platform.sendMessage('player_got_achievement'); } catch (e) {}
+          if (bridge.achievements && bridge.achievements.isSupported) {
+            try { await bridge.achievements.unlock({ achievement: achId }); } catch (e) {}
+          }
+        }
+      }
+
+      // PLATFORM SIGNALS & GAMEPIX TELEMETRY
+      sendGameReady() {
+        if (typeof GamePix !== 'undefined' && typeof GamePix.loaded === 'function') {
+          try { GamePix.loaded(); } catch (e) {}
+        }
+        if (!this.isReady) return;
+        try { bridge.platform.sendMessage('game_ready'); } catch (e) {}
+      }
+
+      sendGameplayStarted() {
+        if (!this.isReady) return;
+        try { bridge.platform.sendMessage('gameplay_started'); } catch (e) {}
+      }
+
+      sendGameplayStopped() {
+        if (!this.isReady) return;
+        try { bridge.platform.sendMessage('gameplay_stopped'); } catch (e) {}
+      }
+
+      updateGamePixScore(scoreVal) {
+        if (typeof GamePix !== 'undefined' && typeof GamePix.updateScore === 'function') {
+          try { GamePix.updateScore(scoreVal); } catch (e) {}
+        }
+      }
+
+      updateGamePixLevel(levelVal) {
+        if (typeof GamePix !== 'undefined' && typeof GamePix.updateLevel === 'function') {
+          try { GamePix.updateLevel(levelVal); } catch (e) {}
+        }
+      }
+
+      triggerHappyMoment() {
+        if (typeof GamePix !== 'undefined' && typeof GamePix.happyMoment === 'function') {
+          try { GamePix.happyMoment(); } catch (e) {}
+        }
+      }
+
+      // ADVERTISEMENTS (Supports GamePix SDK v3 & Playgama Bridge v2)
+      showInterstitial(placement = 'level_completed') {
+        if (typeof GamePix !== 'undefined' && typeof GamePix.interstitialAd === 'function') {
+          sound.setPlatformMuted(true);
+          if (game) game.pausedByPlatform = true;
+          try {
+            GamePix.interstitialAd().then(() => {
+              sound.setPlatformMuted(false);
+              if (game) game.pausedByPlatform = false;
+            }).catch(() => {
+              sound.setPlatformMuted(false);
+              if (game) game.pausedByPlatform = false;
+            });
+            return;
+          } catch (e) {
+            sound.setPlatformMuted(false);
+            if (game) game.pausedByPlatform = false;
+          }
+        }
+        if (!this.isReady || !bridge.advertisement.isInterstitialSupported) return;
+        try { bridge.advertisement.showInterstitial(placement); } catch (e) {}
+      }
+
+      showRewarded(placement, onRewardedCallback) {
+        telemetry.track('rewarded_requested', { placement });
+        if (typeof GamePix !== 'undefined' && typeof GamePix.rewardAd === 'function') {
+          sound.setPlatformMuted(true);
+          if (game) game.pausedByPlatform = true;
+          try {
+            GamePix.rewardAd().then((res) => {
+              sound.setPlatformMuted(false);
+              if (game) game.pausedByPlatform = false;
+              if (res && res.success && typeof onRewardedCallback === 'function') {
+                onRewardedCallback();
+              } else {
+                showCoachToast('Ad closed early — watch full ad to claim reward.');
+              }
+            }).catch(() => {
+              sound.setPlatformMuted(false);
+              if (game) game.pausedByPlatform = false;
+            });
+            return;
+          } catch (e) {
+            sound.setPlatformMuted(false);
+            if (game) game.pausedByPlatform = false;
+          }
+        }
+        if (this.isReady && bridge.advertisement.isRewardedSupported) {
+          this.pendingRewardCallback = onRewardedCallback;
+          try {
+            bridge.advertisement.showRewarded(placement);
+            return;
+          } catch (e) {}
+        }
+        showCoachToast('📺 Watching rewarded ad...');
+        setTimeout(() => {
+          if (typeof onRewardedCallback === 'function') onRewardedCallback();
+        }, 700);
+      }
+
+      async purchaseProduct(productId, onSuccess) {
+        telemetry.track('payment_initiated', { id: productId });
+        if (this.isReady && bridge.payments && bridge.payments.isSupported) {
+          try {
+            const purchase = await bridge.payments.purchase(productId);
+            if (purchase) {
+              await bridge.payments.consumePurchase(productId);
+              if (typeof onSuccess === 'function') onSuccess();
+              return;
+            }
+          } catch (e) {
+            showCoachToast('Purchase cancelled or unavailable.');
+            return;
+          }
+        }
+        showCoachToast(`Store item "${productId}" ready for Playgama portal billing.`);
+      }
+
+      submitLeaderboardScore(levelNum) {
+        if (!this.isReady || !bridge.leaderboards || !bridge.leaderboards.isSupported) return;
+        try { bridge.leaderboards.setScore('highest_level_leaderboard', levelNum); } catch (e) {}
+      }
+    }
+
+    const playgama = new PlaygamaManager();
+
+    /* ==========================================================================
+       4. GRADUAL 5-LEVEL STEPPED DIFFICULTY GENERATOR
+       "for first each 5 level up let difficulty be increasing gradually"
+       Every 5 levels (Lv 1-5, 6-10, 11-15, 16-20, 21-25...) forms a smooth step!
+       ========================================================================== */
+    const GEM_TYPES = [
+      { id: 0, name: 'Ruby', primary: '#ff2a54', highlight: '#ff8da3', border: '#9e0b28', shape: 'rhombus' },
+      { id: 1, name: 'Sapphire', primary: '#1e88e5', highlight: '#90caf9', border: '#0d47a1', shape: 'circle' },
+      { id: 2, name: 'Emerald', primary: '#00c853', highlight: '#b9f6ca', border: '#1b5e20', shape: 'hexagon' },
+      { id: 3, name: 'Topaz', primary: '#ffd600', highlight: '#fff59d', border: '#f57f17', shape: 'triangle' },
+      { id: 4, name: 'Amethyst', primary: '#aa00ff', highlight: '#ea80fc', border: '#4a148c', shape: 'octagon' },
+      { id: 5, name: 'Diamond', primary: '#00e5ff', highlight: '#e0f7fa', border: '#006064', shape: 'star' },
+      { id: 6, name: 'Amber', primary: '#ff6d00', highlight: '#ffd180', border: '#bf360c', shape: 'pentagon' }
+    ];
+
+    const WORLD_NAMES = [
+      "Crystal Cavern", "Emerald Forest", "Sunken Atlantis", "Volcanic Forge",
+      "Starlight Peak", "Amber Dunes", "Frostbite Citadel", "Amethyst Nebula",
+      "Golden Temple", "Shadow Abyss", "Coral Kingdom", "Skyward Sanctuary",
+      "Obsidian Wastes", "Prism Gardens", "Lunar Observatory", "Solar Oasis",
+      "Mystic Swamp", "Clockwork Spire", "Cloud Nine", "Imperial Vault"
+    ];
+
+    const TIER_LABELS = [
+      "Gentle", "Warm-Up", "Rising", "Steady", "Tactical",
+      "Skilled", "Expert", "Master", "Grandmaster", "Legend"
+    ];
+
+    function mulberry32(seed) {
+      return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function buildBoardMask(rows, cols, layoutType) {
+      const mask = Array.from({ length: rows }, () => Array(cols).fill(true));
+      switch (layoutType) {
+        case 1:
+          mask[0][0] = mask[0][cols - 1] = mask[rows - 1][0] = mask[rows - 1][cols - 1] = false;
+          break;
+        case 2:
+          const cr = Math.floor(rows / 2), cc = Math.floor(cols / 2);
+          mask[cr - 1][cc - 1] = mask[cr - 1][cc] = mask[cr][cc - 1] = mask[cr][cc] = false;
+          break;
+        case 3:
+          mask[0][0] = mask[0][1] = mask[1][0] = mask[0][cols - 2] = mask[0][cols - 1] = mask[1][cols - 1] = false;
+          mask[rows - 2][0] = mask[rows - 1][0] = mask[rows - 1][1] = mask[rows - 2][cols - 1] = mask[rows - 1][cols - 2] = mask[rows - 1][cols - 1] = false;
+          break;
+        case 4:
+          mask[1][1] = mask[1][cols - 2] = mask[rows - 2][1] = mask[rows - 2][cols - 2] = false;
+          break;
+        default:
+          break;
+      }
+      return mask;
+    }
+
+    function generateLevelConfig(levelNumber) {
+      const clamped = Math.max(1, Math.min(1000, levelNumber));
+      const rng = mulberry32(clamped * 7919 + 104729);
+
+      // 5-Level Difficulty Step Tier (Tier 0 = Lv 1..5, Tier 1 = Lv 6..10, Tier 2 = Lv 11..15, etc.)
+      const fiveLevelTier = Math.floor((clamped - 1) / 5);
+      const stepWithinTier = (clamped - 1) % 5; // 0..4 inside the 5-level bracket
+      const tierLabel = TIER_LABELS[Math.min(fiveLevelTier, TIER_LABELS.length - 1)];
+
+      const rows = 8;
+      const cols = 8;
+
+      // Levels 1-5: Full open square board for smooth onboarding; custom shapes introduced gradually every 5 levels
+      let layoutType = 0;
+      if (fiveLevelTier === 1 && stepWithinTier >= 2) layoutType = 1;
+      else if (fiveLevelTier >= 2) layoutType = (fiveLevelTier + stepWithinTier) % 5;
+
+      const mask = buildBoardMask(rows, cols, layoutType);
+
+      // Gradual gem color count scaling per 5-level bracket:
+      // Lv 1-10 (Tiers 0-1): 4 colors (lots of natural cascades!)
+      // Lv 11-20 (Tiers 2-3): 5 colors
+      // Lv 21-35 (Tiers 4-6): 6 colors
+      // Lv 36+ (Tier 7+): 6 colors (7 colors on every 5th boss peak)
+      let activeColors = 4;
+      if (fiveLevelTier >= 2 && fiveLevelTier <= 3) activeColors = 5;
+      else if (fiveLevelTier >= 4 && fiveLevelTier <= 6) activeColors = 6;
+      else if (fiveLevelTier >= 7) activeColors = (stepWithinTier === 4) ? 7 : 6;
+
+      // Moves start generous (26 moves in Lv 1-5) and tighten very gradually by 1 move per 5-level tier
+      const maxMoves = Math.max(18, 26 - Math.floor(fiveLevelTier / 2));
+
+      // Target Score increases smoothly by 5-level tier + small per-level step
+      const targetScore = 650 + (fiveLevelTier * 260) + (stepWithinTier * 45);
+
+      // Target Gem Goals scale gradually every 5 levels
+      const targetGems = {};
+      const numTargets = fiveLevelTier === 0 ? 1 : fiveLevelTier <= 2 ? 2 : 3;
+      const shuffledGems = [...Array(activeColors).keys()].sort(() => rng() - 0.5);
+
+      for (let i = 0; i < numTargets; i++) {
+        const gemId = shuffledGems[i];
+        const baseReq = 6 + (fiveLevelTier * 2) + stepWithinTier;
+        targetGems[gemId] = Math.min(28, baseReq);
+      }
+
+      const baseHue = (clamped * 37) % 360;
+      return {
+        levelNumber: clamped,
+        fiveLevelTier: fiveLevelTier + 1,
+        tierLabel,
+        rows,
+        cols,
+        activeColors,
+        maxMoves,
+        targetScore,
+        targetGems,
+        playableMask: mask,
+        bgTop: `hsl(${baseHue}, 65%, 15%)`,
+        bgBottom: `hsl(${(baseHue + 35) % 360}, 75%, 8%)`,
+        tileEven: `hsla(${baseHue}, 50%, 25%, 0.5)`,
+        tileOdd: `hsla(${(baseHue + 25) % 360}, 55%, 18%, 0.5)`
+      };
+    }
+
+    /* ==========================================================================
+       5. TASKS, ACHIEVEMENTS, DAILY REWARD & CROSS-PROMO CATALOGS
+       ========================================================================== */
+    const TASKS_CATALOG = [
+      { id: 'clear_gems', title: 'Clear 40 Gems', target: 40, rewardCoins: 60 },
+      { id: 'powerups', title: 'Create 3 Line Blasters / Bombs', target: 3, rewardCoins: 100 },
+      { id: 'win_levels', title: 'Complete 3 Levels', target: 3, rewardCoins: 150 },
+      { id: 'social_action', title: 'Share or Invite a Friend', target: 1, rewardCoins: 120 },
+      { id: 'auth_player', title: 'Activate Player Profile', target: 1, rewardCoins: 150 }
+    ];
+
+    const ACHIEVEMENTS_CATALOG = [
+      { id: 'first_win', title: 'First Victory', desc: 'Complete Level 1', rewardCoins: 50 },
+      { id: 'tier_climber_lv5', title: 'Tier 1 Graduate', desc: 'Complete the first 5-Level Tier (Lv 5)', rewardCoins: 100 },
+      { id: 'combo_master', title: 'Cascade Master', desc: 'Trigger a 3x Combo Cascade', rewardCoins: 80 },
+      { id: 'bomb_alchemist', title: 'Rainbow Alchemist', desc: 'Create a 5-Gem Color Bomb', rewardCoins: 120 },
+      { id: 'star_perfectionist', title: 'Star Perfectionist', desc: 'Earn 3 Stars on any level', rewardCoins: 90 },
+      { id: 'world_conqueror_lv10', title: 'Tier 2 Conqueror', desc: 'Clear Level 10', rewardCoins: 200 }
+    ];
+
+    const DAILY_REWARDS = [
+      { day: 1, coins: 50, hints: 0, label: '+50 🪙' },
+      { day: 2, coins: 75, hints: 1, label: '+75 🪙 +1 💡' },
+      { day: 3, coins: 100, hints: 0, label: '+100 🪙' },
+      { day: 4, coins: 150, hints: 2, label: '+150 🪙 +2 💡' },
+      { day: 5, coins: 200, hints: 0, label: '+200 🪙' },
+      { day: 6, coins: 250, hints: 3, label: '+250 🪙 +3 💡' },
+      { day: 7, coins: 500, hints: 5, label: '👑 +500 🪙 +5 💡' }
+    ];
+
+    const CROSS_PROMO_GAMES = [
+      { id: 'royal_hex', title: 'Royal Hex Sort', genre: '3D Hexa Puzzle', reward: 25, icon: '🔷' },
+      { id: 'gold_miner_blitz', title: 'Gold Miner Blitz', genre: 'Arcade Idle', reward: 25, icon: '⛏️' },
+      { id: 'starlight_merge', title: 'Starlight Merge Kingdom', genre: 'Merge Adventure', reward: 25, icon: '🌟' }
+    ];
+
+    /* ==========================================================================
+       6. STORAGE MANAGER
+       ========================================================================== */
+    class StorageManager {
+      constructor() {
+        this.PREFIX = 'connectgold_';
+        this.cache = {};
+      }
+
+      async loadFromPlaygamaBridge() {
+        if (typeof bridge === 'undefined' || !bridge.storage) return;
+        try {
+          const keys = ['current_level', 'highest_level', 'coins', 'lives', 'hints_remaining', 'daily_streak'];
+          const data = await bridge.storage.get(keys);
+          if (Array.isArray(data)) {
+            keys.forEach((k, idx) => {
+              if (data[idx] !== null && data[idx] !== undefined) {
+                this.cache[k] = Number(data[idx]);
+                localStorage.setItem(this.PREFIX + k, JSON.stringify(this.cache[k]));
+              }
+            });
+          }
+        } catch (e) {}
+      }
+
+      get(key, def) {
+        if (this.cache[key] !== undefined) return this.cache[key];
+        try {
+          if (typeof GamePix !== 'undefined' && GamePix.localStorage) {
+            const gpVal = GamePix.localStorage.getItem(this.PREFIX + key);
+            if (gpVal !== null && gpVal !== undefined) return JSON.parse(gpVal);
+          }
+          const v = localStorage.getItem(this.PREFIX + key);
+          return v !== null ? JSON.parse(v) : def;
+        } catch (e) { return def; }
+      }
+
+      set(key, val) {
+        this.cache[key] = val;
+        const serialized = JSON.stringify(val);
+        try {
+          if (typeof GamePix !== 'undefined' && GamePix.localStorage) {
+            GamePix.localStorage.setItem(this.PREFIX + key, serialized);
+          }
+        } catch (e) {}
+        try { localStorage.setItem(this.PREFIX + key, serialized); } catch (e) {}
+        if (typeof bridge !== 'undefined' && bridge.storage && playgama && playgama.isReady) {
+          try { bridge.storage.set([key], [val]).catch(() => {}); } catch (e) {}
+        }
+      }
+
+      getCurrentLevel() { return this.get('current_level', 1); }
+      setCurrentLevel(l) {
+        this.set('current_level', l);
+        if (l > this.getHighestLevel()) {
+          this.set('highest_level', l);
+          if (playgama) playgama.submitLeaderboardScore(l);
+        }
+      }
+      getHighestLevel() { return this.get('highest_level', 1); }
+      getCoins() { return this.get('coins', 450); }
+      setCoins(c) { this.set('coins', Math.max(0, c)); }
+      getLives() { return this.get('lives', 5); }
+      setLives(l) { this.set('lives', Math.max(0, Math.min(5, l))); }
+      useLife() {
+        const cur = this.getLives();
+        if (cur > 0) { this.setLives(cur - 1); return true; }
+        return false;
+      }
+      getHints() { return this.get('hints_remaining', 5); }
+      setHints(h) { this.set('hints_remaining', Math.max(0, h)); }
+      getLevelStars(lvl) { return this.get(`stars_${lvl}`, 0); }
+      setLevelStars(lvl, stars) {
+        if (stars > this.getLevelStars(lvl)) this.set(`stars_${lvl}`, stars);
+      }
+    }
+
+    const storage = new StorageManager();
+
+    function incrementTaskProgress(taskId, amount = 1) {
+      const cur = storage.get(`task_prog_${taskId}`, 0);
+      storage.set(`task_prog_${taskId}`, cur + amount);
+    }
+
+    /* ==========================================================================
+       7. GAME ENGINE & MATCH-3 CONTROLLER
+       ========================================================================== */
+    class GameEngine {
+      constructor() {
+        this.canvas = document.getElementById('game-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.wrapper = document.getElementById('canvas-wrapper');
+
+        this.levelConfig = null;
+        this.grid = [];
+        this.score = 0;
+        this.movesLeft = 0;
+        this.targetsRemaining = {};
+
+        this.state = 'READY';
+        this.pausedByPlatform = false;
+        this.selectedCell = null;
+        this.particles = [];
+        this.aiSuggestedMove = null;
+        this.lastTime = performance.now();
+
+        // Multiplayer state
+        this.mpActive = false;
+        this.mpOpponentScore = 0;
+        this.mpOpponentName = 'Rival_88';
+
+        this.initCanvasSize();
+        window.addEventListener('resize', () => this.initCanvasSize());
+        this.initInput();
+        this.startLoop();
+      }
+
+      initCanvasSize() {
+        const rect = this.wrapper.getBoundingClientRect();
+        const size = Math.min(rect.width, rect.height) - 10;
+        const dpr = window.devicePixelRatio || 1;
+
+        this.canvasWidth = Math.max(260, size);
+        this.canvasHeight = this.canvasWidth;
+
+        this.canvas.width = this.canvasWidth * dpr;
+        this.canvas.height = this.canvasHeight * dpr;
+        this.canvas.style.width = `${this.canvasWidth}px`;
+        this.canvas.style.height = `${this.canvasHeight}px`;
+
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      loadLevel(levelNum) {
+        this.levelConfig = generateLevelConfig(levelNum);
+        this.score = 0;
+        this.mpOpponentScore = 0;
+        this.movesLeft = this.levelConfig.maxMoves;
+        this.targetsRemaining = { ...this.levelConfig.targetGems };
+        this.aiSuggestedMove = null;
+        this.selectedCell = null;
+        this.particles = [];
+
+        const rows = this.levelConfig.rows;
+        const cols = this.levelConfig.cols;
+        this.grid = Array.from({ length: rows }, () => Array(cols).fill(null));
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (!this.levelConfig.playableMask[r][c]) continue;
+            let typeId;
+            do {
+              typeId = Math.floor(Math.random() * this.levelConfig.activeColors);
+            } while (
+              (c >= 2 && this.grid[r][c - 1]?.typeId === typeId && this.grid[r][c - 2]?.typeId === typeId) ||
+              (r >= 2 && this.grid[r - 1][c]?.typeId === typeId && this.grid[r - 2][c]?.typeId === typeId)
+            );
+
+            this.grid[r][c] = {
+              typeId, row: r, col: c, renderX: c, renderY: r, scale: 1, special: 0, removing: false
+            };
+          }
+        }
+
+        this.state = 'READY';
+        this.updateHUD();
+        playgama.sendGameplayStarted();
+        telemetry.track('level_started', {
+          level: this.levelConfig.levelNumber,
+          fiveLevelTier: this.levelConfig.fiveLevelTier,
+          colors: this.levelConfig.activeColors
+        });
+      }
+
+      initInput() {
+        let startX = 0, startY = 0, isDown = false;
+
+        const getGridPos = (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          const x = clientX - rect.left, y = clientY - rect.top;
+          const cellSize = this.canvasWidth / this.levelConfig.cols;
+          return { row: Math.floor(y / cellSize), col: Math.floor(x / cellSize), x, y };
+        };
+
+        const onDown = (e) => {
+          if (this.state !== 'READY' || this.pausedByPlatform) return;
+          sound.init();
+          isDown = true;
+          const pos = getGridPos(e);
+          startX = pos.x; startY = pos.y;
+
+          if (this.isValidCell(pos.row, pos.col)) {
+            if (!this.selectedCell) {
+              this.selectedCell = { r: pos.row, c: pos.col };
+              sound.swap();
+            } else {
+              const dr = Math.abs(pos.row - this.selectedCell.r);
+              const dc = Math.abs(pos.col - this.selectedCell.c);
+              if (dr + dc === 1) {
+                this.trySwap(this.selectedCell.r, this.selectedCell.c, pos.row, pos.col);
+                this.selectedCell = null;
+              } else {
+                this.selectedCell = { r: pos.row, c: pos.col };
+                sound.swap();
+              }
+            }
+          }
+        };
+
+        const onMove = (e) => {
+          if (!isDown || !this.selectedCell || this.state !== 'READY' || this.pausedByPlatform) return;
+          const pos = getGridPos(e);
+          const dx = pos.x - startX, dy = pos.y - startY;
+          if (Math.abs(dx) > 22 || Math.abs(dy) > 22) {
+            let tr = this.selectedCell.r, tc = this.selectedCell.c;
+            if (Math.abs(dx) > Math.abs(dy)) tc += dx > 0 ? 1 : -1;
+            else tr += dy > 0 ? 1 : -1;
+            if (this.isValidCell(tr, tc)) this.trySwap(this.selectedCell.r, this.selectedCell.c, tr, tc);
+            this.selectedCell = null;
+            isDown = false;
+          }
+        };
+
+        const onUp = () => { isDown = false; };
+        this.canvas.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        this.canvas.addEventListener('touchstart', onDown, { passive: false });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+      }
+
+      isValidCell(r, c) {
+        if (!this.levelConfig) return false;
+        return r >= 0 && r < this.levelConfig.rows && c >= 0 && c < this.levelConfig.cols && this.levelConfig.playableMask[r][c] && this.grid[r][c] !== null;
+      }
+
+      async trySwap(r1, c1, r2, c2) {
+        this.state = 'ANIMATING';
+        this.aiSuggestedMove = null;
+
+        const gemA = this.grid[r1][c1], gemB = this.grid[r2][c2];
+        gemA.row = r2; gemA.col = c2;
+        gemB.row = r1; gemB.col = c1;
+        this.grid[r1][c1] = gemB;
+        this.grid[r2][c2] = gemA;
+        sound.swap();
+
+        await this.waitForAnimations();
+
+        if (gemA.special === 2 || gemB.special === 2) {
+          const bomb = gemA.special === 2 ? gemA : gemB;
+          const target = gemA.special === 2 ? gemB : gemA;
+          this.movesLeft--;
+          this.simulateMultiplayerStep();
+          this.updateHUD();
+          await this.triggerColorBomb(bomb, target.typeId);
+          await this.processBoardCascades();
+          return;
+        }
+
+        const matches = this.findMatches();
+        if (matches.length > 0) {
+          this.movesLeft--;
+          this.simulateMultiplayerStep();
+          this.updateHUD();
+          await this.resolveMatches(matches, 1);
+          await this.processBoardCascades();
+        } else {
+          sound.invalid();
+          gemA.row = r1; gemA.col = c1;
+          gemB.row = r2; gemB.col = c2;
+          this.grid[r1][c1] = gemA;
+          this.grid[r2][c2] = gemB;
+          await this.waitForAnimations();
+          this.state = 'READY';
+        }
+      }
+
+      simulateMultiplayerStep() {
+        if (!this.mpActive) return;
+        this.mpOpponentScore += 120 + Math.floor(Math.random() * 180);
+        document.getElementById('mp-opponent-score').textContent = this.mpOpponentScore.toLocaleString();
+      }
+
+      findMatches() {
+        const rows = this.levelConfig.rows, cols = this.levelConfig.cols;
+        const matchGroups = [];
+
+        for (let r = 0; r < rows; r++) {
+          let count = 1;
+          for (let c = 0; c < cols; c++) {
+            const cur = this.grid[r][c], nxt = c + 1 < cols ? this.grid[r][c + 1] : null;
+            if (cur && nxt && cur.typeId === nxt.typeId && !cur.removing && !nxt.removing) count++;
+            else {
+              if (count >= 3) {
+                const grp = [];
+                for (let k = c - count + 1; k <= c; k++) grp.push({ r, c: k, gem: this.grid[r][k] });
+                matchGroups.push(grp);
+              }
+              count = 1;
+            }
+          }
+        }
+
+        for (let c = 0; c < cols; c++) {
+          let count = 1;
+          for (let r = 0; r < rows; r++) {
+            const cur = this.grid[r][c], nxt = r + 1 < rows ? this.grid[r + 1][c] : null;
+            if (cur && nxt && cur.typeId === nextTypeId(nxt) && !cur.removing && !nxt.removing) count++;
+            else {
+              if (count >= 3) {
+                const grp = [];
+                for (let k = r - count + 1; k <= r; k++) grp.push({ r: k, c, gem: this.grid[k][c] });
+                matchGroups.push(grp);
+              }
+              count = 1;
+            }
+          }
+        }
+        return matchGroups;
+
+        function nextTypeId(n) { return n ? n.typeId : -1; }
+      }
+
+      async resolveMatches(matchGroups, combo = 1) {
+        sound.match(combo);
+        if (combo >= 3) playgama.unlockAchievement('combo_master');
+
+        let points = 0;
+        let clearedCount = 0;
+
+        for (const group of matchGroups) {
+          const count = group.length;
+          points += count * 55 * combo;
+          clearedCount += count;
+
+          let createSpecial = count === 4 ? 1 : count >= 5 ? 2 : 0;
+          let spawnGemPos = group[Math.floor(group.length / 2)];
+
+          if (createSpecial > 0) {
+            incrementTaskProgress('powerups', 1);
+            if (createSpecial === 2) playgama.unlockAchievement('bomb_alchemist');
+          }
+
+          for (const item of group) {
+            const gem = this.grid[item.r][item.c];
+            if (!gem || gem.removing) continue;
+            if (this.targetsRemaining[gem.typeId] > 0) this.targetsRemaining[gem.typeId]--;
+            if (gem.special === 1) {
+              sound.specialZap();
+              this.triggerLineBlaster(item.r, item.c);
+            }
+            this.spawnGemParticles(item.r, item.c, gem.typeId);
+            gem.removing = true;
+          }
+
+          if (createSpecial > 0 && spawnGemPos) {
+            setTimeout(() => {
+              const g = this.grid[spawnGemPos.r][spawnGemPos.c];
+              if (g) {
+                g.removing = false;
+                g.special = createSpecial;
+                this.spawnFloatingText(`💥 POWER-UP!`, spawnGemPos.r, spawnGemPos.c, '#ffd700');
+              }
+            }, 90);
+          }
+        }
+
+        incrementTaskProgress('clear_gems', clearedCount);
+        this.score += points;
+        this.spawnFloatingText(combo > 1 ? `COMBO x${combo}! +${points}` : `+${points}`, 3, 4, combo > 1 ? '#ff9100' : '#ffd700');
+        this.updateHUD();
+
+        await new Promise(res => setTimeout(res, 210));
+
+        for (let r = 0; r < this.levelConfig.rows; r++) {
+          for (let c = 0; c < this.levelConfig.cols; c++) {
+            if (this.grid[r][c]?.removing) this.grid[r][c] = null;
+          }
+        }
+      }
+
+      triggerLineBlaster(row, col) {
+        for (let c = 0; c < this.levelConfig.cols; c++) {
+          const g = this.grid[row][c];
+          if (g && !g.removing) {
+            g.removing = true;
+            this.score += 80;
+            this.spawnGemParticles(row, c, g.typeId);
+            if (this.targetsRemaining[g.typeId] > 0) this.targetsRemaining[g.typeId]--;
+          }
+        }
+      }
+
+      async triggerColorBomb(bombGem, targetTypeId) {
+        sound.colorBomb();
+        bombGem.removing = true;
+        let count = 0;
+        for (let r = 0; r < this.levelConfig.rows; r++) {
+          for (let c = 0; c < this.levelConfig.cols; c++) {
+            const g = this.grid[r][c];
+            if (g && g.typeId === targetTypeId && !g.removing) {
+              g.removing = true;
+              count++;
+              this.spawnGemParticles(r, c, g.typeId);
+              if (this.targetsRemaining[g.typeId] > 0) this.targetsRemaining[g.typeId]--;
+            }
+          }
+        }
+        const pts = count * 120;
+        this.score += pts;
+        this.spawnFloatingText(`COLOR BLAST! +${pts}`, bombGem.row, bombGem.col, '#00e5ff');
+        this.updateHUD();
+        await new Promise(res => setTimeout(res, 280));
+        for (let r = 0; r < this.levelConfig.rows; r++) {
+          for (let c = 0; c < this.levelConfig.cols; c++) {
+            if (this.grid[r][c]?.removing) this.grid[r][c] = null;
+          }
+        }
+      }
+
+      async processBoardCascades() {
+        const rows = this.levelConfig.rows, cols = this.levelConfig.cols;
+        let dropped = false;
+
+        for (let c = 0; c < cols; c++) {
+          for (let r = rows - 1; r >= 0; r--) {
+            if (!this.levelConfig.playableMask[r][c] || this.grid[r][c] !== null) continue;
+            for (let k = r - 1; k >= 0; k--) {
+              if (this.grid[k][c] !== null) {
+                this.grid[r][c] = this.grid[k][c];
+                this.grid[r][c].row = r;
+                this.grid[k][c] = null;
+                dropped = true;
+                break;
+              }
+            }
+          }
+        }
+
+        for (let c = 0; c < cols; c++) {
+          let spawnOffset = 1;
+          for (let r = rows - 1; r >= 0; r--) {
+            if (this.levelConfig.playableMask[r][c] && this.grid[r][c] === null) {
+              const typeId = Math.floor(Math.random() * this.levelConfig.activeColors);
+              this.grid[r][c] = {
+                typeId, row: r, col: c, renderX: c, renderY: -spawnOffset, scale: 1, special: 0, removing: false
+              };
+              spawnOffset++;
+              dropped = true;
+            }
+          }
+        }
+
+        if (dropped) await this.waitForAnimations();
+
+        const newMatches = this.findMatches();
+        if (newMatches.length > 0) {
+          await this.resolveMatches(newMatches, 2);
+          await this.processBoardCascades();
+        } else {
+          this.checkGameCompletion();
+        }
+      }
+
+      waitForAnimations() {
+        return new Promise(resolve => {
+          const start = performance.now();
+          const check = () => {
+            let animating = false;
+            for (let r = 0; r < this.levelConfig.rows; r++) {
+              for (let c = 0; c < this.levelConfig.cols; c++) {
+                const g = this.grid[r][c];
+                if (g && (Math.abs(g.renderX - g.col) > 0.04 || Math.abs(g.renderY - g.row) > 0.04)) {
+                  animating = true; break;
+                }
+              }
+            }
+            if (animating && performance.now() - start < 550) requestAnimationFrame(check);
+            else {
+              for (let r = 0; r < this.levelConfig.rows; r++) {
+                for (let c = 0; c < this.levelConfig.cols; c++) {
+                  const g = this.grid[r][c];
+                  if (g) { g.renderX = g.col; g.renderY = g.row; }
+                }
+              }
+              resolve();
+            }
+          };
+          requestAnimationFrame(check);
+        });
+      }
+
+      checkGameCompletion() {
+        const targetsDone = Object.values(this.targetsRemaining).every(v => v <= 0);
+        const scoreDone = this.score >= this.levelConfig.targetScore;
+
+        if (targetsDone && scoreDone) {
+          this.state = 'OVER';
+          playgama.sendGameplayStopped();
+          sound.win();
+
+          const lvl = this.levelConfig.levelNumber;
+          const stars = this.score >= this.levelConfig.targetScore * 1.45 ? 3 : this.score >= this.levelConfig.targetScore * 1.18 ? 2 : 1;
+          let coinsEarned = 25 + stars * 5;
+          if (this.mpActive && this.score > this.mpOpponentScore) {
+            coinsEarned += 40;
+          }
+
+          storage.setLevelStars(lvl, stars);
+          storage.setCoins(storage.getCoins() + coinsEarned);
+          if (lvl === storage.getCurrentLevel()) storage.setCurrentLevel(lvl + 1);
+
+          playgama.updateGamePixScore(this.score);
+          playgama.updateGamePixLevel(lvl);
+          playgama.triggerHappyMoment();
+
+          incrementTaskProgress('win_levels', 1);
+          telemetry.track('level_completed', { level: lvl, score: this.score, stars });
+
+          // Achievements check
+          if (lvl >= 1) playgama.unlockAchievement('first_win');
+          if (lvl >= 5) playgama.unlockAchievement('tier_climber_lv5');
+          if (lvl >= 10) playgama.unlockAchievement('world_conqueror_lv10');
+          if (stars === 3) playgama.unlockAchievement('star_perfectionist');
+
+          showWinModal(this.score, stars, coinsEarned);
+          return;
+        }
+
+        if (this.movesLeft <= 0) {
+          this.state = 'OVER';
+          playgama.sendGameplayStopped();
+          sound.fail();
+          storage.useLife();
+          telemetry.track('level_failed', { level: this.levelConfig.levelNumber, score: this.score });
+          showFailModal(this.score);
+          return;
+        }
+
+        this.state = 'READY';
+      }
+
+      findAiHint() {
+        const rows = this.levelConfig.rows, cols = this.levelConfig.cols;
+        let bestMove = null, highest = -1;
+
+        const evaluateSwap = (r1, c1, r2, c2) => {
+          const g1 = this.grid[r1][c1], g2 = this.grid[r2][c2];
+          if (!g1 || !g2) return;
+          this.grid[r1][c1] = g2; this.grid[r2][c2] = g1;
+
+          let sc = (g1.special === 2 || g2.special === 2) ? 1500 : 0;
+          if (sc === 0) {
+            for (const grp of this.findMatches()) {
+              sc += grp.length * 100 + (grp.length >= 4 ? 400 : 0);
+              for (const itm of grp) if (this.targetsRemaining[itm.gem.typeId] > 0) sc += 300;
+            }
+          }
+          this.grid[r1][c1] = g1; this.grid[r2][c2] = g2;
+          if (sc > highest && sc > 0) { highest = sc; bestMove = { r1, c1, r2, c2 }; }
+        };
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (this.isValidCell(r, c)) {
+              if (c + 1 < cols && this.isValidCell(r, c + 1)) evaluateSwap(r, c, r, c + 1);
+              if (r + 1 < rows && this.isValidCell(r + 1, c)) evaluateSwap(r, c, r + 1, c);
+            }
+          }
+        }
+        this.aiSuggestedMove = bestMove;
+        return bestMove;
+      }
+
+      spawnGemParticles(r, c, typeId) {
+        const cellSize = this.canvasWidth / this.levelConfig.cols;
+        const cx = (c + 0.5) * cellSize, cy = (r + 0.5) * cellSize;
+        const color = GEM_TYPES[typeId].primary;
+        for (let i = 0; i < 12; i++) {
+          const a = Math.random() * Math.PI * 2, s = 2 + Math.random() * 4.5;
+          this.particles.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, color, size: 3 + Math.random() * 3, life: 1, decay: 0.04 });
+        }
+      }
+
+      spawnFloatingText(text, r, c, color = '#ffd700') {
+        const cellSize = this.canvasWidth / this.levelConfig.cols;
+        const badge = document.createElement('div');
+        badge.className = 'floating-text';
+        badge.innerText = text;
+        badge.style.color = color;
+        badge.style.left = `${(c + 0.5) * cellSize}px`;
+        badge.style.top = `${(r + 0.5) * cellSize}px`;
+        this.wrapper.appendChild(badge);
+        setTimeout(() => badge.remove(), 800);
+      }
+
+      updateHUD() {
+        document.getElementById('world-badge').innerText = `Tier ${this.levelConfig.fiveLevelTier} • ${this.levelConfig.tierLabel}`;
+        document.getElementById('level-display').innerText = `Lv ${this.levelConfig.levelNumber}`;
+        document.getElementById('moves-display').innerText = this.movesLeft;
+        document.getElementById('score-val').innerText = this.score.toLocaleString();
+        document.getElementById('target-score-val').innerText = this.levelConfig.targetScore.toLocaleString();
+        document.getElementById('lives-count').innerText = storage.getLives();
+        document.getElementById('coins-count').innerText = storage.getCoins();
+        document.getElementById('hints-badge').innerText = storage.getHints();
+
+        const startLv = (this.levelConfig.fiveLevelTier - 1) * 5 + 1;
+        document.getElementById('tier-step-info').innerText = `Lv ${startLv}-${startLv + 4} (${this.levelConfig.activeColors} Colors)`;
+
+        const ratio = Math.min(1, this.score / this.levelConfig.targetScore);
+        document.getElementById('score-fill').style.width = `${ratio * 100}%`;
+
+        const container = document.getElementById('targets-container');
+        container.innerHTML = '';
+        for (const [gemId, count] of Object.entries(this.targetsRemaining)) {
+          const gem = GEM_TYPES[gemId];
+          const pill = document.createElement('div');
+          pill.className = `target-pill ${count <= 0 ? 'done' : ''}`;
+          pill.innerHTML = `<div class="target-gem-icon" style="background: ${gem.primary};"></div><span>${count <= 0 ? '✓' : count}</span>`;
+          container.appendChild(pill);
+        }
+      }
+
+      startLoop() {
+        const loop = (time) => {
+          const dt = (time - this.lastTime) / 1000;
+          this.lastTime = time;
+          if (!this.pausedByPlatform) {
+            this.update(dt);
+            this.render();
+          }
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      }
+
+      update(dt) {
+        if (!this.levelConfig) return;
+        const speed = 14;
+        for (let r = 0; r < this.levelConfig.rows; r++) {
+          for (let c = 0; c < this.levelConfig.cols; c++) {
+            const g = this.grid[r][c];
+            if (!g) continue;
+            g.renderX += (g.col - g.renderX) * Math.min(1, speed * dt);
+            g.renderY += (g.row - g.renderY) * Math.min(1, speed * dt);
+          }
+        }
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life -= p.decay;
+          if (p.life <= 0) this.particles.splice(i, 1);
+        }
+      }
+
+      render() {
+        if (!this.levelConfig) return;
+        const ctx = this.ctx, w = this.canvasWidth, h = this.canvasHeight;
+        const rows = this.levelConfig.rows, cols = this.levelConfig.cols, cellSize = w / cols;
+
+        ctx.clearRect(0, 0, w, h);
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, this.levelConfig.bgTop);
+        grad.addColorStop(1, this.levelConfig.bgBottom);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (!this.levelConfig.playableMask[r][c]) continue;
+            ctx.fillStyle = (r + c) % 2 === 0 ? this.levelConfig.tileEven : this.levelConfig.tileOdd;
+            ctx.beginPath();
+            ctx.roundRect(c * cellSize + 2, r * cellSize + 2, cellSize - 4, cellSize - 4, 8);
+            ctx.fill();
+          }
+        }
+
+        if (this.selectedCell) {
+          ctx.strokeStyle = '#ffd700';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.roundRect(this.selectedCell.c * cellSize + 3, this.selectedCell.r * cellSize + 3, cellSize - 6, cellSize - 6, 9);
+          ctx.stroke();
+        }
+
+        if (this.aiSuggestedMove) {
+          const m = this.aiSuggestedMove;
+          ctx.strokeStyle = '#00e676';
+          ctx.lineWidth = 3.5;
+          [{ r: m.r1, c: m.c1 }, { r: m.r2, c: m.c2 }].forEach(pos => {
+            ctx.beginPath();
+            ctx.roundRect(pos.c * cellSize + 2, pos.r * cellSize + 2, cellSize - 4, cellSize - 4, 9);
+            ctx.stroke();
+          });
+        }
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const gem = this.grid[r][c];
+            if (gem) this.drawGem(ctx, gem, cellSize);
+          }
+        }
+
+        for (const p of this.particles) {
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      drawGem(ctx, gem, cellSize) {
+        const x = (gem.renderX + 0.5) * cellSize, y = (gem.renderY + 0.5) * cellSize;
+        const radius = (cellSize * 0.39) * gem.scale;
+        const gemDef = GEM_TYPES[gem.typeId];
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        if (gem.special === 2) {
+          ctx.fillStyle = '#ffd700';
+          ctx.beginPath();
+          ctx.arc(0, 0, radius * 1.1, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = 'bold 15px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🌈', 0, 0);
+          ctx.restore();
+          return;
+        }
+
+        if (gem.special === 1) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, radius * 1.15, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = gemDef.primary;
+        ctx.strokeStyle = gemDef.border;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (gemDef.shape === 'circle') ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        else if (gemDef.shape === 'rhombus') {
+          ctx.moveTo(0, -radius); ctx.lineTo(radius, 0); ctx.lineTo(0, radius); ctx.lineTo(-radius, 0); ctx.closePath();
+        } else if (gemDef.shape === 'triangle') {
+          ctx.moveTo(0, -radius); ctx.lineTo(radius, radius * 0.88); ctx.lineTo(-radius, radius * 0.88); ctx.closePath();
+        } else {
+          ctx.roundRect(-radius, -radius, radius * 2, radius * 2, radius * 0.35);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = gemDef.highlight;
+        ctx.beginPath();
+        ctx.arc(-radius * 0.28, -radius * 0.28, radius * 0.26, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    /* ==========================================================================
+       8. UI CONTROLLERS & FEATURE MODALS
+       ========================================================================== */
+    let game;
+    let currentLevelPage = 0;
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await playgama.init();
+
+      game = new GameEngine();
+      game.loadLevel(storage.getCurrentLevel());
+
+      requestAnimationFrame(() => playgama.sendGameReady());
+
+      // Top & Feature Buttons
+      document.getElementById('btn-player-profile').addEventListener('click', () => openModal('modal-player'));
+      document.getElementById('btn-notifications').addEventListener('click', () => {
+        document.getElementById('notif-dot').style.display = 'none';
+        telemetry.renderNotifications();
+        openModal('modal-notifications');
+      });
+
+      document.getElementById('btn-open-daily-reward').addEventListener('click', () => {
+        renderDailyRewardModal();
+        openModal('modal-daily-reward');
+      });
+      document.getElementById('btn-open-tasks').addEventListener('click', () => {
+        renderTasksModal();
+        openModal('modal-tasks');
+      });
+      document.getElementById('btn-open-achievements').addEventListener('click', () => {
+        renderAchievementsModal();
+        openModal('modal-achievements');
+      });
+      document.getElementById('btn-open-social').addEventListener('click', () => openModal('modal-social'));
+      document.getElementById('btn-open-crosspromo').addEventListener('click', () => {
+        renderCrossPromoModal();
+        openModal('modal-crosspromo');
+      });
+
+      document.getElementById('btn-multiplayer').addEventListener('click', () => openModal('modal-multiplayer'));
+
+      document.getElementById('btn-ai-hint').addEventListener('click', () => {
+        const hintsLeft = storage.getHints();
+        if (hintsLeft > 0) {
+          const move = game.findAiHint();
+          if (move) {
+            storage.setHints(hintsLeft - 1);
+            game.updateHUD();
+            showCoachToast("💡 Best move highlighted on board!");
+          } else {
+            showCoachToast("Shuffling board...");
+          }
+        } else {
+          openModal('modal-shop');
+        }
+      });
+
+      document.getElementById('btn-daily-challenge').addEventListener('click', () => {
+        showCoachToast("👑 Daily Crown Challenge Loaded!");
+        game.loadLevel(777);
+      });
+
+      document.getElementById('btn-level-select').addEventListener('click', () => {
+        openModal('modal-levels');
+        renderLevelGrid();
+      });
+
+      const toggleSoundState = () => {
+        sound.enabled = !sound.enabled;
+        document.getElementById('btn-sound').innerText = sound.enabled ? '🔊' : '🔇';
+        document.getElementById('btn-menu-sound-toggle').innerText = sound.enabled ? '🔊 Sound Effects: ON' : '🔇 Sound Effects: OFF';
+      };
+      document.getElementById('btn-sound').addEventListener('click', toggleSoundState);
+      document.getElementById('btn-menu-sound-toggle').addEventListener('click', toggleSoundState);
+
+      document.getElementById('btn-menu').addEventListener('click', () => openModal('modal-menu'));
+      document.getElementById('btn-menu-restart').addEventListener('click', () => {
+        playgama.showInterstitial('level_restart');
+        restartCurrentLevel();
+      });
+      document.getElementById('btn-menu-refill-lives').addEventListener('click', () => {
+        playgama.showRewarded('refill_lives', () => {
+          storage.setLives(5);
+          game.updateHUD();
+          closeModal('modal-menu');
+          showCoachToast("❤️ Full 5 Lives Restored!");
+        });
+      });
+
+      document.getElementById('btn-win-next').addEventListener('click', () => {
+        closeModal('modal-win');
+        playgama.showInterstitial('level_completed');
+        game.loadLevel(game.levelConfig.levelNumber + 1);
+      });
+
+      document.getElementById('btn-buy-hints').addEventListener('click', () => {
+        if (storage.getCoins() >= 300) {
+          storage.setCoins(storage.getCoins() - 300);
+          storage.setHints(storage.getHints() + 5);
+          game.updateHUD();
+          closeModal('modal-shop');
+          showCoachToast("🎉 Unlocked +5 AI Hints!");
+        } else {
+          showCoachToast("Need 300 Coins! Watch an ad or claim Daily Rewards.");
+        }
+      });
+
+      document.getElementById('btn-watch-ad').addEventListener('click', () => {
+        playgama.showRewarded('extra_coins', () => {
+          storage.setCoins(storage.getCoins() + 10);
+          game.updateHUD();
+          showCoachToast("🪙 +10 Coins granted!");
+        });
+      });
+
+      // Tap Coins badge to open In-App Store directly
+      document.getElementById('hud-coins').addEventListener('click', () => openModal('modal-shop'));
+
+      document.getElementById('btn-claim-daily').addEventListener('click', () => claimDailyReward(1));
+      document.getElementById('btn-claim-daily-2x').addEventListener('click', () => {
+        playgama.showRewarded('daily_reward_double', () => claimDailyReward(2));
+      });
+
+      document.getElementById('btn-page-prev').addEventListener('click', () => {
+        if (currentLevelPage > 0) { currentLevelPage--; renderLevelGrid(); }
+      });
+      document.getElementById('btn-page-next').addEventListener('click', () => {
+        if (currentLevelPage < 19) { currentLevelPage++; renderLevelGrid(); }
+      });
+    });
+
+    // Daily Reward Logic
+    function renderDailyRewardModal() {
+      const streak = storage.get('daily_streak', 1);
+      const grid = document.getElementById('daily-reward-grid');
+      grid.innerHTML = DAILY_REWARDS.map(d => {
+        const isCurrent = d.day === ((streak - 1) % 7) + 1;
+        const isClaimed = d.day < ((streak - 1) % 7) + 1;
+        return `
+          <div class="daily-day-box ${isCurrent ? 'active-day' : ''} ${isClaimed ? 'claimed-day' : ''}">
+            <b>Day ${d.day}</b>
+            <span>${d.label}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function claimDailyReward(multiplier = 1) {
+      const today = new Date().toISOString().slice(0, 10);
+      if (storage.get('last_daily_claim', '') === today) {
+        showCoachToast("🎁 Already claimed today's reward! Come back tomorrow.");
+        return;
+      }
+      const streak = storage.get('daily_streak', 1);
+      const reward = DAILY_REWARDS[(streak - 1) % 7];
+      storage.setCoins(storage.getCoins() + reward.coins * multiplier);
+      storage.setHints(storage.getHints() + reward.hints * multiplier);
+      storage.set('last_daily_claim', today);
+      storage.set('daily_streak', streak + 1);
+      game.updateHUD();
+      renderDailyRewardModal();
+      telemetry.track('daily_reward_claimed', { day: reward.day, multiplier });
+      showCoachToast(`🎁 Claimed ${reward.coins * multiplier} Coins!`);
+    }
+
+    // Playgama Tasks Logic
+    function renderTasksModal() {
+      const container = document.getElementById('tasks-list-container');
+      container.innerHTML = TASKS_CATALOG.map(t => {
+        const prog = Math.min(t.target, storage.get(`task_prog_${t.id}`, 0));
+        const claimed = storage.get(`task_claimed_${t.id}`, false);
+        const ready = prog >= t.target && !claimed;
+        return `
+          <div class="list-item-card">
+            <div>
+              <div style="font-size: 12px; font-weight: 700;">${t.title} (${prog}/${t.target})</div>
+              <div style="font-size: 11px; color: var(--gold-glow);">Reward: +${t.rewardCoins} 🪙</div>
+            </div>
+            <button class="hud-btn" ${!ready ? 'disabled style="opacity:0.5"' : ''} onclick="claimTaskReward('${t.id}', ${t.rewardCoins})">
+              ${claimed ? '✓ Claimed' : ready ? 'Claim!' : 'In Progress'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function claimTaskReward(taskId, coins) {
+      if (storage.get(`task_claimed_${taskId}`, false)) return;
+      storage.set(`task_claimed_${taskId}`, true);
+      storage.setCoins(storage.getCoins() + coins);
+      game.updateHUD();
+      renderTasksModal();
+      telemetry.track('task_claimed', { taskId, coins });
+      showCoachToast(`📋 Task Completed: +${coins} Coins!`);
+    }
+
+    // Achievements Modal
+    function renderAchievementsModal() {
+      const container = document.getElementById('achievements-list-container');
+      container.innerHTML = ACHIEVEMENTS_CATALOG.map(a => {
+        const unlocked = storage.get(`ach_${a.id}`, false);
+        return `
+          <div class="list-item-card">
+            <div>
+              <div style="font-size: 12px; font-weight: 700;">${unlocked ? '🏆' : '🔒'} ${a.title}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${a.desc} (+${a.rewardCoins} 🪙)</div>
+            </div>
+            <span style="font-size: 11px; font-weight: 700; color: ${unlocked ? '#00e676' : '#64748b'};">
+              ${unlocked ? 'Unlocked' : 'Locked'}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Cross-Promo Modal
+    function renderCrossPromoModal() {
+      const list = document.getElementById('crosspromo-list');
+      list.innerHTML = CROSS_PROMO_GAMES.map(g => {
+        const tried = storage.get(`promo_${g.id}`, false);
+        return `
+          <div class="list-item-card">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:22px;">${g.icon}</span>
+              <div>
+                <div style="font-size:12px; font-weight:700;">${g.title}</div>
+                <div style="font-size:11px; color:var(--text-muted);">${g.genre} • +${g.reward} 🪙 Bonus</div>
+              </div>
+            </div>
+            <button class="hud-btn" onclick="launchCrossPromo('${g.id}', '${g.title}', ${g.reward})">
+              ${tried ? 'Play' : 'Play (+25 🪙)'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function launchCrossPromo(id, title, reward) {
+      telemetry.track('cross_promo_clicked', { id, title });
+      if (!storage.get(`promo_${id}`, false)) {
+        storage.set(`promo_${id}`, true);
+        storage.setCoins(storage.getCoins() + reward);
+        game.updateHUD();
+        renderCrossPromoModal();
+        showCoachToast(`🎮 Launched ${title}! +${reward} Coins awarded!`);
+      } else {
+        showCoachToast(`🎮 Opening ${title}...`);
+      }
+    }
+
+    // Multiplayer Functions
+    function startMultiplayerQuickMatch() {
+      game.mpActive = true;
+      game.mpOpponentScore = 0;
+      game.mpOpponentName = 'Grandmaster_' + Math.floor(10 + Math.random() * 89);
+      document.getElementById('mp-opponent-name').textContent = game.mpOpponentName;
+      document.getElementById('mp-opponent-score').textContent = '0';
+      document.getElementById('mp-hud-bar').classList.add('active');
+      closeModal('modal-multiplayer');
+      game.loadLevel(game.levelConfig.levelNumber);
+      telemetry.track('multiplayer_started', { mode: 'quick_match' });
+      showCoachToast(`⚔️ Matched vs ${game.mpOpponentName}! Beat their score!`);
+    }
+
+    function copyRoomCode() {
+      const code = document.getElementById('my-room-code').textContent;
+      playgama.writeClipboard(code);
+    }
+
+    async function pasteRoomCodeFromClipboard() {
+      const txt = await playgama.readClipboard();
+      if (txt) document.getElementById('input-room-code').value = txt.trim();
+    }
+
+    function joinRoomCodeMatch() {
+      const code = document.getElementById('input-room-code').value.trim() || 'CG-100';
+      game.mpActive = true;
+      game.mpOpponentScore = 0;
+      document.getElementById('mp-room-tag').textContent = `Room: #${code}`;
+      document.getElementById('mp-hud-bar').classList.add('active');
+      closeModal('modal-multiplayer');
+      game.loadLevel(game.levelConfig.levelNumber);
+      showCoachToast(`⚔️ Joined Room #${code}!`);
+    }
+
+    function stopMultiplayerMatch() {
+      game.mpActive = false;
+      document.getElementById('mp-hud-bar').classList.remove('active');
+      closeModal('modal-multiplayer');
+      showCoachToast('Switched to Solo Campaign Mode');
+    }
+
+    function buyInAppProduct(productId, coinsReward, hintsReward, livesReward) {
+      playgama.purchaseProduct(productId, () => {
+        if (coinsReward > 0) storage.setCoins(storage.getCoins() + coinsReward);
+        if (hintsReward > 0) storage.setHints(storage.getHints() + hintsReward);
+        if (livesReward > 0) storage.setLives(livesReward);
+        game.updateHUD();
+        closeModal('modal-shop');
+        showCoachToast(`💎 Purchased ${productId}!`);
+      });
+    }
+
+    function shareScoreAction() {
+      playgama.shareGame();
+    }
+
+    function requestBrowserNotifications() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(p => {
+          showCoachToast(p === 'granted' ? '🔔 Browser Notifications Enabled!' : '🔔 In-Game Notification Center Active!');
+        });
+      } else {
+        showCoachToast('🔔 In-Game Notification Center Active!');
+      }
+    }
+
+    function openModal(id) {
+      playgama.sendGameplayStopped();
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      if (game && game.state === 'READY') playgama.sendGameplayStarted();
+    }
+
+    function showCoachToast(msg) {
+      const toast = document.getElementById('coach-toast');
+      document.getElementById('coach-toast-msg').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2700);
+    }
+
+    function renderLevelGrid() {
+      const grid = document.getElementById('level-grid-container');
+      grid.innerHTML = '';
+      const start = currentLevelPage * 50 + 1, end = Math.min(1000, start + 49);
+      document.getElementById('page-indicator').innerText = `${start} - ${end}`;
+
+      const highest = storage.getHighestLevel(), current = storage.getCurrentLevel();
+      for (let lvl = start; lvl <= end; lvl++) {
+        const cell = document.createElement('div');
+        const unlocked = lvl <= highest;
+        cell.className = `level-cell ${lvl === current ? 'current' : unlocked ? 'unlocked' : 'locked'}`;
+        const stars = storage.getLevelStars(lvl);
+        cell.innerHTML = `<span>${lvl}</span><span class="level-stars">${stars > 0 ? '★'.repeat(stars) : ''}</span>`;
+        if (unlocked) {
+          cell.addEventListener('click', () => {
+            closeModal('modal-levels');
+            game.loadLevel(lvl);
+          });
+        }
+        grid.appendChild(cell);
+      }
+    }
+
+    function showWinModal(finalScore, stars, coins) {
+      document.getElementById('win-final-score').innerText = finalScore.toLocaleString();
+      document.getElementById('win-coins-earned').innerText = `+${coins} 🪙`;
+      const starsDiv = document.getElementById('win-stars');
+      starsDiv.innerHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        const span = document.createElement('span');
+        span.className = i <= stars ? 'star-gold' : 'star-dim';
+        span.innerText = '★';
+        starsDiv.appendChild(span);
+      }
+      openModal('modal-win');
+    }
+
+    function showFailModal(score) {
+      document.getElementById('fail-score').innerText = score.toLocaleString();
+      document.getElementById('fail-lives').innerText = `${storage.getLives()} ❤️`;
+      openModal('modal-fail');
+    }
+
+    function restartCurrentLevel() {
+      closeModal('modal-win');
+      closeModal('modal-fail');
+      closeModal('modal-menu');
+      game.loadLevel(game.levelConfig.levelNumber);
+    }
+
+    function retryLevelWithLife() {
+      if (storage.getLives() > 0) {
+        closeModal('modal-fail');
+        playgama.showInterstitial('level_restart');
+        game.loadLevel(game.levelConfig.levelNumber);
+      } else {
+        playgama.showRewarded('refill_lives', () => {
+          storage.setLives(5);
+          closeModal('modal-fail');
+          game.loadLevel(game.levelConfig.levelNumber);
+          showCoachToast("❤️ Lives Refilled!");
+        });
+      }
+    }
+  </script>
+</body>
+</html>

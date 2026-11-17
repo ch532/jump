@@ -1,5 +1,6 @@
 google.com, pub-7728035806961877, DIRECT, f08c47fec0942fa0
 
+google.com, pub-1200612252124098, DIRECT, f08c47fec0942fa0
 
 vungle.com, 6aeadfaf072353e2c43cbfb3, DIRECT, c107d686becd2d77
 
